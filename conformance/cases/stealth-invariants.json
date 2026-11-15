@@ -1,0 +1,91 @@
+{
+  "id": "stealth-invariants",
+  "title": "SDK and helper must not add fingerprint changes",
+  "contract": "0.1.0",
+  "runner": "client-audit",
+  "status": "design",
+  "preconditions": [
+    "Ombra app running",
+    "engine installed",
+    "CDP traffic between the helper and the browser is observable",
+    "the engine process command line is readable"
+  ],
+  "invariants": [
+    {
+      "id": "SI-01",
+      "rule": "The client must not send Runtime.enable",
+      "check": "cdp-audit",
+      "forbidden": ["Runtime.enable"]
+    },
+    {
+      "id": "SI-02",
+      "rule": "The client must not enable Debugger or Log domains",
+      "check": "cdp-audit",
+      "forbidden": ["Debugger.enable", "Log.enable"]
+    },
+    {
+      "id": "SI-03",
+      "rule": "The client must not inject script before document load",
+      "check": "cdp-audit",
+      "forbidden": ["Page.addScriptToEvaluateOnNewDocument"]
+    },
+    {
+      "id": "SI-04",
+      "rule": "The client must not override identity through Emulation",
+      "check": "cdp-audit",
+      "forbidden": [
+        "Emulation.setUserAgentOverride",
+        "Emulation.setTimezoneOverride",
+        "Emulation.setLocaleOverride",
+        "Emulation.setDeviceMetricsOverride",
+        "Emulation.setTouchEmulationEnabled"
+      ]
+    },
+    {
+      "id": "SI-05",
+      "rule": "The engine command line must not contain automation or stealth flags added by the SDK",
+      "check": "flags-audit",
+      "forbidden": [
+        "--enable-automation",
+        "--disable-blink-features=AutomationControlled",
+        "--headless=old"
+      ]
+    },
+    {
+      "id": "SI-06",
+      "rule": "The launch payload exposes a CDP endpoint and does not claim a WebDriver path",
+      "check": "launch-response",
+      "expect": [
+        { "path": "data.ws.puppeteer", "matches": "^wss?://" },
+        { "path": "data.webdriver", "equals": "" }
+      ]
+    },
+    {
+      "id": "SI-07",
+      "rule": "navigator.webdriver must be false in the launched profile",
+      "check": "probe",
+      "path": "navigator.webdriver",
+      "equals": false
+    },
+    {
+      "id": "SI-08",
+      "rule": "The helper world must not be visible as the main world",
+      "check": "probe",
+      "path": "window.__ombra",
+      "equals": null
+    },
+    {
+      "id": "SI-09",
+      "rule": "The client must not set a custom user agent through launch arguments",
+      "check": "flags-audit",
+      "forbidden": ["--user-agent"]
+    },
+    {
+      "id": "SI-10",
+      "rule": "The client must not disable the Chromium sandbox on a sandbox-capable host",
+      "check": "flags-audit",
+      "forbidden": ["--no-sandbox", "--disable-setuid-sandbox"],
+      "unless": "container or explicit user opt-in"
+    }
+  ]
+}

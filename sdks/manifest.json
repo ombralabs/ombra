@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "contract_version": "0.1.0",
+  "sdks": [
+    {
+      "id": "python",
+      "language": "Python",
+      "directory": "sdks/python",
+      "package": "ombra",
+      "registry": "PyPI",
+      "runtime": "Python 3.10+",
+      "source_root": "sdks/python/src/ombra",
+      "tests_root": "sdks/python/tests",
+      "cdp_clients": ["Playwright"],
+      "status": "scaffold"
+    },
+    {
+      "id": "node",
+      "language": "Node.js / TypeScript",
+      "directory": "sdks/node",
+      "package": "@ombra/sdk",
+      "registry": "npm",
+      "runtime": "Node.js 20+",
+      "source_root": "sdks/node/src",
+      "tests_root": "sdks/node/tests",
+      "cdp_clients": ["Playwright", "Puppeteer"],
+      "status": "scaffold"
+    },
+    {
+      "id": "dotnet",
+      "language": "C# / .NET",
+      "directory": "sdks/dotnet",
+      "package": "Ombra",
+      "registry": "NuGet",
+      "runtime": ".NET 8+",
+      "source_root": "sdks/dotnet/src/Ombra",
+      "tests_root": "sdks/dotnet/tests/Ombra.Tests",
+      "cdp_clients": ["Microsoft.Playwright", "Selenium"],
+      "status": "scaffold"
+    },
+    {
+      "id": "java",
+      "language": "Java",
+      "directory": "sdks/java",
+      "package": "dev.ombra:ombra",
+      "registry": "Maven Central",
+      "runtime": "Java 17+",
+      "source_root": "sdks/java/src/main/java/dev/ombra",
+      "tests_root": "sdks/java/src/test/java/dev/ombra",
+      "cdp_clients": ["Playwright", "Selenium"],
+      "status": "scaffold"
+    },
+    {
+      "id": "go",
+      "language": "Go",
+      "directory": "sdks/go",
+      "package": "github.com/ombralabs/ombra/sdks/go",
+      "registry": "Go modules",
+      "runtime": "Go 1.22+",
+      "source_root": "sdks/go",
+      "tests_root": "sdks/go",
+      "cdp_clients": ["chromedp", "playwright-go"],
+      "status": "scaffold"
+    },
+    {
+      "id": "php",
+      "language": "PHP",
+      "directory": "sdks/php",
+      "package": "ombralabs/ombra",
+      "registry": "Packagist",
+      "runtime": "PHP 8.2+",
+      "source_root": "sdks/php/src",
+      "tests_root": "sdks/php/tests",
+      "cdp_clients": ["CDP WebSocket"],
+      "status": "scaffold"
+    },
+    {
+      "id": "ruby",
+      "language": "Ruby",
+      "directory": "sdks/ruby",
+      "package": "ombra",
+      "registry": "RubyGems",
+      "runtime": "Ruby 3.2+",
+      "source_root": "sdks/ruby/lib/ombra",
+      "tests_root": "sdks/ruby/spec",
+      "cdp_clients": ["Ferrum"],
+      "status": "scaffold"
+    },
+    {
+      "id": "rust",
+      "language": "Rust",
+      "directory": "sdks/rust",
+      "package": "ombra",
+      "registry": "crates.io",
+      "runtime": "Rust 1.78+",
+      "source_root": "sdks/rust/src",
+      "tests_root": "sdks/rust/tests",
+      "cdp_clients": ["chromiumoxide"],
+      "status": "scaffold"
+    }
+  ]
+}

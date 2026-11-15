@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ombralabs/ombra/security/advisories/new
+    about: Report privately. Do not open a public issue.
+  - name: Documentation
+    url: https://github.com/ombralabs/ombra/tree/main/docs
+    about: Architecture, SDK contract, versioning, and the stealth checkup.

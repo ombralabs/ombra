@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ombrabrowser.dev/schemas/profile.schema.json",
+  "title": "Profile row",
+  "description": "A profile as returned by POST /api/v2/browser-profile/list. Extra fields are allowed because the profile row is additive.",
+  "type": "object",
+  "required": ["profile_id", "profile_no", "name", "group_id", "fingerprint_config", "ombra"],
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short opaque identifier. Never assume it is numeric."
+    },
+    "profile_no": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "Serial number as a string."
+    },
+    "name": { "type": "string" },
+    "group_id": {
+      "type": "string",
+      "description": "\"0\" means ungrouped."
+    },
+    "group_name": { "type": "string" },
+    "remark": { "type": "string" },
+    "created_time": {
+      "type": "string",
+      "description": "Unix seconds as a string in v0."
+    },
+    "last_open_time": {
+      "type": "string",
+      "description": "Unix seconds as a string; \"0\" means never opened."
+    },
+    "ip": { "type": "string" },
+    "ip_country": { "type": "string" },
+    "user_proxy_config": {
+      "type": "object",
+      "description": "Proxy description used by the profile row. Secrets may be redacted by the app.",
+      "additionalProperties": true
+    },
+    "fingerprint_config": {
+      "type": "object",
+      "properties": {
+        "seed": { "type": "integer", "minimum": 0 },
+        "os": { "type": "string" },
+        "os_version": { "type": "string" },
+        "brand": { "type": "string" },
+        "automatic_timezone": { "type": "string", "enum": ["0", "1"] },
+        "timezone": { "type": "string" },
+        "language_switch": { "type": "string", "enum": ["0", "1"] },
+        "language": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "screen_resolution": {
+          "type": "string",
+          "description": "\"<width>_<height>\" or \"random\"."
+        },
+        "hardware_concurrency": {
+          "oneOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "device_memory": {
+          "oneOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string", "pattern": "^[0-9]+$" }
+          ]
+        },
+        "storage_quota_mb": { "type": "integer", "minimum": 0 },
+        "webgl": { "type": "string", "enum": ["0", "2", "3"] },
+        "webgl_config": {
+          "type": "object",
+          "properties": {
+            "unmasked_vendor": { "type": "string" },
+            "unmasked_renderer": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "webrtc": { "type": "string" },
+        "ua": { "type": "string" },
+        "random_ua": { "type": "string" },
+        "canvas": { "type": "string", "enum": ["0", "1"] },
+        "webgl_image": { "type": "string", "enum": ["0", "1"] },
+        "audio": { "type": "string", "enum": ["0", "1"] },
+        "client_rects": { "type": "string", "enum": ["0", "1"] }
+      },
+      "additionalProperties": true
+    },
+    "ombra": {
+      "type": "object",
+      "required": ["humanize", "captcha"],
+      "properties": {
+        "humanize": {
+          "type": "object",
+          "required": ["enabled", "preset", "block_input", "paste_key", "seed"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "preset": { "type": "string", "enum": ["default", "careful", "fast"] },
+            "block_input": { "type": "boolean" },
+            "paste_key": { "type": "string" },
+            "seed": {
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "description": "Read-only persona seed, serialized as a string."
+            }
+          },
+          "additionalProperties": false
+        },
+        "captcha": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "solve": { "type": "boolean" },
+            "types": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "array", "items": { "type": "string" } }
+              ]
+            },
+            "time_budget_ms": { "type": "integer", "minimum": 0 },
+            "max_attempts": { "type": "integer", "minimum": 1, "maximum": 10 },
+            "allow_llm": { "type": "boolean" },
+            "manual_mode": { "type": "boolean" },
+            "manual_resume_ms": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

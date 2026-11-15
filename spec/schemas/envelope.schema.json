@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ombrabrowser.dev/schemas/envelope.schema.json",
+  "title": "Local API envelope",
+  "description": "The response envelope used by every Ombra Local API endpoint.",
+  "type": "object",
+  "required": ["code", "msg", "data"],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "description": "0 means success. -1 is the conventional failure code; other values are reserved."
+    },
+    "msg": {
+      "type": "string",
+      "description": "Human-readable result or error message. Not stable for parsing."
+    },
+    "data": {
+      "description": "Endpoint-specific payload. Empty object on most failures.",
+      "type": ["object", "null"]
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    { "code": 0, "msg": "success", "data": {} },
+    { "code": -1, "msg": "Profile not found: abc123", "data": {} }
+  ]
+}

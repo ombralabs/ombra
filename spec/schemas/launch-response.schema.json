@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ombrabrowser.dev/schemas/launch-response.schema.json",
+  "title": "Launch response",
+  "description": "Successful data payload for POST /api/v2/browser-profile/start and the active-profile query.",
+  "type": "object",
+  "required": ["code", "msg", "data"],
+  "properties": {
+    "code": { "const": 0 },
+    "msg": { "type": "string" },
+    "data": {
+      "type": "object",
+      "required": ["ws", "debug_port", "webdriver"],
+      "properties": {
+        "ws": {
+          "type": "object",
+          "required": ["puppeteer", "selenium"],
+          "properties": {
+            "puppeteer": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^wss?://",
+              "description": "CDP WebSocket URL. Pass this to Playwright, Puppeteer, or any CDP client."
+            },
+            "selenium": {
+              "type": "string",
+              "pattern": "^[^:]+:[0-9]+$",
+              "description": "host:port without a scheme."
+            }
+          },
+          "additionalProperties": false
+        },
+        "debug_port": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "String on the wire. SDKs expose it as an integer."
+        },
+        "webdriver": {
+          "type": "string",
+          "description": "Empty in v0."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Active", "Inactive"],
+          "description": "Present on the active-profile query."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "code": 0,
+      "msg": "success",
+      "data": {
+        "ws": {
+          "puppeteer": "ws://127.0.0.1:9222/devtools/browser/6f1c2a7e",
+          "selenium": "127.0.0.1:9222"
+        },
+        "debug_port": "9222",
+        "webdriver": ""
+      }
+    }
+  ]
+}

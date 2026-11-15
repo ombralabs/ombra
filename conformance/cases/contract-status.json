@@ -1,0 +1,15 @@
+{
+  "id": "contract-status",
+  "title": "Status is a liveness check",
+  "contract": "0.1.0",
+  "runner": "wire",
+  "status": "design",
+  "preconditions": ["Ombra app running", "Local API reachable on the configured endpoint"],
+  "steps": [
+    { "call": "status", "as": "status" }
+  ],
+  "expect": [
+    { "path": "status.code", "equals": 0 },
+    { "path": "status.data", "equals": {} }
+  ]
+}

@@ -1,0 +1,83 @@
+name: Bug report
+description: Something in the SDK, contract, docs, or checkup is wrong.
+title: "bug: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Remove proxy credentials, API keys, cookies, real IPs, and profile data before submitting.
+
+        For a security issue, do not use this form. See [SECURITY.md](https://github.com/ombralabs/ombra/blob/main/SECURITY.md).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Contract
+        - Python SDK
+        - Node.js SDK
+        - .NET SDK
+        - Java SDK
+        - Go SDK
+        - PHP SDK
+        - Ruby SDK
+        - Rust SDK
+        - Documentation
+        - Stealth checkup
+        - Tooling or CI
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: SDK version, Ombra app version, engine version, OS and runtime.
+      placeholder: "python 0.1.0, app 0.9.0, engine 151.0.7922.108, macOS 15.7, Python 3.12"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: The smallest code or sequence of calls that shows the problem.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the raw `msg` and `code` from the Local API response when relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Redacted. Do not include credentials or personal data.
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmation
+      options:
+        - label: I removed secrets, proxy credentials, and personal data from this report.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true

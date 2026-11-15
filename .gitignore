@@ -1,0 +1,80 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+htmlcov/
+.coverage
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+*.tsbuildinfo
+
+# .NET
+bin/
+obj/
+TestResults/
+*.user
+*.suo
+
+# Java
+target/
+*.class
+.gradle/
+hs_err_pid*
+
+# Go
+coverage.out
+*.test
+
+# PHP
+vendor/
+composer.lock
+
+# Ruby
+.bundle/
+pkg/
+Gemfile.lock
+
+# Rust
+Cargo.lock
+target/
+
+# Generated reports and local runs
+reports/
+conformance/out/
+qa/out/
+.stealth-results/
+.ombra/

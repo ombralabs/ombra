@@ -1,0 +1,45 @@
+{
+  "id": "launch-lifecycle",
+  "title": "Create, launch, observe, stop, delete",
+  "contract": "0.1.0",
+  "runner": "lifecycle",
+  "status": "design",
+  "preconditions": ["Ombra app running", "engine installed", "no proxy required for this case"],
+  "steps": [
+    {
+      "call": "profiles.create",
+      "as": "profile",
+      "args": { "name": "conformance-lifecycle" }
+    },
+    {
+      "call": "launch",
+      "as": "session",
+      "args": { "profile": "$profile.id", "headless": true }
+    },
+    {
+      "call": "active",
+      "as": "active",
+      "args": { "profile": "$profile.id" }
+    },
+    {
+      "call": "stop",
+      "args": { "profile": "$profile.id" }
+    },
+    {
+      "call": "active",
+      "as": "stopped",
+      "args": { "profile": "$profile.id" }
+    },
+    {
+      "call": "profiles.delete",
+      "args": { "ids": ["$profile.id"] }
+    }
+  ],
+  "expect": [
+    { "path": "profile.id", "type": "string", "notEmpty": true },
+    { "path": "session.cdp_url", "matches": "^wss?://" },
+    { "path": "session.debug_port", "type": "integer", "greaterThan": 0 },
+    { "path": "active.status", "equals": "Active" },
+    { "path": "stopped.status", "equals": "Inactive" }
+  ]
+}

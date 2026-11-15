@@ -1,0 +1,52 @@
+name: Feature request
+description: Propose a contract addition, an SDK, or a checkup improvement.
+title: "feat: "
+labels: ["enhancement", "triage"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Contract
+        - New SDK
+        - Existing SDK
+        - Conformance
+        - Stealth checkup
+        - Documentation
+        - Tooling or CI
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that the current repository does not support?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: The API, wire field, case, or document you would like to see.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This can be expressed in the Local API and does not require the SDK to patch the browser.
+          required: true
+        - label: I understand that stealth changes belong to the engine, not to the SDK.
+          required: true
