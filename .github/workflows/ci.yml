@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,6 +17,9 @@ concurrency:
 jobs:
   validate:
     name: Structure, manifest, JSON and links
+    # Private repositories in this org have no Actions minutes yet.
+    # The check runs automatically once the repository is public.
+    if: ${{ github.repository_visibility == 'public' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
