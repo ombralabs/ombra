@@ -1,306 +1,285 @@
-# SDK contract v0.1
+# SDK API contract v0.1
 
-> **Status: draft.** The Ombra Local API is normative for wire behavior. This document is normative for SDK behavior. If the two disagree, the app wins and this document is corrected in the same pull request.
+> **Status: draft.** This document defines what every official Ombra SDK exposes and guarantees. It is normative for SDK behavior; the engine build is normative for fingerprint behavior. If the two disagree, the engine wins for stealth and this document is corrected.
 
-This contract defines what every official Ombra SDK exposes, how it maps to the Local API, and which guarantees hold across languages. It deliberately stops at the browser boundary: page automation belongs to Playwright, Puppeteer, Selenium, chromedp, Ferrum, and chromiumoxide.
+Every Ombra SDK is a **launcher and CDP bridge**, not a control-plane client. It starts the Ombra Chromium binary, waits for the CDP endpoint, connects the automation client native to that language, and returns that client's browser object. The caller writes normal Playwright, Puppeteer, chromedp, Ferrum, or chromiumoxide code.
+
+The SDK launches the engine as a child process. The Ombra app is an optional product for manual profile management; it is not a dependency and not in the SDK path.
 
 ## 1. Scope
 
 In scope:
 
-- Local API discovery, authentication, and error handling.
-- Profile lifecycle: list, get, create, update, delete.
-- Session lifecycle: launch, inspect, stop.
-- Typed access to the `ombra.humanize` and `ombra.captcha` profile namespaces.
-- A connection helper that returns the CDP endpoint in the shape the language's dominant client expects.
-- Cross-language behavior that the conformance suite can verify.
+- Resolving, verifying, and optionally downloading the Ombra engine binary.
+- Spawning the engine with a profile directory, proxy, fingerprint seed, humanize, and CAPTCHA options.
+- Waiting for CDP readiness and connecting the automation client.
+- Returning a native browser object with the same API the caller already uses.
+- Named profiles with persistent seeds and user data.
+- Clean shutdown, orphan cleanup, and typed errors.
 
 Out of scope:
 
-- Page automation, selectors, waits, and assertions.
-- Fingerprint generation, patching, or validation. The engine owns it.
+- Page automation, selectors, waits, and assertions. The automation client owns them.
+- Fingerprint generation, patching, or validation. The engine owns them.
 - Proxy rotation, CAPTCHA solving, and RPA scheduling.
-- Downloading, installing, or updating the browser.
-- Cloud APIs. Ombra is local-first.
+- The Ombra desktop app and its product surfaces.
+- A new page API that competes with Playwright or Puppeteer.
 
 ## 2. Principles
 
-1. **Thin over clever.** An SDK is a typed HTTP client plus a CDP connection helper. If a feature can live in the app or the engine, it does not live in eight SDKs.
-2. **The wire is the contract.** SDKs do not invent behavior the Local API does not have. Missing wire capability is an issue, not a client-side workaround.
-3. **Same profile, same result.** The browser must not be able to tell which SDK started it. No SDK-specific launch flags, injected scripts, or CDP calls.
-4. **Explicit lifecycle.** Launch and stop are visible operations. No hidden retries, no background reconnection, no silent profile creation.
-5. **Local by default.** Loopback endpoint, no telemetry, no phone-home, no credential logging.
-6. **Boring errors.** One error hierarchy per language, stable kinds, and the raw wire message preserved for support.
+1. **Drop-in over new.** `launch()` returns the browser object the caller already knows. Migration is an import change, not a rewrite.
+2. **Stealth is compiled in.** The SDK passes user intent to the engine. It does not inject scripts, patch properties, or add stealth flags on its own.
+3. **One launcher, native clients.** The SDK owns process lifecycle and CDP readiness. Playwright, Puppeteer, chromedp, Ferrum, and chromiumoxide own the page.
+4. **Explicit lifecycle.** Launch and close are visible. No background reconnection, no silent profile creation, no hidden retries of a failed launch.
+5. **Local by default.** Loopback CDP, no telemetry, no phone-home, no credential logging.
+6. **Boring errors.** One hierarchy per language, stable kinds, and the engine's stderr preserved for support.
 
-## 3. Transport
+## 3. The launch model
 
-| Item | Value |
-|---|---|
-| Default endpoint | `http://127.0.0.1:45678` |
-| Override | `OMBRA_API_URL`, then an explicit constructor argument wins |
-| Binding | Loopback only (`127.0.0.1`, `localhost`, `[::1]`) |
-| Methods | `GET` and `POST` are equivalent; SDKs use `POST` with JSON for mutations and `GET` for reads |
-| Content type | `application/json; charset=utf-8` |
-| Auth | Disabled by default. When enabled in the app: `Authorization: Bearer <key>` from `OMBRA_API_KEY` or the constructor |
-| Origin | Requests carrying a browser `Origin` header are rejected by the app. SDKs must not send one |
-| Connect timeout | 5 seconds (recommended default) |
-| Read timeout | 30 seconds for reads, 120 seconds for launch and stop |
-| Keep-alive | Reuse one HTTP connection pool per client |
-
-SDKs must URL-encode query values and must not append a trailing slash to the base URL.
-
-## 4. Envelope and errors
-
-Every response uses the same envelope:
-
-```json
-{ "code": 0, "msg": "success", "data": {} }
+```text
+caller
+  │ launch(options)
+  ▼
+SDK ── resolve binary ── verify checksum ── spawn engine
+  │                                            │
+  │                                  DevToolsActivePort
+  │                                            │
+  └──────── connect automation client over CDP ┘
+  │
+  ▼
+native client object (Playwright/Puppeteer Browser, chromedp session, Ferrum browser, …)
 ```
 
-Failure:
+Steps:
 
-```json
-{ "code": -1, "msg": "Profile not found: abc123", "data": {} }
-```
+1. Resolve the engine binary using the order in §5.
+2. Resolve the profile directory and fingerprint seed using §7.
+3. Start the authenticated-proxy relay if needed (§8).
+4. Spawn the engine with `--remote-debugging-port=0`, the profile directory, and the option flags.
+5. Wait for `DevToolsActivePort` or the CDP HTTP endpoint, bounded by `timeout_ms`.
+6. Connect the automation client with its CDP-connect call.
+7. Return the native browser object.
+8. On close, close the automation client, then terminate the engine and wait for the process to exit.
+
+If any step fails, the SDK terminates the child process it started and raises a typed error. It never leaves an orphaned browser behind.
+
+## 4. Launch options
+
+These are the common options. Names are `snake_case` in the contract and follow local conventions on each surface (`timeout_ms`, `TimeoutMs`, `timeoutMs`).
+
+| Option | Type | Default | Meaning |
+|---|---|---|---|
+| `headless` | bool | `true` | Run without a window. The engine uses its current headless mode. |
+| `proxy` | string or object | none | Proxy URL or `{type, host, port, username, password}`. |
+| `fingerprint` | object | none | Seed and persona hints, see §6. |
+| `profile` | string | none | Named persistent profile under the cache directory. |
+| `user_data_dir` | path | temp | Explicit profile directory; mutually exclusive with `profile`. |
+| `args` | string[] | `[]` | Extra engine arguments. The SDK passes them through and adds none. |
+| `binary_path` | path | resolved | Explicit engine binary. |
+| `timeout_ms` | int | `30000` | Deadline for process start and CDP readiness. |
+| `humanize` | bool or object | engine default | `false`, `true`, or `{ "preset": "default" \| "careful" \| "fast" }`. |
+| `captcha` | bool or object | `false` | `true` or `{ "types", "time_budget_ms", "max_attempts" }`. |
+| `license_key` | string | env | Passed to the engine. The SDK does not validate it. |
+| `env` | map | `{}` | Extra environment variables for the engine process. |
+| `download` | bool | `true` | Allow the SDK to fetch a missing binary. |
 
 Rules:
 
-- HTTP status is usually `200` even for failures. Inspect `code`, not the status line.
-- `code: 0` means success; any other value is a failure.
-- `404` means an unknown path and `405` an unsupported method; both are client bugs, not API errors.
-- `data` may be `{}`, `null`, or absent on failure. SDKs must not assume a shape.
+- `profile` and `user_data_dir` are mutually exclusive. Passing both is `InvalidOption`.
+- `args` is for flags the SDK does not model. It is passed unchanged and is never used to inject stealth patches.
+- Unknown options are rejected, not ignored. Silent option loss is how fingerprints drift.
+- The SDK never adds `--enable-automation`, `--disable-blink-features=AutomationControlled`, `--no-sandbox`, or `--user-agent` on its own.
 
-The wire exposes only `code` and `msg`. SDKs map failures to a stable local taxonomy while preserving `raw_code` and `raw_message`:
+## 5. Binary resolution
 
-| SDK error kind | Typical cause |
+Resolution order, first match wins:
+
+1. `binary_path` option.
+2. `OMBRA_BINARY_PATH` environment variable.
+3. The engine installed by the Ombra app, when the app is present.
+4. The SDK's managed cache for the requested version.
+5. A download, when `download` is true and a download URL is configured.
+
+The SDK verifies the binary before launch:
+
+- SHA-256 against the published manifest.
+- Platform and architecture match the host.
+- Executable permission on POSIX.
+- On Windows, the binary is not blocked by the Mark-of-the-Web.
+
+`OMBRA_SKIP_CHECKSUM=1` disables the checksum check for development builds only. It must be loud in the logs and must never be the default.
+
+### Binary utilities
+
+Every SDK exposes:
+
+| Function | Result |
 |---|---|
-| `connection_failed` | App not running, wrong port, loopback blocked |
-| `timeout` | Launch exceeded the deadline, app is busy |
-| `unauthorized` | API key missing or wrong |
-| `not_found` | Unknown profile or proxy |
-| `invalid_request` | Bad field, wrong type, unsupported value |
-| `conflict` | Profile already running, delete of a running profile |
-| `engine_unavailable` | Engine binary missing, license slot unavailable |
-| `unsupported` | Contract or feature not supported by this app build |
-| `server_error` | Unclassified app failure |
-| `protocol_error` | Non-JSON response, truncated body, unexpected envelope |
+| `binary_info()` | `{version, platform, path, installed, source, sha256}` |
+| `ensure_binary()` | Downloads and verifies the binary if missing; returns the path |
+| `clear_cache()` | Removes SDK-managed engine binaries; leaves user profiles alone |
 
-Classification is heuristic because the wire has no machine-readable error codes. The SDK must keep the original message and expose a `request_id` when the app provides one.
+`source` is one of `argument`, `env`, `app`, `cache`, `download`, or `none`. `installed` is false until verification succeeds.
 
-## 5. Resource model
+## 6. Fingerprint options
 
-**Profile** — a persisted browser identity and its settings.
+The `fingerprint` object is a typed facade over the engine's persona flags. The SDK maps it mechanically and never generates values on its own, except for the initial seed.
 
-| SDK field | Wire field | Notes |
+| Field | Type | Meaning |
 |---|---|---|
-| `id` | `profile_id` | Short string; never assume numeric |
-| `profile_no` | `profile_no` | Integer serial number, stable per installation |
-| `name` | `name` | Required on create |
-| `group_id` | `group_id` | String; `"0"` means ungrouped |
-| `group_name` | `group_name` | Read-only |
-| `remark` | `remark` | Free text |
-| `proxy` | `user_proxy_config` | Normalized object; secrets are write-only |
-| `fingerprint` | `fingerprint_config` | Typed facade, see §6 |
-| `humanize` | `ombra.humanize` | See §7 |
-| `captcha` | `ombra.captcha` | See §8 |
-| `created_at` | `created_time` | Wire string; expose as native time when parseable |
-| `last_opened_at` | `last_open_time` | Wire string; `"0"` means never |
-| `ip` | `ip` | Last observed exit IP, or empty |
-| `ip_country` | `ip_country` | Lowercase country code, or empty |
+| `seed` | uint64 | Persona seed. The only field that determines the whole persona. |
+| `os` | `macos` \| `windows` \| `linux` | Target platform. |
+| `os_version` | string | Optional OS version hint. |
+| `timezone` | IANA name or `auto` | `auto` follows the proxy exit when the engine supports it. |
+| `locale` | BCP-47 or `auto` | `auto` follows the proxy exit when the engine supports it. |
+| `screen` | `{width, height}` or `auto` | Viewport and screen metrics. |
+| `gpu` | `{vendor, renderer}` or `auto` | WebGL strings. |
+| `hardware_concurrency` | int or `auto` | Reported core count. |
+| `device_memory` | int or `auto` | Reported device memory. |
+| `noise` | bool | Enable the engine's canvas/audio/client-rect noise. |
 
-**Session** — a running profile.
+`seed` is required for reproducible personas. If it is absent:
 
-| SDK field | Wire field | Notes |
+- with a named or explicit profile, the SDK reads the persisted seed;
+- without a profile, the SDK generates a random seed for the session and does not persist it.
+
+The SDK must not derive a seed from the proxy, the hostname, the time, or the process ID. A seed is an identity contract, not a cache key.
+
+## 7. Profiles and persistence
+
+A named profile stores cookies, local storage, extensions, and the persona seed.
+
+- Default root: `OMBRA_CACHE_DIR/profiles/<slug>`, with `OMBRA_CACHE_DIR` defaulting to `~/.ombra`.
+- The slug is derived from the profile name, lowercased, with unsafe characters replaced. Collisions are resolved with a stable suffix.
+- Metadata lives in `.ombra/profile.json`: seed, OS, timezone, locale, humanize preset, creation time, and the engine version that created it. No proxy credentials.
+- A lock file prevents two processes from launching the same profile. A stale lock is detected by checking the recorded PID and process start time.
+- Deleting a profile is an explicit filesystem operation or an app action; the SDK never deletes profile data as part of cleanup.
+- Ephemeral launches use a temporary directory and delete it after the browser exits.
+
+If a profile exists and `fingerprint.seed` is absent, the persisted seed wins. If `fingerprint.seed` is present and differs, the new seed wins and is persisted; this is an explicit persona change and is recorded in the profile metadata and the launch log.
+
+## 8. Proxy handling
+
+- An unauthenticated proxy is passed to the engine as a proxy server flag.
+- An authenticated proxy is exposed through a loopback relay started by the SDK, because Chromium does not accept credentials in the proxy server argument. The engine sees `socks5://127.0.0.1:<port>` or `http://127.0.0.1:<port>` without credentials.
+- The relay holds credentials in memory only. They must not appear in the process command line, logs, crash reports, or profile metadata.
+- The relay binds to loopback and accepts only the engine process.
+- If the relay cannot start, launch fails with `ProxyError` before the engine is spawned.
+- Proxy rotation is out of scope. One launch, one exit.
+
+Timezone and locale alignment with the proxy exit is the caller's responsibility unless `fingerprint.timezone` or `fingerprint.locale` is `auto` and the engine supports the lookup. The checkup treats a mismatch as a finding, not as an SDK bug, unless the SDK claimed to align them.
+
+## 9. Humanize and CAPTCHA
+
+`humanize` and `captcha` are launch-time switches over engine features, not SDK implementations.
+
+- `humanize: false` disables the engine's humanized input for this launch.
+- `humanize: true` uses the engine default preset.
+- `humanize: {preset}` selects `default`, `careful`, or `fast`.
+- `captcha: false` leaves the engine module off.
+- `captcha: true` enables the module with engine defaults.
+- `captcha: {types, time_budget_ms, max_attempts}` configures the module.
+
+The SDK does not solve CAPTCHAs, inspect challenges, or promise a success rate. Runtime CAPTCHA state is available through the engine's CDP domain `Ombra`; a typed event stream is planned for contract `0.2`.
+
+## 10. Return types
+
+| Language | Function | Returns |
 |---|---|---|
-| `profile_id` | `profile_id` | The profile this session belongs to |
-| `cdp_url` | `ws.puppeteer` | CDP WebSocket URL |
-| `selenium_address` | `ws.selenium` | `host:port` without a scheme |
-| `debug_port` | `debug_port` | Wire value is a string; SDK exposes an integer |
-| `webdriver` | `webdriver` | Empty string in v0; reserved for compatibility |
+| Python | `launch()` | `playwright.sync_api.Browser` |
+| Python | `launch_async()` | `playwright.async_api.Browser` |
+| Python | `launch_context()` | `playwright.sync_api.BrowserContext` |
+| Node.js | `launch()` | `playwright.Browser` |
+| Node.js | `launchPuppeteer()` | `puppeteer.Browser` |
+| .NET | `Ombra.LaunchAsync()` | `Microsoft.Playwright.IBrowser` |
+| Java | `Ombra.launch()` | `com.microsoft.playwright.Browser` |
+| Go | `ombra.Launch(ctx)` | `*ombra.Session`; `Session.Context()` is a chromedp-ready context |
+| PHP | `Ombra\launch()` | `Ombra\Browser`, a thin CDP handle |
+| Ruby | `Ombra.launch()` | `Ferrum::Browser` |
+| Rust | `ombra::launch()` | `chromiumoxide::Browser` |
 
-**Status** — the result of `GET /status`. The app returns `{ "code": 0, "data": {}, "msg": "success" }` as a liveness check. It does not expose app or engine versions in v0.
+The returned object must be a normal instance of the automation client. Do not wrap it in a proxy that hides methods, changes types, or intercepts page calls. If the SDK needs to expose launch metadata, put it on a separate object or module-level function.
 
-## 6. Operations
+The close call on the returned object closes the automation connection. The SDK must also terminate the engine process and release the profile lock, even when the caller forgets to call an SDK-specific `close()`.
 
-All profile operations target the v2 paths. SDKs do not use the v1 paths.
+## 11. Errors
 
-| SDK operation | Wire call | Idempotent | Notes |
-|---|---|---|---|
-| `status()` | `GET /status` | Yes | Liveness only |
-| `profiles.list(query)` | `POST /api/v2/browser-profile/list` | Yes | See pagination below |
-| `profiles.get(id)` | list with `profile_id: [id]` | Yes | Returns `not_found` when empty |
-| `profiles.create(spec)` | `POST /api/v2/browser-profile/create` | No | Returns `{ profile_id, profile_no }` |
-| `profiles.update(id, patch)` | `POST /api/v2/browser-profile/update` | Yes | Partial patch; returns no content |
-| `profiles.delete(ids)` | `POST /api/v2/browser-profile/delete` | Yes | Moves profiles to trash; running profiles are rejected |
-| `launch(id, options)` | `POST /api/v2/browser-profile/start` | No | Blocks until the CDP endpoint is ready |
-| `active(id)` | `GET /api/v2/browser-profile/active` | Yes | `Active` or `Inactive` |
-| `stop(id)` | `POST /api/v2/browser-profile/stop` | Yes | Stopping a stopped profile succeeds |
-
-### Pagination
-
-The server defaults to **one** profile per page. SDKs must set an explicit page size, defaulting to `100`, and must expose `page` and `limit`. The list response is:
-
-```json
-{ "code": 0, "msg": "success", "data": { "list": [], "page": 1, "limit": 100 } }
-```
-
-Supported v2 query fields: `profile_id` (array), `profile_no` (array), `group_id`, `sort_type` (`serial_number`, `last_open_time`, `created_time`), `sort_order` (`asc`, `desc`), `page`, `limit`.
-
-### Create and update
-
-Required on create: `name`. Everything else is optional and falls back to the app's defaults.
-
-| SDK field | Wire field |
+| Kind | When |
 |---|---|
-| `name` | `name` |
-| `group_id` | `group_id` |
-| `remark` | `remark` |
-| `proxy` | `user_proxy_config` or `proxyid` |
-| `fingerprint` | `fingerprint_config` |
-| `humanize` | `ombra.humanize` |
-| `captcha` | `ombra.captcha` |
-| `extras` | merged into `fingerprint_config` |
+| `InvalidOption` | Unknown option, conflicting options, bad type |
+| `BinaryNotFound` | No binary at any resolution step and download disabled |
+| `DownloadFailed` | Network, HTTP, or disk failure while fetching |
+| `ChecksumMismatch` | SHA-256 does not match the manifest |
+| `UnsupportedPlatform` | No build for the host OS or architecture |
+| `UnsupportedEngine` | The resolved engine build is outside the SDK's supported range |
+| `LicenseError` | The engine refused to start because of the license |
+| `ProxyError` | The relay could not start or the proxy is invalid |
+| `ProfileBusy` | Another process holds the profile lock |
+| `LaunchTimeout` | The CDP endpoint did not appear within `timeout_ms` |
+| `CDPConnectError` | The endpoint appeared but the client could not connect |
+| `EngineExited` | The engine exited during launch or immediately after |
+| `EngineCrashed` | The engine died while the browser was open |
 
-Update sends only the fields present in the patch. `null` clears an optional field where the app supports clearing; otherwise the SDK rejects the patch locally with `invalid_request`.
+Each error carries a stable `kind`, a human message, and optional `details` with the binary path, exit code, or stderr tail. Proxy credentials and license keys are redacted.
 
-### Launch and stop
+Retries:
 
-Launch body:
+- Download may retry twice with backoff.
+- Launch is never retried automatically. A retry creates a second browser and a second profile lock.
+- `CDPConnectError` may be retried once only when the endpoint is still alive and the timeout has not expired.
 
-```json
-{
-  "profile_id": "abc123",
-  "headless": false,
-  "launch_args": ["--window-size=1512,982"],
-  "last_opened_tabs": true,
-  "delete_cache": false
-}
-```
+## 12. Stealth invariants
 
-- `launch_args` is passed through unchanged. SDKs never add their own flags.
-- `profile_no` is accepted as an alternative identifier. If both are present, `profile_id` wins.
-- Starting a profile that is already starting waits for the same browser.
-- Stop is idempotent and safe to call in `finally`.
-- Deleting a running profile fails with `conflict`; stop it first.
+These are MUST-level requirements. A violation is a release blocker.
 
-## 7. Fingerprint facade
+1. **No stealth scripts.** No `Page.addScriptToEvaluateOnNewDocument`, no `evaluateOnNewDocument`, no property shims, no prototype patches.
+2. **No `Runtime.enable`.** The SDK must not enable `Runtime`, `Debugger`, or `Log` for readiness or logging. Readiness uses the CDP HTTP endpoint or `Browser.getVersion`.
+3. **No `Emulation.*` overrides.** No user agent, timezone, locale, device metrics, or touch emulation from the SDK.
+4. **No automation flags.** No `--enable-automation`, no `--disable-blink-features=AutomationControlled`, no `--no-sandbox` by default. `--no-sandbox` is allowed only through an explicit `args` entry in a container, and the SDK warns.
+5. **No UA or header overrides.** The engine's identity is the identity. Header mutation is the caller's explicit choice, not an SDK default.
+6. **No disabled security.** No `--disable-web-security`, no certificate-error bypass, no `--ignore-certificate-errors` by default.
+7. **Loopback CDP only.** The debug port binds to `127.0.0.1`. Never expose it on `0.0.0.0`.
+8. **Clean process tree.** On timeout, exception, or `close()`, terminate the engine and its children. A leaked browser is a stealth and security failure.
+9. **No telemetry.** No analytics, crash reporting, or usage pings without explicit, documented opt-in.
+10. **No secret logging.** Proxy credentials, license keys, cookies, and full CDP URLs with tokens are never logged.
 
-`fingerprint_config` is a string-heavy wire surface. SDKs expose a typed facade and perform only mechanical mapping. They never generate, infer, or randomize values.
+The automation client may enable domains internally. That is a client property, measured separately by the checkup; the SDK must not add any.
 
-| SDK field | Wire mapping | Value format |
+## 13. Environment variables
+
+| Variable | Default | Meaning |
 |---|---|---|
-| `seed` | `fingerprint_config.seed` | Unsigned integer |
-| `os` | `fingerprint_config.os` | `macos`, `windows`, `linux` |
-| `os_version` | `fingerprint_config.os_version` | String |
-| `brand` | `fingerprint_config.brand` | `chrome` |
-| `timezone` | `automatic_timezone: "0"` + `timezone` | IANA zone |
-| `timezone: "auto"` | `automatic_timezone: "1"` | Omit `timezone` |
-| `language` | `language_switch: "0"` + `language` | BCP-47 tag |
-| `language: "auto"` | `language_switch: "1"` | Omit `language` |
-| `screen` | `screen_resolution` | `"<width>_<height>"` |
-| `screen: "auto"` | `screen_resolution: "random"` | — |
-| `gpu` | `webgl: "2"` + `webgl_config` | `{ "unmasked_vendor", "unmasked_renderer" }` |
-| `gpu: "auto"` | Omit `webgl`, `webgl_config` | Seed decides |
-| `hardware_concurrency` | `hardware_concurrency` | Integer or numeric string |
-| `device_memory` | `device_memory` | Integer or numeric string |
-| `storage_quota_mb` | `storage_quota_mb` | Integer |
-| `noise.*` | `canvas`, `webgl_image`, `audio`, `client_rects` | `"0"` / `"1"` or boolean |
+| `OMBRA_BINARY_PATH` | unset | Explicit engine binary |
+| `OMBRA_CACHE_DIR` | `~/.ombra` | Managed binaries and named profiles |
+| `OMBRA_DOWNLOAD_URL` | release endpoint | Base URL for binary downloads |
+| `OMBRA_VERSION` | latest compatible | Engine version to resolve |
+| `OMBRA_AUTO_UPDATE` | `true` | Check for a newer engine on launch |
+| `OMBRA_SKIP_CHECKSUM` | `false` | Development only; disables SHA-256 verification |
+| `OMBRA_LICENSE_KEY` | unset | Passed to the engine |
+| `OMBRA_TIMEOUT_MS` | `30000` | Default launch deadline |
+| `OMBRA_LOG_LEVEL` | `warn` | `error`, `warn`, `info`, `debug` |
 
-`webrtc` is not a settable SDK field. Ombra always reports the gateway IP; the app stores a supplied value only for compatibility. Reads expose `webrtc: "proxy"` as informational.
+Precedence: explicit option > environment variable > profile metadata > default.
 
-Stored-only fields such as `fonts`, `media_devices`, `mac_address_config`, `device_name`, `speech_switch`, `tls`, `do_not_track`, `scan_port_type`, `flash`, `location`, `browser_kernel_config` are not typed in v0. They pass through `extras` unchanged and are returned on read.
+## 14. Versioning
 
-## 8. Humanize
+- The API contract is `0.1.0`.
+- While the contract is `0.x`, additive changes bump the patch and breaking changes bump the minor.
+- Every SDK declares the contract range it implements and the engine range it supports.
+- `binary_info().version` is the engine version actually used. It is the first thing to include in a bug report.
+- Automation clients (Playwright, Puppeteer, chromedp, Ferrum, chromiumoxide) are peer dependencies with documented supported ranges. The SDK must not vendor them.
+- An SDK release is tested against the current engine build and the previous one.
 
-| Field | Type | Default | Notes |
-|---|---|---|---|
-| `enabled` | bool | `true` | Per-profile |
-| `preset` | `default` \| `careful` \| `fast` | `default` | Engine persona preset |
-| `block_input` | bool | `false` | Blocks manual input while automation runs |
-| `paste_key` | string | `""` | Hotkey, e.g. `Ctrl+Alt+V`; `⌘` is rejected |
-| `seed` | string | read-only | Persona seed, returned by the app |
+## 15. Open questions
 
-SDKs must reject unknown keys with `invalid_request` before sending the request, so the error names the field. `ombra.humanize.seed` is always read-only.
+These block the `0.1.0` freeze:
 
-## 9. CAPTCHA
+1. **Binary distribution.** Does the SDK download the engine, always use the app-installed engine, or support both? The contract currently supports both with download as a fallback.
+2. **License passing.** Is `OMBRA_LICENSE_KEY` read by the engine directly, passed as a flag, or read from a file? The SDK needs one stable answer.
+3. **Authenticated proxy relay.** Is a loopback relay acceptable, or will the engine grow native credential support?
+4. **Puppeteer parity.** Does `launchPuppeteer()` support every launch option, or a documented subset?
+5. **Profile metadata.** Is `.ombra/profile.json` the long-term format, and does the app read it?
+6. **Auto-update.** Should the SDK update the engine automatically, pin to a version, or only report availability?
+7. **Humanize and CAPTCHA mapping.** Which engine flags are stable enough to be part of the SDK contract?
 
-| Field | Type | Notes |
-|---|---|---|
-| `enabled` | bool | Enables the engine module |
-| `solve` | bool | Solve automatically when detection fires |
-| `types` | string[] \| null | `null` means all supported types |
-| `time_budget_ms` | u32 | Per-task budget |
-| `max_attempts` | u32 | 1–10 |
-| `allow_llm` | bool | Permit the LLM channel |
-| `manual_mode` | bool | Solve while working by hand |
-| `manual_resume_ms` | u32 | Pause before resuming after manual input |
-
-The engine validates ranges and task types. SDKs validate only types and unknown keys. Support depends on the build and the task; the SDK must not promise a success rate.
-
-Runtime state and solving events are exposed over the CDP domain `Ombra` (`getCaptchaState`, `setCaptchaPolicy`, `solveCaptcha`). A typed event stream is planned for contract `0.2`; v0 SDKs return the endpoint and document the CDP commands.
-
-## 10. Sessions and CDP helpers
-
-The SDK never opens the page. It returns a session and, optionally, a one-line connection helper:
-
-| Language | Helper | Returns |
-|---|---|---|
-| Python | `session.connect_playwright()` | `playwright.sync_api.Browser` |
-| Python | `session.connect_playwright_async()` | `playwright.async_api.Browser` |
-| Node.js | `session.connectPlaywright()` | `playwright.Browser` |
-| Node.js | `session.connectPuppeteer()` | `puppeteer.Browser` |
-| .NET | `session.ConnectPlaywrightAsync()` | `Microsoft.Playwright.IBrowser` |
-| Java | `session.connectPlaywright()` | `com.microsoft.playwright.Browser` |
-| Go | `session.ConnectChromedp(ctx)` | `context.Context` bound to the browser |
-| PHP | `session->cdpUrl()` | `string` |
-| Ruby | `session.ferrum_options` | Hash for `Ferrum::Browser.new` |
-| Rust | `session.chromiumoxide_config()` | `chromiumoxide::browser::Config` |
-
-Helpers may set the WebSocket URL and transport options. They must not:
-
-- enable `Runtime`, `Log`, or `Debugger` domains;
-- inject scripts or evaluate JavaScript;
-- override user agent, timezone, locale, viewport, or device metrics;
-- dismiss dialogs or interact with the page;
-- retry connection attempts indefinitely.
-
-The helper returns a normal client object. The caller owns page lifecycle, and closing the browser object must not stop the Ombra profile unless the SDK documents an explicit `close({ stopProfile: true })` option.
-
-## 11. Stealth invariants
-
-These are MUST-level requirements for every SDK and every helper. A violation is a release blocker.
-
-1. **No `Runtime.enable`.** Use `Runtime.evaluate` only when the caller explicitly asks for JavaScript, and prefer the engine's isolated world.
-2. **No stealth scripts.** No `Page.addScriptToEvaluateOnNewDocument`, no `evaluateOnNewDocument`, no property shims, no prototype patches.
-3. **No identity overrides.** No `Emulation.setUserAgentOverride`, `setTimezoneOverride`, `setLocaleOverride`, `setDeviceMetricsOverride`, or `setTouchEmulationEnabled`.
-4. **No automation flags.** No `--enable-automation`, no `--disable-blink-features=AutomationControlled`, no `--no-sandbox` unless the caller explicitly opts in for a container and the app allows it.
-5. **No synthetic interaction.** Do not replace `Input.dispatchMouseEvent` / `dispatchKeyEvent` with DOM `.click()` or value assignment on security-sensitive steps.
-6. **No seed mutation.** Never derive, randomize, or rewrite the profile seed or persona.
-7. **No cross-profile state.** One session per profile, one user-data directory per profile, no copying cookies between profiles.
-8. **No telemetry.** No analytics, crash reporting, or usage pings without explicit, documented opt-in.
-
-The conformance suite checks the observable subset of these rules in [conformance/cases/stealth-invariants.json](../conformance/cases/stealth-invariants.json). The engine checkup covers the rest; see [stealth-checkup.md](stealth-checkup.md).
-
-## 12. Versioning
-
-- The contract has its own semantic version; this document is `0.1.0`.
-- While the contract is `0.x`, additive changes bump the patch and breaking changes bump the minor. After `1.0`, normal semver applies.
-- Every SDK declares the contract range it implements, for example `ombra-contract = ">=0.1,<0.2"`.
-- An SDK must refuse to run against an app build whose contract is outside that range, with `unsupported` and both versions in the message.
-- Deprecations are announced one minor ahead, documented in [CHANGELOG.md](../CHANGELOG.md), and removed no earlier than the next minor.
-
-See [versioning.md](versioning.md) for the compatibility matrix.
-
-## 13. Open questions
-
-These block the `0.1.0` freeze and need an owner decision:
-
-1. **App and engine version exposure.** `/status` returns empty data. Do we add an Ombra-specific endpoint, or keep the contract version in the SDK only?
-2. **Wire error codes.** Should `code` stay `0/-1`, or can Ombra add stable negative codes without breaking existing clients?
-3. **Session adoption.** Should `launch()` attach to an already-running profile and return its endpoint, or fail with `conflict`? The server currently waits for the in-flight start.
-4. **`launch_args` policy.** Which flags are forbidden by the app, and should the SDK mirror that list?
-5. **CAPTCHA events.** Is the CDP domain `Ombra` the long-term event channel, or will Local API add a stream?
-6. **Group and proxy CRUD.** v0 accepts an inline proxy and `group_id`; full CRUD is deferred to `0.2`.
-7. **Trash semantics.** `delete` moves to trash. Do SDKs need `restore` and `purge` in v0, or is trash an app-only feature?
-
-Until these are resolved, SDKs must implement the documented behavior and leave the edge cases as typed `unsupported` errors rather than guessing.
+Until these are resolved, SDKs implement the documented behavior and return `UnsupportedEngine` or `InvalidOption` for the unclear edges instead of guessing.

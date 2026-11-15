@@ -9,18 +9,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 ### Added
 
 - Repository scaffold for the Ombra SDK monorepo: eight language directories, a machine-readable manifest, and an idiomatic layout per ecosystem.
-- English and Russian root READMEs with the positioning, the Local API quick start, the SDK matrix, and the stealth design rules.
-- `docs/architecture.md` — component boundaries, launch sequence, trust boundaries, and failure modes.
-- `docs/sdk-contract.md` — the v0.1 wire contract, profile and session models, fingerprint facade, humanize and CAPTCHA settings, CDP helper rules, and open questions.
+- English and Russian root READMEs with the drop-in Playwright/Puppeteer positioning, the `launch()` quick start, the SDK matrix, and the stealth design rules.
+- `docs/architecture.md` — launcher and CDP-bridge boundaries, the launch sequence, trust boundaries, and failure modes.
+- `docs/sdk-contract.md` — the v0.1 launch contract: options, native return types, binary resolution, profiles and seed persistence, proxy relay, humanize and CAPTCHA switches, errors, and stealth invariants.
 - `docs/stealth-checkup.md` and its Russian translation — layers, targets, gates, status model, runbook, per-signal checklist, reporting, CI, and triage.
-- `docs/versioning.md` — contract, SDK, app, and engine versioning, tag conventions, support window, and compatibility matrix.
-- JSON Schemas for the envelope, launch response, profile row, and conformance report.
-- Language-neutral conformance cases for status, lifecycle, and stealth invariants.
+- `docs/versioning.md` — SDK, engine, and automation-client compatibility, tag conventions, support window, and compatibility matrix.
+- JSON Schemas for launch options, binary info, and the conformance report.
+- Language-neutral conformance cases for a basic launch, profile locking, and stealth invariants.
 - `tools/check_repo.py` — structure, manifest, JSON, and local-link validation for CI.
 
 ### Changed
 
-- None yet.
+- The SDK is a launcher and CDP bridge, not a control-plane client. It spawns the engine, connects Playwright/Puppeteer/chromedp/Ferrum/chromiumoxide, and returns the native browser object.
+- The root README and SDK READMEs use `launch()` as the only entry point; the earlier profile-management quick start was removed.
 
 ### Fixed
 
@@ -28,7 +29,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 
 ### Security
 
-- None yet.
+- The contract requires SHA-256 verification before launch, a loopback-only CDP port, and no proxy credentials or license keys in the process command line.
 
 ## [0.1.0] — unreleased
 

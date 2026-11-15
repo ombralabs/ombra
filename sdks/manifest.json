@@ -11,7 +11,9 @@
       "runtime": "Python 3.10+",
       "source_root": "sdks/python/src/ombra",
       "tests_root": "sdks/python/tests",
-      "cdp_clients": ["Playwright"],
+      "cdp_clients": [
+        "Playwright"
+      ],
       "status": "scaffold"
     },
     {
@@ -23,7 +25,10 @@
       "runtime": "Node.js 20+",
       "source_root": "sdks/node/src",
       "tests_root": "sdks/node/tests",
-      "cdp_clients": ["Playwright", "Puppeteer"],
+      "cdp_clients": [
+        "Playwright",
+        "Puppeteer"
+      ],
       "status": "scaffold"
     },
     {
@@ -35,7 +40,9 @@
       "runtime": ".NET 8+",
       "source_root": "sdks/dotnet/src/Ombra",
       "tests_root": "sdks/dotnet/tests/Ombra.Tests",
-      "cdp_clients": ["Microsoft.Playwright", "Selenium"],
+      "cdp_clients": [
+        "Microsoft.Playwright"
+      ],
       "status": "scaffold"
     },
     {
@@ -47,7 +54,9 @@
       "runtime": "Java 17+",
       "source_root": "sdks/java/src/main/java/dev/ombra",
       "tests_root": "sdks/java/src/test/java/dev/ombra",
-      "cdp_clients": ["Playwright", "Selenium"],
+      "cdp_clients": [
+        "Microsoft Playwright"
+      ],
       "status": "scaffold"
     },
     {
@@ -59,7 +68,9 @@
       "runtime": "Go 1.22+",
       "source_root": "sdks/go",
       "tests_root": "sdks/go",
-      "cdp_clients": ["chromedp", "playwright-go"],
+      "cdp_clients": [
+        "chromedp"
+      ],
       "status": "scaffold"
     },
     {
@@ -71,7 +82,9 @@
       "runtime": "PHP 8.2+",
       "source_root": "sdks/php/src",
       "tests_root": "sdks/php/tests",
-      "cdp_clients": ["CDP WebSocket"],
+      "cdp_clients": [
+        "CDP"
+      ],
       "status": "scaffold"
     },
     {
@@ -83,7 +96,9 @@
       "runtime": "Ruby 3.2+",
       "source_root": "sdks/ruby/lib/ombra",
       "tests_root": "sdks/ruby/spec",
-      "cdp_clients": ["Ferrum"],
+      "cdp_clients": [
+        "Ferrum"
+      ],
       "status": "scaffold"
     },
     {
@@ -95,7 +110,9 @@
       "runtime": "Rust 1.78+",
       "source_root": "sdks/rust/src",
       "tests_root": "sdks/rust/tests",
-      "cdp_clients": ["chromiumoxide"],
+      "cdp_clients": [
+        "chromiumoxide"
+      ],
       "status": "scaffold"
     }
   ]

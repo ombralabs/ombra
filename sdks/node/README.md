@@ -1,8 +1,8 @@
 # Ombra SDK for Node.js
 
-> **Scaffold.** Layout and contract only. No package is published and no client is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
+> **Scaffold.** Layout and contract only. No package is published and no launcher is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
 
-[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#11-stealth-invariants)
+[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#12-stealth-invariants)
 
 ## Target package
 
@@ -12,34 +12,49 @@
 | Registry | npm |
 | Runtime | Node.js 20+ |
 | Language | TypeScript, ESM and CJS builds |
-| CDP clients | Playwright, Puppeteer |
+| Returns | `playwright.Browser`; `puppeteer.Browser` from `launchPuppeteer()` |
 | Status | Scaffold |
 
 ## Target API
 
 ```ts
-import { Ombra } from "@ombra/sdk";
+import { launch } from "@ombra/sdk";
 
-const client = new Ombra({ endpoint: "http://127.0.0.1:45678" });
-
-const profile = await client.profiles.create({
-  name: "checkout-eu",
-  fingerprint: { seed: 20261116, os: "macos" },
-  proxy: "socks5://user:pass@proxy:1080",
-});
-
-const session = await client.launch(profile.id, { headless: false });
-const browser = await session.connectPlaywright();
+const browser = await launch();
 const page = await browser.newPage();
 await page.goto("https://example.com");
+console.log(await page.title());
 await browser.close();
-await session.close();
 ```
 
-Puppeteer uses the same session:
+With options:
 
 ```ts
-const browser = await session.connectPuppeteer();
+const browser = await launch({
+  profile: "pricing-eu",
+  headless: false,
+  proxy: "socks5://user:pass@proxy:1080",
+  fingerprint: { seed: 20261116, os: "macos" },
+});
+```
+
+Puppeteer is a separate entry point because the return type differs:
+
+```ts
+import { launchPuppeteer } from "@ombra/sdk";
+
+const browser = await launchPuppeteer({ headless: false });
+const page = await browser.newPage();
+```
+
+Binary management:
+
+```ts
+import { binaryInfo, ensureBinary, clearCache } from "@ombra/sdk";
+
+console.log(await binaryInfo());
+await ensureBinary();
+await clearCache();
 ```
 
 ## Layout
@@ -50,15 +65,15 @@ sdks/node/
 ├── tsconfig.json
 ├── src/
 │   ├── index.ts
-│   ├── client.ts        # Ombra
-│   ├── profiles.ts      # Profile, ProfileSpec, ProfilesClient
-│   ├── session.ts       # Session, Playwright/Puppeteer helpers
-│   ├── transport.ts     # fetch, envelope, auth, timeouts
+│   ├── launch.ts        # launch, launchPuppeteer
+│   ├── binary.ts        # resolve, verify, download, binaryInfo
+│   ├── profile.ts       # named profiles, seed persistence, lock
+│   ├── proxy.ts         # loopback relay
 │   └── errors.ts        # OmbraError hierarchy
 └── tests/
-    ├── transport.test.ts
-    ├── profiles.test.ts
-    └── session.test.ts
+    ├── options.test.ts
+    ├── binary.test.ts
+    └── launch.test.ts
 ```
 
 ## Build and test (planned)
@@ -74,8 +89,7 @@ pnpm build
 
 ## Notes
 
-- Use the built-in `fetch`; do not add an HTTP dependency.
+- Playwright and Puppeteer are optional peer dependencies. Import them lazily so either can be absent.
 - Ship ESM with a CJS compatibility build, and declare `engines.node >= 20`.
-- The Playwright and Puppeteer helpers are optional peer dependencies. Import them lazily.
-- `debug_port` is a number on the session object, a string on the wire.
-- No `Runtime.enable`, no init scripts, no `Emulation.*` — see the contract.
+- Use the built-in `fetch` for binary downloads; do not add an HTTP dependency.
+- Do not wrap the returned browser. Type checks and existing page objects must keep working.

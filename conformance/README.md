@@ -1,6 +1,6 @@
 # Conformance
 
-Conformance is what keeps eight SDKs honest. Every language must produce the same observable behavior for the same profile, the same wire calls, and the same CDP hygiene.
+Conformance is what keeps eight SDKs honest. Every language must launch the same engine, return the native browser type of its ecosystem, and leave the same stealth surface untouched.
 
 This directory is the language-neutral source of truth. It contains declarative cases, the report schema, and (eventually) a runner that drives any SDK through the cases.
 
@@ -8,12 +8,12 @@ This directory is the language-neutral source of truth. It contains declarative 
 
 | Suite | Question it answers | Runner |
 |---|---|---|
-| **Wire** | Does the SDK map the Local API correctly? | HTTP against a running app |
-| **Lifecycle** | Does create → launch → stop → delete behave the same everywhere? | HTTP + process inspection |
-| **Stealth invariants** | Does the SDK or its helper add flags, CDP domains, or scripts? | CDP audit + real command line |
+| **Launch** | Does `launch()` return a real browser and a usable page? | Launch + native client |
+| **Lifecycle** | Do profiles lock, close, and restart the same way everywhere? | Launch + process inspection |
+| **Stealth invariants** | Does the SDK add flags, CDP domains, or scripts? | CDP audit + real command line |
 | **Parity** | Do two SDKs produce the same canonical fingerprint for the same seed? | Two clients, one profile, one probe |
 
-The suites are independent. A Python SDK can pass wire and fail parity because its Playwright helper enables a domain; that is a real finding.
+The suites are independent. A Python SDK can pass launch and fail parity because its Playwright helper enables a domain; that is a real finding.
 
 ## Case format
 
@@ -21,21 +21,21 @@ Cases are JSON so a runner can consume them without a YAML dependency. A case is
 
 ```json
 {
-  "id": "launch-lifecycle",
-  "title": "Create, launch, stop, delete",
+  "id": "launch-basic",
+  "title": "launch() returns a native browser",
   "contract": "0.1.0",
-  "runner": "lifecycle",
+  "runner": "launch",
   "status": "design",
-  "preconditions": ["app running", "engine installed"],
+  "preconditions": ["engine binary available"],
   "steps": [
-    { "call": "profiles.create", "as": "profile", "args": { "name": "conformance" } },
-    { "call": "launch", "args": { "profile": "$profile.id" }, "as": "session" },
-    { "call": "stop", "args": { "profile": "$profile.id" } },
-    { "call": "profiles.delete", "args": { "ids": ["$profile.id"] } }
+    { "call": "launch", "as": "browser", "args": { "headless": true } },
+    { "call": "browser.new_page", "as": "page" },
+    { "call": "page.goto", "args": { "url": "https://example.com" } },
+    { "call": "browser.close" }
   ],
   "expect": [
-    { "path": "session.cdp_url", "matches": "^wss?://" },
-    { "path": "active.status", "equals": "Inactive" }
+    { "path": "browser.kind", "equals": "native" },
+    { "path": "page.url", "matches": "^https://example\\.com" }
   ]
 }
 ```
@@ -43,6 +43,7 @@ Cases are JSON so a runner can consume them without a YAML dependency. A case is
 Rules:
 
 - `$name.field` references a previous step's result.
+- `expect_error` marks a step that must fail with a specific SDK error kind.
 - `status` is `design`, `active`, or `retired`. Only `active` cases gate a release.
 - `contract` is the contract version the case was written against.
 - `preconditions` are prose; the runner decides how to satisfy them.
@@ -50,18 +51,19 @@ Rules:
 
 ## Stealth invariants
 
-[`cases/stealth-invariants.json`](cases/stealth-invariants.json) is the machine-readable form of the rules in [docs/sdk-contract.md §11](../docs/sdk-contract.md#11-stealth-invariants). Each entry names a check the runner can implement mechanically:
+[`cases/stealth-invariants.json`](cases/stealth-invariants.json) is the machine-readable form of the rules in [docs/sdk-contract.md §12](../docs/sdk-contract.md#12-stealth-invariants). Each entry names a check the runner can implement mechanically:
 
 - `cdp-audit` — inspect the commands the client sends over the CDP WebSocket.
 - `flags-audit` — inspect the engine process command line.
-- `launch-response` — inspect the Local API payload.
+- `process-audit` — inspect the process list, bound ports, and environment.
 - `probe` — compare the browser's answer with the expected value.
+- `binary-info` — verify the resolved binary metadata.
 
 A failure is a release blocker for the SDK, even when the engine is correct.
 
 ## Report schema
 
-[`schema/report.schema.json`](schema/report.schema.json) is the shared report format for wire, lifecycle, and stealth runs. The stealth checkup uses the same shape, so one dashboard can consume both.
+[`schema/report.schema.json`](schema/report.schema.json) is the shared report format for launch, lifecycle, stealth, and parity runs. The stealth checkup uses the same shape, so one dashboard can consume both.
 
 A report has:
 
@@ -75,10 +77,10 @@ A report has:
 The runner does not exist yet. The intended interface:
 
 ```bash
-# Wire and lifecycle through a language SDK.
-python -m conformance run --sdk python --suite wire,lifecycle
+# Launch and lifecycle through a language SDK.
+python -m conformance run --sdk python --suite launch,lifecycle
 
-# Stealth invariants for one SDK against a running app.
+# Stealth invariants for one SDK against a local engine build.
 python -m conformance run --sdk node --suite stealth --profile conformance
 
 # Parity between two SDKs.
@@ -89,7 +91,7 @@ Until then, the cases are specifications for SDK authors and reviewers. A pull r
 
 ## Adding a case
 
-1. Pick the lowest suite that can express the behavior (wire before lifecycle, lifecycle before stealth).
+1. Pick the lowest suite that can express the behavior (launch before lifecycle, lifecycle before stealth).
 2. Write the case with a stable `id` and the current contract version.
 3. Add the runner hook if the case introduces a new call shape.
 4. Run it against at least two SDKs before marking it `active`.

@@ -1,8 +1,8 @@
 # Ombra SDK for .NET
 
-> **Scaffold.** Layout and contract only. No package is published and no client is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
+> **Scaffold.** Layout and contract only. No package is published and no launcher is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
 
-[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#11-stealth-invariants)
+[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#12-stealth-invariants)
 
 ## Target package
 
@@ -12,7 +12,7 @@
 | Registry | NuGet |
 | Runtime | .NET 8+ |
 | Language | C# with nullable reference types |
-| CDP clients | Microsoft.Playwright, Selenium |
+| Returns | `Microsoft.Playwright.IBrowser` |
 | Status | Scaffold |
 
 ## Target API
@@ -20,28 +20,29 @@
 ```csharp
 using Ombra;
 
-await using var client = new OmbraClient("http://127.0.0.1:45678");
-
-var profile = await client.Profiles.CreateAsync(new ProfileSpec
+var browser = await Ombra.LaunchAsync(new LaunchOptions
 {
-    Name = "checkout-eu",
-    Fingerprint = new Fingerprint { Seed = 20261116, Os = "macos" },
+    Profile = "pricing-eu",
+    Headless = false,
     Proxy = "socks5://user:pass@proxy:1080",
+    Fingerprint = new Fingerprint { Seed = 20261116, Os = "macos" },
 });
 
-await using var session = await client.LaunchAsync(profile.Id, headless: false);
-var browser = await session.ConnectPlaywrightAsync();
 var page = await browser.NewPageAsync();
 await page.GotoAsync("https://example.com");
-await session.CloseAsync();
+Console.WriteLine(await page.TitleAsync());
+await browser.CloseAsync();
 ```
 
-The Selenium helper returns a configured `OpenQA.Selenium.Chrome.ChromeDriver`:
+Binary management:
 
 ```csharp
-using var driver = await session.ConnectSeleniumAsync();
-driver.Navigate().GoToUrl("https://example.com");
+var info = Ombra.BinaryInfo();
+await Ombra.EnsureBinaryAsync();
+Ombra.ClearCache();
 ```
+
+`LaunchAsync` returns a real `IBrowser`; existing page objects and helpers keep working.
 
 ## Layout
 
@@ -49,16 +50,17 @@ driver.Navigate().GoToUrl("https://example.com");
 sdks/dotnet/
 ├── src/Ombra/
 │   ├── Ombra.csproj
-│   ├── OmbraClient.cs
-│   ├── ProfilesClient.cs
-│   ├── Profile.cs
-│   ├── Session.cs
-│   ├── Transport.cs
+│   ├── Ombra.cs             # LaunchAsync, BinaryInfo, EnsureBinaryAsync
+│   ├── LaunchOptions.cs
+│   ├── Fingerprint.cs
+│   ├── BinaryManager.cs
+│   ├── ProfileStore.cs
+│   ├── ProxyRelay.cs
 │   └── OmbraException.cs
 └── tests/Ombra.Tests/
     ├── Ombra.Tests.csproj
-    ├── TransportTests.cs
-    └── SessionTests.cs
+    ├── OptionsTests.cs
+    └── LaunchTests.cs
 ```
 
 ## Build and test (planned)
@@ -73,8 +75,7 @@ dotnet pack src/Ombra -c Release
 ## Notes
 
 - Target `net8.0`; do not multi-target unless a consumer needs it.
-- Use `HttpClient` from `IHttpClientFactory` when the consumer provides one, and a single static client otherwise.
+- Microsoft.Playwright is an optional package. Keep the core artifact free of a hard dependency.
 - Async everywhere; no `.Result` or `.Wait()`.
-- Playwright and Selenium are optional packages; the helpers live in separate extension methods.
-- `debug_port` is an `int`; the wire sends a string.
-- No `Runtime.enable`, no init scripts, no `Emulation.*` — see the contract.
+- Use one `HttpClient` for binary downloads and verify SHA-256 before spawn.
+- Do not add launch flags, init scripts, or `Emulation` overrides.

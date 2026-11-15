@@ -1,8 +1,8 @@
 # Ombra SDK for PHP
 
-> **Scaffold.** Layout and contract only. No package is published and no client is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
+> **Scaffold.** Layout and contract only. No package is published and no launcher is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
 
-[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#11-stealth-invariants)
+[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#12-stealth-invariants)
 
 ## Target package
 
@@ -11,7 +11,7 @@
 | Package | `ombralabs/ombra` |
 | Registry | Packagist |
 | Runtime | PHP 8.2+ |
-| CDP clients | Any CDP WebSocket client; the helper returns the URL |
+| Returns | `Ombra\Browser`, a thin CDP handle |
 | Status | Scaffold |
 
 ## Target API
@@ -19,38 +19,50 @@
 ```php
 <?php
 
-use Ombra\Client;
+use function Ombra\binary_info;
+use function Ombra\launch;
 
-$client = new Client('http://127.0.0.1:45678');
-
-$profile = $client->profiles()->create([
-    'name' => 'checkout-eu',
-    'fingerprint' => ['seed' => 20261116, 'os' => 'macos'],
+$browser = launch([
+    'profile' => 'pricing-eu',
+    'headless' => false,
     'proxy' => 'socks5://user:pass@proxy:1080',
+    'fingerprint' => ['seed' => 20261116, 'os' => 'macos'],
 ]);
 
-$session = $client->launch($profile->id, ['headless' => false]);
-$cdpUrl = $session->cdpUrl();
+$page = $browser->newPage();
+$page->goto('https://example.com');
+echo $page->title();
 
-// Pass $cdpUrl to the CDP client your project already uses.
-$session->close();
+$browser->close();
+
+print_r(binary_info());
+```
+
+PHP has no dominant Playwright/Puppeteer client, so the SDK returns a small `Ombra\Browser` handle with `newPage()`, `close()`, and the CDP URL. The handle is intentionally thin; page automation beyond navigation and evaluation belongs to the CDP client your project already uses.
+
+Binary management:
+
+```php
+Ombra\ensure_binary();
+Ombra\clear_cache();
 ```
 
 ## Layout
 
 ```text
 sdks/php/
-├── composer.json        # PSR-4: Ombra\ => src/
+├── composer.json        # PSR-4: Ombra\ => src/, files: src/functions.php
 ├── src/
-│   ├── Client.php
-│   ├── ProfilesClient.php
-│   ├── Profile.php
-│   ├── Session.php
-│   ├── Transport.php
+│   ├── functions.php    # launch, binary_info, ensure_binary, clear_cache
+│   ├── Browser.php      # newPage, close, cdpUrl
+│   ├── Page.php         # goto, title, evaluate
+│   ├── BinaryManager.php
+│   ├── ProfileStore.php
+│   ├── ProxyRelay.php
 │   └── OmbraException.php
 └── tests/
-    ├── TransportTest.php
-    └── SessionTest.php
+    ├── OptionsTest.php
+    └── LaunchTest.php
 ```
 
 ## Build and test (planned)
@@ -66,6 +78,5 @@ vendor/bin/phpunit
 
 - PSR-4, PSR-12, `declare(strict_types=1);` in every file.
 - Use cURL or the PSR-18 client the consumer provides; do not bundle a full HTTP framework.
-- No async runtime. The client is synchronous and predictable.
-- `debug_port` is an `int`; the wire sends a string.
-- No `Runtime.enable`, no init scripts, no `Emulation.*` — see the contract.
+- No async runtime. The launcher is synchronous and predictable.
+- Do not add launch flags, init scripts, or `Emulation` overrides.

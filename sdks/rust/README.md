@@ -1,8 +1,8 @@
 # Ombra SDK for Rust
 
-> **Scaffold.** Layout and contract only. No package is published and no client is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
+> **Scaffold.** Layout and contract only. No package is published and no launcher is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
 
-[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#11-stealth-invariants)
+[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#12-stealth-invariants)
 
 ## Target package
 
@@ -11,40 +11,43 @@
 | Crate | `ombra` |
 | Registry | crates.io |
 | Runtime | Rust 1.78+, Tokio |
-| CDP client | chromiumoxide |
+| Returns | `chromiumoxide::Browser` |
 | Status | Scaffold |
 
 ## Target API
 
 ```rust
-use ombra::{Fingerprint, LaunchOptions, Ombra, ProfileSpec};
+use ombra::{Fingerprint, LaunchOptions};
 
 #[tokio::main]
 async fn main() -> Result<(), ombra::Error> {
-    let client = Ombra::new("http://127.0.0.1:45678")?;
+    let browser = ombra::launch(
+        LaunchOptions::builder()
+            .profile("pricing-eu")
+            .headless(false)
+            .proxy("socks5://user:pass@proxy:1080")
+            .fingerprint(Fingerprint::builder().seed(20261116).os("macos").build())
+            .build()?,
+    )
+    .await?;
 
-    let profile = client
-        .profiles()
-        .create(
-            ProfileSpec::builder()
-                .name("checkout-eu")
-                .fingerprint(Fingerprint::builder().seed(20261116).os("macos").build())
-                .proxy("socks5://user:pass@proxy:1080")
-                .build()?,
-        )
-        .await?;
+    let page = browser.new_page("https://example.com").await?;
+    println!("{:?}", page.url().await?);
 
-    let session = client
-        .launch(&profile.id, LaunchOptions::new().headless(false))
-        .await?;
-
-    let config = session.chromiumoxide_config();
-    let _browser = chromiumoxide::Browser::launch(config).await?;
-
-    session.close().await?;
+    browser.close().await?;
     Ok(())
 }
 ```
+
+Binary management:
+
+```rust
+let info = ombra::binary_info().await?;
+let path = ombra::ensure_binary().await?;
+ombra::clear_cache()?;
+```
+
+`launch()` returns a real `chromiumoxide::Browser`; existing chromiumoxide handlers keep working.
 
 ## Layout
 
@@ -53,14 +56,14 @@ sdks/rust/
 ├── Cargo.toml
 ├── src/
 │   ├── lib.rs
-│   ├── client.rs
-│   ├── profiles.rs
-│   ├── session.rs
-│   ├── transport.rs
-│   └── error.rs
+│   ├── launch.rs       # launch, LaunchOptions, Session
+│   ├── binary.rs       # resolve, verify, download, binary_info
+│   ├── profile.rs      # named profiles, seed persistence, lock
+│   ├── proxy.rs        # loopback relay
+│   └── error.rs        # Error, ErrorKind
 └── tests/
-    ├── transport.rs
-    └── session.rs
+    ├── options.rs
+    └── launch.rs
 ```
 
 ## Build and test (planned)
@@ -75,7 +78,6 @@ cargo doc --no-deps
 ## Notes
 
 - Tokio is the async runtime; keep it out of the public types where possible.
-- `chromiumoxide` is an optional feature so the core client builds without a browser dependency.
-- Use `thiserror` for the error enum and `reqwest` for HTTP; no hidden global runtime.
-- `debug_port` is a `u16`; the wire sends a string.
-- No `Runtime.enable`, no init scripts, no `Emulation.*` — see the contract.
+- `chromiumoxide` is an optional feature so the core launcher builds without a browser dependency.
+- Use `thiserror` for the error enum and `reqwest` for downloads; no hidden global runtime.
+- Do not add launch flags, init scripts, or `Emulation` overrides.

@@ -1,8 +1,8 @@
 # Ombra SDK for Go
 
-> **Scaffold.** Layout and contract only. No package is published and no client is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
+> **Scaffold.** Layout and contract only. No package is published and no launcher is implemented yet. The API below is the target defined by [contract v0.1](../../docs/sdk-contract.md).
 
-[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#11-stealth-invariants)
+[← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#12-stealth-invariants)
 
 ## Target package
 
@@ -11,7 +11,7 @@
 | Module | `github.com/ombralabs/ombra/sdks/go` |
 | Registry | Go modules |
 | Runtime | Go 1.22+ |
-| CDP clients | chromedp, playwright-go |
+| Returns | `*ombra.Session`; `Session.Context()` is chromedp-ready |
 | Status | Scaffold |
 
 ## Target API
@@ -23,38 +23,39 @@ import (
 	"context"
 	"log"
 
+	"github.com/chromedp/chromedp"
 	"github.com/ombralabs/ombra/sdks/go"
 )
 
 func main() {
 	ctx := context.Background()
 
-	client, err := ombra.New(ombra.WithEndpoint("http://127.0.0.1:45678"))
+	session, err := ombra.Launch(ctx,
+		ombra.WithHeadless(false),
+		ombra.WithProfile("pricing-eu"),
+		ombra.WithProxy("socks5://user:pass@proxy:1080"),
+		ombra.WithSeed(20261116),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer session.Close()
 
-	profile, err := client.Profiles.Create(ctx, ombra.ProfileSpec{
-		Name:        "checkout-eu",
-		Fingerprint: ombra.Fingerprint{Seed: 20261116, OS: "macos"},
-		Proxy:       "socks5://user:pass@proxy:1080",
-	})
-	if err != nil {
+	pageCtx := session.Context()
+	if err := chromedp.Run(pageCtx, chromedp.Navigate("https://example.com")); err != nil {
 		log.Fatal(err)
 	}
-
-	session, err := client.Launch(ctx, profile.ID, ombra.LaunchOptions{Headless: false})
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer session.Close(ctx)
-
-	browserCtx, err := session.ConnectChromedp(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	_ = browserCtx
 }
+```
+
+`Session.Context()` already carries the remote allocator for the launched engine, so ordinary chromedp actions work unchanged.
+
+Binary management:
+
+```go
+info, err := ombra.BinaryInfo(ctx)
+path, err := ombra.EnsureBinary(ctx)
+err = ombra.ClearCache()
 ```
 
 ## Layout
@@ -64,12 +65,12 @@ Go uses the package root, not a `src/` directory:
 ```text
 sdks/go/
 ├── go.mod               # module github.com/ombralabs/ombra/sdks/go
-├── client.go            # Client, New, options
-├── profiles.go          # Profile, ProfileSpec, ProfilesClient
-├── session.go           # Session, chromedp/playwright helpers
-├── transport.go         # net/http, envelope, auth, timeouts
+├── launch.go            # Launch, Session, options
+├── binary.go            # resolve, verify, download, BinaryInfo
+├── profile.go           # named profiles, seed persistence, lock
+├── proxy.go             # loopback relay
 ├── errors.go            # Error, ErrorKind
-└── client_test.go
+└── launch_test.go
 ```
 
 ## Build and test (planned)
@@ -83,8 +84,7 @@ go test -race ./...
 
 ## Notes
 
-- Accept a `context.Context` as the first argument for every network call.
+- Accept a `context.Context` as the first argument for every operation.
 - Return wrapped errors with `%w` and expose `errors.Is` / `errors.As` helpers.
-- The chromedp helper returns a `context.Context`; the caller owns cancellation.
-- `debug_port` is an `int`; the wire sends a string.
-- No `Runtime.enable`, no init scripts, no `Emulation.*` — see the contract.
+- `Session.Close()` terminates the engine and releases the profile lock; it is safe to call twice.
+- Do not enable `Runtime`, inject init scripts, or override identity through `Emulation`.

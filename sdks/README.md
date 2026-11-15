@@ -1,21 +1,21 @@
 # SDK sources
 
-One directory per language, one contract for all of them.
+One directory per language, one launch contract for all of them.
 
 The machine-readable registry is [`manifest.json`](manifest.json). It is the source of truth for package names, runtimes, source roots, test roots, and status. If a directory and the manifest disagree, the manifest wins and the directory is fixed.
 
 ## Matrix
 
-| SDK | Package (target) | Registry | Runtime | Source root | Status |
+| SDK | Package (target) | Registry | Runtime | `launch()` returns | Status |
 |---|---|---|---|---|---|
-| [Python](python/README.md) | `ombra` | PyPI | 3.10+ | `src/ombra/` | Scaffold |
-| [Node.js](node/README.md) | `@ombra/sdk` | npm | Node 20+ | `src/` | Scaffold |
-| [.NET](dotnet/README.md) | `Ombra` | NuGet | .NET 8+ | `src/Ombra/` | Scaffold |
-| [Java](java/README.md) | `dev.ombra:ombra` | Maven Central | 17+ | `src/main/java/dev/ombra/` | Scaffold |
-| [Go](go/README.md) | `github.com/ombralabs/ombra/sdks/go` | Go modules | 1.22+ | package root | Scaffold |
-| [PHP](php/README.md) | `ombralabs/ombra` | Packagist | 8.2+ | `src/` | Scaffold |
-| [Ruby](ruby/README.md) | `ombra` | RubyGems | 3.2+ | `lib/ombra/` | Scaffold |
-| [Rust](rust/README.md) | `ombra` | crates.io | 1.78+ | `src/` | Scaffold |
+| [Python](python/README.md) | `ombra` | PyPI | 3.10+ | Playwright `Browser` | Scaffold |
+| [Node.js](node/README.md) | `@ombra/sdk` | npm | Node 20+ | Playwright `Browser`; Puppeteer via `launchPuppeteer()` | Scaffold |
+| [.NET](dotnet/README.md) | `Ombra` | NuGet | .NET 8+ | Playwright `IBrowser` | Scaffold |
+| [Java](java/README.md) | `dev.ombra:ombra` | Maven Central | 17+ | Playwright `Browser` | Scaffold |
+| [Go](go/README.md) | `github.com/ombralabs/ombra/sdks/go` | Go modules | 1.22+ | chromedp-ready session | Scaffold |
+| [PHP](php/README.md) | `ombralabs/ombra` | Packagist | 8.2+ | `Ombra\Browser` CDP handle | Scaffold |
+| [Ruby](ruby/README.md) | `ombra` | RubyGems | 3.2+ | `Ferrum::Browser` | Scaffold |
+| [Rust](rust/README.md) | `ombra` | crates.io | 1.78+ | `chromiumoxide::Browser` | Scaffold |
 
 Package names are targets. Registry availability is verified before the first publish.
 
@@ -23,9 +23,9 @@ Package names are targets. Registry availability is verified before the first pu
 
 | Status | Meaning |
 |---|---|
-| `scaffold` | Layout and contract exist; no working client |
-| `contract` | Types and wire mapping are implemented and reviewed; no release |
-| `alpha` | Usable against the current app; breaking changes allowed |
+| `scaffold` | Layout and contract exist; no working launcher |
+| `contract` | Options, binary resolution, and error mapping are implemented and reviewed; no release |
+| `alpha` | Usable against the current engine; breaking changes allowed |
 | `beta` | Feature-complete for contract v0; release candidates |
 | `stable` | Published and covered by the support window |
 
@@ -42,7 +42,7 @@ sdks/<language>/
 └── tests/ (or spec/)
 ```
 
-When implementation starts, it also gains the ecosystem's package manifest, a license header, and a `CHANGELOG.md` link to the repository changelog. Do not add generated lockfiles from other languages.
+When implementation starts, it also gains the ecosystem's package manifest and a license header. Do not add generated lockfiles from other languages.
 
 ## Layout conventions
 
@@ -63,13 +63,14 @@ The manifest records the exact roots, so tooling does not have to guess.
 
 ## What every implementation must include
 
-- A client constructor with endpoint, optional API key, and timeouts.
-- `status`, `profiles` (list, get, create, update, delete), `launch`, `active`, `stop`.
-- Typed `Profile`, `Session`, and error types.
-- A connection helper for the dominant CDP client(s) in that ecosystem.
-- A contract version declaration and a check against the supported range.
-- Tests for the envelope, error mapping, profile mapping, and session parsing.
-- No stealth logic, no page automation, no telemetry.
+- `launch(options)` returning the native browser object for that ecosystem.
+- Binary resolution, SHA-256 verification, and `binary_info()`.
+- Named profiles with a seed and a profile lock.
+- Proxy support, including the loopback relay for authenticated proxies.
+- Clean shutdown of the engine process tree.
+- A typed error hierarchy with stable kinds.
+- Tests for option validation, binary resolution, profile locking, and launch.
+- No stealth logic, no page API, no telemetry.
 
 See [docs/sdk-contract.md](../docs/sdk-contract.md) for the normative behavior.
 
@@ -78,7 +79,7 @@ See [docs/sdk-contract.md](../docs/sdk-contract.md) for the normative behavior.
 1. Copy [`_template`](_template/README.md) to `sdks/<language>/`.
 2. Add an entry to [`manifest.json`](manifest.json) with the correct source and test roots.
 3. Write the README: status, package target, runtime, target API, layout, test command.
-4. Implement the wire client and the error mapping.
+4. Implement binary resolution, option validation, the launch, and the native client connection.
 5. Add at least one conformance case and make it runnable.
 6. Add the language to the root README matrix.
 7. Run `python3 tools/check_repo.py`.
@@ -87,10 +88,11 @@ A language without a conformance path is a documentation-only directory and shou
 
 ## Release checklist
 
-- [ ] Contract tests pass.
-- [ ] Stealth invariants pass for the helper.
+- [ ] Launch conformance passes.
+- [ ] Profile lock and cleanup tests pass.
+- [ ] Stealth invariants pass for the launcher and the client.
 - [ ] Cross-SDK parity passes for the same profile and seed.
 - [ ] Package manifest version matches the tag (`sdks/<language>/vX.Y.Z`).
 - [ ] README and root matrix show the new status.
-- [ ] Changelog entry names the contract range.
+- [ ] Changelog entry names the contract range and engine build.
 - [ ] No secrets, generated artifacts, or registry tokens in the commit.

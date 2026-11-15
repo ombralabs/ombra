@@ -9,25 +9,25 @@ Use GitHub's private vulnerability reporting on this repository: **Security → 
 Include:
 
 - the affected SDK, version, and language runtime;
-- the app and engine versions, if relevant;
+- the SDK, engine, and automation-client versions;
 - a minimal reproduction, with secrets removed;
 - the impact you believe it has;
 - whether you want public credit.
 
-Do not include proxy credentials, real IP addresses, profile data, cookies, or API keys in the report. If a credential was exposed, rotate it before reporting.
+Do not include proxy credentials, real IP addresses, profile data, cookies, or license keys in the report. If a credential was exposed, rotate it before reporting.
 
 ## Scope
 
 In scope:
 
 - the SDK sources in this repository;
-- the wire contract, schemas, and conformance cases;
+- the launch contract, schemas, and conformance cases;
 - documentation that could cause an insecure integration;
 - supply-chain issues in the build and release process.
 
 Out of scope:
 
-- the Ombra engine and desktop app (separate repositories and disclosure processes);
+- the Ombra engine and app (separate repositories and disclosure processes);
 - third-party sites, detectors, or anti-bot services;
 - detection bypass results, CAPTCHA outcomes, or "stealth failed" reports;
 - vulnerabilities that require the attacker to already control the local user account;
@@ -65,8 +65,9 @@ The repository is at contract `0.1.0` and no SDK package has been released. Once
 
 ## Hardening notes for integrators
 
-- Keep the Local API on loopback. Do not expose it through a reverse proxy or a tunnel.
-- Enable the API key if other local users share the machine.
-- Do not log the `Authorization` header, proxy credentials, or profile cookies.
+- Keep the CDP endpoint on loopback. Do not expose the debug port through a proxy, tunnel, or container port mapping.
+- Do not disable checksum verification in production. `OMBRA_SKIP_CHECKSUM=1` is for local development builds only.
+- Protect `OMBRA_LICENSE_KEY` and proxy credentials as secrets. The SDK must not log them or put them in the process command line.
 - Treat the CDP endpoint as a full-control interface: anyone who can reach it can drive the browser.
-- Pin SDK versions and verify package signatures or hashes where the registry supports it.
+- Pin SDK and engine versions, and verify package hashes where the registry supports it.
+- Run the engine as the local user. Do not run it as root or with a shared profile directory.

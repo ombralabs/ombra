@@ -1,10 +1,10 @@
 # Contributing to Ombra SDKs
 
-Thanks for taking the time to contribute. This repository is small on purpose: a wire contract, eight language folders, a conformance suite, and the docs that bind them together.
+Thanks for taking the time to contribute. This repository is small on purpose: a launch contract, eight language folders, a conformance suite, and the docs that bind them together.
 
 ## Ways to contribute
 
-- **Report a contract gap.** Open an issue with the call you expected, the call you got, and the app version.
+- **Report a contract gap.** Open an issue with the call you expected, the call you got, and the `binary_info()` output.
 - **Add or improve an SDK.** Start with [sdks/_template](sdks/_template/README.md).
 - **Add a conformance case.** A case is worth more than a screenshot.
 - **Improve the checkup.** New detectors, better gates, and reproducible failures are welcome.
@@ -24,10 +24,10 @@ Per-SDK toolchains are documented in each SDK README. They are not installed by 
 
 ## The change order
 
-Wire changes, SDK changes, and engine changes have different owners. Follow this order:
+Launch-contract changes, SDK changes, and engine changes have different owners. Follow this order:
 
-1. **Contract first.** Update [docs/sdk-contract.md](docs/sdk-contract.md) and, if the payload changes, [spec/schemas](spec/schemas).
-2. **App second.** The wire behavior must exist in the app before an SDK relies on it.
+1. **Contract first.** Update [docs/sdk-contract.md](docs/sdk-contract.md) and, if an option changes, [spec/schemas](spec/schemas).
+2. **Engine second.** The flag or capability must exist in the engine before an SDK exposes it.
 3. **SDK third.** Implement against the updated contract and add a conformance case.
 4. **Docs last.** Update the root README, the Russian mirror, and the SDK README.
 
@@ -37,20 +37,20 @@ A pull request that changes an SDK without a contract change is fine only when i
 
 - Copy [sdks/_template](sdks/_template/README.md) for a new language.
 - Add the entry to [sdks/manifest.json](sdks/manifest.json). The checker validates the paths.
-- Keep the public API idiomatic for the language and the wire format `snake_case`.
+- Keep the public API idiomatic for the language and the contract option names `snake_case`.
 - Add the contract version declaration and the compatibility check.
 - Do not add stealth logic, launch flags, page automation, or telemetry.
 - Add at least one runnable conformance case.
 
-The stealth invariants in [docs/sdk-contract.md §11](docs/sdk-contract.md#11-stealth-invariants) are release blockers. A helper that enables `Runtime.enable` for convenience will be rejected.
+The stealth invariants in [docs/sdk-contract.md §12](docs/sdk-contract.md#12-stealth-invariants) are release blockers. A helper that enables `Runtime.enable` for convenience will be rejected.
 
 ## Commits and pull requests
 
 Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```text
-feat(python): add profile update
-fix(node): preserve raw error message
+feat(python): add named profile support
+fix(node): preserve the engine stderr tail
 docs(stealth): clarify proxy flag scoring
 chore(repo): validate JSON files in CI
 ```
@@ -79,7 +79,8 @@ Use the pull request template. Keep the diff focused; do not reformat unrelated 
 - [ ] `python3 tools/check_repo.py` passes.
 - [ ] New JSON files parse and match their schema.
 - [ ] New links resolve.
-- [ ] The SDK change does not add CDP domains, scripts, or flags.
+- [ ] The SDK change does not add CDP domains, scripts, or launch flags.
+- [ ] `launch()` returns the native browser object, without a wrapper.
 - [ ] The README matrix and manifest agree.
 - [ ] No secrets, no generated artifacts, no lockfiles from other languages.
 - [ ] The Russian mirror is updated when the English user-facing text changes.

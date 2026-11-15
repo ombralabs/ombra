@@ -1,6 +1,6 @@
 # Stealth checkup
 
-A repeatable procedure for deciding whether an Ombra engine build, app build, or SDK change is allowed to ship from a stealth standpoint.
+A repeatable procedure for deciding whether an Ombra engine build, SDK change, or automation-client configuration is allowed to ship from a stealth standpoint.
 
 This is not a promise that a browser is undetectable. Detection is a moving target: it depends on the site, region, IP reputation, account history, browser version, detector version, and the coherence of the profile. The checkup exists to replace anecdotes with **measurements taken under recorded conditions**, and to catch regressions before users do.
 
@@ -21,7 +21,7 @@ The checkup covers six layers. Each layer has a different owner and a different 
 
 | Layer | What is measured | Owner | Typical targets |
 |---|---|---|---|
-| **L0 Transport** | Exit IP, DNS, WebRTC, TLS, HTTP/2, headers | Engine + app proxy path | TrackMe, IP/WebRTC leak pages, header echoes |
+| **L0 Transport** | Exit IP, DNS, WebRTC, TLS, HTTP/2, headers | Engine + SDK proxy relay | TrackMe, IP/WebRTC leak pages, header echoes |
 | **L1 Identity** | UA, Client Hints, platform, GPU, screen, fonts, locale, timezone | Engine | Local probe, Sannysoft, Intoli |
 | **L2 Fingerprint** | Canvas, WebGL, audio, client rects, voices, media devices | Engine | CreepJS, FingerprintJS, BrowserScan, Pixelscan |
 | **L3 Automation** | WebDriver, CDP artifacts, injected scripts, bindings, stack traces | Engine + SDK/helper | rebrowser, brotector, botd, local probe |
@@ -46,7 +46,7 @@ The adversary is not a single page. A production anti-bot system correlates all 
 Before running any target:
 
 - [ ] Engine build is the exact artifact under test, recorded by version and SHA-256.
-- [ ] App build is recorded by version; the Local API is on loopback and no other client is attached.
+- [ ] SDK version, automation-client version, and engine version are recorded; no second client is attached to the engine.
 - [ ] A dedicated test profile exists with a fixed seed and no personal data.
 - [ ] Proxy is configured on the profile, and the exit country is recorded.
 - [ ] Timezone, locale, and WebRTC are set to follow the proxy exit unless the test explicitly checks manual values.
@@ -91,6 +91,7 @@ The IDs are stable and are used in reports and baselines.
 | `L0-01` | Launch flags audit | L0 | Automation, sandbox, or override flags in the real command line | No forbidden flags |
 | `L0-02` | IP and WebRTC leak | L0 | Host IP over HTTP, STUN, or TURN | Exit IP only |
 | `L0-03` | TLS and HTTP/2 | L0 | JA3N, JA4, Akamai hash, cipher and extension differences | Match reference Chromium |
+| `L0-04` | Proxy relay | L0 | Credentials in the process list, relay exposed beyond loopback | Loopback only; no secret in the command line |
 | `L1-01` | Local fingerprint probe | L1 | WebDriver, chrome object, plugins, permissions, UA-CH, screen, fonts, timezone | All critical checks pass |
 | `L1-02` | Sannysoft | L1 | Classic headless and automation tells | All rows green |
 | `L1-03` | Intoli headless test | L1 | Older headless markers and UA consistency | All rows pass |
@@ -112,14 +113,17 @@ The IDs are stable and are used in reports and baselines.
 | `L5-02` | Context agreement | L5 | Main frame vs worker vs iframe vs cross-origin | Same values |
 | `L5-03` | Reload stability | L5 | Noise resets, canvas drift, storage changes | Stable hashes |
 | `L5-04` | Cross-SDK parity | L5 | SDK-specific launch or CDP behavior | Identical hashes for the same profile |
+| `L5-05` | Profile persistence | L5 | Seed drift across restarts, concurrent launch of one profile | Identical hash; second launch gets `ProfileBusy` |
 
 ### Target notes
 
-**L0-01 — Launch flags.** Inspect the actual command line of the engine process, not the SDK's intent. Forbidden: `--enable-automation`, `--disable-blink-features=AutomationControlled`, `--headless=old`, `--no-sandbox` on a host that supports the sandbox, `--remote-debugging-port` with a fixed public port, `--user-agent` overrides, and any flag the app did not intend to pass. The engine's real command line is the source of truth.
+**L0-01 — Launch flags.** Inspect the actual command line of the engine process, not the SDK's intent. Forbidden: `--enable-automation`, `--disable-blink-features=AutomationControlled`, `--headless=old`, `--no-sandbox` on a host that supports the sandbox, `--remote-debugging-port` with a fixed public port, `--user-agent` overrides, and any flag the SDK did not intend to pass. The engine's real command line is the source of truth.
 
 **L0-02 — IP and WebRTC.** Test over HTTP, a STUN page, and a TURN relay. A profile behind a proxy must not expose the host IP through any path. A direct profile may show its own IP; that is not a leak. Record the exit country and compare it with timezone and locale.
 
 **L0-03 — TLS and HTTP/2.** Use a local TrackMe instance or `tls.peet.ws`. Compare JA3N, JA4, and the Akamai HTTP/2 hash with a real Chrome of the same milestone. A mismatch usually means a non-Chromium client, a TLS-terminating proxy, or a build with a modified network stack.
+
+**L0-04 — Proxy relay.** When the SDK uses an authenticated proxy, inspect the engine command line and the open ports. The engine must see a loopback proxy without credentials; the relay must bind to `127.0.0.1` and only the child process may connect. A credential in the process list, a relay on `0.0.0.0`, or a direct connection that bypasses the relay is a failure.
 
 **L1-01 — Local probe.** Keep a bundled page that runs without network access. It must cover `navigator.webdriver`, `window.chrome`, plugins, permissions, UA-CH, hardware concurrency, device memory, screen and viewport, color depth, timezone, languages, WebGL vendor and renderer, fonts, and a canvas hash. This is the first target to run and the first to fail when a build is wrong.
 
@@ -133,9 +137,9 @@ The IDs are stable and are used in reports and baselines.
 
 **L3-01 / L3-02 — CDP leaks.** Run the local rebrowser and brotector bundles. The critical checks are `runtimeEnableLeak`, `exposeFunctionLeak`, `navigatorWebdriver`, `pwInitScripts`, and `sourceUrlLeak`. If the automation client itself calls `Runtime.enable`, the run must distinguish that from an engine defect. The preferred client configuration avoids the domain entirely.
 
-**L3-03 — Init-script and stack probe.** Load a page that inspects `Function.prototype.toString`, `Error.prepareStackTrace`, script source URLs, and unexpected globals. Any injected helper must be invisible or must not exist. Ombra's app automation uses an isolated world named `ombra`; a visible world or a global binding is a failure.
+**L3-03 — Init-script and stack probe.** Load a page that inspects `Function.prototype.toString`, `Error.prepareStackTrace`, script source URLs, and unexpected globals. Any injected helper must be invisible or must not exist. Ombra's engine automation uses an isolated world named `ombra`; a visible world or a global binding is a failure.
 
-**L3-04 — CDP command audit.** Put a logging WebSocket proxy between the automation client and `data.ws.puppeteer`, or use the client's protocol log. Record every domain and method. `Runtime.enable`, `Debugger.enable`, `Log.enable`, `Page.addScriptToEvaluateOnNewDocument`, and `Target.setAutoAttach` with unexpected filters are red flags. This audit is how SDK regressions are caught before a detector notices them.
+**L3-04 — CDP command audit.** Put a logging WebSocket proxy between the automation client and the CDP endpoint returned by the SDK, or use the client's protocol log. Record every domain and method. `Runtime.enable`, `Debugger.enable`, `Log.enable`, `Page.addScriptToEvaluateOnNewDocument`, and `Target.setAutoAttach` with unexpected filters are red flags. This audit is how SDK regressions are caught before a detector notices them.
 
 **L4-01 — Input fidelity.** Use a page that records pointer, mouse, keyboard, and focus events with `isTrusted`, timestamps, coordinates, and order. A correct click is a `mouseMoved` sequence, `mousePressed`, `mouseReleased`, with plausible timing. A correct keystroke carries `key`, `code`, `keyCode`, and, where relevant, composition data. `element.click()` and direct value assignment fail this target.
 
@@ -153,13 +157,16 @@ The IDs are stable and are used in reports and baselines.
 
 **L5-04 — Cross-SDK parity.** Run the same profile and seed through Python, Node.js, and at least one compiled-language SDK. The canonical hashes must match. A difference means an SDK is adding a flag, a CDP command, or a launch option it should not.
 
+**L5-05 — Profile persistence.** Launch a named profile, record the canonical hash, close it, and launch it again without passing a seed. The hash must match. Launch the same profile twice concurrently: the second launch must fail with `ProfileBusy`, not steal the lock or spawn a second browser.
+
 ## 7. Runbook
 
 ### Step 0 — Freeze the inputs
 
 ```text
 engine_version:   151.0.7922.108 (build SHA-256)
-app_version:      <version>
+sdk_version:      <version>
+client_version:   <version>
 contract_version: 0.1.0
 os:               macOS 15.x arm64 / Windows 11 x64 / Ubuntu 24.04 x64
 mode:             headed | headless
@@ -185,7 +192,7 @@ The harness writes `report.json` and `report.md`. Preserve both; the JSON is the
 
 ### Step 2 — SDK and client pass
 
-The SDK does not change the engine, but it can change the launch options and the CDP client. Run the same profile through each SDK under test and capture:
+The SDK does not change the engine, but it chooses the binary, launch options, and CDP client. Run the same profile through each SDK under test and capture:
 
 - the real engine command line;
 - the CDP command audit;
@@ -391,8 +398,9 @@ CI-specific rules:
 | Cloudflare loop | IP reputation, cookies, headless, behavior | Change exit, clear profile, run headed, inspect input |
 | CAPTCHA not detected | Module off, build mismatch, task type unsupported | Enable the module; record the unsupported type |
 | Profile closes after last tab | Expected headed behavior when the script closes all tabs | Keep a tab open or run headless |
-| `conflict` on delete | Profile is running | Stop first |
-| Launch timeout | App busy, engine missing, license slot | Check the app, engine install, and license; then stop the profile |
+| `ProfileBusy` | Another process holds the profile lock | Close the other browser or use a different profile |
+| `Launch timeout` | Engine missing, license refused, blocked binary, slow start | Run `binary_info()`, check the license and the engine stderr, then retry |
+| `ChecksumMismatch` | Binary replaced or download corrupted | Clear the SDK cache and re-run `ensure_binary()` |
 
 ## 12. What this checkup does not cover
 

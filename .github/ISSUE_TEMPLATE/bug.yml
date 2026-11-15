@@ -34,8 +34,8 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: SDK version, Ombra app version, engine version, OS and runtime.
-      placeholder: "python 0.1.0, app 0.9.0, engine 151.0.7922.108, macOS 15.7, Python 3.12"
+      description: SDK version, engine version, automation-client version, OS and runtime.
+      placeholder: "python 0.1.0, engine 151.0.7922.108, Playwright 1.5x, macOS 15.7, Python 3.12"
     validations:
       required: true
 
@@ -59,7 +59,7 @@ body:
     id: actual
     attributes:
       label: Actual behavior
-      description: Include the raw `msg` and `code` from the Local API response when relevant.
+      description: Include the SDK error kind, the `binary_info()` output, and the engine stderr tail.
     validations:
       required: true
 

@@ -30,7 +30,7 @@ body:
     id: proposal
     attributes:
       label: Proposed solution
-      description: The API, wire field, case, or document you would like to see.
+      description: The launch option, case, or document you would like to see.
     validations:
       required: true
 
@@ -46,7 +46,7 @@ body:
     attributes:
       label: Scope check
       options:
-        - label: This can be expressed in the Local API and does not require the SDK to patch the browser.
+        - label: This can be expressed as a launch option and does not require the SDK to patch the browser.
           required: true
         - label: I understand that stealth changes belong to the engine, not to the SDK.
           required: true

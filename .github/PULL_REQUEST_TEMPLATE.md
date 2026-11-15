@@ -11,7 +11,7 @@
 ## Type
 
 - [ ] Contract or schema change
-- [ ] SDK implementation
+- [ ] SDK launcher
 - [ ] Conformance case
 - [ ] Documentation
 - [ ] Tooling or CI
@@ -20,8 +20,8 @@
 ## Contract and compatibility
 
 - Contract version targeted: `0.1.0`
-- [ ] The wire contract is unchanged
-- [ ] The contract is updated in this PR, and the app/engine side already supports it
+- [ ] The launch contract is unchanged
+- [ ] The contract is updated in this PR, and the engine supports the flag or capability
 - [ ] The change is backward compatible
 - [ ] The change is breaking and [docs/versioning.md](../docs/versioning.md) was updated
 

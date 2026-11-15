@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ombrabrowser.dev/schemas/launch-options.schema.json",
+  "title": "Launch options",
+  "description": "The language-neutral option object accepted by every Ombra SDK launch function.",
+  "type": "object",
+  "properties": {
+    "headless": {
+      "type": "boolean",
+      "default": true,
+      "description": "Run the engine without a window."
+    },
+    "proxy": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "$ref": "#/$defs/proxy"
+        }
+      ]
+    },
+    "fingerprint": {
+      "$ref": "#/$defs/fingerprint"
+    },
+    "profile": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Named persistent profile under the SDK cache directory. The SDK slugifies the name."
+    },
+    "user_data_dir": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Explicit profile directory. Mutually exclusive with profile."
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Extra engine arguments, passed through unchanged."
+    },
+    "binary_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Explicit engine binary."
+    },
+    "timeout_ms": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 600000,
+      "default": 30000
+    },
+    "humanize": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "$ref": "#/$defs/humanize"
+        }
+      ]
+    },
+    "captcha": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "$ref": "#/$defs/captcha"
+        }
+      ]
+    },
+    "license_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Passed to the engine. Never logged."
+    },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "download": {
+      "type": "boolean",
+      "default": true,
+      "description": "Allow a missing binary to be downloaded."
+    }
+  },
+  "additionalProperties": false,
+  "not": {
+    "required": [
+      "profile",
+      "user_data_dir"
+    ]
+  },
+  "$defs": {
+    "proxy": {
+      "type": "object",
+      "required": [
+        "type",
+        "host",
+        "port"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "http",
+            "https",
+            "socks5"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "fingerprint": {
+      "type": "object",
+      "properties": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "os": {
+          "type": "string",
+          "enum": [
+            "macos",
+            "windows",
+            "linux"
+          ]
+        },
+        "os_version": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string",
+          "description": "IANA time zone or \"auto\"."
+        },
+        "locale": {
+          "type": "string",
+          "description": "BCP-47 language tag or \"auto\"."
+        },
+        "screen": {
+          "oneOf": [
+            {
+              "type": "string",
+              "const": "auto"
+            },
+            {
+              "type": "object",
+              "required": [
+                "width",
+                "height"
+              ],
+              "properties": {
+                "width": {
+                  "type": "integer",
+                  "minimum": 320
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": 240
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "gpu": {
+          "oneOf": [
+            {
+              "type": "string",
+              "const": "auto"
+            },
+            {
+              "type": "object",
+              "required": [
+                "vendor",
+                "renderer"
+              ],
+              "properties": {
+                "vendor": {
+                  "type": "string"
+                },
+                "renderer": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "hardware_concurrency": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            }
+          ]
+        },
+        "device_memory": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "const": "auto"
+            }
+          ]
+        },
+        "noise": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "humanize": {
+      "type": "object",
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": [
+            "default",
+            "careful",
+            "fast"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "captcha": {
+      "type": "object",
+      "properties": {
+        "types": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "time_budget_ms": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 600000
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "examples": [
+    {
+      "headless": false,
+      "profile": "pricing-eu",
+      "proxy": "socks5://user:pass@proxy:1080",
+      "fingerprint": {
+        "seed": 20261116,
+        "os": "macos"
+      },
+      "humanize": {
+        "preset": "default"
+      },
+      "timeout_ms": 30000
+    }
+  ]
+}

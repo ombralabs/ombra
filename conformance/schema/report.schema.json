@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ombrabrowser.dev/schemas/report.schema.json",
   "title": "Ombra conformance and stealth report",
-  "description": "Shared report shape for wire, lifecycle, stealth, and parity runs.",
+  "description": "Shared report shape for launch, lifecycle, stealth, and parity runs.",
   "type": "object",
   "required": [
     "run_id",

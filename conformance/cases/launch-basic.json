@@ -1,0 +1,23 @@
+{
+  "id": "launch-basic",
+  "title": "launch() returns a native browser",
+  "contract": "0.1.0",
+  "runner": "launch",
+  "status": "design",
+  "preconditions": [
+    "engine binary available or downloadable",
+    "no profile lock held"
+  ],
+  "steps": [
+    { "call": "launch", "as": "browser", "args": { "headless": true } },
+    { "call": "browser.new_page", "as": "page" },
+    { "call": "page.goto", "args": { "url": "https://example.com" } },
+    { "call": "browser.close" }
+  ],
+  "expect": [
+    { "path": "browser.kind", "equals": "native" },
+    { "path": "browser.client", "oneOf": ["playwright", "puppeteer"] },
+    { "path": "page.url", "matches": "^https://example\\.com" },
+    { "path": "browser.closed", "equals": true }
+  ]
+}
