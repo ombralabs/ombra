@@ -1,0 +1,10 @@
+{
+  "identifier": "main",
+  "windows": ["main"],
+  "permissions": [
+    "allow-list-profiles",
+    "allow-create-profile",
+    "allow-edit-profile",
+    "allow-set-profile-deleted"
+  ]
+}

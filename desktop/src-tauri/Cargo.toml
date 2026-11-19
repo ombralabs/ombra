@@ -1,10 +1,22 @@
 [package]
 name = "ombra-desktop-store"
-version = "1.2.1"
-description = "Local profile catalog from Ombra Desktop"
+version = "1.2.2"
+description = "Ombra Desktop local profile manager"
 edition = "2024"
 rust-version = "1.90"
 publish = false
+
+[features]
+app = ["dep:tauri", "dep:tauri-build"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[[bin]]
+name = "ombra-desktop"
+path = "src/main.rs"
+required-features = ["app"]
+
+[build-dependencies]
+tauri-build = { version = "=2.7.4", optional = true , features = [] }
 
 [dependencies]
 base64 = "0.22"
@@ -14,6 +26,7 @@ libc = "0.2"
 rusqlite = { version = "0.40", features = ["bundled", "functions"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tauri = { version = "=2.12.5", optional = true , features = [] }
 tempfile = "3"
 thiserror = "2"
 zeroize = "1"

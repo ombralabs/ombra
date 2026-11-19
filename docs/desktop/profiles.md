@@ -2,6 +2,12 @@
 
 The local catalog stores one SQLite record per profile. A profile can belong to one group, carry several tags, have one user-assigned status label and keep an ordered list of bookmarks. For example, a group can identify a project, tags can identify review topics, and a status label can show that a review is complete.
 
+## Ombra Desktop 1.2.2
+
+1. Select **New profile**, enter a name and an optional note, then select **Save**.
+2. Find a profile by name, note or number in **Search profiles**. Select **Edit** to change its name or note.
+3. Select the profile’s trash button and confirm **Move to Trash**. Open **Trash** and select **Restore** to return it to the active list. Its files stay in the data directory.
+
 ## Catalog operations
 
 Open the application data directory with `Store::open_local`. The handle holds the directory lock until it is dropped. Use an empty directory for this example. Close the application that owns a catalog before opening it with this library. The caller supplies the creation time in Unix seconds.

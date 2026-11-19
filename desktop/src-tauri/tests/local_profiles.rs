@@ -3,6 +3,35 @@ use rusqlite::{Connection, params};
 use std::fs;
 
 #[test]
+fn editing_profile_details_keeps_other_fields_and_cannot_edit_trash() {
+    let dir = tempfile::tempdir().unwrap();
+    let store = Store::open_local(dir.path()).unwrap();
+    let mut input = ProfileInput::new("Work", r#"{"legacy":true}"#);
+    input.start_urls.push("https://example.test/".into());
+    let profile = store.create_profile(&input, 1).unwrap();
+
+    assert!(matches!(
+        store.edit_profile_details(&profile.id, " ", "Ignored"),
+        Err(StoreError::Invalid("name"))
+    ));
+    store
+        .edit_profile_details(&profile.id, "  Review  ", "New note")
+        .unwrap();
+    let edited = store.get_profile(&profile.id).unwrap().unwrap();
+    assert_eq!(edited.name, "Review");
+    assert_eq!(edited.note, "New note");
+    assert_eq!(edited.start_urls, input.start_urls);
+    assert_eq!(edited.fingerprint_json, input.fingerprint_json);
+
+    store.set_deleted(std::slice::from_ref(&profile.id), Some(2)).unwrap();
+    assert!(matches!(
+        store.edit_profile_details(&profile.id, "Hidden", ""),
+        Err(StoreError::NotFound(_))
+    ));
+    assert_eq!(store.list_trash().unwrap()[0].name, "Review");
+}
+
+#[test]
 fn local_profile_edits_survive_reopen_and_preserve_legacy_fields() {
     let dir = tempfile::tempdir().unwrap();
     let store = Store::open_local(dir.path()).unwrap();
