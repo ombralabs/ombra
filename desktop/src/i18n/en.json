@@ -1,0 +1,28 @@
+{
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "details": "Details",
+    "ungrouped": "No group"
+  },
+  "palette": {
+    "label": "Group color",
+    "color": "Color {color}"
+  },
+  "tags": {
+    "add": "Add a tag",
+    "remove": "Remove the “{tag}” tag"
+  },
+  "secret": {
+    "saved": "Saved — leave empty to keep it",
+    "password": {
+      "remove": "Remove the saved password",
+      "willBeRemoved": "The password will be removed on save."
+    },
+    "totp": {
+      "remove": "Remove the saved 2FA key",
+      "willBeRemoved": "The 2FA key will be removed on save."
+    },
+    "keep": "Keep"
+  }
+}

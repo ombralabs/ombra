@@ -1,0 +1,28 @@
+[package]
+name = "ombra-desktop-store"
+version = "1.2.1"
+description = "Local profile catalog from Ombra Desktop"
+edition = "2024"
+rust-version = "1.90"
+publish = false
+
+[dependencies]
+base64 = "0.22"
+chacha20poly1305 = "0.10"
+getrandom = "0.3"
+libc = "0.2"
+rusqlite = { version = "0.40", features = ["bundled", "functions"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tempfile = "3"
+thiserror = "2"
+zeroize = "1"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+keyring = { version = "3", features = ["apple-native"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+keyring = { version = "3", features = ["sync-secret-service", "crypto-rust"] }
+
+[target.'cfg(windows)'.dependencies]
+keyring = { version = "3", features = ["windows-native"] }

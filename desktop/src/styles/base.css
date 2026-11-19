@@ -1,0 +1,464 @@
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --canvas-bg: #f0f2f6;
+  --canvas-grid: #cfd6e2;
+  --text: #141c30;
+  --text-2: #69748c;
+  --text-inverse: #ffffff;
+  --sidebar: #f5f7fb;
+  --sidebar-active: #e3edff;
+  --sidebar-hover: #eaf0f8;
+  --sidebar-text: #28334d;
+  --sidebar-muted: #626f87;
+  --sidebar-strong: #141c30;
+  --border: #e5e9f1;
+  --border-strong: #d7deea;
+  --row-border: #eaf0f6;
+  /* Акцент — заливки (основная кнопка, бегунок, полоса загрузки); текст на светлом — `--accent-ink` или `--link`. */
+  --accent: #2864ff;
+  --accent-hover: color-mix(in srgb, var(--accent) 85%, var(--text));
+  --accent-soft: #edf3ff;
+  --accent-ink: #1454ed;
+  --link: #1454ed;
+  --link-hover: #0b3cb8;
+  /* Единый синий акцент для активных элементов и клавиатурного фокуса. */
+  --focus: var(--accent-ink);
+  --focus-ring: color-mix(in srgb, var(--accent) 35%, transparent);
+  --muted-bg: #f0f3f8;
+  --segment-bg: #f0f3f8;
+  --field-disabled: var(--bg);
+  --warn-bg: #f6efd2;
+  --warn-text: #6b5200;
+  --danger-bg: #fbe6da;
+  --danger-text: #8f3206;
+  --danger-border: #e3bfa9;
+  /* Точки состояния на тёмной панели и в карточке Local API. */
+  --ok: #22c55e;
+  /* «Работает», «Доступен», «Комбинация согласована». */
+  --ok-bg: #dff0e6;
+  --ok-text: #176b45;
+  /* Строка «Ещё K профилей» в списке панели группы. */
+  --more-bg: #f7f9fc;
+  /* Рамка кнопок на фоне `--accent-soft`: панель массовых действий, кнопки в выбранной строке. */
+  --bulk-border: #cbdcff;
+  /* «Запускается». */
+  --info-bg: #e3eaf6;
+  --info-text: #2b4c8c;
+  /* Неактивная вторичная кнопка. */
+  --disabled-bg: var(--bg);
+  --disabled-border: var(--border);
+  --danger-dot: #e5673d;
+  --switch-off: #98a3b8;
+  --switch-on: var(--accent);
+  --radius-card: 8px;
+  --radius-control: 6px;
+  --control-h: 44px;
+  --font: 'Golos Text', system-ui, sans-serif;
+  --font-brand: 'Jost', 'Futura', 'Century Gothic', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--link);
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.muted {
+  color: var(--text-2);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.page {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 28px 24px;
+  overflow: auto;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.hint {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text-2);
+}
+
+/* Плашка предупреждения в диалогах и карточках. */
+.notice {
+  padding: 10px 12px;
+  border-radius: var(--radius-control);
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.note .icon {
+  color: var(--accent-ink);
+}
+
+.error-text {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--danger-text);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  height: var(--control-h);
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+.input:focus-visible {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.input::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: #929cb0;
+}
+
+.input:disabled {
+  background: var(--field-disabled);
+  border-color: var(--border);
+  color: var(--text-2);
+}
+
+.input.invalid {
+  border-color: var(--danger-text);
+}
+
+textarea.input {
+  height: auto;
+  padding: 10px 12px;
+  line-height: 20px;
+  resize: vertical;
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--link-hover);
+}
+
+.link:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.badge {
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-size: 11px;
+  line-height: 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.icon.filled {
+  fill: currentColor;
+  stroke: none;
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.popover {
+  z-index: 50;
+  min-width: max(var(--reka-select-trigger-width, 0px), 180px);
+  max-height: 320px;
+  overflow: auto;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+
+.menu-item[data-highlighted] {
+  background: var(--muted-bg);
+}
+
+.menu-item[data-disabled] {
+  color: var(--text-2);
+  cursor: default;
+  opacity: 0.6;
+}
+
+.menu-item.danger {
+  color: var(--danger-text);
+}
+
+/* Пояснение внутри меню: текстом, не пунктом (клавиатура не видит `title`). */
+.menu-note {
+  max-width: 240px;
+  padding: 4px 10px 6px;
+}
+
+/* Общее для трёх таблиц-списков (профили, прокси, группы); сетка колонок и отличия — в самих компонентах. */
+.grid-table {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.grid-table .row {
+  display: grid;
+  column-gap: 12px;
+  align-items: center;
+  padding: 0 var(--row-pad, 16px);
+}
+
+.grid-table .row.header {
+  flex-shrink: 0;
+  height: 46px;
+  background: #f8fafd;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.grid-table .cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.grid-table .main,
+.grid-table .sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grid-table .main {
+  font-size: 13px;
+}
+
+.grid-table .sub {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-2);
+}
+
+.grid-table .right {
+  text-align: right;
+}
+
+.grid-table .empty {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px;
+  text-align: center;
+}
+
+/* Шапка страниц-списков: профили, прокси, группы. */
+.list-page > .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+
+.list-page > .head .title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--text) 32%, transparent);
+}
+
+.dialog-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 16px 48px color-mix(in srgb, var(--text) 20%, transparent);
+}
+
+.separator {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--row-border);
+}
+
+.dot-sm {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Shared settings rows: readable labels beside controls, stacked when the window is narrow. */
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; }
+.setting-intro { min-width: 0; }
+.setting-intro > label { font-weight: 500; }
+.setting-intro .hint { margin: 4px 0 0; }
+@media (max-width: 700px) {
+  .setting-row { flex-wrap: wrap; gap: 12px; }
+}

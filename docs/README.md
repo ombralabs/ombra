@@ -1,10 +1,11 @@
 # Documentation
 
-Start here if you are integrating Ombra from a script, adding a language SDK, or validating a build.
+Start here if you are integrating Ombra from a script, adding a language SDK, working with desktop profile data, or validating a build.
 
 | Document | Read it when |
 |---|---|
 | [Architecture](architecture.md) | You need to know which component owns what, or how a launch actually works |
+| [Desktop profiles](desktop/README.md) | You work with local profile data, encryption keys, or an existing desktop vault |
 | [SDK contract](sdk-contract.md) | You are implementing or reviewing an SDK |
 | [Stealth checkup](stealth-checkup.md) | You are validating an engine, SDK, or client configuration before release |
 | [Stealth checkup (RU)](stealth-checkup.ru.md) | Same, in Russian |

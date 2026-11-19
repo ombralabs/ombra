@@ -286,7 +286,9 @@ We do not publish stealth numbers without the conditions that produced them. The
 .
 ├── README.md                  # this file (English)
 ├── README.ru.md               # Russian translation
+├── desktop/                   # local profile catalog and desktop controls
 ├── docs/
+│   ├── desktop/               # profile manager documentation
 │   ├── architecture.md        # components, launch flow, boundaries
 │   ├── sdk-contract.md        # v0 launch contract and SDK behavior
 │   ├── stealth-checkup.md     # stealth validation method and runbook
@@ -305,7 +307,7 @@ We do not publish stealth numbers without the conditions that produced them. The
 └── .github/workflows/ci.yml
 ```
 
-The engine and the Ombra app live in separate repositories. This repository contains the SDK sources, the launch contract, the conformance cases, and the documentation that binds them together.
+The local profile catalog and reusable Desktop controls are maintained in this repository alongside the SDKs. The engine and the full Desktop 1.2.1 release have their own repositories. [Desktop source](desktop/README.md) · [Profile manager documentation](docs/desktop/README.md).
 
 ## The contract
 

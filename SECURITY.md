@@ -20,14 +20,14 @@ Do not include proxy credentials, real IP addresses, profile data, cookies, or l
 
 In scope:
 
-- the SDK sources in this repository;
+- the SDK sources and local desktop profile components in this repository;
 - the launch contract, schemas, and conformance cases;
 - documentation that could cause an insecure integration;
 - supply-chain issues in the build and release process.
 
 Out of scope:
 
-- the Ombra engine and app (separate repositories and disclosure processes);
+- the Ombra engine and the legacy desktop application in their respective repositories;
 - third-party sites, detectors, or anti-bot services;
 - detection bypass results, CAPTCHA outcomes, or "stealth failed" reports;
 - vulnerabilities that require the attacker to already control the local user account;
