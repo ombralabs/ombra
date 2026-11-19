@@ -1,0 +1,2444 @@
+{
+  "run_id": "2026-11-19T14-34-53Z-151.0.7922.108-7-headless",
+  "started_at": "2026-11-19T14:34:53.971Z",
+  "operator": "i.bokov",
+  "sdk": {
+    "name": "ombra-checks-probe",
+    "version": "1.0.0",
+    "contract": "0.1.0"
+  },
+  "engine": {
+    "name": "Ombra Chromium",
+    "version": "151.0.7922.108-7",
+    "sha256": "5706357f237344062127b10cfbadb6e3184c4d1d6cde857ea489591cff0edd28",
+    "hash_source": "archive.sha256",
+    "artifact": "151.0.7922.108-7",
+    "binary": "Chromium"
+  },
+  "environment": {
+    "os": "darwin 25.6.0 arm64",
+    "mode": "headless",
+    "transport": "file",
+    "proxy_country": "direct",
+    "seed_hash": "sha256:bf4d4b6c1f3d43ae7a98449d731a45a1d2426eebebcd9364db359151014281d4",
+    "notes": "sandbox=disabled; window=1440x900; probe=1.0.0; probes=hard-only; transport=file; no-sandbox is required on this host; do not treat this run as an L0-01 pass"
+  },
+  "targets": [
+    {
+      "id": "L1-01",
+      "status": "PASS",
+      "failures": [],
+      "duration_ms": 2642,
+      "artifacts": [
+        "benchmark/probe/index.html",
+        "benchmark/probe/fp-core.js"
+      ]
+    },
+    {
+      "id": "L5-01",
+      "status": "PASS",
+      "failures": [],
+      "duration_ms": 12694,
+      "artifacts": [
+        "benchmark/probe/fp-core.js"
+      ]
+    }
+  ],
+  "verdict": "PASS",
+  "checks": {
+    "probe_version": "1.0.0",
+    "result_file": "checks/results/2026-11-19T14-34-53Z-151.0.7922.108-7-headless.json",
+    "flags": [
+      "--disable-background-networking",
+      "--disable-breakpad",
+      "--disable-component-update",
+      "--disable-crash-reporter",
+      "--disable-gpu-sandbox",
+      "--disable-sync",
+      "--force-device-scale-factor=1",
+      "--headless=new",
+      "--metrics-recording-only",
+      "--mute-audio",
+      "--no-default-browser-check",
+      "--no-first-run",
+      "--no-sandbox",
+      "--remote-debugging-port=0",
+      "--window-size=1440,900",
+      "about:blank"
+    ],
+    "metrics": {
+      "runs": 5,
+      "probe_count": 55,
+      "hard_total": 55,
+      "hard_stable": 55,
+      "hard_pct": 100,
+      "noise_total": 0,
+      "hard_errors": 0,
+      "hard_hash": "a29179f464e0a64c"
+    },
+    "comparisons": [
+      {
+        "hardPct": 100,
+        "contextPct": 100,
+        "hardBad": [],
+        "hardMissing": [],
+        "contextBad": []
+      },
+      {
+        "hardPct": 100,
+        "contextPct": 100,
+        "hardBad": [],
+        "hardMissing": [],
+        "contextBad": []
+      },
+      {
+        "hardPct": 100,
+        "contextPct": 100,
+        "hardBad": [],
+        "hardMissing": [],
+        "contextBad": []
+      },
+      {
+        "hardPct": 100,
+        "contextPct": 100,
+        "hardBad": [],
+        "hardMissing": [],
+        "contextBad": []
+      }
+    ],
+    "runs": [
+      {
+        "schema": 1,
+        "version": "1.0.0",
+        "id": "20261119143458-cfllw7",
+        "createdAt": "2026-11-19T14:34:55.804Z",
+        "durationMs": 2642,
+        "label": "cold 1",
+        "profile": "benchmark-headless",
+        "note": "",
+        "probes": {
+          "nav.userAgent": {
+            "c": "hard",
+            "h": "51107bec0367312d",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.appVersion": {
+            "c": "hard",
+            "h": "9271eee0ef818a43",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.platform": {
+            "c": "hard",
+            "h": "e772a9ded8941208",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.vendor": {
+            "c": "hard",
+            "h": "a90ae816338561ee",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.productSub": {
+            "c": "hard",
+            "h": "b2e192af40736e50",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.languages": {
+            "c": "hard",
+            "h": "748ae6b25cd48b5e",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.cores": {
+            "c": "hard",
+            "h": "29fcbaef6ac770db",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.memory": {
+            "c": "hard",
+            "h": "ce8f7bc597492c24",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.touch": {
+            "c": "hard",
+            "h": "eb2b2475ab050fb7",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.pdf": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.webdriver": {
+            "c": "hard",
+            "h": "a2630f8a6393f0aa",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.cookieEnabled": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.privacy": {
+            "c": "hard",
+            "h": "c93e27e6694a7798",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.plugins": {
+            "c": "hard",
+            "h": "8ff89bd85707f723",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.uaData": {
+            "c": "hard",
+            "h": "1be5a308630f46ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "screen.geometry": {
+            "c": "hard",
+            "h": "4d4ebaa5a446381f",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "locale.timezone": {
+            "c": "hard",
+            "h": "a080ebe95b3bec1b",
+            "ok": true,
+            "err": null,
+            "ms": 8.4,
+            "n": false
+          },
+          "locale.intl": {
+            "c": "hard",
+            "h": "164a83ecade0f618",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "locale.date": {
+            "c": "hard",
+            "h": "ffd6738c1419a236",
+            "ok": true,
+            "err": null,
+            "ms": 0.7,
+            "n": false
+          },
+          "locale.number": {
+            "c": "hard",
+            "h": "d4e32d2649477221",
+            "ok": true,
+            "err": null,
+            "ms": 0.9,
+            "n": false
+          },
+          "locale.collator": {
+            "c": "hard",
+            "h": "0c3f8517c92a470b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "locale.plural": {
+            "c": "hard",
+            "h": "9bc4e1d482a5694b",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "canvas.2d": {
+            "c": "hard",
+            "h": "96d62a84036bc8af",
+            "ok": true,
+            "err": null,
+            "ms": 834.1,
+            "n": false
+          },
+          "canvas.metrics": {
+            "c": "hard",
+            "h": "19dd38c0278490cb",
+            "ok": true,
+            "err": null,
+            "ms": 3.7,
+            "n": false
+          },
+          "canvas.winding": {
+            "c": "hard",
+            "h": "4609da464d4eae1f",
+            "ok": true,
+            "err": null,
+            "ms": 301.9,
+            "n": false
+          },
+          "canvas.offscreen": {
+            "c": "hard",
+            "h": "f1774e768981454e",
+            "ok": true,
+            "err": null,
+            "ms": 318,
+            "n": false
+          },
+          "webgl1.info": {
+            "c": "hard",
+            "h": "35d24516d1b72a29",
+            "ok": true,
+            "err": null,
+            "ms": 10.4,
+            "n": false
+          },
+          "webgl1.params": {
+            "c": "hard",
+            "h": "83fe5b78af244084",
+            "ok": true,
+            "err": null,
+            "ms": 227.3,
+            "n": false
+          },
+          "webgl1.extensions": {
+            "c": "hard",
+            "h": "8c0b86d4e416ee84",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl1.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 32.2,
+            "n": false
+          },
+          "webgl2.info": {
+            "c": "hard",
+            "h": "04464a2fdc47ed64",
+            "ok": true,
+            "err": null,
+            "ms": 5.9,
+            "n": false
+          },
+          "webgl2.params": {
+            "c": "hard",
+            "h": "2f094f8ecf5ff2d2",
+            "ok": true,
+            "err": null,
+            "ms": 0.9,
+            "n": false
+          },
+          "webgl2.extensions": {
+            "c": "hard",
+            "h": "444e925bf8af8d28",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl2.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 24.3,
+            "n": false
+          },
+          "webgpu.adapter": {
+            "c": "hard",
+            "h": "349d77c044f31c66",
+            "ok": true,
+            "err": null,
+            "ms": 195.3,
+            "n": false
+          },
+          "audio.offline": {
+            "c": "hard",
+            "h": "3fc27d5f48a2e982",
+            "ok": true,
+            "err": null,
+            "ms": 2,
+            "n": false
+          },
+          "audio.worklet": {
+            "c": "hard",
+            "h": "adeca93c98a6401e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "fonts.available": {
+            "c": "hard",
+            "h": "2aa746c45f00270b",
+            "ok": true,
+            "err": null,
+            "ms": 56.2,
+            "n": false
+          },
+          "fonts.emoji": {
+            "c": "hard",
+            "h": "f87cd1d92f557526",
+            "ok": true,
+            "err": null,
+            "ms": 558.9,
+            "n": false
+          },
+          "js.math": {
+            "c": "hard",
+            "h": "f76c790a5de41cc4",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "js.number": {
+            "c": "hard",
+            "h": "2a53bc503430ab6d",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.error": {
+            "c": "hard",
+            "h": "61aa4a3b424a5ac4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.native": {
+            "c": "hard",
+            "h": "6b3a8c1891269e0a",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.proxy": {
+            "c": "hard",
+            "h": "2d360e3f5b36933f",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.wasm": {
+            "c": "hard",
+            "h": "5ab6b53aa570a9f0",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "css.supports": {
+            "c": "hard",
+            "h": "132523bc094ae754",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "css.api": {
+            "c": "hard",
+            "h": "9c036dccc97d4741",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "media.canPlay": {
+            "c": "hard",
+            "h": "268483337256e7a8",
+            "ok": true,
+            "err": null,
+            "ms": 0.5,
+            "n": false
+          },
+          "media.recorder": {
+            "c": "hard",
+            "h": "db6cb5261f2133f1",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "hw.apis": {
+            "c": "hard",
+            "h": "6f8ce894e3e5e20e",
+            "ok": true,
+            "err": null,
+            "ms": 1.3,
+            "n": false
+          },
+          "auto.chrome": {
+            "c": "hard",
+            "h": "e12fa1a6102b4b19",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "auto.cdp": {
+            "c": "hard",
+            "h": "d095202279b28c9e",
+            "ok": true,
+            "err": null,
+            "ms": 0.5,
+            "n": false
+          },
+          "auto.consistency": {
+            "c": "hard",
+            "h": "de494899a4940a45",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "auto.headless": {
+            "c": "hard",
+            "h": "dfc4dfd2d6090f9a",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "auto.permissions": {
+            "c": "hard",
+            "h": "4c3097841357f2ad",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          }
+        },
+        "noise": [],
+        "hardHash": "a29179f464e0a64c",
+        "sessionHash": "a29179f464e0a64c",
+        "hardStable": true,
+        "hardNoisy": [],
+        "hardErr": [],
+        "counts": {
+          "total": 55,
+          "hard": 55,
+          "context": 0,
+          "hardStable": 55,
+          "hardNoisy": 0,
+          "hardErr": 0
+        }
+      },
+      {
+        "schema": 1,
+        "version": "1.0.0",
+        "id": "20261119143514-8a59e4",
+        "createdAt": "2026-11-19T14:35:12.299Z",
+        "durationMs": 2567,
+        "label": "cold 2",
+        "profile": "benchmark-headless",
+        "note": "",
+        "probes": {
+          "nav.userAgent": {
+            "c": "hard",
+            "h": "51107bec0367312d",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.appVersion": {
+            "c": "hard",
+            "h": "9271eee0ef818a43",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.platform": {
+            "c": "hard",
+            "h": "e772a9ded8941208",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.vendor": {
+            "c": "hard",
+            "h": "a90ae816338561ee",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.productSub": {
+            "c": "hard",
+            "h": "b2e192af40736e50",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.languages": {
+            "c": "hard",
+            "h": "748ae6b25cd48b5e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.cores": {
+            "c": "hard",
+            "h": "29fcbaef6ac770db",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.memory": {
+            "c": "hard",
+            "h": "ce8f7bc597492c24",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.touch": {
+            "c": "hard",
+            "h": "eb2b2475ab050fb7",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.pdf": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "nav.webdriver": {
+            "c": "hard",
+            "h": "a2630f8a6393f0aa",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.cookieEnabled": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.privacy": {
+            "c": "hard",
+            "h": "c93e27e6694a7798",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.plugins": {
+            "c": "hard",
+            "h": "8ff89bd85707f723",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "nav.uaData": {
+            "c": "hard",
+            "h": "1be5a308630f46ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "screen.geometry": {
+            "c": "hard",
+            "h": "4d4ebaa5a446381f",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "locale.timezone": {
+            "c": "hard",
+            "h": "a080ebe95b3bec1b",
+            "ok": true,
+            "err": null,
+            "ms": 8.2,
+            "n": false
+          },
+          "locale.intl": {
+            "c": "hard",
+            "h": "164a83ecade0f618",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "locale.date": {
+            "c": "hard",
+            "h": "ffd6738c1419a236",
+            "ok": true,
+            "err": null,
+            "ms": 0.7,
+            "n": false
+          },
+          "locale.number": {
+            "c": "hard",
+            "h": "d4e32d2649477221",
+            "ok": true,
+            "err": null,
+            "ms": 0.8,
+            "n": false
+          },
+          "locale.collator": {
+            "c": "hard",
+            "h": "0c3f8517c92a470b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "locale.plural": {
+            "c": "hard",
+            "h": "9bc4e1d482a5694b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "canvas.2d": {
+            "c": "hard",
+            "h": "96d62a84036bc8af",
+            "ok": true,
+            "err": null,
+            "ms": 823.3,
+            "n": false
+          },
+          "canvas.metrics": {
+            "c": "hard",
+            "h": "19dd38c0278490cb",
+            "ok": true,
+            "err": null,
+            "ms": 6.3,
+            "n": false
+          },
+          "canvas.winding": {
+            "c": "hard",
+            "h": "4609da464d4eae1f",
+            "ok": true,
+            "err": null,
+            "ms": 275.2,
+            "n": false
+          },
+          "canvas.offscreen": {
+            "c": "hard",
+            "h": "f1774e768981454e",
+            "ok": true,
+            "err": null,
+            "ms": 325.7,
+            "n": false
+          },
+          "webgl1.info": {
+            "c": "hard",
+            "h": "35d24516d1b72a29",
+            "ok": true,
+            "err": null,
+            "ms": 13.9,
+            "n": false
+          },
+          "webgl1.params": {
+            "c": "hard",
+            "h": "83fe5b78af244084",
+            "ok": true,
+            "err": null,
+            "ms": 205.5,
+            "n": false
+          },
+          "webgl1.extensions": {
+            "c": "hard",
+            "h": "8c0b86d4e416ee84",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl1.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 33.2,
+            "n": false
+          },
+          "webgl2.info": {
+            "c": "hard",
+            "h": "04464a2fdc47ed64",
+            "ok": true,
+            "err": null,
+            "ms": 4.4,
+            "n": false
+          },
+          "webgl2.params": {
+            "c": "hard",
+            "h": "2f094f8ecf5ff2d2",
+            "ok": true,
+            "err": null,
+            "ms": 0.4,
+            "n": false
+          },
+          "webgl2.extensions": {
+            "c": "hard",
+            "h": "444e925bf8af8d28",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "webgl2.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 30.6,
+            "n": false
+          },
+          "webgpu.adapter": {
+            "c": "hard",
+            "h": "349d77c044f31c66",
+            "ok": true,
+            "err": null,
+            "ms": 6.2,
+            "n": false
+          },
+          "audio.offline": {
+            "c": "hard",
+            "h": "3fc27d5f48a2e982",
+            "ok": true,
+            "err": null,
+            "ms": 191,
+            "n": false
+          },
+          "audio.worklet": {
+            "c": "hard",
+            "h": "adeca93c98a6401e",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "fonts.available": {
+            "c": "hard",
+            "h": "2aa746c45f00270b",
+            "ok": true,
+            "err": null,
+            "ms": 63.6,
+            "n": false
+          },
+          "fonts.emoji": {
+            "c": "hard",
+            "h": "f87cd1d92f557526",
+            "ok": true,
+            "err": null,
+            "ms": 517.4,
+            "n": false
+          },
+          "js.math": {
+            "c": "hard",
+            "h": "f76c790a5de41cc4",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "js.number": {
+            "c": "hard",
+            "h": "2a53bc503430ab6d",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.error": {
+            "c": "hard",
+            "h": "61aa4a3b424a5ac4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.native": {
+            "c": "hard",
+            "h": "6b3a8c1891269e0a",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.proxy": {
+            "c": "hard",
+            "h": "2d360e3f5b36933f",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.wasm": {
+            "c": "hard",
+            "h": "5ab6b53aa570a9f0",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "css.supports": {
+            "c": "hard",
+            "h": "132523bc094ae754",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "css.api": {
+            "c": "hard",
+            "h": "9c036dccc97d4741",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "media.canPlay": {
+            "c": "hard",
+            "h": "268483337256e7a8",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "media.recorder": {
+            "c": "hard",
+            "h": "db6cb5261f2133f1",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "hw.apis": {
+            "c": "hard",
+            "h": "6f8ce894e3e5e20e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "auto.chrome": {
+            "c": "hard",
+            "h": "e12fa1a6102b4b19",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "auto.cdp": {
+            "c": "hard",
+            "h": "d095202279b28c9e",
+            "ok": true,
+            "err": null,
+            "ms": 0.6,
+            "n": false
+          },
+          "auto.consistency": {
+            "c": "hard",
+            "h": "de494899a4940a45",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "auto.headless": {
+            "c": "hard",
+            "h": "dfc4dfd2d6090f9a",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "auto.permissions": {
+            "c": "hard",
+            "h": "4c3097841357f2ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          }
+        },
+        "noise": [],
+        "hardHash": "a29179f464e0a64c",
+        "sessionHash": "a29179f464e0a64c",
+        "hardStable": true,
+        "hardNoisy": [],
+        "hardErr": [],
+        "counts": {
+          "total": 55,
+          "hard": 55,
+          "context": 0,
+          "hardStable": 55,
+          "hardNoisy": 0,
+          "hardErr": 0
+        }
+      },
+      {
+        "schema": 1,
+        "version": "1.0.0",
+        "id": "20261119143531-prxa6u",
+        "createdAt": "2026-11-19T14:35:28.820Z",
+        "durationMs": 2532,
+        "label": "cold 3",
+        "profile": "benchmark-headless",
+        "note": "",
+        "probes": {
+          "nav.userAgent": {
+            "c": "hard",
+            "h": "51107bec0367312d",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.appVersion": {
+            "c": "hard",
+            "h": "9271eee0ef818a43",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.platform": {
+            "c": "hard",
+            "h": "e772a9ded8941208",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.vendor": {
+            "c": "hard",
+            "h": "a90ae816338561ee",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.productSub": {
+            "c": "hard",
+            "h": "b2e192af40736e50",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.languages": {
+            "c": "hard",
+            "h": "748ae6b25cd48b5e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.cores": {
+            "c": "hard",
+            "h": "29fcbaef6ac770db",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.memory": {
+            "c": "hard",
+            "h": "ce8f7bc597492c24",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.touch": {
+            "c": "hard",
+            "h": "eb2b2475ab050fb7",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.pdf": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.webdriver": {
+            "c": "hard",
+            "h": "a2630f8a6393f0aa",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.cookieEnabled": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.privacy": {
+            "c": "hard",
+            "h": "c93e27e6694a7798",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.plugins": {
+            "c": "hard",
+            "h": "8ff89bd85707f723",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.uaData": {
+            "c": "hard",
+            "h": "1be5a308630f46ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "screen.geometry": {
+            "c": "hard",
+            "h": "4d4ebaa5a446381f",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "locale.timezone": {
+            "c": "hard",
+            "h": "a080ebe95b3bec1b",
+            "ok": true,
+            "err": null,
+            "ms": 8.3,
+            "n": false
+          },
+          "locale.intl": {
+            "c": "hard",
+            "h": "164a83ecade0f618",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "locale.date": {
+            "c": "hard",
+            "h": "ffd6738c1419a236",
+            "ok": true,
+            "err": null,
+            "ms": 0.7,
+            "n": false
+          },
+          "locale.number": {
+            "c": "hard",
+            "h": "d4e32d2649477221",
+            "ok": true,
+            "err": null,
+            "ms": 0.9,
+            "n": false
+          },
+          "locale.collator": {
+            "c": "hard",
+            "h": "0c3f8517c92a470b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "locale.plural": {
+            "c": "hard",
+            "h": "9bc4e1d482a5694b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "canvas.2d": {
+            "c": "hard",
+            "h": "96d62a84036bc8af",
+            "ok": true,
+            "err": null,
+            "ms": 644.2,
+            "n": false
+          },
+          "canvas.metrics": {
+            "c": "hard",
+            "h": "19dd38c0278490cb",
+            "ok": true,
+            "err": null,
+            "ms": 2.7,
+            "n": false
+          },
+          "canvas.winding": {
+            "c": "hard",
+            "h": "4609da464d4eae1f",
+            "ok": true,
+            "err": null,
+            "ms": 447.8,
+            "n": false
+          },
+          "canvas.offscreen": {
+            "c": "hard",
+            "h": "f1774e768981454e",
+            "ok": true,
+            "err": null,
+            "ms": 316.9,
+            "n": false
+          },
+          "webgl1.info": {
+            "c": "hard",
+            "h": "35d24516d1b72a29",
+            "ok": true,
+            "err": null,
+            "ms": 212.7,
+            "n": false
+          },
+          "webgl1.params": {
+            "c": "hard",
+            "h": "83fe5b78af244084",
+            "ok": true,
+            "err": null,
+            "ms": 0.8,
+            "n": false
+          },
+          "webgl1.extensions": {
+            "c": "hard",
+            "h": "8c0b86d4e416ee84",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl1.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 30.6,
+            "n": false
+          },
+          "webgl2.info": {
+            "c": "hard",
+            "h": "04464a2fdc47ed64",
+            "ok": true,
+            "err": null,
+            "ms": 4.6,
+            "n": false
+          },
+          "webgl2.params": {
+            "c": "hard",
+            "h": "2f094f8ecf5ff2d2",
+            "ok": true,
+            "err": null,
+            "ms": 0.6,
+            "n": false
+          },
+          "webgl2.extensions": {
+            "c": "hard",
+            "h": "444e925bf8af8d28",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl2.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 28.3,
+            "n": false
+          },
+          "webgpu.adapter": {
+            "c": "hard",
+            "h": "349d77c044f31c66",
+            "ok": true,
+            "err": null,
+            "ms": 5.8,
+            "n": false
+          },
+          "audio.offline": {
+            "c": "hard",
+            "h": "3fc27d5f48a2e982",
+            "ok": true,
+            "err": null,
+            "ms": 186.7,
+            "n": false
+          },
+          "audio.worklet": {
+            "c": "hard",
+            "h": "adeca93c98a6401e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "fonts.available": {
+            "c": "hard",
+            "h": "2aa746c45f00270b",
+            "ok": true,
+            "err": null,
+            "ms": 51.6,
+            "n": false
+          },
+          "fonts.emoji": {
+            "c": "hard",
+            "h": "f87cd1d92f557526",
+            "ok": true,
+            "err": null,
+            "ms": 526.2,
+            "n": false
+          },
+          "js.math": {
+            "c": "hard",
+            "h": "f76c790a5de41cc4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.number": {
+            "c": "hard",
+            "h": "2a53bc503430ab6d",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.error": {
+            "c": "hard",
+            "h": "61aa4a3b424a5ac4",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.native": {
+            "c": "hard",
+            "h": "6b3a8c1891269e0a",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.proxy": {
+            "c": "hard",
+            "h": "2d360e3f5b36933f",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.wasm": {
+            "c": "hard",
+            "h": "5ab6b53aa570a9f0",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "css.supports": {
+            "c": "hard",
+            "h": "132523bc094ae754",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "css.api": {
+            "c": "hard",
+            "h": "9c036dccc97d4741",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "media.canPlay": {
+            "c": "hard",
+            "h": "268483337256e7a8",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "media.recorder": {
+            "c": "hard",
+            "h": "db6cb5261f2133f1",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "hw.apis": {
+            "c": "hard",
+            "h": "6f8ce894e3e5e20e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "auto.chrome": {
+            "c": "hard",
+            "h": "e12fa1a6102b4b19",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "auto.cdp": {
+            "c": "hard",
+            "h": "d095202279b28c9e",
+            "ok": true,
+            "err": null,
+            "ms": 0.5,
+            "n": false
+          },
+          "auto.consistency": {
+            "c": "hard",
+            "h": "de494899a4940a45",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "auto.headless": {
+            "c": "hard",
+            "h": "dfc4dfd2d6090f9a",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "auto.permissions": {
+            "c": "hard",
+            "h": "4c3097841357f2ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          }
+        },
+        "noise": [],
+        "hardHash": "a29179f464e0a64c",
+        "sessionHash": "a29179f464e0a64c",
+        "hardStable": true,
+        "hardNoisy": [],
+        "hardErr": [],
+        "counts": {
+          "total": 55,
+          "hard": 55,
+          "context": 0,
+          "hardStable": 55,
+          "hardNoisy": 0,
+          "hardErr": 0
+        }
+      },
+      {
+        "schema": 1,
+        "version": "1.0.0",
+        "id": "20261119143547-1i3iyk",
+        "createdAt": "2026-11-19T14:35:45.127Z",
+        "durationMs": 2517,
+        "label": "cold 4",
+        "profile": "benchmark-headless",
+        "note": "",
+        "probes": {
+          "nav.userAgent": {
+            "c": "hard",
+            "h": "51107bec0367312d",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.appVersion": {
+            "c": "hard",
+            "h": "9271eee0ef818a43",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.platform": {
+            "c": "hard",
+            "h": "e772a9ded8941208",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.vendor": {
+            "c": "hard",
+            "h": "a90ae816338561ee",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.productSub": {
+            "c": "hard",
+            "h": "b2e192af40736e50",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.languages": {
+            "c": "hard",
+            "h": "748ae6b25cd48b5e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.cores": {
+            "c": "hard",
+            "h": "29fcbaef6ac770db",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.memory": {
+            "c": "hard",
+            "h": "ce8f7bc597492c24",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.touch": {
+            "c": "hard",
+            "h": "eb2b2475ab050fb7",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.pdf": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.webdriver": {
+            "c": "hard",
+            "h": "a2630f8a6393f0aa",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.cookieEnabled": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.privacy": {
+            "c": "hard",
+            "h": "c93e27e6694a7798",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.plugins": {
+            "c": "hard",
+            "h": "8ff89bd85707f723",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.uaData": {
+            "c": "hard",
+            "h": "1be5a308630f46ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "screen.geometry": {
+            "c": "hard",
+            "h": "4d4ebaa5a446381f",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "locale.timezone": {
+            "c": "hard",
+            "h": "a080ebe95b3bec1b",
+            "ok": true,
+            "err": null,
+            "ms": 8.4,
+            "n": false
+          },
+          "locale.intl": {
+            "c": "hard",
+            "h": "164a83ecade0f618",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "locale.date": {
+            "c": "hard",
+            "h": "ffd6738c1419a236",
+            "ok": true,
+            "err": null,
+            "ms": 0.8,
+            "n": false
+          },
+          "locale.number": {
+            "c": "hard",
+            "h": "d4e32d2649477221",
+            "ok": true,
+            "err": null,
+            "ms": 0.8,
+            "n": false
+          },
+          "locale.collator": {
+            "c": "hard",
+            "h": "0c3f8517c92a470b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "locale.plural": {
+            "c": "hard",
+            "h": "9bc4e1d482a5694b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "canvas.2d": {
+            "c": "hard",
+            "h": "96d62a84036bc8af",
+            "ok": true,
+            "err": null,
+            "ms": 591.4,
+            "n": false
+          },
+          "canvas.metrics": {
+            "c": "hard",
+            "h": "19dd38c0278490cb",
+            "ok": true,
+            "err": null,
+            "ms": 3,
+            "n": false
+          },
+          "canvas.winding": {
+            "c": "hard",
+            "h": "4609da464d4eae1f",
+            "ok": true,
+            "err": null,
+            "ms": 450.4,
+            "n": false
+          },
+          "canvas.offscreen": {
+            "c": "hard",
+            "h": "f1774e768981454e",
+            "ok": true,
+            "err": null,
+            "ms": 343.6,
+            "n": false
+          },
+          "webgl1.info": {
+            "c": "hard",
+            "h": "35d24516d1b72a29",
+            "ok": true,
+            "err": null,
+            "ms": 211.6,
+            "n": false
+          },
+          "webgl1.params": {
+            "c": "hard",
+            "h": "83fe5b78af244084",
+            "ok": true,
+            "err": null,
+            "ms": 0.6,
+            "n": false
+          },
+          "webgl1.extensions": {
+            "c": "hard",
+            "h": "8c0b86d4e416ee84",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl1.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 44.6,
+            "n": false
+          },
+          "webgl2.info": {
+            "c": "hard",
+            "h": "04464a2fdc47ed64",
+            "ok": true,
+            "err": null,
+            "ms": 5.8,
+            "n": false
+          },
+          "webgl2.params": {
+            "c": "hard",
+            "h": "2f094f8ecf5ff2d2",
+            "ok": true,
+            "err": null,
+            "ms": 0.5,
+            "n": false
+          },
+          "webgl2.extensions": {
+            "c": "hard",
+            "h": "444e925bf8af8d28",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl2.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 26.8,
+            "n": false
+          },
+          "webgpu.adapter": {
+            "c": "hard",
+            "h": "349d77c044f31c66",
+            "ok": true,
+            "err": null,
+            "ms": 5.8,
+            "n": false
+          },
+          "audio.offline": {
+            "c": "hard",
+            "h": "3fc27d5f48a2e982",
+            "ok": true,
+            "err": null,
+            "ms": 185.4,
+            "n": false
+          },
+          "audio.worklet": {
+            "c": "hard",
+            "h": "adeca93c98a6401e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "fonts.available": {
+            "c": "hard",
+            "h": "2aa746c45f00270b",
+            "ok": true,
+            "err": null,
+            "ms": 53.6,
+            "n": false
+          },
+          "fonts.emoji": {
+            "c": "hard",
+            "h": "f87cd1d92f557526",
+            "ok": true,
+            "err": null,
+            "ms": 525.1,
+            "n": false
+          },
+          "js.math": {
+            "c": "hard",
+            "h": "f76c790a5de41cc4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.number": {
+            "c": "hard",
+            "h": "2a53bc503430ab6d",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.error": {
+            "c": "hard",
+            "h": "61aa4a3b424a5ac4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.native": {
+            "c": "hard",
+            "h": "6b3a8c1891269e0a",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.proxy": {
+            "c": "hard",
+            "h": "2d360e3f5b36933f",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.wasm": {
+            "c": "hard",
+            "h": "5ab6b53aa570a9f0",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "css.supports": {
+            "c": "hard",
+            "h": "132523bc094ae754",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "css.api": {
+            "c": "hard",
+            "h": "9c036dccc97d4741",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "media.canPlay": {
+            "c": "hard",
+            "h": "268483337256e7a8",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "media.recorder": {
+            "c": "hard",
+            "h": "db6cb5261f2133f1",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "hw.apis": {
+            "c": "hard",
+            "h": "6f8ce894e3e5e20e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "auto.chrome": {
+            "c": "hard",
+            "h": "e12fa1a6102b4b19",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "auto.cdp": {
+            "c": "hard",
+            "h": "d095202279b28c9e",
+            "ok": true,
+            "err": null,
+            "ms": 0.6,
+            "n": false
+          },
+          "auto.consistency": {
+            "c": "hard",
+            "h": "de494899a4940a45",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "auto.headless": {
+            "c": "hard",
+            "h": "dfc4dfd2d6090f9a",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "auto.permissions": {
+            "c": "hard",
+            "h": "4c3097841357f2ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          }
+        },
+        "noise": [],
+        "hardHash": "a29179f464e0a64c",
+        "sessionHash": "a29179f464e0a64c",
+        "hardStable": true,
+        "hardNoisy": [],
+        "hardErr": [],
+        "counts": {
+          "total": 55,
+          "hard": 55,
+          "context": 0,
+          "hardStable": 55,
+          "hardNoisy": 0,
+          "hardErr": 0
+        }
+      },
+      {
+        "schema": 1,
+        "version": "1.0.0",
+        "id": "20261119143603-vco9lk",
+        "createdAt": "2026-11-19T14:36:01.515Z",
+        "durationMs": 2436,
+        "label": "cold 5",
+        "profile": "benchmark-headless",
+        "note": "",
+        "probes": {
+          "nav.userAgent": {
+            "c": "hard",
+            "h": "51107bec0367312d",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "nav.appVersion": {
+            "c": "hard",
+            "h": "9271eee0ef818a43",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.platform": {
+            "c": "hard",
+            "h": "e772a9ded8941208",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.vendor": {
+            "c": "hard",
+            "h": "a90ae816338561ee",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.productSub": {
+            "c": "hard",
+            "h": "b2e192af40736e50",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.languages": {
+            "c": "hard",
+            "h": "748ae6b25cd48b5e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.cores": {
+            "c": "hard",
+            "h": "29fcbaef6ac770db",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.memory": {
+            "c": "hard",
+            "h": "ce8f7bc597492c24",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.touch": {
+            "c": "hard",
+            "h": "eb2b2475ab050fb7",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.pdf": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "nav.webdriver": {
+            "c": "hard",
+            "h": "a2630f8a6393f0aa",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.cookieEnabled": {
+            "c": "hard",
+            "h": "08956a4c870bf5f4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "nav.privacy": {
+            "c": "hard",
+            "h": "c93e27e6694a7798",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "nav.plugins": {
+            "c": "hard",
+            "h": "8ff89bd85707f723",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "nav.uaData": {
+            "c": "hard",
+            "h": "1be5a308630f46ad",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "screen.geometry": {
+            "c": "hard",
+            "h": "4d4ebaa5a446381f",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "locale.timezone": {
+            "c": "hard",
+            "h": "a080ebe95b3bec1b",
+            "ok": true,
+            "err": null,
+            "ms": 8.8,
+            "n": false
+          },
+          "locale.intl": {
+            "c": "hard",
+            "h": "164a83ecade0f618",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "locale.date": {
+            "c": "hard",
+            "h": "ffd6738c1419a236",
+            "ok": true,
+            "err": null,
+            "ms": 0.8,
+            "n": false
+          },
+          "locale.number": {
+            "c": "hard",
+            "h": "d4e32d2649477221",
+            "ok": true,
+            "err": null,
+            "ms": 1,
+            "n": false
+          },
+          "locale.collator": {
+            "c": "hard",
+            "h": "0c3f8517c92a470b",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "locale.plural": {
+            "c": "hard",
+            "h": "9bc4e1d482a5694b",
+            "ok": true,
+            "err": null,
+            "ms": 0.3,
+            "n": false
+          },
+          "canvas.2d": {
+            "c": "hard",
+            "h": "96d62a84036bc8af",
+            "ok": true,
+            "err": null,
+            "ms": 730.7,
+            "n": false
+          },
+          "canvas.metrics": {
+            "c": "hard",
+            "h": "19dd38c0278490cb",
+            "ok": true,
+            "err": null,
+            "ms": 2.8,
+            "n": false
+          },
+          "canvas.winding": {
+            "c": "hard",
+            "h": "4609da464d4eae1f",
+            "ok": true,
+            "err": null,
+            "ms": 276.1,
+            "n": false
+          },
+          "canvas.offscreen": {
+            "c": "hard",
+            "h": "f1774e768981454e",
+            "ok": true,
+            "err": null,
+            "ms": 316.3,
+            "n": false
+          },
+          "webgl1.info": {
+            "c": "hard",
+            "h": "35d24516d1b72a29",
+            "ok": true,
+            "err": null,
+            "ms": 219.2,
+            "n": false
+          },
+          "webgl1.params": {
+            "c": "hard",
+            "h": "83fe5b78af244084",
+            "ok": true,
+            "err": null,
+            "ms": 0.7,
+            "n": false
+          },
+          "webgl1.extensions": {
+            "c": "hard",
+            "h": "8c0b86d4e416ee84",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "webgl1.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 25.8,
+            "n": false
+          },
+          "webgl2.info": {
+            "c": "hard",
+            "h": "04464a2fdc47ed64",
+            "ok": true,
+            "err": null,
+            "ms": 4.8,
+            "n": false
+          },
+          "webgl2.params": {
+            "c": "hard",
+            "h": "2f094f8ecf5ff2d2",
+            "ok": true,
+            "err": null,
+            "ms": 0.5,
+            "n": false
+          },
+          "webgl2.extensions": {
+            "c": "hard",
+            "h": "444e925bf8af8d28",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "webgl2.render": {
+            "c": "hard",
+            "h": "07da620567e989d8",
+            "ok": true,
+            "err": null,
+            "ms": 23.2,
+            "n": false
+          },
+          "webgpu.adapter": {
+            "c": "hard",
+            "h": "349d77c044f31c66",
+            "ok": true,
+            "err": null,
+            "ms": 6.9,
+            "n": false
+          },
+          "audio.offline": {
+            "c": "hard",
+            "h": "3fc27d5f48a2e982",
+            "ok": true,
+            "err": null,
+            "ms": 185.7,
+            "n": false
+          },
+          "audio.worklet": {
+            "c": "hard",
+            "h": "adeca93c98a6401e",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "fonts.available": {
+            "c": "hard",
+            "h": "2aa746c45f00270b",
+            "ok": true,
+            "err": null,
+            "ms": 50.5,
+            "n": false
+          },
+          "fonts.emoji": {
+            "c": "hard",
+            "h": "f87cd1d92f557526",
+            "ok": true,
+            "err": null,
+            "ms": 522.4,
+            "n": false
+          },
+          "js.math": {
+            "c": "hard",
+            "h": "f76c790a5de41cc4",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.number": {
+            "c": "hard",
+            "h": "2a53bc503430ab6d",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.error": {
+            "c": "hard",
+            "h": "61aa4a3b424a5ac4",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "js.native": {
+            "c": "hard",
+            "h": "6b3a8c1891269e0a",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "js.proxy": {
+            "c": "hard",
+            "h": "2d360e3f5b36933f",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "js.wasm": {
+            "c": "hard",
+            "h": "5ab6b53aa570a9f0",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "css.supports": {
+            "c": "hard",
+            "h": "132523bc094ae754",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "css.api": {
+            "c": "hard",
+            "h": "9c036dccc97d4741",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "media.canPlay": {
+            "c": "hard",
+            "h": "268483337256e7a8",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "media.recorder": {
+            "c": "hard",
+            "h": "db6cb5261f2133f1",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "hw.apis": {
+            "c": "hard",
+            "h": "6f8ce894e3e5e20e",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "auto.chrome": {
+            "c": "hard",
+            "h": "e12fa1a6102b4b19",
+            "ok": true,
+            "err": null,
+            "ms": 0.1,
+            "n": false
+          },
+          "auto.cdp": {
+            "c": "hard",
+            "h": "d095202279b28c9e",
+            "ok": true,
+            "err": null,
+            "ms": 0.6,
+            "n": false
+          },
+          "auto.consistency": {
+            "c": "hard",
+            "h": "de494899a4940a45",
+            "ok": true,
+            "err": null,
+            "ms": 0.2,
+            "n": false
+          },
+          "auto.headless": {
+            "c": "hard",
+            "h": "dfc4dfd2d6090f9a",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          },
+          "auto.permissions": {
+            "c": "hard",
+            "h": "4c3097841357f2ad",
+            "ok": true,
+            "err": null,
+            "ms": 0,
+            "n": false
+          }
+        },
+        "noise": [],
+        "hardHash": "a29179f464e0a64c",
+        "sessionHash": "a29179f464e0a64c",
+        "hardStable": true,
+        "hardNoisy": [],
+        "hardErr": [],
+        "counts": {
+          "total": 55,
+          "hard": 55,
+          "context": 0,
+          "hardStable": 55,
+          "hardNoisy": 0,
+          "hardErr": 0
+        }
+      }
+    ],
+    "baseline": null,
+    "regressions": []
+  }
+}
