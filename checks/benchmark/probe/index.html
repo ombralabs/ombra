@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Ombra Local Probe — fingerprint stability</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Ombra Local Probe</h1>
+      <p class="sub">
+        Локальный чекер стабильности отпечатка Ombra Chromium. Считает сигналы на этой странице,
+        сравнивает слепки и показывает, что именно изменилось. Без сети, без внешних скриптов,
+        без телеметрии и без LLM.
+      </p>
+    </div>
+    <div class="badges" aria-label="Гарантии">
+      <span class="badge ok">OFFLINE</span>
+      <span class="badge">CSP connect-src 'none'</span>
+      <span class="badge" id="versionBadge">v1.0.0</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel controls" aria-labelledby="controlsTitle">
+      <div>
+        <h2 id="controlsTitle">Снять слепок</h2>
+        <p class="hint">Один слепок — это один запуск набора проб. Двойной прогон дополнительно ловит шум: пробы, которые меняются между двумя запусками подряд.</p>
+      </div>
+
+      <div class="control-grid">
+        <div class="field">
+          <label for="profileInput">Профиль</label>
+          <input id="profileInput" type="text" value="default" autocomplete="off" spellcheck="false" placeholder="например, chrome-work">
+        </div>
+        <div class="field">
+          <label for="labelInput">Метка слепка</label>
+          <input id="labelInput" type="text" autocomplete="off" spellcheck="false" placeholder="например, cold start #1">
+        </div>
+        <label class="check">
+          <input id="doubleRun" type="checkbox" checked>
+          Двойной прогон (детект шума)
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="takeBtn" class="primary" type="button">Снять слепок</button>
+        <button id="exportBtn" type="button">Экспорт JSON</button>
+        <button id="importBtn" type="button">Импорт</button>
+        <button id="copyBtn" type="button">Копировать отчёт</button>
+        <button id="clearBtn" class="danger" type="button">Очистить всё</button>
+      </div>
+
+      <div class="baseline-row">
+        <label for="baselineSelect">База для сравнения</label>
+        <select id="baselineSelect" aria-label="Базовый слепок"></select>
+        <label class="check">
+          <input id="strictMode" type="checkbox">
+          Строгий режим: изменения context — тоже ошибка
+        </label>
+      </div>
+
+      <div id="progress" class="progress" hidden>
+        <div class="bar"><span id="progressBar"></span></div>
+        <p id="progressText">Подготовка…</p>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Сводка">
+      <div class="stat">
+        <div class="label">Hard stability</div>
+        <div class="value" id="statHardPct">—</div>
+        <div class="meta" id="statHardMeta">нет данных</div>
+      </div>
+      <div class="stat">
+        <div class="label">Context stability</div>
+        <div class="value" id="statContextPct">—</div>
+        <div class="meta" id="statContextMeta">нет данных</div>
+      </div>
+      <div class="stat">
+        <div class="label">Шум / ошибки</div>
+        <div class="value" id="statNoise">—</div>
+        <div class="meta" id="statNoiseMeta">двойной прогон</div>
+      </div>
+      <div class="stat">
+        <div class="label">Слепок</div>
+        <div class="value" id="statProbes">—</div>
+        <div class="meta"><code id="statHash">—</code></div>
+      </div>
+    </section>
+
+    <section class="panel verdict" id="verdictPanel" aria-live="polite">
+      <div class="verdict-badge" id="verdictBadge">WAIT</div>
+      <div>
+        <h2 id="verdictTitle">Снимите первый слепок</h2>
+        <p id="verdictText">После первого слепка он станет базой. Второй и последующие слепки будут сравниваться с базой по каждой пробе.</p>
+        <p class="mini" id="verdictMini"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="diffPanel" aria-labelledby="diffTitle">
+      <h2 id="diffTitle">Изменения относительно базы</h2>
+      <p class="hint" id="diffHint">Здесь появятся только реальные расхождения: hard — красным, context — жёлтым, шум — оранжевым.</p>
+      <div class="list" id="diffList"></div>
+    </section>
+
+    <section class="panel" id="probesPanel" aria-labelledby="probesTitle">
+      <h2 id="probesTitle">Все пробы</h2>
+      <p class="hint">Нажмите на строку, чтобы увидеть сырое значение и хеш. <code>hard</code> — обязано совпадать, <code>context</code> — зависит от окна/дисплея/сети, <code>volatile</code> — меняется всегда и в оценку не входит.</p>
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Фильтр проб">
+          <button type="button" data-filter="all" class="active">Все</button>
+          <button type="button" data-filter="hard">Hard</button>
+          <button type="button" data-filter="changes">Изменения</button>
+          <button type="button" data-filter="noisy">Шум</button>
+        </div>
+        <input id="probeSearch" type="search" placeholder="Фильтр по id или названию…" autocomplete="off">
+        <span class="count" id="probeCount">0 / 0</span>
+      </div>
+      <div id="probeList"></div>
+    </section>
+
+    <section class="panel" id="historyPanel" aria-labelledby="historyTitle">
+      <h2 id="historyTitle">История слепков</h2>
+      <p class="hint">История хранится только в <code>localStorage</code> этого браузера. Экспорт содержит сырые значения — не публикуйте его без необходимости.</p>
+      <div class="history-list" id="historyList"></div>
+    </section>
+
+    <details class="panel" id="protocolPanel">
+      <summary>
+        <h2>Протокол проверки и как читать результат</h2>
+        <span class="chev">развернуть</span>
+      </summary>
+      <div class="doc">
+        <h3>1. Что считается стабильностью</h3>
+        <ul>
+          <li><strong>Hard</strong> — canvas, WebGL/WebGPU, audio, шрифты, Math/JS, UA-CH, timezone, screen, plugins, automation-маркеры. Для одного профиля на одной машине обязаны совпадать бит-в-бит после полного перезапуска браузера.</li>
+          <li><strong>Context</strong> — inner/outer size, DPR, visualViewport, ориентация, media queries, media devices, permissions, WebRTC. Могут меняться от окна, зума, монитора, разрешений и сети. Это не провал, если изменение объяснимо.</li>
+          <li><strong>Volatile</strong> — батарея, connection, memory usage. Меняются всегда; в оценку не входят.</li>
+        </ul>
+        <p><strong>Hard stability = 100%</strong> и <strong>0 шумных hard-проб</strong> — единственный критерий «стабильно». Всё остальное — разбор причин.</p>
+
+        <h3>2. Минимальный протокол (5 холодных стартов)</h3>
+        <ol>
+          <li>Закройте браузер полностью (не просто вкладку). Убедитесь, что процессов браузера не осталось.</li>
+          <li>Запустите браузер с тем же профилем, окном, зумом 100% и теми же флагами. Откройте чекер.</li>
+          <li>Снимите слепок с меткой <code>cold 1</code>. Первый станет базой.</li>
+          <li>Повторите полный выход/запуск ещё 4 раза, метки <code>cold 2…5</code>.</li>
+          <li>Ожидаемо: hard 100%, 0 шума. Если hard-проба изменилась — это реальная нестабильность, а не «шум сети».</li>
+          <li>Дополнительно: 3 замера с интервалом 1 час и 24 часа; 3 замера через разные proxy/VPN; 2 замера после изменения размера окна/зума.</li>
+        </ol>
+
+        <h3>3. Как читать вердикт</h3>
+        <ul>
+          <li><strong>STABLE</strong> — все hard-пробы совпали, шума нет. Context-изменений нет.</li>
+          <li><strong>STABLE / CONTEXT CHANGED</strong> — hard совпал, изменились только окно/дисплей/сеть. Проверьте, что это объяснимо.</li>
+          <li><strong>REVIEW</strong> — строгий режим и context-изменения. Разберите, что именно изменилось.</li>
+          <li><strong>UNSTABLE</strong> — хотя бы одна hard-проба изменилась или шумит. Это провал: сайт увидит другой отпечаток.</li>
+          <li><strong>INCOMPLETE</strong> — в базе или текущем слепке не хватает проб (например, после обновления чекера). Нужен новый baseline.</li>
+        </ul>
+
+        <h3>4. Что чекер не проверяет</h3>
+        <ul>
+          <li>TLS/JA3/JA4, HTTP/2, TCP/IP, порядок заголовков, IP/ASN/geo, DNS — это серверный слой. Для него используйте ссылки из README и сравнивайте ответы внешних страниц между запусками.</li>
+          <li>Поведение (мышь, клавиатура, тайминги) и репутацию IP. Это не свойства JS-отпечатка.</li>
+          <li>Уникальность относительно популяции. Чекер показывает стабильность, а не «редкость»; для этого нужны AmIUnique / Cover Your Tracks / FingerprintJS.</li>
+        </ul>
+
+        <h3>5. Почему это независимо от LLM</h3>
+        <p>Страница не делает сетевых запросов: CSP <code>connect-src 'none'</code>, нет <code>fetch/XHR/WebSocket</code>, нет внешних скриптов и картинок. Все вычисления — детерминированные JS-пробы и хеши; сравнение — арифметика, без модели. Проверить можно в DevTools → Network: после загрузки страницы запросов быть не должно.</p>
+      </div>
+    </details>
+  </main>
+
+  <footer>
+    <span>Ombra checks · local probe · данные не покидают браузер</span>
+    <span>Перед публикацией экспорта проверьте, что в нём нет ваших локальных IP и имён устройств</span>
+  </footer>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <input id="importFile" type="file" accept="application/json,.json" hidden>
+  <noscript><p style="padding:20px;color:#fb7185">Для работы чекера нужен JavaScript. Сеть ему не нужна.</p></noscript>
+
+  <script src="fp-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
