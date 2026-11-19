@@ -186,6 +186,19 @@ impl Store {
             .collect()
     }
 
+    /// Change the name and note of an active profile without rewriting other fields.
+    pub fn edit_profile_details(&self, id: &str, name: &str, note: &str) -> Result<(), StoreError> {
+        let name = validate_name(name)?;
+        let updated = self.conn().execute(
+            "UPDATE profiles SET name = ?2, note = ?3 WHERE id = ?1 AND deleted_at IS NULL",
+            params![id, name, note],
+        )?;
+        if updated == 0 {
+            return Err(StoreError::NotFound(format!("профиль {id}")));
+        }
+        Ok(())
+    }
+
     /// Меняет заданные поля у профилей одной транзакцией; несуществующие id пропускаются. Возвращает число изменённых.
     pub fn edit_profiles(&self, ids: &[String], edit: &ProfileEdit) -> Result<usize, StoreError> {
         let start_urls = edit.start_urls.as_deref().map(to_json);
@@ -491,14 +504,19 @@ impl Store {
 
 fn validate(input: &ProfileInput) -> Result<(), StoreError> {
     if input.network.as_ref().is_some_and(|network| network.direct) && (input.proxy_id.is_some() || input.inline_proxy.is_some()) { return Err(StoreError::Invalid("proxy_id")); }
-    let name = input.name.trim();
-    if name.is_empty() || name.chars().count() > 100 {
-        return Err(StoreError::Invalid("name"));
-    }
+    validate_name(&input.name)?;
     if serde_json::from_str::<serde_json::Value>(&input.fingerprint_json).is_err() {
         return Err(StoreError::Invalid("fingerprint"));
     }
     Ok(())
+}
+
+fn validate_name(name: &str) -> Result<&str, StoreError> {
+    let name = name.trim();
+    if name.is_empty() || name.chars().count() > 100 {
+        return Err(StoreError::Invalid("name"));
+    }
+    Ok(name)
 }
 
 fn check_proxy(conn: &Connection, proxy_id: Option<i64>) -> Result<(), StoreError> {
