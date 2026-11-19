@@ -3,12 +3,15 @@
  * Ombra checks — local fingerprint benchmark.
  *
  * Launches the Ombra Chromium engine N times with one profile and one
- * fingerprint seed, runs the bundled local probe through CDP, compares the
- * hard probes and writes a conformance report to checks/results/.
+ * fingerprint seed, runs the bundled local probe through CDP (without
+ * Runtime.enable), optionally verifies seed sensitivity with an alternate
+ * seed, compares the hard probes, and writes a conformance report to
+ * checks/results/.
  *
  * The report follows conformance/schema/report.schema.json and covers:
- *   L1-01  local fingerprint probe
- *   L5-01  seed stability across cold starts
+ *   L1-01  local fingerprint probe (across all runs)
+ *   L5-01  seed stability across cold starts + seed-change sensitivity
+ *   L5-02  cross-context agreement (Main / Worker / iframe / detached iframe)
  *
  * No npm dependencies. Node.js 22+ (global fetch/WebSocket).
  */
@@ -23,99 +26,70 @@ import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import process from 'node:process';
 
+import {
+  PROBE_VERSION,
+  CONTRACT_VERSION,
+  DEFAULT_SEED,
+  VALID_PLATFORMS,
+  defaultGapExpiry,
+  deriveAlternateSeed,
+  hashSeed,
+  parseArgs,
+  buildEngineFlags,
+  candidateVersionDirs,
+  extractBuildVersion,
+  compareSnapshots,
+  skippedProbes,
+  evaluateL101,
+  evaluateL501,
+  evaluateL502,
+  metricsFor,
+  isCompatibleBaseline,
+  diffBaseline,
+  reportVerdict,
+  redactReport
+} from './lib.mjs';
+
 const BENCH_DIR = dirname(fileURLToPath(import.meta.url));
 const PROBE_DIR = join(BENCH_DIR, 'probe');
 const CHECKS_DIR = dirname(BENCH_DIR);
 const REPO_ROOT = dirname(CHECKS_DIR);
 const RESULTS_DIR = join(CHECKS_DIR, 'results');
-const PROBE_VERSION = '1.0.0';
-const CONTRACT_VERSION = '0.1.0';
-const DEFAULT_SEED = 20261119;
-
-const DEFAULTS = {
-  runs: 5,
-  timeout: 120000,
-  mode: 'headed',
-  transport: 'http',
-  sandbox: true,
-  doubleRun: true,
-  hardOnly: true,
-  redact: true,
-  keep: false,
-  seed: DEFAULT_SEED,
-  operator: process.env.USER || process.env.USERNAME || 'local'
-};
-
-const TARGET_RANK = { INCOMPLETE: 0, UNREACHABLE: 1, FAIL: 1, DEGRADED: 2, PASS: 3 };
-
-function parseArgs(argv) {
-  const args = { ...DEFAULTS };
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    const next = () => {
-      const value = argv[++i];
-      if (value === undefined) throw new Error(`missing value for ${arg}`);
-      return value;
-    };
-    switch (arg) {
-      case '--runs': args.runs = Math.max(1, Number(next())); break;
-      case '--engine': args.engine = next(); break;
-      case '--chrome': args.engine = next(); break;
-      case '--profile': args.profile = resolve(next()); break;
-      case '--out': args.out = resolve(next()); break;
-      case '--baseline': args.baseline = resolve(next()); break;
-      case '--seed': args.seed = Number(next()); break;
-      case '--operator': args.operator = next(); break;
-      case '--timeout': args.timeout = Math.max(10000, Number(next())); break;
-      case '--mode':
-        args.mode = next();
-        if (!['headed', 'headless'].includes(args.mode)) throw new Error('--mode must be headed or headless');
-        break;
-      case '--transport':
-        args.transport = next();
-        if (!['http', 'file'].includes(args.transport)) throw new Error('--transport must be http or file');
-        break;
-      case '--headless': args.mode = 'headless'; break;
-      case '--headed': args.mode = 'headed'; break;
-      case '--no-sandbox': args.sandbox = false; break;
-      case '--no-double': args.doubleRun = false; break;
-      case '--hard-only': args.hardOnly = true; break;
-      case '--all-probes': args.hardOnly = false; break;
-      case '--keep': args.keep = true; break;
-      case '--no-redact': args.redact = false; break;
-      case '-h':
-      case '--help': printHelp(); process.exit(0); break;
-      default:
-        throw new Error(`unknown argument: ${arg}`);
-    }
-  }
-  if (!Number.isInteger(args.seed) || args.seed < 0) throw new Error('--seed must be a non-negative integer');
-  return args;
-}
 
 function printHelp() {
-  console.log(`Ombra fingerprint benchmark
+  console.log(`Ombra fingerprint benchmark (probe v${PROBE_VERSION})
 
 Usage:
   node checks/benchmark/run.mjs [options]
 
 Options:
-  --runs N          cold starts (default 5)
-  --engine PATH     Ombra Chromium binary (default: selected installed engine)
-  --profile DIR     reuse an existing profile (default: temporary profile)
-  --out FILE        report path (default: checks/results/<run_id>.json)
-  --baseline FILE   compare against a specific previous report
-  --seed N          fingerprint seed passed as --fingerprint=N (default ${DEFAULT_SEED})
-  --mode MODE       headed | headless (default headed)
-  --transport MODE  http (default) or file for hosts where loopback HTTP is blocked
-  --headless        alias for --mode headless
-  --no-sandbox      pass --no-sandbox on hosts where the Chromium sandbox is unavailable
-  --no-double       disable the probe's two-pass noise detection
-  --all-probes      include context/volatile probes (default: hard-only)
-  --timeout MS      per-run evaluation timeout (default 120000)
-  --keep            keep the temporary profile
-  --no-redact       keep raw probe values in the JSON (local debugging only)
-  --operator NAME   value written to report.operator
+  --runs N                 cold starts with primary seed (default 5)
+  --engine PATH            Ombra Chromium binary (default: selected installed engine)
+  --profile DIR            reuse an existing profile (default: temporary profile)
+  --out FILE               report path (default: checks/results/<run_id>.json)
+  --baseline FILE          compare against a specific previous report (missing fails)
+  --seed VALUE             primary fingerprint seed passed as --fingerprint=VALUE (default ${DEFAULT_SEED})
+  --seed2 VALUE            alternate seed for L5-01 sensitivity check (default derived)
+  --no-seed-check          skip the L5-01 alternate-seed sensitivity check
+  --platform OS            pass --fingerprint-platform (${VALID_PLATFORMS.join('|')})
+  --timezone TZ            pass --fingerprint-timezone=TZ
+  --location LOC           pass --fingerprint-location=LOC
+  --profile-preset NAME    pass --fingerprint-profile=NAME
+  --dpr N                  pass --fingerprint-device-pixel-ratio=N (opt-in)
+  --mode MODE              headed | headless (default headed)
+  --transport MODE         http (default) or file for hosts where loopback HTTP is blocked
+  --headless               alias for --mode headless
+  --headed                 alias for --mode headed
+  --no-sandbox             pass --no-sandbox on hosts where the Chromium sandbox is unavailable
+  --no-double              disable the probe's two-pass noise detection
+  --hard-only              run only hard probes (default)
+  --all-probes             include context/volatile probes too
+  --timeout MS             per-run evaluation timeout (default 120000)
+  --keep                   keep the temporary profile
+  --no-redact              keep raw probe values in the JSON (local debugging only)
+  --operator NAME          value written to report.operator
+  --known-gap-owner NAME   owner recorded on DEGRADED targets
+  --known-gap-expires DATE expiry YYYY-MM-DD recorded on DEGRADED targets
 
 The report is saved to checks/results/ and follows
 conformance/schema/report.schema.json. Exit code 0 means PASS; 1 means
@@ -158,7 +132,10 @@ async function normalizeEngine(candidate) {
     'Contents/MacOS/Chromium',
     'Chromium',
     'chrome',
-    'chromium'
+    'chromium',
+    'chrome.exe',
+    'chromium.exe',
+    'Chromium.exe'
   ];
   for (const item of relativeCandidates) {
     const path = join(candidate, item);
@@ -172,15 +149,26 @@ async function resolveEngine(explicit) {
   if (explicit) candidates.push(explicit);
   if (process.env.OMBRA_BINARY_PATH) candidates.push(process.env.OMBRA_BINARY_PATH);
 
+  const engineRoots = [];
   if (process.platform === 'darwin') {
-    const engines = join(homedir(), 'Library', 'Application Support', 'Ombra', 'engines');
+    engineRoots.push(join(homedir(), 'Library', 'Application Support', 'Ombra', 'engines'));
+  } else if (process.platform === 'linux') {
+    const xdgData = process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share');
+    engineRoots.push(join(xdgData, 'Ombra', 'engines'));
+    engineRoots.push(join(xdgData, 'ombra', 'engines'));
+  } else if (process.platform === 'win32') {
+    const localAppData = process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local');
+    engineRoots.push(join(localAppData, 'Ombra', 'engines'));
+  }
+
+  for (const engines of engineRoots) {
     try {
       const selection = JSON.parse(await readFile(join(engines, 'selection.json'), 'utf8'));
       if (selection.active) {
-        candidates.push(join(engines, 'versions', selection.active, 'Chromium.app', 'Contents', 'MacOS', 'Chromium'));
+        candidates.push(join(engines, 'versions', selection.active));
       }
     } catch { /* no selection */ }
-    candidates.push(join(engines, 'Chromium.app', 'Contents', 'MacOS', 'Chromium'));
+    candidates.push(engines);
   }
 
   for (const candidate of candidates) {
@@ -196,26 +184,33 @@ async function resolveEngine(explicit) {
 
 async function engineInfo(binary) {
   const version = await detectVersion(binary);
-  const versionDir = resolve(dirname(binary), '..', '..', '..');
-  const archiveFile = join(versionDir, 'archive.sha256');
+  const dirs = candidateVersionDirs(binary);
+  const build = extractBuildVersion(dirs);
+
   let sha256 = null;
   let hashSource = 'binary';
-  try {
-    const text = (await readFile(archiveFile, 'utf8')).trim().split(/\s+/)[0];
-    if (/^[0-9a-f]{64}$/i.test(text)) {
-      sha256 = text.toLowerCase();
-      hashSource = 'archive.sha256';
-    }
-  } catch { /* fall back to the binary */ }
+  let artifactDir = build.dir;
+
+  for (const dir of dirs) {
+    const archiveFile = join(dir, 'archive.sha256');
+    try {
+      const text = (await readFile(archiveFile, 'utf8')).trim().split(/\s+/)[0];
+      if (/^[0-9a-f]{64}$/i.test(text)) {
+        sha256 = text.toLowerCase();
+        hashSource = 'archive.sha256';
+        artifactDir = dir;
+        break;
+      }
+    } catch { /* try next ancestor */ }
+  }
   if (!sha256) sha256 = await hashFile(binary);
 
-  const buildMatch = versionDir.match(/(\d+\.\d+\.\d+\.\d+-[0-9]+)/);
   return {
     name: 'Ombra Chromium',
-    version: buildMatch ? buildMatch[1] : version,
+    version: build.version || version,
     sha256,
     hash_source: hashSource,
-    artifact: basename(versionDir),
+    artifact: basename(artifactDir || dirname(binary)),
     binary: basename(binary)
   };
 }
@@ -270,11 +265,14 @@ async function buildStandalone() {
     readFile(join(PROBE_DIR, 'app.js'), 'utf8')
   ]);
 
-  const csp = "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'";
-  let output = html.replace(/<meta http-equiv="Content-Security-Policy"[\s\S]*?>/i, `<meta http-equiv="Content-Security-Policy" content="${csp}">`);
-  output = output.replace('<link rel="stylesheet" href="styles.css">', `<style>\n${css}\n</style>`);
-  output = output.replace('<script src="fp-core.js"></script>', `<script>\n${core}\n</script>`);
-  output = output.replace('<script src="app.js"></script>', `<script>\n${app}\n</script>`);
+  const csp = "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'self' blob: about:; worker-src 'self' blob:; base-uri 'none'; form-action 'none'";
+  let output = html.replace(
+    /<meta http-equiv="Content-Security-Policy"[\s\S]*?>/i,
+    () => `<meta http-equiv="Content-Security-Policy" content="${csp}">`
+  );
+  output = output.replace('<link rel="stylesheet" href="styles.css">', () => `<style>\n${css}\n</style>`);
+  output = output.replace('<script src="fp-core.js"></script>', () => `<script>\n${core}\n</script>`);
+  output = output.replace('<script src="app.js"></script>', () => `<script>\n${app}\n</script>`);
   await writeFile(file, output, 'utf8');
   return { dir, file, url: pathToFileURL(file).href };
 }
@@ -286,6 +284,15 @@ class CDP {
     this.nextId = 0;
     this.pending = new Map();
     this.listeners = new Map();
+    this.onCloseRejectors = new Set();
+  }
+
+  _failAll(reason) {
+    const error = new Error(reason);
+    for (const item of this.pending.values()) item.reject(error);
+    this.pending.clear();
+    for (const rejector of this.onCloseRejectors) rejector(error);
+    this.onCloseRejectors.clear();
   }
 
   async connect() {
@@ -299,6 +306,12 @@ class CDP {
       };
       this.socket.addEventListener('open', onOpen);
       this.socket.addEventListener('error', onError);
+    });
+    this.socket.addEventListener('close', (event) => {
+      this._failAll(`CDP socket closed (code ${event.code || 0})`);
+    });
+    this.socket.addEventListener('error', (event) => {
+      this._failAll(`CDP socket error: ${event.message || 'unknown'}`);
     });
     this.socket.addEventListener('message', (event) => {
       let message;
@@ -332,71 +345,81 @@ class CDP {
     });
   }
 
-  once(method, timeoutMs = 15000) {
+  once(method, timeoutMs = 15000, expectedSessionId = null) {
     return new Promise((resolvePromise, reject) => {
       let timer = null;
-      const handler = (params, sessionId) => {
-        clearTimeout(timer);
+      const cleanup = () => {
+        if (timer) clearTimeout(timer);
+        this.onCloseRejectors.delete(onAbort);
         const handlers = this.listeners.get(method) || [];
         const index = handlers.indexOf(handler);
         if (index >= 0) handlers.splice(index, 1);
+      };
+      const onAbort = (error) => {
+        cleanup();
+        reject(error);
+      };
+      const handler = (params, sessionId) => {
+        if (expectedSessionId && sessionId !== expectedSessionId) return;
+        cleanup();
         resolvePromise({ params, sessionId });
       };
       if (!this.listeners.has(method)) this.listeners.set(method, []);
       this.listeners.get(method).push(handler);
+      this.onCloseRejectors.add(onAbort);
       timer = setTimeout(() => {
-        const handlers = this.listeners.get(method) || [];
-        const index = handlers.indexOf(handler);
-        if (index >= 0) handlers.splice(index, 1);
-        reject(new Error(`timeout waiting for ${method}`));
+        cleanup();
+        reject(new Error(`CDP event timeout: ${method}`));
       }, timeoutMs);
     });
   }
 
   close() {
+    this._failAll('CDP client closed');
     try { this.socket?.close(); } catch { /* ignore */ }
   }
 }
 
-function waitExit(child, timeoutMs = 12000) {
-  return new Promise((resolvePromise) => {
-    if (child.exitCode !== null) { resolvePromise(); return; }
+async function evaluate(cdp, sessionId, expression, timeoutMs) {
+  const timer = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error(`evaluate timeout (${timeoutMs}ms)`)), timeoutMs);
+  });
+  const call = cdp.send('Runtime.evaluate', {
+    expression,
+    awaitPromise: true,
+    returnByValue: true
+  }, sessionId);
+  const result = await Promise.race([call, timer]);
+  if (result.exceptionDetails) {
+    const text = result.exceptionDetails.exception?.description || result.exceptionDetails.text || 'JS exception';
+    throw new Error(text);
+  }
+  return result.result?.value;
+}
+
+async function waitForPort(profileDir, timeoutMs) {
+  const portFile = join(profileDir, 'DevToolsActivePort');
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const text = await readFile(portFile, 'utf8');
+      const port = Number(text.trim().split(/\r?\n/)[0]);
+      if (Number.isInteger(port) && port > 0) return port;
+    } catch { /* wait */ }
+    await sleep(150);
+  }
+  throw new Error('DevToolsActivePort did not appear');
+}
+
+async function waitExit(child, timeoutMs) {
+  if (child.exitCode !== null) return;
+  await new Promise((resolvePromise) => {
     const timer = setTimeout(() => {
       try { child.kill('SIGKILL'); } catch { /* ignore */ }
       resolvePromise();
     }, timeoutMs);
     child.once('exit', () => { clearTimeout(timer); resolvePromise(); });
   });
-}
-
-function evaluate(cdp, sessionId, expression, timeoutMs) {
-  return cdp.send('Runtime.evaluate', {
-    expression,
-    awaitPromise: true,
-    returnByValue: true,
-    timeout: timeoutMs
-  }, sessionId).then((response) => {
-    if (response.exceptionDetails) {
-      const details = response.exceptionDetails;
-      const description = details.exception?.description || details.text || 'evaluation failed';
-      throw new Error(description);
-    }
-    return response.result?.value;
-  });
-}
-
-async function waitForPort(profileDir, timeoutMs) {
-  const portFile = join(profileDir, 'DevToolsActivePort');
-  const started = Date.now();
-  while (Date.now() - started < timeoutMs) {
-    try {
-      const text = await readFile(portFile, 'utf8');
-      const port = Number(text.trim().split(/\r?\n/)[0]);
-      if (Number.isInteger(port) && port > 0) return port;
-    } catch { /* not written yet */ }
-    await sleep(120);
-  }
-  throw new Error(`DevToolsActivePort was not created in ${profileDir}`);
 }
 
 async function waitForVersion(port) {
@@ -419,28 +442,36 @@ async function waitForVersion(port) {
   throw new Error(`/json/version did not become ready (last HTTP ${lastStatus})`);
 }
 
-async function runOnce({ engine, profileDir, url, mode, sandbox, doubleRun, hardOnly, seed, timeout, index }) {
+async function runOnce({
+  engine,
+  profileDir,
+  url,
+  mode,
+  sandbox,
+  doubleRun,
+  hardOnly,
+  seed,
+  platformName,
+  timezone,
+  location,
+  profilePreset,
+  dpr,
+  timeout,
+  label
+}) {
   try { await rm(join(profileDir, 'DevToolsActivePort'), { force: true }); } catch { /* ignore */ }
 
-  const flags = [
-    `--user-data-dir=${profileDir}`,
-    '--remote-debugging-port=0',
-    `--fingerprint=${seed}`,
-    '--no-first-run',
-    '--no-default-browser-check',
-    '--disable-background-networking',
-    '--disable-component-update',
-    '--disable-sync',
-    '--disable-crash-reporter',
-    '--disable-breakpad',
-    '--metrics-recording-only',
-    '--mute-audio',
-    '--window-size=1440,900',
-    '--force-device-scale-factor=1',
-    'about:blank'
-  ];
-  if (mode === 'headless') flags.unshift('--headless=new');
-  if (!sandbox) flags.unshift('--no-sandbox', '--disable-gpu-sandbox');
+  const flags = buildEngineFlags({
+    profileDir,
+    mode,
+    sandbox,
+    seed,
+    platform: platformName,
+    timezone,
+    location,
+    profilePreset,
+    dpr
+  });
 
   const child = spawn(engine, flags, { stdio: ['ignore', 'pipe', 'pipe'] });
   let stderr = '';
@@ -457,9 +488,9 @@ async function runOnce({ engine, profileDir, url, mode, sandbox, doubleRun, hard
     const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' });
     const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
     await cdp.send('Page.enable', {}, sessionId);
-    await cdp.send('Runtime.enable', {}, sessionId);
+    // Intentionally omit Runtime.enable (conformance SI-01: Runtime.enable leaks via console/Error.stack).
 
-    const loaded = cdp.once('Page.loadEventFired', 20000).catch(() => null);
+    const loaded = cdp.once('Page.loadEventFired', 20000, sessionId).catch(() => null);
     await cdp.send('Page.navigate', { url }, sessionId);
     await loaded;
 
@@ -471,7 +502,6 @@ async function runOnce({ engine, profileDir, url, mode, sandbox, doubleRun, hard
     }
     if (!ready) throw new Error('window.FPAudit did not initialize');
 
-    const label = `cold ${index}`;
     const expression = `window.FPAudit.run({doubleRun:${doubleRun}, hardOnly:${hardOnly}, label:${JSON.stringify(label)}, profile:${JSON.stringify(`benchmark-${mode}`)}})`;
     const snapshot = await evaluate(cdp, sessionId, expression, timeout);
     if (!snapshot || !snapshot.probes) throw new Error('empty snapshot');
@@ -489,169 +519,48 @@ async function runOnce({ engine, profileDir, url, mode, sandbox, doubleRun, hard
   }
 }
 
-function probeClass(probe) {
-  return probe?.c || 'hard';
-}
-
-function statusOf(baseProbe, currentProbe) {
-  if (!baseProbe || !currentProbe) return 'missing';
-  if (!baseProbe.ok && !currentProbe.ok) return 'absent';
-  if (!baseProbe.ok || !currentProbe.ok) return 'changed';
-  if (baseProbe.n || currentProbe.n) return 'noisy';
-  return baseProbe.h === currentProbe.h ? 'same' : 'changed';
-}
-
-function compareSnapshots(base, current) {
-  const ids = new Set([...Object.keys(base.probes || {}), ...Object.keys(current.probes || {})]);
-  const rows = [];
-  for (const id of ids) {
-    const baseProbe = base.probes?.[id];
-    const currentProbe = current.probes?.[id];
-    rows.push({
-      id,
-      cls: probeClass(baseProbe || currentProbe),
-      status: statusOf(baseProbe, currentProbe)
-    });
-  }
-  const hard = rows.filter((row) => row.cls === 'hard');
-  const context = rows.filter((row) => row.cls === 'context');
-  const hardBad = hard.filter((row) => row.status === 'changed' || row.status === 'noisy');
-  const hardMissing = hard.filter((row) => row.status === 'missing');
-  const contextBad = context.filter((row) => row.status === 'changed' || row.status === 'noisy' || row.status === 'missing');
-  const pct = (subset) => {
-    const denominator = subset.filter((row) => row.status !== 'absent').length;
-    const same = subset.filter((row) => row.status === 'same').length;
-    return denominator ? Math.round((same / denominator) * 1000) / 10 : 100;
-  };
-  return {
-    hardPct: pct(hard),
-    contextPct: pct(context),
-    hardBad,
-    hardMissing,
-    contextBad
-  };
-}
-
-function skippedProbes(snapshot) {
-  const probes = snapshot?.probes || {};
-  return Object.keys(probes).filter((id) => probes[id]?.v && probes[id].v.skipped);
-}
-
-function evaluateL101(snapshot) {
-  const failures = [];
-  const critical = [];
-  const probes = snapshot?.probes || {};
-
-  if (probes['nav.webdriver']?.v !== false) {
-    critical.push(`navigator.webdriver=${JSON.stringify(probes['nav.webdriver']?.v)}`);
-  }
-  const cdpArtifacts = probes['auto.cdp']?.v;
-  if (Array.isArray(cdpArtifacts) && cdpArtifacts.length) {
-    critical.push(`CDP artifacts visible: ${cdpArtifacts.join(', ')}`);
-  }
-  const headless = probes['auto.headless']?.v || {};
-  for (const [key, value] of Object.entries(headless)) {
-    if (value) critical.push(`auto.headless.${key}=true`);
-  }
-  const consistency = probes['auto.consistency']?.v || {};
-  for (const key of ['webdriver', 'mobileNoTouch', 'chromeNoPlugins', 'outerZero', 'screenZero']) {
-    if (consistency[key]) critical.push(`auto.consistency.${key}=true`);
-  }
-  if (snapshot?.hardErr?.length) {
-    failures.push(`unavailable hard probes: ${snapshot.hardErr.join(', ')}`);
-  }
-  if (probes['nav.uaData']?.v?.available === false) {
-    failures.push('User-Agent Client Hints unavailable');
-  }
-
-  const status = critical.length ? 'FAIL' : failures.length ? 'DEGRADED' : 'PASS';
-  return {
-    id: 'L1-01',
-    status,
-    failures: critical.concat(failures),
-    skipped: skippedProbes(snapshot),
-    duration_ms: snapshot?.durationMs || 0,
-    artifacts: ['benchmark/probe/index.html', 'benchmark/probe/fp-core.js']
-  };
-}
-
-function evaluateL501(snapshots) {
-  if (snapshots.length < 2) {
-    return {
-      id: 'L5-01',
-      status: 'UNREACHABLE',
-      failures: ['at least two cold starts are required'],
-      duration_ms: snapshots.reduce((sum, snapshot) => sum + (snapshot.durationMs || 0), 0),
-      artifacts: ['benchmark/probe/fp-core.js']
-    };
-  }
-
-  const base = snapshots[0];
-  const failures = [];
-  const comparisons = snapshots.slice(1).map((snapshot) => compareSnapshots(base, snapshot));
-  const hardBad = comparisons.flatMap((comparison) => comparison.hardBad);
-  const hardMissing = comparisons.flatMap((comparison) => comparison.hardMissing);
-  const noiseTotal = snapshots.reduce((sum, snapshot) => sum + (snapshot.hardNoisy?.length || 0), 0);
-  const hardErrors = snapshots.flatMap((snapshot) => snapshot.hardErr || []);
-  const minHardPct = Math.min(...comparisons.map((comparison) => comparison.hardPct));
-  const hashes = new Set(snapshots.map((snapshot) => snapshot.hardHash));
-
-  if (hardBad.length) {
-    failures.push(`hard probes changed or became noisy: ${hardBad.map((row) => row.id).join(', ')}`);
-  }
-  if (hardMissing.length) {
-    failures.push(`hard probes missing: ${hardMissing.map((row) => row.id).join(', ')}`);
-  }
-  if (noiseTotal) failures.push(`hard noise detected: ${noiseTotal} probe(s)`);
-  if (minHardPct < 100) failures.push(`hard stability dropped to ${minHardPct}%`);
-  if (hashes.size !== 1) failures.push('hard hash differs between cold starts');
-  if (hardErrors.length) failures.push(`unavailable hard probes: ${[...new Set(hardErrors)].join(', ')}`);
-
-  const critical = hardBad.length || noiseTotal || minHardPct < 100 || hashes.size !== 1;
-  const degraded = hardMissing.length || hardErrors.length;
-  const status = critical ? 'FAIL' : degraded ? 'DEGRADED' : 'PASS';
-
-  return {
-    id: 'L5-01',
-    status,
-    failures,
-    duration_ms: snapshots.reduce((sum, snapshot) => sum + (snapshot.durationMs || 0), 0),
-    artifacts: ['benchmark/probe/fp-core.js']
-  };
-}
-
-function metricsFor(snapshots, comparisons) {
-  const first = snapshots[0];
-  return {
-    runs: snapshots.length,
-    probe_count: first?.counts?.total ?? Object.keys(first?.probes || {}).length,
-    hard_total: first?.counts?.hard ?? 0,
-    hard_stable: Math.min(...snapshots.map((snapshot) => snapshot.counts?.hardStable ?? 0)),
-    hard_pct: comparisons.length ? Math.min(...comparisons.map((comparison) => comparison.hardPct)) : 100,
-    noise_total: snapshots.reduce((sum, snapshot) => sum + (snapshot.hardNoisy?.length || 0), 0),
-    hard_errors: snapshots.reduce((sum, snapshot) => sum + (snapshot.hardErr?.length || 0), 0),
-    hard_hash: snapshots.every((snapshot) => snapshot.hardHash === first?.hardHash) ? first?.hardHash : null
-  };
-}
-
-async function loadBaseline({ explicit, startedAt, engine, mode, outPath, currentTargets, currentMetrics }) {
+async function loadBaseline({
+  explicit,
+  startedAt,
+  engine,
+  mode,
+  osName,
+  transport,
+  hardOnly,
+  sandbox,
+  profilePlatform,
+  outPath,
+  currentTargets,
+  currentMetrics,
+  currentVerdict
+}) {
   let file = null;
   if (explicit) {
     file = explicit;
-    if (!(await fileExists(file))) throw new Error(`baseline not found: ${file}`);
+    if (!(await fileExists(file))) {
+      throw new Error(`explicit baseline not found: ${file}`);
+    }
   } else {
     const files = (await readdir(RESULTS_DIR).catch(() => []))
       .filter((name) => name.endsWith('.json'))
       .map((name) => join(RESULTS_DIR, name))
       .filter((path) => path !== outPath);
     const reports = [];
+    const criteria = {
+      engineName: engine.name,
+      mode,
+      os: osName,
+      transport,
+      probeVersion: PROBE_VERSION,
+      hardOnly,
+      sandbox,
+      profilePlatform,
+      startedAt
+    };
     for (const path of files) {
       try {
         const report = JSON.parse(await readFile(path, 'utf8'));
-        if (report?.engine?.name !== engine.name) continue;
-        if (report?.environment?.mode !== mode) continue;
-        if (!['PASS', 'PASS_WITH_GAPS'].includes(report?.verdict)) continue;
-        if (report?.started_at && report.started_at >= startedAt) continue;
+        if (!isCompatibleBaseline(report, criteria)) continue;
         reports.push({ path, report });
       } catch { /* skip malformed */ }
     }
@@ -661,68 +570,19 @@ async function loadBaseline({ explicit, startedAt, engine, mode, outPath, curren
 
   if (!file) return { baseline: null, regressions: [] };
 
-  const report = JSON.parse(await readFile(file, 'utf8'));
-  const baselineTargets = new Map((report.targets || []).map((target) => [target.id, target.status]));
-  const currentTargetMap = new Map((currentTargets || []).map((target) => [target.id, target.status]));
-  const regressions = [];
-
-  for (const [id, status] of currentTargetMap) {
-    const previous = baselineTargets.get(id);
-    if (previous && TARGET_RANK[status] < TARGET_RANK[previous]) {
-      regressions.push(`${id}: ${previous} -> ${status}`);
-    }
-  }
-
-  const previousMetrics = report.checks?.metrics || {};
-  const current = currentMetrics || {};
-  if (typeof previousMetrics.hard_pct === 'number' && previousMetrics.hard_pct > current.hard_pct) {
-    regressions.push(`hard stability: ${previousMetrics.hard_pct}% -> ${current.hard_pct}%`);
-  }
-  if (typeof previousMetrics.hard_total === 'number' && previousMetrics.hard_total > current.hard_total) {
-    regressions.push(`hard probe coverage: ${previousMetrics.hard_total} -> ${current.hard_total}`);
-  }
-  if (typeof previousMetrics.noise_total === 'number' && previousMetrics.noise_total < current.noise_total) {
-    regressions.push(`hard noise: ${previousMetrics.noise_total} -> ${current.noise_total}`);
-  }
-  if (typeof previousMetrics.hard_errors === 'number' && previousMetrics.hard_errors < current.hard_errors) {
-    regressions.push(`hard probe errors: ${previousMetrics.hard_errors} -> ${current.hard_errors}`);
-  }
-
-  return {
-    baseline: {
-      file: relative(REPO_ROOT, file),
-      run_id: report.run_id,
-      started_at: report.started_at,
-      verdict: report.verdict,
-      metrics: previousMetrics
-    },
-    regressions
-  };
-}
-
-function reportVerdict(targets, regressions) {
-  if (regressions.length) return 'FAIL';
-  if (targets.some((target) => target.status === 'FAIL')) return 'FAIL';
-  if (targets.some((target) => target.status === 'UNREACHABLE')) return 'INCOMPLETE';
-  if (targets.some((target) => target.status === 'DEGRADED')) return 'PASS_WITH_GAPS';
-  return 'PASS';
+  const baselineReport = JSON.parse(await readFile(file, 'utf8'));
+  return diffBaseline({
+    baselineReport,
+    baselineFile: relative(REPO_ROOT, file),
+    currentTargets,
+    currentMetrics,
+    currentVerdict
+  });
 }
 
 function makeRunId(startedAt, engineVersion, mode) {
   const stamp = startedAt.replace(/\.\d{3}Z$/, 'Z').replace(/[:]/g, '-');
   return `${stamp}-${engineVersion}-${mode}`.replace(/[^A-Za-z0-9._-]/g, '-');
-}
-
-function redactReport(report) {
-  const copy = JSON.parse(JSON.stringify(report));
-  for (const run of copy.checks?.runs || []) {
-    for (const probe of Object.values(run.probes || {})) {
-      if (probe && typeof probe === 'object') delete probe.v;
-    }
-  }
-  copy.checks.flags = (copy.checks.flags || []).filter((flag) => !flag.startsWith('--user-data-dir='));
-  delete copy.checks.error;
-  return copy;
 }
 
 async function writeReport(report, outPath) {
@@ -733,13 +593,29 @@ async function writeReport(report, outPath) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!(await fileExists(join(PROBE_DIR, 'index.html')))) throw new Error(`probe not found: ${PROBE_DIR}`);
+  if (args.help) {
+    printHelp();
+    return 0;
+  }
+  if (!(await fileExists(join(PROBE_DIR, 'index.html')))) {
+    throw new Error(`probe not found: ${PROBE_DIR}`);
+  }
 
   const enginePath = await resolveEngine(args.engine);
   const engine = await engineInfo(enginePath);
   const startedAt = new Date().toISOString();
+  const osName = `${platform()} ${release()} ${arch()}`;
   const runId = makeRunId(startedAt, engine.version, args.mode);
   const outPath = args.out || join(RESULTS_DIR, `${runId}.json`);
+  const seedHash = hashSeed(args.seed);
+  const effectiveSeed2 = args.seedCheck && args.runs >= 2
+    ? (args.seed2 || deriveAlternateSeed(args.seed))
+    : null;
+  const gapOptions = {
+    operator: args.operator,
+    knownGapOwner: args.knownGapOwner || args.operator,
+    knownGapExpires: args.knownGapExpires || defaultGapExpiry(startedAt)
+  };
 
   let profileDir = args.profile;
   let temporaryProfile = false;
@@ -752,18 +628,21 @@ async function main() {
 
   let serverInfo = null;
   let standalone = null;
+  let altProfileDir = null;
   const snapshots = [];
   const allFlags = new Set();
   let runError = null;
+  let seedCheck = { checked: false, changed: null, seed2_hash: null, diff_probes: [], error: null };
 
-  console.log('Ombra fingerprint benchmark');
-  console.log(`  engine:  ${engine.name} ${engine.version}`);
-  console.log(`  sha256:  ${engine.sha256.slice(0, 16)}… (${engine.hash_source})`);
-  console.log(`  mode:    ${args.mode}`);
+  console.log(`Ombra fingerprint benchmark (probe v${PROBE_VERSION})`);
+  console.log(`  engine:    ${engine.name} ${engine.version}`);
+  console.log(`  sha256:    ${engine.sha256.slice(0, 16)}… (${engine.hash_source})`);
+  console.log(`  mode:      ${args.mode}`);
   console.log(`  transport: ${args.transport}`);
-  console.log(`  seed:    ${args.seed}`);
-  console.log(`  profile: ${profileDir}${temporaryProfile ? ' (temporary)' : ''}`);
-  console.log(`  runs:    ${args.runs}`);
+  console.log(`  seed_hash: ${seedHash.slice(0, 23)}…`);
+  if (args.platform) console.log(`  platform:  ${args.platform}`);
+  console.log(`  profile:   ${profileDir}${temporaryProfile ? ' (temporary)' : ''}`);
+  console.log(`  runs:      ${args.runs}${effectiveSeed2 ? ' (+1 alternate-seed check)' : ''}`);
   console.log('');
 
   try {
@@ -775,7 +654,7 @@ async function main() {
       serverInfo = await startProbeServer();
       probeUrl = serverInfo.url;
     }
-    console.log(`  probe:   ${probeUrl}`);
+    console.log(`  probe:     ${probeUrl}`);
     console.log('');
 
     for (let index = 1; index <= args.runs; index++) {
@@ -788,8 +667,13 @@ async function main() {
         doubleRun: args.doubleRun,
         hardOnly: args.hardOnly,
         seed: args.seed,
+        platformName: args.platform,
+        timezone: args.timezone,
+        location: args.location,
+        profilePreset: args.profilePreset,
+        dpr: args.dpr,
         timeout: args.timeout,
-        index
+        label: `cold ${index}`
       });
       snapshots.push(result.snapshot);
       for (const flag of result.flags) {
@@ -799,9 +683,46 @@ async function main() {
       }
       console.log(
         `run ${index}/${args.runs}: hard=${result.snapshot.hardHash.slice(0, 12)} ` +
-        `probes=${result.snapshot.counts.total} noise=${result.snapshot.noise.length} ` +
-        `hardErrors=${result.snapshot.hardErr.length} duration=${result.snapshot.durationMs}ms`
+        `probes=${result.snapshot.counts.total} skipped=${result.snapshot.counts.hardSkipped || 0} ` +
+        `noise=${result.snapshot.noise.length} hardErrors=${result.snapshot.hardErr.length} ` +
+        `duration=${result.snapshot.durationMs}ms`
       );
+    }
+
+    if (effectiveSeed2 && snapshots.length >= 2) {
+      altProfileDir = await mkdtemp(join(tmpdir(), 'ombra-check-seed2-'));
+      seedCheck.checked = true;
+      seedCheck.seed2_hash = hashSeed(effectiveSeed2);
+      try {
+        const alt = await runOnce({
+          engine: enginePath,
+          profileDir: altProfileDir,
+          url: probeUrl,
+          mode: args.mode,
+          sandbox: args.sandbox,
+          doubleRun: false,
+          hardOnly: args.hardOnly,
+          seed: effectiveSeed2,
+          platformName: args.platform,
+          timezone: args.timezone,
+          location: args.location,
+          profilePreset: args.profilePreset,
+          dpr: args.dpr,
+          timeout: args.timeout,
+          label: 'seed-check'
+        });
+        const diff = compareSnapshots(snapshots[0], alt.snapshot);
+        seedCheck.changed = alt.snapshot.hardHash !== snapshots[0].hardHash;
+        seedCheck.seed2_hard_hash = alt.snapshot.hardHash;
+        seedCheck.diff_probes = diff.hardBad.map((row) => row.id);
+        console.log(
+          `seed check: hard=${alt.snapshot.hardHash.slice(0, 12)} ` +
+          `changed=${seedCheck.changed} (${seedCheck.diff_probes.length} hard probe(s) differed)`
+        );
+      } catch (error) {
+        seedCheck.error = error.message;
+        console.error(`seed check failed: ${error.message}`);
+      }
     }
   } catch (error) {
     runError = error;
@@ -809,23 +730,35 @@ async function main() {
   } finally {
     if (serverInfo) await new Promise((resolvePromise) => serverInfo.server.close(resolvePromise));
     if (standalone) await rm(standalone.dir, { recursive: true, force: true }).catch(() => {});
+    if (altProfileDir) await rm(altProfileDir, { recursive: true, force: true }).catch(() => {});
   }
 
-  const targets = snapshots.length
-    ? [evaluateL101(snapshots[0]), evaluateL501(snapshots)]
-    : [
-        { id: 'L1-01', status: 'UNREACHABLE', failures: [runError?.message || 'no run'], duration_ms: 0, artifacts: [] },
-        { id: 'L5-01', status: 'UNREACHABLE', failures: [runError?.message || 'no run'], duration_ms: 0, artifacts: [] }
-      ];
+  const l101 = evaluateL101(snapshots, {
+    ...gapOptions,
+    sandbox: args.sandbox,
+    runError: runError?.message
+  });
+  const l501 = evaluateL501(snapshots, {
+    ...gapOptions,
+    expectedRuns: args.runs,
+    runError: runError?.message,
+    seedCheck
+  });
+  const l502 = evaluateL502(snapshots, gapOptions);
+  const targets = l502 ? [l101, l501, l502] : [l101, l501];
+
   const comparisons = snapshots.length > 1
     ? snapshots.slice(1).map((snapshot) => compareSnapshots(snapshots[0], snapshot))
     : [];
-  const metrics = snapshots.length ? metricsFor(snapshots, comparisons) : null;
-  const skipped = snapshots.length ? skippedProbes(snapshots[0]) : [];
-  const seedHash = `sha256:${createHash('sha256').update(String(args.seed)).digest('hex')}`;
+  const metrics = snapshots.length ? metricsFor(snapshots, comparisons, { expectedRuns: args.runs, seedCheck }) : null;
+  const skipped = snapshots.length
+    ? [...new Set(snapshots.flatMap((snapshot) => skippedProbes(snapshot)))].sort()
+    : [];
 
+  const preBaselineVerdict = runError ? 'INCOMPLETE' : reportVerdict(targets, []);
   let baseline = null;
   let regressions = [];
+  let baselineError = null;
   if (!runError && snapshots.length) {
     try {
       const result = await loadBaseline({
@@ -833,18 +766,27 @@ async function main() {
         startedAt,
         engine,
         mode: args.mode,
+        osName,
+        transport: args.transport,
+        hardOnly: args.hardOnly,
+        sandbox: args.sandbox,
+        profilePlatform: args.platform,
         outPath,
         currentTargets: targets,
-        currentMetrics: metrics
+        currentMetrics: metrics,
+        currentVerdict: preBaselineVerdict
       });
       baseline = result.baseline;
       regressions = result.regressions;
     } catch (error) {
-      console.error(`baseline comparison skipped: ${error.message}`);
+      baselineError = error;
+      console.error(`baseline error: ${error.message}`);
     }
   }
 
-  const verdict = runError ? 'INCOMPLETE' : reportVerdict(targets, regressions);
+  const verdict = (runError || baselineError) ? 'INCOMPLETE' : reportVerdict(targets, regressions);
+  const errorText = [runError?.message, baselineError?.message].filter(Boolean).join('; ') || null;
+
   const report = {
     run_id: runId,
     started_at: startedAt,
@@ -863,17 +805,22 @@ async function main() {
       binary: engine.binary
     },
     environment: {
-      os: `${platform()} ${release()} ${arch()}`,
+      os: osName,
       mode: args.mode,
       transport: args.transport,
+      sandbox: args.sandbox,
+      hard_only: args.hardOnly,
+      profile_platform: args.platform,
       proxy_country: 'direct',
       seed_hash: seedHash,
       notes: [
         `sandbox=${args.sandbox ? 'enabled' : 'disabled'}`,
-        `window=1440x900`,
+        'window=1440x900',
+        args.dpr !== null ? `dpr=${args.dpr}` : 'dpr=native',
         `probe=${PROBE_VERSION}`,
         `probes=${args.hardOnly ? 'hard-only' : 'all'}`,
         `transport=${args.transport}`,
+        args.platform ? `platform=${args.platform}` : null,
         args.sandbox ? null : 'no-sandbox is required on this host; do not treat this run as an L0-01 pass'
       ].filter(Boolean).join('; ')
     },
@@ -885,23 +832,28 @@ async function main() {
       flags: [...allFlags].sort(),
       metrics,
       skipped,
+      seed_check: seedCheck,
       comparisons,
       runs: snapshots,
       baseline,
       regressions,
-      error: runError ? runError.message : null
+      error: errorText
     }
   };
 
-  const savedPath = await writeReport(args.redact ? redactReport(report) : report, outPath);
+  const finalReport = args.redact
+    ? redactReport(report, { profileDir, seed: args.seed, seed2: effectiveSeed2 })
+    : report;
+  const savedPath = await writeReport(finalReport, outPath);
+
   console.log('');
   for (const target of targets) {
     console.log(`${target.id}: ${target.status}${target.failures.length ? ` (${target.failures.join('; ')})` : ''}`);
   }
   if (baseline) {
     console.log(`baseline: ${baseline.run_id} (${baseline.verdict})`);
-  } else {
-    console.log('baseline: none (first accepted run for this engine mode)');
+  } else if (!baselineError) {
+    console.log('baseline: none (first compatible run for this engine/mode/os/transport/probe)');
   }
   if (regressions.length) {
     for (const regression of regressions) console.log(`REGRESSION: ${regression}`);

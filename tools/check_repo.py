@@ -54,11 +54,25 @@ REQUIRED_ROOT_FILES = [
     "conformance/cases/launch-basic.json",
     "conformance/cases/launch-profile-lock.json",
     "conformance/cases/stealth-invariants.json",
+    "checks/README.md",
+    "checks/fingerprint-stability.md",
+    "checks/benchmark/lib.mjs",
+    "checks/benchmark/run.mjs",
+    "checks/benchmark/compare.py",
+    "checks/benchmark/serve.py",
+    "checks/benchmark/probe/index.html",
+    "checks/benchmark/probe/fp-core.js",
+    "checks/benchmark/probe/app.js",
     "tools/check_repo.py",
 ]
 
 SDK_STATUSES = {"scaffold", "contract", "alpha", "beta", "stable"}
 CONTRACT_VERSION = re.compile(r"^\d+\.\d+\.\d+$")
+REPORT_VERDICTS = {"PASS", "PASS_WITH_GAPS", "FAIL", "INCOMPLETE"}
+TARGET_STATUSES = {"PASS", "DEGRADED", "FAIL", "UNREACHABLE"}
+REPORT_MODES = {"headed", "headless"}
+PROXY_COUNTRY_RE = re.compile(r"^([A-Z]{2}|direct)$")
+ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 MD_LINK = re.compile(r"!?\[[^\]]*\]\((?P<target>[^)\s]+)(?:\s+\"[^\"]*\")?\)")
 HTML_LINK = re.compile(r"""(?:src|href)=["'](?P<target>[^"']+)["']""")
@@ -276,6 +290,97 @@ def check_readme_pair() -> None:
         warn("README.ru.md does not link back to README.md")
 
 
+def check_benchmark_reports() -> int:
+    results_dir = ROOT / "checks" / "results"
+    if not results_dir.is_dir():
+        return 0
+    count = 0
+    for path in sorted(results_dir.glob("*.json")):
+        count += 1
+        where = rel(path)
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue  # Already reported by check_json_files
+        if not isinstance(data, dict):
+            error("%s: report root must be an object" % where)
+            continue
+
+        for key in ("run_id", "started_at", "operator", "sdk", "engine", "environment", "targets", "verdict"):
+            if key not in data:
+                error("%s: missing required report field %r" % (where, key))
+
+        verdict = data.get("verdict")
+        if verdict not in REPORT_VERDICTS:
+            error("%s: invalid verdict %r" % (where, verdict))
+
+        for comp_key in ("sdk", "engine"):
+            comp = data.get(comp_key)
+            if not isinstance(comp, dict) or not comp.get("name") or not comp.get("version"):
+                error("%s: %s must have non-empty name and version" % (where, comp_key))
+
+        env = data.get("environment")
+        if isinstance(env, dict):
+            if not isinstance(env.get("os"), str) or not env.get("os"):
+                error("%s: environment.os must be a non-empty string" % where)
+            if env.get("mode") not in REPORT_MODES:
+                error("%s: environment.mode must be headed or headless" % where)
+            seed_hash = env.get("seed_hash")
+            if not isinstance(seed_hash, str) or not seed_hash.startswith("sha256:"):
+                error("%s: environment.seed_hash must start with 'sha256:'" % where)
+            proxy_country = env.get("proxy_country")
+            if proxy_country is not None and (not isinstance(proxy_country, str) or not PROXY_COUNTRY_RE.match(proxy_country)):
+                error("%s: environment.proxy_country must be ISO alpha-2 or 'direct'" % where)
+        else:
+            error("%s: environment must be an object" % where)
+
+        targets = data.get("targets")
+        if not isinstance(targets, list) or not targets:
+            error("%s: targets must be a non-empty array" % where)
+        else:
+            for idx, target in enumerate(targets):
+                t_where = "%s: targets[%d]" % (where, idx)
+                if not isinstance(target, dict):
+                    error("%s must be an object" % t_where)
+                    continue
+                if not isinstance(target.get("id"), str) or not target.get("id"):
+                    error("%s missing non-empty id" % t_where)
+                status = target.get("status")
+                if status not in TARGET_STATUSES:
+                    error("%s invalid status %r" % (t_where, status))
+                if not isinstance(target.get("failures"), list):
+                    error("%s failures must be a list" % t_where)
+                if status == "DEGRADED":
+                    gap = target.get("known_gap")
+                    if not isinstance(gap, dict):
+                        error("%s DEGRADED target must include known_gap" % t_where)
+                    else:
+                        if not isinstance(gap.get("owner"), str) or not gap.get("owner"):
+                            error("%s known_gap.owner must be non-empty" % t_where)
+                        if not isinstance(gap.get("reason"), str) or not gap.get("reason"):
+                            error("%s known_gap.reason must be non-empty" % t_where)
+                        expires = gap.get("expires")
+                        if not isinstance(expires, str) or not ISO_DATE_RE.match(expires):
+                            error("%s known_gap.expires must be YYYY-MM-DD" % t_where)
+
+        checks = data.get("checks")
+        if isinstance(checks, dict):
+            flags = checks.get("flags") or []
+            for flag in flags:
+                if isinstance(flag, str) and (flag.startswith("--fingerprint=") or flag.startswith("--user-data-dir=")):
+                    error("%s: sensitive flag leaked in checks.flags (%s)" % (where, flag.split("=", 1)[0]))
+            for r_idx, run in enumerate(checks.get("runs") or []):
+                probes = run.get("probes") if isinstance(run, dict) else None
+                if isinstance(probes, dict):
+                    raw_keys = [pid for pid, item in probes.items() if isinstance(item, dict) and "v" in item]
+                    if raw_keys:
+                        error("%s: checks.runs[%d] contains unredacted raw probe values (%s)" % (
+                            where, r_idx, ", ".join(raw_keys[:3])
+                        ))
+                        break
+    return count
+
+
 def main() -> int:
     check_root_files()
     manifest = load_manifest()
@@ -283,6 +388,7 @@ def main() -> int:
         check_manifest(manifest)
     check_readme_pair()
     json_count = check_json_files()
+    check_benchmark_reports()
     checked_links = check_markdown_links()
 
     for message in warnings:

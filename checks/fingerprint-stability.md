@@ -282,7 +282,7 @@ TLS/JA3/JA4, HTTP/2, TCP/IP, порядок заголовков, IP/ASN/geo, DN
 
 ### 3.2. Определения
 
-- **Слепок** — один прогон 69 проб (55 hard, 11 context, 3 volatile) в одном состоянии браузера.
+- **Слепок** — один прогон 78 проб (65 hard, 10 context, 3 volatile) в одном состоянии браузера.
 - **База (baseline)** — слепок, с которым сравниваются остальные. Обычно первый в серии.
 - **Cold start** — полный выход браузера (все процессы завершены), затем запуск с тем же профилем, окном, зумом и флагами. Не «перезагрузка вкладки» и не `chrome://restart`.
 - **Hard** — обязан совпадать бит-в-бит. Любое изменение = провал.
@@ -405,7 +405,7 @@ checks/
     serve.py                 ← static server на 127.0.0.1
     probe/
       index.html             ← UI
-      fp-core.js             ← 69 проб, хеши, сравнение
+      fp-core.js             ← 78 проб, хеши, сравнение
       app.js                 ← история, baseline, экспорт, отчёт
       styles.css
   results/                   ← принятые JSON-отчёты
@@ -473,12 +473,13 @@ python3 -m http.server 8787 --bind 127.0.0.1
 | Шрифты | список установленных, метрики, emoji-рендеринг | hard |
 | JS-движок | Math, числа, Error stack, native toString, Proxy/Reflect, WASM | hard |
 | CSS | `CSS.supports` (29 свойств + селекторы), CSS API | hard |
-| Медиа/речь | canPlayType, MediaRecorder, enumerateDevices, speech voices | кодеки — hard; devices/voices — context |
-| Железо/API | Bluetooth/USB/HID/Serial/WakeLock/Share/Clipboard/…; storage; permissions; battery; connection; memory; gamepads | APIs — hard; storage/permissions/gamepads — context; battery/connection/memory — volatile |
-| Автоматизация | `window.chrome`, CDP-артефакты, согласованность UA/platform/touch/plugins, headless-эвристики, Notification vs Permissions | hard |
+| Медиа/речь | canPlayType, MediaCapabilities/MediaSource, MediaRecorder, enumerateDevices, speech voices | кодеки/capabilities — hard; devices/voices — context |
+| Железо/API | Bluetooth/USB/HID/Serial/WakeLock/Share/Clipboard/Keyboard/…; `jsHeapSizeLimit`; `keyboard.getLayoutMap()`; storage; permissions; battery; connection; memory; gamepads | APIs/heapLimit/keyboard — hard; storage/permissions/gamepads — context; battery/connection/memory — volatile |
+| DOM / Контекст | `ClientRects` vs `Range` + сетка `1/512 px`; согласованность Main / Worker / `iframe` / detached `iframe` (`L5-02`) | hard |
+| Автоматизация | `window.chrome`, CDP-артефакты, `Runtime.enable` leak, нативность прототипов/геттеров, кросс-полевая согласованность UA/platform/GPU/touch/plugins, headless-эвристики, Notification vs Permissions | hard |
 | WebRTC | типы host-кандидатов и address kinds (mDNS/IPv4/IPv6), без STUN | context |
 
-Всего **69 проб**: 55 hard, 11 context, 3 volatile. Точное число может меняться при обновлении чекера; смотрите `counts` в экспорте.
+Всего **78 проб**: 65 hard, 10 context, 3 volatile. Точное число может меняться при обновлении чекера; смотрите `counts` в экспорте.
 
 ### 4.6. Как считается стабильность
 
@@ -503,14 +504,14 @@ python3 -m http.server 8787 --bind 127.0.0.1
 `checks/benchmark/run.mjs` запускает движок N раз с одним профилем и одним `--fingerprint` seed, между запусками полностью закрывает браузер и вызывает `window.FPAudit.run()` через CDP. Это проверяет именно повторяемость, а не «перезагрузку вкладки».
 
 ```bash
-# 5 холодных стартов; по умолчанию — hard-only (55 проб)
-node checks/benchmark/run.mjs --runs 5 --headless --transport file --no-sandbox
+# 5 холодных стартов + контрольный запуск с другим seed; по умолчанию — hard-only (65 проб)
+node checks/benchmark/run.mjs --runs 5 --headless
 
-# сравнить отчёт
-python3 checks/benchmark/compare.py checks/results/*.json
+# сравнить отчёты (headless и headed группируются автоматически)
+python3 checks/benchmark/compare.py checks/results/
 ```
 
-`--transport file` нужен только там, где loopback HTTP заблокирован (наш сборочный хост). На обычной машине используйте HTTP по умолчанию: раннер сам поднимает временный сервер на `127.0.0.1`.
+`--transport file` нужен только там, где loopback HTTP заблокирован; при этом пропущенные hard-пробы (`auto.permissions`, worker в `context.agreement`) переводят цель в `DEGRADED` с `known_gap`. На обычной машине используйте HTTP по умолчанию: раннер сам поднимает временный сервер на `127.0.0.1` и не отправляет `Runtime.enable`.
 
 | Опция | Смысл |
 |---|---|
@@ -519,11 +520,14 @@ python3 checks/benchmark/compare.py checks/results/*.json
 | `--profile DIR` | существующий тестовый профиль (по умолчанию временный) |
 | `--mode headed\|headless` | режим; для релиза нужны оба |
 | `--transport http\|file` | HTTP (по умолчанию) или self-contained file fallback |
-| `--seed N` | передаётся как `--fingerprint=N` (по умолчанию 20261119) |
-| `--baseline FILE` | сравнить с конкретным предыдущим отчётом |
-| `--all-probes` | добавить context/volatile (69 проб вместо 55 hard) |
+| `--seed VALUE` | передаётся как `--fingerprint=VALUE` (по умолчанию 20261119) |
+| `--seed2 VALUE` / `--no-seed-check` | альтернативный seed для проверки чувствительности `L5-01` |
+| `--platform OS` | `--fingerprint-platform` (`windows\|macos\|linux\|android`) |
+| `--dpr N` | опциональный `--fingerprint-device-pixel-ratio=N` |
+| `--baseline FILE` | сравнить с конкретным предыдущим отчётом (отсутствующий файл → ошибка) |
+| `--all-probes` | добавить context/volatile (78 проб вместо 65 hard) |
 | `--no-double` | без двойного прогона (быстрее, но без детекта шума) |
-| `--no-sandbox` | только для хостов, где sandbox не инициализируется |
+| `--no-sandbox` | только для хостов, где sandbox не инициализируется (ставит `DEGRADED` + `known_gap`) |
 | `--no-redact` | сохранить сырые значения (только локально, не коммитить) |
 
 Важно:
@@ -557,8 +561,9 @@ python3 checks/benchmark/compare.py export.json --json report.json
 
 | Опция | Смысл |
 |---|---|
-| `--baseline ID\|LABEL` | выбрать базу по id или подстроке метки |
+| `--baseline ID\|LABEL` | выбрать базу по id или подстроке метки (отключает автогруппировку) |
 | `--profile NAME` | фильтр по профилю |
+| `--no-group` | сравнить все слепки против одной базы без автогруппировки |
 | `--strict` | context-изменения → exit 2 |
 | `--fail-on hard\|context\|none` | что считать ошибкой для exit code |
 | `--json FILE` | машинный отчёт |

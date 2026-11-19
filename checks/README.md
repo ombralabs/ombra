@@ -8,14 +8,15 @@ The full catalogue of external fingerprint checks, the S0–S10 test plan, and
 the manual probe guide are in
 [`fingerprint-stability.md`](fingerprint-stability.md).
 
-The benchmark implements two targets from that document:
+The benchmark implements three targets from that document:
 
 | Target | Question | Evidence |
 |---|---|---|
-| `L1-01` | Does the local probe see a coherent, non-automated fingerprint? | First cold-start snapshot: WebDriver, CDP artifacts, headless markers, UA-CH, hard-probe coverage |
-| `L5-01` | Does the same profile and seed produce the same hard fingerprint across launches? | Five cold starts: identical `hardHash`, 100% hard stability, zero hard noise |
+| `L1-01` | Does the local probe see a coherent, non-automated fingerprint across every run? | All cold-start snapshots: WebDriver, CDP artifacts, `Runtime.enable` leak, native prototype integrity, cross-field OS/GPU/UA coherence, permissions parity, headless markers, UA-CH, hard-probe coverage |
+| `L5-01` | Does the same profile and seed produce the same hard fingerprint across launches, and does changing the seed change it? | Five cold starts with identical `hardHash`, 100% hard stability, zero hard noise, plus an alternate-seed control launch verifying `hardHash` changes |
+| `L5-02` | Do Main window, DedicatedWorker, same-origin `iframe`, and detached `iframe` agree? | `context.agreement` probe across all cold-start snapshots |
 
-`L0` (transport), `L3` (automation/CDP audit), and `L4` (behavior) are not
+`L0` (transport), `L3` (full SDK CDP audit), and `L4` (behavior) are not
 covered by this benchmark. They remain separate checkup targets.
 
 ## Layout
@@ -25,12 +26,14 @@ checks/
   README.md
   fingerprint-stability.md
   benchmark/
-    run.mjs          # engine launcher + CDP runner + report writer
-    compare.py       # offline comparison of reports or raw snapshots
+    lib.mjs          # pure parsing, comparison, target/baseline evaluation, redaction
+    run.mjs          # engine launcher + CDP runner (no Runtime.enable) + report writer
+    compare.py       # offline grouped comparison of reports or raw snapshots
     serve.py         # manual probe server on 127.0.0.1
+    tests/           # zero-dependency Node and Python unit tests
     probe/
-      index.html     # local-only UI
-      fp-core.js     # 69 probes (55 hard); benchmark uses hard-only by default
+      index.html     # local-only UI (CSP connect-src 'none')
+      fp-core.js     # 78 probes (65 hard, 10 context, 3 volatile); hard-only by default
       app.js
       styles.css
   results/
@@ -43,20 +46,21 @@ report; do not delete or rewrite history.
 
 ## Current evidence
 
-| Date | Engine | Mode | `L1-01` | `L5-01` | Hard | Noise |
-|---|---|---|---|---|---|---|
-| 2026-11-19 | 151.0.7922.108-7 | headless | PASS | PASS | 100% (55/55) | 0 |
-| 2026-11-19 | 151.0.7922.108-7 | headed | PASS | PASS | 100% (55/55) | 0 |
+| Date | Engine | Probe | Mode | `L1-01` | `L5-01` | Hard | Noise |
+|---|---|---|---|---|---|---|---|
+| 2026-11-19 | 151.0.7922.108-7 | 1.0.0 (legacy) | headless | PASS | PASS | 100% (55/55) | 0 |
+| 2026-11-19 | 151.0.7922.108-7 | 1.0.0 (legacy) | headed | PASS | PASS | 100% (55/55) | 0 |
 
 Reports:
 [headless](results/2026-11-19T14-34-53Z-151.0.7922.108-7-headless.json),
 [headed](results/2026-11-19T14-36-37Z-151.0.7922.108-7-headed.json).
 
-Both runs used `--transport file` because loopback HTTP was blocked on the
-recording host, `--hard-only` (55 hard probes), and `--no-sandbox` because the
-host cannot initialize the Chromium sandbox. They are valid `L1-01`/`L5-01`
-evidence; they do not assert `L0-01` (launch flags) or full permission/WebRTC
-coverage.
+> Note: those two historical v1.0.0 files were recorded before probe v1.1.0
+> using `--transport file` and `--no-sandbox`. Starting with v1.1.0, any run
+> with skipped hard probes (such as `file://`) or `--no-sandbox` records an
+> explicit `known_gap` (`DEGRADED` / `PASS_WITH_GAPS`, exit `1`) instead of a
+> full release-gate `PASS`. Re-record with `--transport http` and sandbox
+> enabled for a full v1.1.0 `PASS` baseline.
 
 ## Run
 
@@ -78,21 +82,28 @@ writes:
 checks/results/<run_id>.json
 ```
 
-By default it runs the **hard-only** subset (55 probes). `L1-01` and `L5-01`
-only depend on hard probes; skipping context/volatile probes avoids
-permission-sensitive APIs on CI. Use `--all-probes` for the full 69-probe
-suite in the manual UI or for debugging.
+By default it runs the **hard-only** subset (65 probes) plus one alternate-seed
+control launch (`--seed2`, verifying `hardHash` changes when `--fingerprint`
+changes). The runner evaluates the page without sending `Runtime.enable`
+(matching conformance invariant `SI-01`) and does not force
+`--force-device-scale-factor=1` (pass `--dpr N` if you want an explicit DPR
+override). Use `--all-probes` for the full 78-probe suite.
 
 The default transport is a temporary HTTP server on `127.0.0.1`. On hosts where
 the engine cannot reach loopback HTTP (some CI/container sandboxes), use
 `--transport file`: the runner builds a self-contained inline copy of the same
-probe and loads it from `file://`. The report records `environment.transport`.
+probe and loads it from `file://`. Because `file://` skips `auto.permissions`
+and the Blob Worker portion of `context.agreement`, those targets are marked
+`DEGRADED` with an explicit `known_gap` (`PASS_WITH_GAPS`, exit `1`).
 
 ```bash
-# normal host
+# normal host (full release gate)
 node checks/benchmark/run.mjs --headless --runs 5
 
-# restricted host: no loopback HTTP
+# cross-OS profile verification
+node checks/benchmark/run.mjs --headless --platform windows --runs 5
+
+# restricted host: no loopback HTTP (produces PASS_WITH_GAPS with known_gap)
 node checks/benchmark/run.mjs --headless --transport file --runs 5
 ```
 
@@ -103,22 +114,32 @@ separate baselines.
 Other options:
 
 ```text
---engine PATH      engine binary (or OMBRA_BINARY_PATH)
---profile DIR      reuse an existing test profile
---seed N           passed as --fingerprint=N (default 20261119)
---transport MODE   http (default) or file
---out FILE         override the result path
---baseline FILE    compare with a specific previous report
---no-sandbox       restricted hosts only; recorded in environment.notes
---no-double        skip the probe's noise self-test (not for release evidence)
---no-redact        keep raw probe values (local debugging only)
---all-probes       run context/volatile probes too (default: hard-only)
---runs N           cold starts (default 5)
+--engine PATH            engine binary (or OMBRA_BINARY_PATH)
+--profile DIR            reuse an existing test profile
+--seed VALUE             passed as --fingerprint=VALUE (default 20261119)
+--seed2 VALUE            alternate seed for L5-01 sensitivity check
+--no-seed-check          skip the alternate-seed sensitivity check
+--platform OS            pass --fingerprint-platform (windows|macos|linux|android)
+--timezone TZ            pass --fingerprint-timezone=TZ
+--location LOC           pass --fingerprint-location=LOC
+--profile-preset NAME    pass --fingerprint-profile=NAME
+--dpr N                  pass --fingerprint-device-pixel-ratio=N
+--transport MODE         http (default) or file
+--out FILE               override the result path
+--baseline FILE          compare with a specific previous report (missing fails)
+--no-sandbox             restricted hosts only; marks L1-01 DEGRADED with known_gap
+--no-double              skip the probe's noise self-test (not for release evidence)
+--no-redact              keep raw probe values (local debugging only)
+--all-probes             run context/volatile probes too (default: hard-only)
+--runs N                 cold starts (default 5)
+--known-gap-owner NAME   owner recorded in known_gap on DEGRADED targets
+--known-gap-expires DATE YYYY-MM-DD expiry recorded in known_gap on DEGRADED targets
 ```
 
 `--no-sandbox` is required in containers and on hosts where the Chromium
-sandbox cannot initialize. The report then says so. Such a run is valid
-evidence for `L1-01`/`L5-01`, but it is **not** an `L0-01` launch-flags pass.
+sandbox cannot initialize. The runner records a `known_gap` and reports
+`PASS_WITH_GAPS` (exit `1`), so a `--no-sandbox` run can never silently become a
+`PASS` release-gate baseline for a sandboxed host.
 
 ## Report
 
@@ -142,50 +163,56 @@ profile is temporary and is not part of the report.
 
 ### L1-01 critical checks
 
-The target fails if any of these is visible in the first snapshot:
+The target evaluates **all** cold-start snapshots and fails if any run shows:
 
 - `navigator.webdriver` is not `false`;
-- a CDP/automation artifact is present in `window`/`document`;
+- a CDP/automation artifact is present in `window`/`document`/`navigator`;
+- `auto.runtimeLeak.leaked === true` (`Runtime.enable` leak);
+- `js.error.sourceUrlLeak === true` or `js.native.allNative === false`;
+- `auto.permissions.mismatch === true`;
 - a headless marker is present (`uaHeadless`, zero screen, zero outer size,
-  no Chrome object, no plugins, no languages);
-- `mobileNoTouch`, `chromeNoPlugins`, `outerZero`, or `screenZero` is true.
+  no Chrome object, no plugins on desktop, no languages);
+- `mobileNoTouch`, `chromeNoPlugins` (desktop), `outerZero`, `screenZero`,
+  `uaPlatformMismatch`, `uaMobileMismatch`, `gpuOsMismatch`, or
+  `webdriverOwnProp` is true.
 
-Unavailable hard probes and missing UA-CH are `DEGRADED`, not `PASS`.
-
-With `--transport file`, permission-sensitive probes (`auto.permissions`,
-`hw.permissions`, `media.devices`, `media.voices`, WebRTC) are skipped because
-the file origin cannot answer them consistently. The report records them under
-`checks.skipped`; `L1-01` covers everything else. Use the HTTP transport for a
-full permission/WebRTC pass.
+Unavailable hard probes, missing UA-CH, skipped hard probes (for example
+`auto.permissions` on `file://`), and `--no-sandbox` are `DEGRADED` with an
+explicit `known_gap`, never `PASS`.
 
 ### L5-01 stable checks
 
-The target passes only when all cold starts have:
+The target passes only when all expected cold starts complete and have:
 
 - the same `hardHash`;
-- 100% hard stability against the first run;
+- 100% hard stability against the first run (`denominator > 0`);
 - zero hard noise;
-- no missing hard probes.
+- no missing, errored, or skipped hard probes;
+- a different `hardHash` on the alternate-seed control launch (`--seed2`).
 
-Context changes (window position, media devices, permissions) are recorded but
-do not fail `L5-01`; hard changes do. The probe's `volatile` class is excluded.
-The default hard-only run does not execute context probes; use `--all-probes`
-when you need that extra context recorded.
+### L5-02 cross-context agreement
+
+`context.agreement` verifies that Main window, DedicatedWorker (Blob),
+same-origin `iframe`, and detached `iframe` agree on `navigator`, `Intl`,
+`screen`, and `OffscreenCanvas`. Any mismatch fails `L5-02`; if the worker
+check is skipped (on `file://`), `L5-02` is `DEGRADED` with `known_gap`.
 
 ## Regression gate
 
 Every release candidate must add a result JSON. The next run automatically
-compares with the latest accepted report (`PASS`/`PASS_WITH_GAPS`) for the same engine name and mode, unless
-`--baseline` names another file.
+compares with the latest compatible accepted report (`PASS`/`PASS_WITH_GAPS`)
+matching the same engine name, mode, OS, transport, probe version, probe subset,
+profile platform, and sandbox level, unless `--baseline` names another file
+(a missing explicit `--baseline` fails the run with exit code `2`).
 
 A regression is any of:
 
-- `L1-01` or `L5-01` status dropping: `PASS` → `DEGRADED`/`FAIL`/`UNREACHABLE`;
+- `L1-01`, `L5-01`, or `L5-02` status dropping: `PASS` → `DEGRADED`/`FAIL`/`UNREACHABLE`;
+- overall `verdict` dropping (for example `PASS` → `PASS_WITH_GAPS`);
 - hard stability dropping below 100%;
-- hard probe coverage decreasing;
-- hard noise increasing above zero;
-- hard probe errors increasing;
-- verdict dropping from `PASS`.
+- executed hard probe coverage decreasing;
+- hard noise rate (`noise_per_run`) increasing;
+- hard probe error rate (`hard_errors_per_run`) increasing.
 
 Any regression makes the report `FAIL` and exits non-zero. Fix it, or record a
 `known_gap` with owner and expiry per
@@ -202,17 +229,29 @@ python3 checks/benchmark/serve.py
 ```
 
 The probe makes no network requests: CSP `connect-src 'none'`, no external
-scripts, fonts, or images. It stores history only in this browser's
-`localStorage`. Export contains raw fingerprint values; treat it as sensitive.
+scripts, fonts, or images (`frame-src 'self' blob: about:; worker-src 'self' blob:`
+are enabled solely for local `L5-02` cross-context checks). It stores history
+only in this browser's `localStorage`. Export contains raw fingerprint values;
+treat it as sensitive.
 
 ## Offline comparison
 
 `compare.py` reads a benchmark report (`checks.runs`), a raw probe export
-(`snapshots`), or a directory of either:
+(`snapshots`), or a directory of either. When given a directory containing
+multiple modes (such as `headless` and `headed`), it groups snapshots by
+compatible `(engine, mode, os, probe)` context automatically (use `--no-group`
+to compare across groups):
 
 ```bash
 python3 checks/benchmark/compare.py checks/results/<run_id>.json
 python3 checks/benchmark/compare.py checks/results/ --strict
+```
+
+## Self-tests
+
+```bash
+node --test checks/benchmark/tests/*.test.mjs
+python3 -m unittest discover -s checks/benchmark/tests -p "test_*.py" -v
 ```
 
 Exit codes: `0` hard-stable, `1` hard changed/noisy/missing, `2` context

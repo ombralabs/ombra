@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var SCHEMA = 1;
   var IS_FILE = window.location.protocol === 'file:';
 
@@ -26,6 +26,7 @@
     screen: 'Экран, окно, media queries',
     locale: 'Локаль, время, Intl',
     canvas: 'Canvas 2D',
+    dom: 'DOM / ClientRects',
     webgl: 'WebGL / GPU',
     webgpu: 'WebGPU',
     audio: 'Audio',
@@ -35,6 +36,7 @@
     media: 'Медиа и речь',
     hardware: 'Железо и API',
     automation: 'Автоматизация и «ложь»',
+    context: 'Кросс-контекстность (Worker / iframe)',
     webrtc: 'WebRTC',
     volatile: 'Волатильные сигналы'
   };
@@ -68,7 +70,10 @@
     if (value === undefined) return 'undefined';
     if (value === null) return 'null';
     var t = typeof value;
-    if (t === 'number') return Number.isFinite(value) ? String(value) : 'num:' + String(value);
+    if (t === 'number') {
+      if (Object.is(value, -0)) return '-0';
+      return Number.isFinite(value) ? String(value) : 'num:' + String(value);
+    }
     if (t === 'string') return JSON.stringify(value);
     if (t === 'boolean') return value ? 'true' : 'false';
     if (t === 'bigint') return 'bigint:' + value.toString();
@@ -84,6 +89,19 @@
       return '{' + parts.join(',') + '}';
     }
     return String(value);
+  }
+
+  function skippedReason(value) {
+    if (value && typeof value === 'object' && typeof value.skipped === 'string' && value.skipped) {
+      return value.skipped;
+    }
+    return null;
+  }
+
+  function probeSkippedReason(probe) {
+    if (!probe || typeof probe !== 'object') return null;
+    if (typeof probe.s === 'string' && probe.s) return probe.s;
+    return skippedReason(probe.v);
   }
 
   function pack(value) {
@@ -200,6 +218,20 @@
 
   var glCache = { 1: null, 2: null };
 
+  function resetPassState() {
+    var keys = [1, 2];
+    for (var i = 0; i < keys.length; i++) {
+      var entry = glCache[keys[i]];
+      if (entry && entry.gl) {
+        try {
+          var lose = entry.gl.getExtension('WEBGL_lose_context');
+          if (lose && typeof lose.loseContext === 'function') lose.loseContext();
+        } catch (e) { /* ignore */ }
+      }
+      glCache[keys[i]] = null;
+    }
+  }
+
   function getGL(version) {
     var key = version === 2 ? 2 : 1;
     if (glCache[key] && !glCache[key].gl.isContextLost()) return glCache[key];
@@ -239,14 +271,55 @@
     return shader;
   }
 
-  function renderGL(gl, version) {
+  function renderGL(gl, version, canvas) {
     var vertexSource, fragmentSource;
     if (version === 2) {
-      vertexSource = '#version 300 es\nin vec2 p; void main(){gl_Position=vec4(p,0.0,1.0);}';
-      fragmentSource = '#version 300 es\nprecision mediump float; out vec4 o; void main(){o=vec4(gl_FragCoord.x/64.0, gl_FragCoord.y/64.0, 0.5, 1.0);}';
+      vertexSource = [
+        '#version 300 es',
+        'in vec3 p;',
+        'in vec3 c;',
+        'out vec3 vc;',
+        'out vec3 vp;',
+        'void main(){',
+        '  vc = c;',
+        '  vp = p;',
+        '  float z = 1.0 + p.z * 0.35;',
+        '  gl_Position = vec4(p.x / z, p.y / z, p.z * 0.5, 1.0);',
+        '}'
+      ].join('\n');
+      fragmentSource = [
+        '#version 300 es',
+        'precision highp float;',
+        'in vec3 vc;',
+        'in vec3 vp;',
+        'out vec4 o;',
+        'void main(){',
+        '  float w = 0.5 + 0.5 * sin(vp.x * 9.0 + cos(vp.y * 7.0));',
+        '  o = vec4(clamp(vc.r * w + 0.15, 0.0, 1.0), clamp(vc.g * (1.0 - w * 0.4), 0.0, 1.0), clamp(vc.b + 0.2 * w, 0.0, 1.0), 0.85);',
+        '}'
+      ].join('\n');
     } else {
-      vertexSource = 'attribute vec2 p; void main(){gl_Position=vec4(p,0.0,1.0);}';
-      fragmentSource = 'precision mediump float; void main(){gl_FragColor=vec4(gl_FragCoord.x/64.0, gl_FragCoord.y/64.0, 0.5, 1.0);}';
+      vertexSource = [
+        'attribute vec3 p;',
+        'attribute vec3 c;',
+        'varying vec3 vc;',
+        'varying vec3 vp;',
+        'void main(){',
+        '  vc = c;',
+        '  vp = p;',
+        '  float z = 1.0 + p.z * 0.35;',
+        '  gl_Position = vec4(p.x / z, p.y / z, p.z * 0.5, 1.0);',
+        '}'
+      ].join('\n');
+      fragmentSource = [
+        'precision mediump float;',
+        'varying vec3 vc;',
+        'varying vec3 vp;',
+        'void main(){',
+        '  float w = 0.5 + 0.5 * sin(vp.x * 9.0 + cos(vp.y * 7.0));',
+        '  gl_FragColor = vec4(clamp(vc.r * w + 0.15, 0.0, 1.0), clamp(vc.g * (1.0 - w * 0.4), 0.0, 1.0), clamp(vc.b + 0.2 * w, 0.0, 1.0), 0.85);',
+        '}'
+      ].join('\n');
     }
 
     var vertex = compileShader(gl, gl.VERTEX_SHADER, vertexSource);
@@ -260,24 +333,45 @@
     }
     gl.useProgram(program);
 
+    // Interleaved [x, y, z, r, g, b] for two intersecting 3D triangles
+    var vertices = new Float32Array([
+      -0.9, -0.8, 0.2, 0.9, 0.2, 0.3,
+       0.9, -0.6, -0.3, 0.2, 0.8, 0.4,
+       0.1,  0.9, 0.4, 0.2, 0.3, 0.95,
+      -0.7,  0.7, -0.2, 0.95, 0.75, 0.1,
+       0.8,  0.5, 0.3, 0.15, 0.85, 0.85,
+      -0.1, -0.9, -0.1, 0.75, 0.2, 0.9
+    ]);
     var buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    var location = gl.getAttribLocation(program, 'p');
-    gl.enableVertexAttribArray(location);
-    gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    var stride = 6 * 4;
+    var locP = gl.getAttribLocation(program, 'p');
+    var locC = gl.getAttribLocation(program, 'c');
+    gl.enableVertexAttribArray(locP);
+    gl.vertexAttribPointer(locP, 3, gl.FLOAT, false, stride, 0);
+    gl.enableVertexAttribArray(locC);
+    gl.vertexAttribPointer(locC, 3, gl.FLOAT, false, stride, 3 * 4);
 
-    gl.viewport(0, 0, 64, 64);
-    gl.disable(gl.DEPTH_TEST);
-    gl.disable(gl.BLEND);
+    gl.viewport(0, 0, 128, 64);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.colorMask(true, true, true, true);
-    gl.clearColor(0.2, 0.4, 0.6, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.clearColor(0.12, 0.22, 0.34, 1);
+    gl.clearDepth(1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
     gl.finish();
 
-    var pixels = new Uint8Array(64 * 64 * 4);
-    gl.readPixels(0, 0, 64, 64, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    var pixels = new Uint8Array(128 * 64 * 4);
+    gl.readPixels(0, 0, 128, 64, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    var canvasHash = null;
+    if (canvas && typeof canvas.toDataURL === 'function') {
+      try { canvasHash = hashString(canvas.toDataURL('image/png')); } catch (e) { canvasHash = null; }
+    }
 
     gl.deleteBuffer(buffer);
     gl.deleteProgram(program);
@@ -286,6 +380,7 @@
 
     return {
       hash: hashBytes(pixels),
+      canvasHash: canvasHash,
       first: Array.from(pixels.slice(0, 12)),
       error: gl.getError()
     };
@@ -302,11 +397,11 @@
     'MAX_UNIFORM_BUFFER_BINDINGS', 'MAX_UNIFORM_BLOCK_SIZE',
     'MAX_ELEMENT_INDEX', 'MAX_ELEMENTS_INDICES', 'MAX_ELEMENTS_VERTICES',
     'MAX_FRAGMENT_INPUT_COMPONENTS', 'MAX_VERTEX_OUTPUT_COMPONENTS',
-    'MAX_COMPUTE_WORK_GROUP_INVOCATIONS', 'MAX_COMPUTE_WORK_GROUP_SIZE',
-    'MAX_TEXTURE_MAX_ANISOTROPY_EXT'
+    'SAMPLES', 'SAMPLE_BUFFERS', 'RED_BITS', 'GREEN_BITS', 'BLUE_BITS',
+    'ALPHA_BITS', 'DEPTH_BITS', 'STENCIL_BITS', 'SUBPIXEL_BITS'
   ];
 
-  function glParameters(gl) {
+  function glParameters(gl, version) {
     var out = {};
     for (var i = 0; i < GL_PARAMS.length; i++) {
       var name = GL_PARAMS[i];
@@ -314,14 +409,42 @@
       if (typeof constant !== 'number') continue;
       try { out[name] = plain(gl.getParameter(constant)); } catch (e) { out[name] = 'err'; }
     }
+    try {
+      var aniso = gl.getExtension('EXT_texture_filter_anisotropic') ||
+        gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
+        gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
+      if (aniso && typeof aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT === 'number') {
+        out.MAX_TEXTURE_MAX_ANISOTROPY_EXT = plain(gl.getParameter(aniso.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+      }
+    } catch (e) { /* ignore */ }
+    if (version === 2 && typeof gl.getInternalformatParameter === 'function') {
+      try {
+        out.INTERNALFORMAT_RGBA8_SAMPLES = plain(
+          gl.getInternalformatParameter(gl.RENDERBUFFER, gl.RGBA8, gl.SAMPLES)
+        );
+      } catch (e) { /* ignore */ }
+    }
+    try {
+      var attrs = gl.getContextAttributes();
+      out.contextAttributes = attrs ? {
+        alpha: attrs.alpha,
+        antialias: attrs.antialias,
+        depth: attrs.depth,
+        stencil: attrs.stencil,
+        premultipliedAlpha: attrs.premultipliedAlpha,
+        preserveDrawingBuffer: attrs.preserveDrawingBuffer
+      } : null;
+    } catch (e) { /* ignore */ }
     return out;
   }
 
   function glPrecision(gl) {
     var out = {};
     var stages = [
-      ['VERTEX_SHADER', 'HIGH_FLOAT'], ['VERTEX_SHADER', 'MEDIUM_FLOAT'],
-      ['FRAGMENT_SHADER', 'HIGH_FLOAT'], ['FRAGMENT_SHADER', 'MEDIUM_FLOAT']
+      ['VERTEX_SHADER', 'HIGH_FLOAT'], ['VERTEX_SHADER', 'MEDIUM_FLOAT'], ['VERTEX_SHADER', 'LOW_FLOAT'],
+      ['VERTEX_SHADER', 'HIGH_INT'], ['VERTEX_SHADER', 'MEDIUM_INT'], ['VERTEX_SHADER', 'LOW_INT'],
+      ['FRAGMENT_SHADER', 'HIGH_FLOAT'], ['FRAGMENT_SHADER', 'MEDIUM_FLOAT'], ['FRAGMENT_SHADER', 'LOW_FLOAT'],
+      ['FRAGMENT_SHADER', 'HIGH_INT'], ['FRAGMENT_SHADER', 'MEDIUM_INT'], ['FRAGMENT_SHADER', 'LOW_INT']
     ];
     for (var i = 0; i < stages.length; i++) {
       var stage = gl[stages[i][0]];
@@ -329,6 +452,7 @@
       if (typeof stage !== 'number' || typeof precision !== 'number') continue;
       try {
         var format = gl.getShaderPrecisionFormat(stage, precision);
+        if (!format) continue;
         out[stages[i][0] + '.' + stages[i][1]] = {
           rangeMin: format.rangeMin,
           rangeMax: format.rangeMax,
@@ -337,6 +461,25 @@
       } catch (e) { /* ignore */ }
     }
     return out;
+  }
+
+  function glExtensions(gl) {
+    var supported = (gl.getSupportedExtensions() || []).slice().sort();
+    var nullList = [];
+    for (var i = 0; i < supported.length; i++) {
+      var extName = supported[i];
+      if (extName === 'WEBGL_lose_context') continue;
+      try {
+        if (gl.getExtension(extName) === null) nullList.push(extName);
+      } catch (e) {
+        nullList.push(extName);
+      }
+    }
+    return {
+      supported: supported,
+      nullCount: nullList.length,
+      nullList: nullList
+    };
   }
 
   function glInfo(gl) {
@@ -537,11 +680,26 @@
     return out;
   });
 
+  add('screen.mediaMatch', 'screen', 'Media queries (hard / screen)', 'hard', function () {
+    return {
+      deviceWidthMatch: window.matchMedia('(device-width: ' + screen.width + 'px)').matches,
+      deviceHeightMatch: window.matchMedia('(device-height: ' + screen.height + 'px)').matches,
+      hoverHover: window.matchMedia('(hover: hover)').matches,
+      anyHoverHover: window.matchMedia('(any-hover: hover)').matches,
+      pointerFine: window.matchMedia('(pointer: fine)').matches,
+      pointerCoarse: window.matchMedia('(pointer: coarse)').matches,
+      anyPointerFine: window.matchMedia('(any-pointer: fine)').matches,
+      colorGamutSrgb: window.matchMedia('(color-gamut: srgb)').matches,
+      colorGamutP3: window.matchMedia('(color-gamut: p3)').matches,
+      colorGamutRec2020: window.matchMedia('(color-gamut: rec2020)').matches
+    };
+  });
+
   // --- locale --------------------------------------------------------------
 
   add('locale.timezone', 'locale', 'Часовой пояс и смещения', 'hard', function () {
-    var january = new Date(2026, 0, 15, 12, 0, 0);
-    var july = new Date(2026, 6, 15, 12, 0, 0);
+    var january = new Date(Date.UTC(2026, 0, 15, 12, 0, 0));
+    var july = new Date(Date.UTC(2026, 6, 15, 12, 0, 0));
     var formatter = new Intl.DateTimeFormat('en-US', { timeZoneName: 'long' });
     function zoneName(date) {
       var parts = formatter.formatToParts(date);
@@ -555,7 +713,8 @@
       offsetJanuary: january.getTimezoneOffset(),
       offsetJuly: july.getTimezoneOffset(),
       nameJanuary: zoneName(january),
-      nameJuly: zoneName(july)
+      nameJuly: zoneName(july),
+      dateString: january.toString()
     };
   });
 
@@ -571,11 +730,13 @@
   });
 
   add('locale.date', 'locale', 'Форматирование даты', 'hard', function () {
-    var date = new Date(2026, 10, 19, 12, 34, 56);
+    var date = new Date(Date.UTC(2026, 10, 19, 12, 34, 56));
     function format(locale) {
       return new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeStyle: 'long' }).format(date);
     }
     return {
+      defaultLocale: format(undefined),
+      defaultShort: date.toLocaleString(),
       en: format('en-US'),
       ru: format('ru-RU'),
       de: format('de-DE'),
@@ -585,6 +746,7 @@
 
   add('locale.number', 'locale', 'Форматирование чисел', 'hard', function () {
     return {
+      defaultLocale: (1234567.891).toLocaleString(),
       en: (1234567.891).toLocaleString('en-US'),
       de: (1234567.891).toLocaleString('de-DE'),
       ru: (1234567.891).toLocaleString('ru-RU'),
@@ -599,12 +761,18 @@
     function sorted(locale) {
       return values.slice().sort(new Intl.Collator(locale).compare);
     }
-    return { de: sorted('de'), sv: sorted('sv') };
+    return {
+      defaultLocale: sorted(undefined),
+      de: sorted('de'),
+      sv: sorted('sv')
+    };
   });
 
   add('locale.plural', 'locale', 'PluralRules', 'hard', function () {
     var locales = ['en', 'ru', 'ar', 'pl', 'fr'];
     var out = {};
+    var defRules = new Intl.PluralRules();
+    out.defaultLocale = [1, 2, 5, 21].map(function (n) { return defRules.select(n); });
     for (var i = 0; i < locales.length; i++) {
       var rules = new Intl.PluralRules(locales[i]);
       out[locales[i]] = [1, 2, 5, 21].map(function (n) { return rules.select(n); });
@@ -614,15 +782,74 @@
 
   // --- canvas --------------------------------------------------------------
 
-  add('canvas.2d', 'canvas', 'Canvas 2D: сцена', 'hard', function () {
+  function decodeDataUrlBytes(dataUrl) {
+    var marker = ';base64,';
+    var idx = dataUrl.indexOf(marker);
+    if (idx === -1) return null;
+    var binary = atob(dataUrl.slice(idx + marker.length));
+    var out = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+    return out;
+  }
+
+  add('canvas.2d', 'canvas', 'Canvas 2D: сцена', 'hard', async function () {
     var pair = newCanvas(320, 100);
     drawCanvasScene(pair.ctx, 320, 100);
+    var url = pair.canvas.toDataURL('image/png');
+    var imageDataHash = null;
+    try {
+      var pixels = pair.ctx.getImageData(0, 0, 320, 100).data;
+      imageDataHash = hashBytes(pixels);
+    } catch (e) {
+      imageDataHash = 'err:' + errText(e);
+    }
+
+    var blobHash = null;
+    var dataUrlMatchesBlob = null;
+    if (typeof pair.canvas.toBlob === 'function') {
+      try {
+        var blob = await new Promise(function (resolve) {
+          pair.canvas.toBlob(resolve, 'image/png');
+        });
+        if (blob && typeof blob.arrayBuffer === 'function') {
+          var blobBytes = new Uint8Array(await blob.arrayBuffer());
+          blobHash = hashBytes(blobBytes);
+          var urlBytes = decodeDataUrlBytes(url);
+          if (urlBytes) {
+            dataUrlMatchesBlob = (urlBytes.length === blobBytes.length) && (hashBytes(urlBytes) === blobHash);
+          }
+        }
+      } catch (e) {
+        blobHash = 'err:' + errText(e);
+      }
+    }
+
+    // Uniform solid-fill test (detects naive per-pixel canvas noise on flat fills)
+    var solid = newCanvas(32, 32);
+    solid.ctx.fillStyle = '#4287f5';
+    solid.ctx.fillRect(0, 0, 32, 32);
+    var solidPixels = solid.ctx.getImageData(0, 0, 32, 32).data;
+    var solidUniform = true;
+    for (var i = 4; i < solidPixels.length; i += 4) {
+      if (solidPixels[i] !== solidPixels[0] ||
+          solidPixels[i + 1] !== solidPixels[1] ||
+          solidPixels[i + 2] !== solidPixels[2] ||
+          solidPixels[i + 3] !== solidPixels[3]) {
+        solidUniform = false;
+        break;
+      }
+    }
+
     return {
       width: pair.canvas.width,
       height: pair.canvas.height,
-      url: pair.canvas.toDataURL('image/png')
+      url: url,
+      imageDataHash: imageDataHash,
+      blobHash: blobHash,
+      dataUrlMatchesBlob: dataUrlMatchesBlob,
+      solidUniform: solidUniform
     };
-  });
+  }, 4000);
 
   add('canvas.metrics', 'canvas', 'Canvas 2D: text metrics', 'hard', function () {
     var pair = newCanvas(600, 100);
@@ -667,7 +894,7 @@
     };
   });
 
-  add('canvas.offscreen', 'canvas', 'OffscreenCanvas', 'hard', function () {
+  add('canvas.offscreen', 'canvas', 'OffscreenCanvas', 'hard', async function () {
     if (typeof OffscreenCanvas === 'undefined') return null;
     var canvas = new OffscreenCanvas(160, 80);
     var ctx = null;
@@ -681,7 +908,65 @@
     var pixels;
     try { pixels = ctx.getImageData(0, 0, 160, 80).data; }
     catch (e) { return { available: true, pixels: false, error: errText(e) }; }
-    return { available: true, pixels: true, size: [160, 80], hash: hashBytes(pixels) };
+    var blobHash = null;
+    if (typeof canvas.convertToBlob === 'function') {
+      try {
+        var blob = await canvas.convertToBlob({ type: 'image/png' });
+        if (blob && typeof blob.arrayBuffer === 'function') {
+          blobHash = hashBytes(new Uint8Array(await blob.arrayBuffer()));
+        }
+      } catch (e) {
+        blobHash = 'err:' + errText(e);
+      }
+    }
+    return {
+      available: true,
+      pixels: true,
+      size: [160, 80],
+      hash: hashBytes(pixels),
+      blobHash: blobHash
+    };
+  }, 4000);
+
+  // --- DOM / ClientRects ---------------------------------------------------
+
+  add('dom.rects', 'dom', 'ClientRects & Range parity', 'hard', function () {
+    if (!document.body) return null;
+    var host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-9999px;top:0;visibility:hidden;font-family:sans-serif;font-size:16px;line-height:1.25;';
+    var span = document.createElement('span');
+    span.style.cssText = 'display:inline-block;padding:1.333px 2.75px;border:0.5px solid transparent;transform:scale(1.013);';
+    span.textContent = 'ClientRects 0123 · mmmlliWWQ 😀';
+    host.appendChild(span);
+    document.body.appendChild(host);
+    try {
+      var elemRect = span.getBoundingClientRect();
+      var range = document.createRange();
+      range.selectNode(span);
+      var rangeRects = range.getClientRects();
+      var rangeRect = rangeRects.length ? rangeRects[0] : range.getBoundingClientRect();
+      var dims = [elemRect.width, elemRect.height, rangeRect.width, rangeRect.height];
+      var gridAligned = true;
+      for (var i = 0; i < dims.length; i++) {
+        var scaled = dims[i] * 512;
+        if (Math.abs(scaled - Math.round(scaled)) > 1e-4) {
+          gridAligned = false;
+          break;
+        }
+      }
+      return {
+        elemWidth: elemRect.width,
+        elemHeight: elemRect.height,
+        rangeWidth: rangeRect.width,
+        rangeHeight: rangeRect.height,
+        rangeCount: rangeRects.length,
+        widthDelta: Number(Math.abs(elemRect.width - rangeRect.width).toFixed(6)),
+        heightDelta: Number(Math.abs(elemRect.height - rangeRect.height).toFixed(6)),
+        subpixelGrid512: gridAligned
+      };
+    } finally {
+      host.remove();
+    }
   });
 
   // --- WebGL ---------------------------------------------------------------
@@ -694,19 +979,19 @@
   add('webgl1.params', 'webgl', 'WebGL1: лимиты и precision', 'hard', function () {
     var state = getGL(1);
     if (!state) return null;
-    return { params: glParameters(state.gl), precision: glPrecision(state.gl) };
+    return { params: glParameters(state.gl, 1), precision: glPrecision(state.gl) };
   });
 
   add('webgl1.extensions', 'webgl', 'WebGL1: расширения', 'hard', function () {
     var state = getGL(1);
     if (!state) return null;
-    return (state.gl.getSupportedExtensions() || []).slice().sort();
+    return glExtensions(state.gl);
   });
 
   add('webgl1.render', 'webgl', 'WebGL1: рендер', 'hard', function () {
     var state = getGL(1);
     if (!state) return null;
-    return renderGL(state.gl, 1);
+    return renderGL(state.gl, 1, state.canvas);
   });
 
   add('webgl2.info', 'webgl', 'WebGL2: vendor/renderer', 'hard', function () {
@@ -717,19 +1002,19 @@
   add('webgl2.params', 'webgl', 'WebGL2: лимиты и precision', 'hard', function () {
     var state = getGL(2);
     if (!state) return null;
-    return { params: glParameters(state.gl), precision: glPrecision(state.gl) };
+    return { params: glParameters(state.gl, 2), precision: glPrecision(state.gl) };
   });
 
   add('webgl2.extensions', 'webgl', 'WebGL2: расширения', 'hard', function () {
     var state = getGL(2);
     if (!state) return null;
-    return (state.gl.getSupportedExtensions() || []).slice().sort();
+    return glExtensions(state.gl);
   });
 
   add('webgl2.render', 'webgl', 'WebGL2: рендер', 'hard', function () {
     var state = getGL(2);
     if (!state) return null;
-    return renderGL(state.gl, 2);
+    return renderGL(state.gl, 2, state.canvas);
   });
 
   // --- WebGPU --------------------------------------------------------------
@@ -822,21 +1107,44 @@
     });
 
     var data = buffer.getChannelData(0);
+    var sliceStart = 4500;
+    var sliceEnd = Math.min(5000, data.length);
+    var sliceSum = 0;
     var sum = 0;
     var samples = [];
     for (var i = 0; i < data.length; i++) {
-      sum += Math.abs(data[i]);
-      if (i % 441 === 0) samples.push(Number(data[i].toFixed(6)));
+      var absVal = Math.abs(data[i]);
+      sum += absVal;
+      if (i >= sliceStart && i < sliceEnd) sliceSum += absVal;
+      if (i % 441 === 0) samples.push(Number(data[i].toPrecision(12)));
     }
+
+    var sliceView = new Float32Array(data.subarray(sliceStart, sliceEnd));
+    var sliceHash = hashBytes(new Uint8Array(sliceView.buffer));
+
+    var copyMatch = null;
+    if (typeof buffer.copyFromChannel === 'function') {
+      try {
+        var copied = new Float32Array(sliceEnd - sliceStart);
+        buffer.copyFromChannel(copied, 0, sliceStart);
+        copyMatch = hashBytes(new Uint8Array(copied.buffer)) === sliceHash;
+      } catch (e) {
+        copyMatch = false;
+      }
+    }
+
     return {
-      sum: Number(sum.toFixed(3)),
+      sum: Number(sum.toPrecision(15)),
+      sliceSum: Number(sliceSum.toPrecision(15)),
+      sliceHash: sliceHash,
+      copyMatch: copyMatch,
       samples: samples,
       sampleRate: buffer.sampleRate,
       length: buffer.length
     };
   }, 4000);
 
-  add('audio.context', 'audio', 'AudioContext-параметры', 'context', function () {
+  add('audio.context', 'audio', 'AudioContext-параметры', 'hard', function () {
     var AudioCtor = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtor) return null;
     var context;
@@ -844,9 +1152,7 @@
     var out = {
       sampleRate: context.sampleRate,
       maxChannelCount: safe(function () { return context.destination.maxChannelCount; }, null),
-      baseLatency: context.baseLatency ?? null,
-      outputLatency: context.outputLatency ?? null,
-      state: context.state
+      baseLatency: context.baseLatency ?? null
     };
     try { var closing = context.close(); if (closing && closing.catch) closing.catch(function () {}); } catch (e) { /* ignore */ }
     return out;
@@ -918,6 +1224,50 @@
     return detectFonts();
   });
 
+  add('fonts.dom', 'fonts', 'DOM-метрики и системные шрифты', 'hard', function () {
+    if (!document.body) return null;
+    var host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-9999px;top:0;visibility:hidden;white-space:nowrap;';
+    document.body.appendChild(host);
+    try {
+      var sampleText = 'mmmmmmmmmmlliWWQ@#%& 0123';
+      var probes = ['monospace', 'serif', 'sans-serif', 'system-ui', '"Arial", sans-serif', '"Segoe UI", sans-serif', '"Helvetica Neue", sans-serif', '"DejaVu Sans", sans-serif'];
+      var domMetrics = {};
+      for (var i = 0; i < probes.length; i++) {
+        var span = document.createElement('span');
+        span.style.font = '48px ' + probes[i];
+        span.textContent = sampleText;
+        host.appendChild(span);
+        var rect = span.getBoundingClientRect();
+        domMetrics[probes[i]] = [span.offsetWidth, span.offsetHeight, Number(rect.width.toFixed(3)), Number(rect.height.toFixed(3))];
+      }
+      var systemKeywords = ['caption', 'menu', 'message-box', 'small-caption', 'status-bar'];
+      var systemFonts = {};
+      for (var k = 0; k < systemKeywords.length; k++) {
+        var el = document.createElement('span');
+        el.style.font = systemKeywords[k];
+        host.appendChild(el);
+        var cs = window.getComputedStyle(el);
+        systemFonts[systemKeywords[k]] = cs ? cs.fontFamily : null;
+      }
+      var checkList = ['Arial', 'Segoe UI', 'Helvetica Neue', 'SF Pro Text', 'Roboto', 'DejaVu Sans', 'Liberation Sans', 'Noto Sans'];
+      var fontChecks = {};
+      if (document.fonts && typeof document.fonts.check === 'function') {
+        for (var c = 0; c < checkList.length; c++) {
+          fontChecks[checkList[c]] = safe(function () { return document.fonts.check('16px "' + checkList[c] + '"'); }, null);
+        }
+      }
+      return {
+        domMetrics: domMetrics,
+        systemFonts: systemFonts,
+        fontChecks: fontChecks,
+        queryLocalFonts: typeof window.queryLocalFonts === 'function'
+      };
+    } finally {
+      host.remove();
+    }
+  });
+
   add('fonts.emoji', 'fonts', 'Emoji-рендеринг', 'hard', function () {
     var pair = newCanvas(420, 80);
     var ctx = pair.ctx;
@@ -936,24 +1286,29 @@
 
   // --- JS engine -----------------------------------------------------------
 
-  add('js.math', 'js', 'Math-функции', 'hard', function () {
+  add('js.math', 'js', 'Math-функции и NaN', 'hard', function () {
     var cases = [
-      ['sin', Math.sin, 0.1], ['cos', Math.cos, 0.1], ['tan', Math.tan, 0.1],
+      ['sin', Math.sin, 0.1], ['sinHuge', Math.sin, 1e300],
+      ['cos', Math.cos, 0.1], ['cosHuge', Math.cos, 1e300],
+      ['tan', Math.tan, 0.1], ['tanHuge', Math.tan, -1e300],
       ['asin', Math.asin, 0.5], ['acos', Math.acos, 0.5], ['atan', Math.atan, 0.5],
-      ['atan2', Math.atan2, 1, 3], ['exp', Math.exp, 0.1], ['expm1', Math.expm1, 0.1],
+      ['atan2', Math.atan2, 1, 3], ['atan2Tiny', Math.atan2, 1e-300, -1e-300],
+      ['exp', Math.exp, 0.1], ['expm1', Math.expm1, 1],
       ['log', Math.log, 10], ['log1p', Math.log1p, 0.1], ['log2', Math.log2, 3],
-      ['log10', Math.log10, 1000], ['pow', Math.pow, 2, 0.5], ['sqrt', Math.sqrt, 2],
-      ['cbrt', Math.cbrt, 2], ['hypot', Math.hypot, 3, 4], ['sinh', Math.sinh, 0.1],
-      ['cosh', Math.cosh, 0.1], ['tanh', Math.tanh, 0.1], ['asinh', Math.asinh, 1],
-      ['acosh', Math.acosh, 2], ['atanh', Math.atanh, 0.5], ['fround', Math.fround, 0.1],
-      ['imul', Math.imul, 0xffffffff, 5], ['clz32', Math.clz32, 1]
+      ['log10', Math.log10, 1000], ['pow', Math.pow, 2, 0.5], ['powPi', Math.pow, Math.PI, -100],
+      ['sqrt', Math.sqrt, 2], ['cbrt', Math.cbrt, 2], ['hypot', Math.hypot, 3, 4],
+      ['sinh', Math.sinh, 1], ['cosh', Math.cosh, 1], ['tanh', Math.tanh, 0.1],
+      ['asinh', Math.asinh, 1e300], ['acosh', Math.acosh, 1e300], ['atanh', Math.atanh, 0.5],
+      ['fround', Math.fround, 0.1], ['imul', Math.imul, 0xffffffff, 5], ['clz32', Math.clz32, 1]
     ];
     var out = {};
     for (var i = 0; i < cases.length; i++) {
       var item = cases[i];
       var value = item[1](item[2], item[3]);
-      out[item[0]] = Number(value.toPrecision(17));
+      out[item[0]] = Number.isFinite(value) ? Number(value.toPrecision(17)) : String(value);
     }
+    var nanBuf = new Float64Array([0 / 0]);
+    out.nanBytes = Array.from(new Uint8Array(nanBuf.buffer));
     return out;
   });
 
@@ -975,37 +1330,71 @@
     };
   });
 
-  add('js.error', 'js', 'Error stack', 'hard', function () {
+  add('js.error', 'js', 'Error stack и sourceURL', 'hard', function () {
     var error = new Error('fp');
     var stack = error.stack || '';
+    var sourceUrlLeak = /pptr:\/\/|UtilityScript|__playwright_evaluation_script__|__puppeteer_evaluation_script__/i.test(stack);
     return {
       name: error.name,
       message: error.message,
       stackLimit: Error.stackTraceLimit,
       stackLines: stack.split('\n').length,
       hasAt: stack.indexOf('    at ') !== -1,
-      hasEval: stack.indexOf('eval') !== -1
+      hasEval: stack.indexOf('eval') !== -1,
+      hasPrepareStackTrace: typeof Error.prepareStackTrace === 'function',
+      sourceUrlLeak: sourceUrlLeak
     };
   });
 
   add('js.native', 'js', 'Native code / подмена функций', 'hard', function () {
+    function getterOf(proto, prop) {
+      if (!proto) return null;
+      var desc = Object.getOwnPropertyDescriptor(proto, prop);
+      return desc && typeof desc.get === 'function' ? desc.get : null;
+    }
+    var navProto = typeof Navigator !== 'undefined' ? Navigator.prototype : null;
+    var screenProto = typeof Screen !== 'undefined' ? Screen.prototype : null;
     var entries = [
+      ['Function.prototype.toString', Function.prototype.toString],
       ['Math.sin', Math.sin],
       ['Array.prototype.map', Array.prototype.map],
       ['Promise', Promise],
       ['fetch', window.fetch],
       ['setTimeout', setTimeout],
       ['RTCPeerConnection', window.RTCPeerConnection],
-      ['navigator.getBattery', navigator.getBattery]
+      ['navigator.getBattery', navigator.getBattery],
+      ['Navigator.webdriver.get', getterOf(navProto, 'webdriver')],
+      ['Navigator.userAgent.get', getterOf(navProto, 'userAgent')],
+      ['Navigator.platform.get', getterOf(navProto, 'platform')],
+      ['Navigator.hardwareConcurrency.get', getterOf(navProto, 'hardwareConcurrency')],
+      ['Navigator.languages.get', getterOf(navProto, 'languages')],
+      ['Navigator.plugins.get', getterOf(navProto, 'plugins')],
+      ['Navigator.deviceMemory.get', getterOf(navProto, 'deviceMemory')],
+      ['Screen.width.get', getterOf(screenProto, 'width')],
+      ['Screen.height.get', getterOf(screenProto, 'height')],
+      ['HTMLCanvasElement.toDataURL', typeof HTMLCanvasElement !== 'undefined' ? HTMLCanvasElement.prototype.toDataURL : null],
+      ['Canvas2D.getImageData', typeof CanvasRenderingContext2D !== 'undefined' ? CanvasRenderingContext2D.prototype.getImageData : null],
+      ['WebGL.getParameter', typeof WebGLRenderingContext !== 'undefined' ? WebGLRenderingContext.prototype.getParameter : null],
+      ['AudioBuffer.getChannelData', typeof AudioBuffer !== 'undefined' ? AudioBuffer.prototype.getChannelData : null]
     ];
-    var out = {};
+    var nativeRe = /^function\s+[^(\n]*\(\)\s*\{\s*\[native code\]\s*\}$/;
+    var funcs = {};
+    var nonNative = [];
     for (var i = 0; i < entries.length; i++) {
       var name = entries[i][0];
       var fn = entries[i][1];
-      if (typeof fn !== 'function') { out[name] = null; continue; }
-      out[name] = Function.prototype.toString.call(fn).slice(0, 300);
+      if (typeof fn !== 'function') { funcs[name] = null; continue; }
+      var src = Function.prototype.toString.call(fn).slice(0, 300);
+      funcs[name] = src;
+      if (!nativeRe.test(src)) nonNative.push(name);
     }
-    return out;
+    var webdriverOwnProp = Object.prototype.hasOwnProperty.call(navigator, 'webdriver');
+    return {
+      funcs: funcs,
+      nonNative: nonNative,
+      webdriverOwnProp: webdriverOwnProp,
+      allNative: nonNative.length === 0 && !webdriverOwnProp
+    };
   });
 
   add('js.proxy', 'js', 'Proxy / Reflect', 'hard', function () {
@@ -1037,6 +1426,16 @@
       module: typeof WebAssembly.Module,
       memory: typeof WebAssembly.Memory,
       table: typeof WebAssembly.Table
+    };
+  });
+
+  add('misc.url', 'js', 'URL & OS-когерентность', 'hard', function () {
+    return {
+      windowsDriveProtocol: safe(function () { return new URL('C:/').protocol; }, null),
+      fileUrlPath: safe(function () { return new URL('file:///C:/').pathname; }, null),
+      screenIsExtended: screen.isExtended ?? null,
+      onLine: navigator.onLine,
+      historyPositive: history.length >= 1
     };
   });
 
@@ -1101,6 +1500,47 @@
     return out;
   });
 
+  add('media.capabilities', 'media', 'MediaCapabilities и MediaSource', 'hard', async function () {
+    var mse = {};
+    if (typeof MediaSource !== 'undefined' && typeof MediaSource.isTypeSupported === 'function') {
+      var mseTypes = [
+        'video/mp4; codecs="avc1.42E01E"',
+        'video/mp4; codecs="av01.0.05M.08"',
+        'video/webm; codecs="vp9"',
+        'audio/mp4; codecs="mp4a.40.2"',
+        'audio/webm; codecs="opus"'
+      ];
+      for (var m = 0; m < mseTypes.length; m++) {
+        mse[mseTypes[m]] = safe(function () { return MediaSource.isTypeSupported(mseTypes[m]); }, null);
+      }
+    }
+    var decoding = null;
+    if (navigator.mediaCapabilities && typeof navigator.mediaCapabilities.decodingInfo === 'function') {
+      var configs = [
+        ['h264', { type: 'file', video: { contentType: 'video/mp4; codecs="avc1.42E01E"', width: 1920, height: 1080, bitrate: 2000000, framerate: 30 } }],
+        ['vp9', { type: 'file', video: { contentType: 'video/webm; codecs="vp09.00.10.08"', width: 1920, height: 1080, bitrate: 2000000, framerate: 30 } }],
+        ['av1', { type: 'file', video: { contentType: 'video/mp4; codecs="av01.0.05M.08"', width: 1920, height: 1080, bitrate: 2000000, framerate: 30 } }],
+        ['hevc', { type: 'file', video: { contentType: 'video/mp4; codecs="hvc1.1.6.L93.B0"', width: 1920, height: 1080, bitrate: 2000000, framerate: 30 } }],
+        ['aac', { type: 'file', audio: { contentType: 'audio/mp4; codecs="mp4a.40.2"', channels: 2, bitrate: 128000, samplerate: 48000 } }],
+        ['opus', { type: 'file', audio: { contentType: 'audio/webm; codecs="opus"', channels: 2, bitrate: 128000, samplerate: 48000 } }]
+      ];
+      decoding = {};
+      for (var i = 0; i < configs.length; i++) {
+        try {
+          var info = await navigator.mediaCapabilities.decodingInfo(configs[i][1]);
+          decoding[configs[i][0]] = {
+            supported: !!info.supported,
+            smooth: !!info.smooth,
+            powerEfficient: !!info.powerEfficient
+          };
+        } catch (e) {
+          decoding[configs[i][0]] = { error: errText(e) };
+        }
+      }
+    }
+    return { mse: mse, decoding: decoding };
+  }, 3000);
+
   add('media.recorder', 'media', 'MediaRecorder', 'hard', function () {
     if (typeof MediaRecorder === 'undefined') return null;
     var types = [
@@ -1112,15 +1552,11 @@
     return out;
   });
 
-  var mediaDevicesPromise = null;
   function enumerateMediaDevices() {
-    if (!mediaDevicesPromise) {
-      mediaDevicesPromise = Promise.race([
-        navigator.mediaDevices.enumerateDevices(),
-        delay(900).then(function () { return null; })
-      ]);
-    }
-    return mediaDevicesPromise;
+    return Promise.race([
+      navigator.mediaDevices.enumerateDevices(),
+      delay(900).then(function () { return null; })
+    ]);
   }
 
   add('media.devices', 'media', 'Media devices', 'context', async function () {
@@ -1139,10 +1575,8 @@
     return out;
   }, 2000);
 
-  var voicesPromise = null;
   function loadVoices() {
-    if (voicesPromise) return voicesPromise;
-    voicesPromise = new Promise(function (resolve) {
+    return new Promise(function (resolve) {
       var started = performance.now();
       function check() {
         var voices = [];
@@ -1155,7 +1589,6 @@
       }
       check();
     });
-    return voicesPromise;
   }
 
   add('media.voices', 'media', 'SpeechSynthesis voices', 'context', async function () {
@@ -1186,10 +1619,38 @@
       serviceWorker: !!navigator.serviceWorker,
       geolocation: !!navigator.geolocation,
       mediaDevices: !!navigator.mediaDevices,
+      keyboard: !!navigator.keyboard,
       paymentRequest: !!window.PaymentRequest,
       webgpu: !!navigator.gpu
     };
   });
+
+  add('hw.heapLimit', 'hardware', 'JS Heap Limit (hard)', 'hard', function () {
+    if (!performance.memory) return null;
+    return {
+      bytes: performance.memory.jsHeapSizeLimit,
+      mib: Math.round(performance.memory.jsHeapSizeLimit / 1048576)
+    };
+  });
+
+  add('hw.keyboard', 'hardware', 'Keyboard layout map', 'hard', async function () {
+    if (!navigator.keyboard || typeof navigator.keyboard.getLayoutMap !== 'function') {
+      return { available: false };
+    }
+    try {
+      var layout = await navigator.keyboard.getLayoutMap();
+      var keys = ['KeyQ', 'KeyW', 'KeyA', 'KeyZ', 'Backquote', 'Minus'];
+      var sample = {};
+      for (var i = 0; i < keys.length; i++) sample[keys[i]] = layout.get(keys[i]) ?? null;
+      return {
+        available: true,
+        size: layout.size,
+        sample: sample
+      };
+    } catch (e) {
+      return { available: true, error: errText(e) };
+    }
+  }, 2000);
 
   add('hw.connection', 'volatile', 'NetworkInformation', 'volatile', function () {
     var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -1308,15 +1769,19 @@
 
   add('auto.cdp', 'automation', 'CDP / automation-артефакты', 'hard', function () {
     var patterns = [
-      '__playwright', '__puppeteer', '__pw_manual', '__nightmare', '_phantom',
-      'callselenium', '_selenium', '$cdc_', '$wdc_', 'domautomation',
-      '__webdriver_evaluate', '__driver_evaluate', '__fxdriver_evaluate',
-      '__lastwatiralert', 'webdriver'
+      '__playwright', '__puppeteer', '__pw_manual', '__pwinitscripts', '__nightmare',
+      '_phantom', 'callselenium', '_selenium', '__selenium', '$cdc_', 'cdc_', '$wdc_',
+      'domautomation', '__webdriver', '__driver_evaluate', '__fxdriver',
+      '__lastwatiralert', '__ombra', 'webdriver'
     ];
     var hits = [];
     var sources = [window, document];
     for (var s = 0; s < sources.length; s++) {
       var names = Object.getOwnPropertyNames(sources[s]);
+      var keys = safe(function () { return Object.keys(sources[s]); }, []);
+      for (var k = 0; k < keys.length; k++) {
+        if (names.indexOf(keys[k]) === -1) names.push(keys[k]);
+      }
       for (var i = 0; i < names.length; i++) {
         var name = names[i].toLowerCase();
         for (var p = 0; p < patterns.length; p++) {
@@ -1327,9 +1792,50 @@
         }
       }
     }
+    if (Object.prototype.hasOwnProperty.call(navigator, 'webdriver')) {
+      hits.push('navigator.own.webdriver');
+    }
     hits.sort();
     return hits;
   });
+
+  function inferUaOs(ua) {
+    if (/Android/i.test(ua)) return 'android';
+    if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
+    if (/Windows NT/i.test(ua)) return 'windows';
+    if (/Macintosh|Mac OS X/i.test(ua)) return 'macos';
+    if (/CrOS/i.test(ua)) return 'chromeos';
+    if (/Linux/i.test(ua)) return 'linux';
+    return null;
+  }
+
+  function inferPlatformOs(plat) {
+    if (!plat) return null;
+    if (/^Win/i.test(plat)) return 'windows';
+    if (/^Mac/i.test(plat)) return 'macos';
+    if (/iPhone|iPad|iPod/i.test(plat)) return 'ios';
+    if (/Android/i.test(plat)) return 'android';
+    if (/Linux/i.test(plat)) return 'linux';
+    return null;
+  }
+
+  function inferUaDataOs(plat) {
+    if (!plat) return null;
+    if (/Windows/i.test(plat)) return 'windows';
+    if (/macOS/i.test(plat)) return 'macos';
+    if (/Android/i.test(plat)) return 'android';
+    if (/Chrome\s*OS/i.test(plat)) return 'chromeos';
+    if (/iOS/i.test(plat)) return 'ios';
+    if (/Linux/i.test(plat)) return 'linux';
+    return null;
+  }
+
+  function inferGpuOs(renderer) {
+    if (!renderer) return null;
+    if (/Direct3D|D3D11|D3D9/i.test(renderer)) return 'windows';
+    if (/Apple\s+M\d|Apple\s+GPU/i.test(renderer)) return 'apple';
+    return null;
+  }
 
   add('auto.consistency', 'automation', 'Согласованность полей', 'hard', function () {
     var ua = navigator.userAgent;
@@ -1338,6 +1844,24 @@
     var isSafari = /Safari\//.test(ua) && !isChrome;
     var mobileUA = /Mobi|Android|iPhone|iPad/.test(ua);
     var uaData = navigator.userAgentData;
+    var uaOs = inferUaOs(ua);
+    var platformOs = inferPlatformOs(navigator.platform);
+    var uaDataOs = inferUaDataOs(uaData ? uaData.platform : null);
+    var glState = getGL(1);
+    var unmaskedRenderer = glState ? safe(function () { return glInfo(glState.gl).unmaskedRenderer; }, null) : null;
+    var gpuOs = inferGpuOs(unmaskedRenderer);
+
+    var navPlatformMismatch = !!(uaOs && platformOs && uaOs !== platformOs &&
+      !((uaOs === 'android' || uaOs === 'chromeos') && platformOs === 'linux'));
+    var uaDataPlatformMismatch = !!(uaOs && uaDataOs && uaOs !== uaDataOs);
+    var uaPlatformMismatch = navPlatformMismatch || uaDataPlatformMismatch;
+    var uaMobileMismatch = !!(uaData && typeof uaData.mobile === 'boolean' && uaData.mobile !== mobileUA);
+    var gpuOsMismatch = !!(uaOs && gpuOs && (
+      (gpuOs === 'windows' && uaOs !== 'windows') ||
+      (gpuOs === 'apple' && uaOs !== 'macos' && uaOs !== 'ios')
+    ));
+    var webdriverOwnProp = Object.prototype.hasOwnProperty.call(navigator, 'webdriver');
+
     return {
       isChrome: isChrome,
       isFirefox: isFirefox,
@@ -1346,6 +1870,10 @@
       platform: navigator.platform,
       uaPlatform: uaData ? uaData.platform : null,
       uaMobile: uaData ? uaData.mobile : null,
+      uaOs: uaOs,
+      platformOs: platformOs,
+      uaDataOs: uaDataOs,
+      gpuOs: gpuOs,
       touchPoints: navigator.maxTouchPoints,
       plugins: navigator.plugins.length,
       mimeTypes: navigator.mimeTypes.length,
@@ -1354,21 +1882,44 @@
       outerZero: window.outerWidth === 0 || window.outerHeight === 0,
       screenZero: screen.width === 0 || screen.height === 0,
       mobileNoTouch: mobileUA && navigator.maxTouchPoints === 0,
-      chromeNoPlugins: isChrome && navigator.plugins.length === 0,
+      chromeNoPlugins: isChrome && !mobileUA && navigator.plugins.length === 0,
+      uaPlatformMismatch: uaPlatformMismatch,
+      uaMobileMismatch: uaMobileMismatch,
+      gpuOsMismatch: gpuOsMismatch,
+      webdriverOwnProp: webdriverOwnProp,
       webdriver: navigator.webdriver === true
     };
   });
 
   add('auto.headless', 'automation', 'Headless-эвристики', 'hard', function () {
+    var mobileUA = /Mobi|Android|iPhone|iPad/.test(navigator.userAgent);
     return {
       webdriver: navigator.webdriver === true,
       uaHeadless: /HeadlessChrome/.test(navigator.userAgent),
       outerZero: window.outerWidth === 0 || window.outerHeight === 0,
       screenZero: screen.width === 0 || screen.height === 0,
       noChrome: !window.chrome,
-      pluginsZero: navigator.plugins.length === 0,
+      pluginsZero: !mobileUA && navigator.plugins.length === 0,
       languagesZero: navigator.languages.length === 0
     };
+  });
+
+  add('auto.runtimeLeak', 'automation', 'CDP Runtime.enable leak', 'hard', function () {
+    var leaked = false;
+    try {
+      var probeError = new Error('rt-probe');
+      Object.defineProperty(probeError, 'stack', {
+        configurable: true,
+        get: function () {
+          leaked = true;
+          return '';
+        }
+      });
+      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+        console.debug(probeError);
+      }
+    } catch (e) { /* ignore */ }
+    return { leaked: leaked };
   });
 
   add('auto.permissions', 'automation', 'Notification vs Permissions', 'hard', async function () {
@@ -1398,6 +1949,203 @@
       mismatch: normalizedQuery !== 'n/a' && notification !== 'n/a' && normalizedQuery !== notification
     };
   }, 1500);
+
+  // --- cross-context agreement (L5-02) -------------------------------------
+
+  function renderOffscreenSampleHash() {
+    if (typeof OffscreenCanvas === 'undefined') return null;
+    try {
+      var c = new OffscreenCanvas(64, 32);
+      var ctx = c.getContext('2d');
+      if (!ctx) return null;
+      ctx.fillStyle = '#1d3557';
+      ctx.fillRect(0, 0, 64, 32);
+      ctx.fillStyle = '#e63946';
+      ctx.fillRect(6, 6, 24, 20);
+      ctx.fillStyle = '#f1faee';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('ctx42', 10, 20);
+      var bytes = ctx.getImageData(0, 0, 64, 32).data;
+      return hashBytes(bytes);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function runDedicatedWorkerProbe() {
+    if (IS_FILE) return Promise.resolve({ skipped: 'file-origin' });
+    if (typeof Worker === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) {
+      return Promise.resolve({ available: false });
+    }
+    var workerSource = [
+      'self.onmessage = function () {',
+      '  function hashBytes(bytes) {',
+      '    var h1 = 0x811c9dc5, h2 = 0x9e3779b9;',
+      '    for (var i = 0; i < bytes.length; i++) {',
+      '      h1 = Math.imul(h1 ^ bytes[i], 16777619);',
+      '      h2 = Math.imul(h2 ^ bytes[i], 2246822519);',
+      '    }',
+      '    return ("00000000" + (h1 >>> 0).toString(16)).slice(-8) + ("00000000" + (h2 >>> 0).toString(16)).slice(-8);',
+      '  }',
+      '  var offscreenHash = null;',
+      '  if (typeof OffscreenCanvas !== "undefined") {',
+      '    try {',
+      '      var c = new OffscreenCanvas(64, 32);',
+      '      var ctx = c.getContext("2d");',
+      '      if (ctx) {',
+      '        ctx.fillStyle = "#1d3557"; ctx.fillRect(0, 0, 64, 32);',
+      '        ctx.fillStyle = "#e63946"; ctx.fillRect(6, 6, 24, 20);',
+      '        ctx.fillStyle = "#f1faee"; ctx.font = "12px sans-serif"; ctx.fillText("ctx42", 10, 20);',
+      '        offscreenHash = hashBytes(ctx.getImageData(0, 0, 64, 32).data);',
+      '      }',
+      '    } catch (e) { offscreenHash = null; }',
+      '  }',
+      '  var intl = Intl.DateTimeFormat().resolvedOptions();',
+      '  var uaData = navigator.userAgentData;',
+      '  self.postMessage({',
+      '    userAgent: navigator.userAgent,',
+      '    platform: navigator.platform,',
+      '    language: navigator.language,',
+      '    languages: Array.from(navigator.languages || []),',
+      '    hardwareConcurrency: navigator.hardwareConcurrency ?? null,',
+      '    deviceMemory: navigator.deviceMemory ?? null,',
+      '    uaPlatform: uaData ? uaData.platform : null,',
+      '    uaMobile: uaData ? uaData.mobile : null,',
+      '    timeZone: intl.timeZone,',
+      '    locale: intl.locale,',
+      '    offscreenHash: offscreenHash',
+      '  });',
+      '};'
+    ].join('\n');
+
+    var blobUrl = null;
+    var worker = null;
+    return new Promise(function (resolve) {
+      var settled = false;
+      function finish(val) {
+        if (settled) return;
+        settled = true;
+        if (timer) clearTimeout(timer);
+        try { if (worker) worker.terminate(); } catch (e) { /* ignore */ }
+        try { if (blobUrl) URL.revokeObjectURL(blobUrl); } catch (e) { /* ignore */ }
+        resolve(val);
+      }
+      var timer = setTimeout(function () { finish({ error: 'worker-timeout' }); }, 2000);
+      try {
+        var blob = new Blob([workerSource], { type: 'text/javascript' });
+        blobUrl = URL.createObjectURL(blob);
+        worker = new Worker(blobUrl);
+        worker.onmessage = function (ev) { finish(ev.data || { error: 'empty-message' }); };
+        worker.onerror = function (err) { finish({ error: err && err.message ? err.message : 'worker-error' }); };
+        worker.postMessage('run');
+      } catch (e) {
+        finish({ error: errText(e) });
+      }
+    });
+  }
+
+  add('context.agreement', 'context', 'Согласованность Main / Worker / iframe (L5-02)', 'hard', async function () {
+    var mainIntl = Intl.DateTimeFormat().resolvedOptions();
+    var mainUaData = navigator.userAgentData;
+    var main = {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      webdriver: navigator.webdriver ?? null,
+      language: navigator.language,
+      languages: Array.from(navigator.languages || []),
+      hardwareConcurrency: navigator.hardwareConcurrency ?? null,
+      deviceMemory: navigator.deviceMemory ?? null,
+      uaPlatform: mainUaData ? mainUaData.platform : null,
+      uaMobile: mainUaData ? mainUaData.mobile : null,
+      timeZone: mainIntl.timeZone,
+      locale: mainIntl.locale,
+      screenWidth: screen.width,
+      screenHeight: screen.height,
+      offscreenHash: renderOffscreenSampleHash()
+    };
+
+    var mismatches = [];
+    var worker = await runDedicatedWorkerProbe();
+    var workerSkipped = skippedReason(worker);
+    if (!workerSkipped && worker && !worker.error && worker.available !== false) {
+      var workerFields = [
+        'userAgent', 'platform', 'language', 'hardwareConcurrency', 'deviceMemory',
+        'uaPlatform', 'uaMobile', 'timeZone', 'locale', 'offscreenHash'
+      ];
+      for (var w = 0; w < workerFields.length; w++) {
+        var wf = workerFields[w];
+        if (worker[wf] !== main[wf]) mismatches.push('worker.' + wf);
+      }
+      if (canon(worker.languages) !== canon(main.languages)) mismatches.push('worker.languages');
+    } else if (!workerSkipped && worker && worker.error) {
+      mismatches.push('worker.error:' + worker.error);
+    }
+
+    var iframeResult = null;
+    var detachedResult = null;
+    if (document.body) {
+      var frame = document.createElement('iframe');
+      frame.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;border:0;visibility:hidden;';
+      frame.src = 'about:blank';
+      document.body.appendChild(frame);
+      try {
+        var cw = frame.contentWindow;
+        if (cw && cw.navigator) {
+          var fIntl = cw.Intl.DateTimeFormat().resolvedOptions();
+          iframeResult = {
+            userAgent: cw.navigator.userAgent,
+            platform: cw.navigator.platform,
+            webdriver: cw.navigator.webdriver ?? null,
+            language: cw.navigator.language,
+            languages: Array.from(cw.navigator.languages || []),
+            hardwareConcurrency: cw.navigator.hardwareConcurrency ?? null,
+            deviceMemory: cw.navigator.deviceMemory ?? null,
+            timeZone: fIntl.timeZone,
+            screenWidth: cw.screen.width,
+            screenHeight: cw.screen.height
+          };
+          var iframeFields = [
+            'userAgent', 'platform', 'webdriver', 'language', 'hardwareConcurrency',
+            'deviceMemory', 'timeZone', 'screenWidth', 'screenHeight'
+          ];
+          for (var f = 0; f < iframeFields.length; f++) {
+            var ff = iframeFields[f];
+            if (iframeResult[ff] !== main[ff]) mismatches.push('iframe.' + ff);
+          }
+          if (canon(iframeResult.languages) !== canon(main.languages)) mismatches.push('iframe.languages');
+        }
+        frame.remove();
+        if (cw) {
+          detachedResult = {
+            accessible: true,
+            webdriver: safe(function () { return cw.navigator ? (cw.navigator.webdriver ?? null) : null; }, null),
+            userAgent: safe(function () { return cw.navigator ? cw.navigator.userAgent : null; }, null),
+            screenZero: safe(function () { return cw.screen ? (cw.screen.width === 0 && cw.screen.height === 0) : null; }, null)
+          };
+          if (detachedResult.webdriver !== null && detachedResult.webdriver !== main.webdriver) {
+            mismatches.push('detached.webdriver');
+          }
+          if (detachedResult.userAgent !== null && detachedResult.userAgent !== main.userAgent) {
+            mismatches.push('detached.userAgent');
+          }
+        }
+      } catch (e) {
+        iframeResult = { error: errText(e) };
+        mismatches.push('iframe.error:' + errText(e));
+      } finally {
+        try { if (frame.parentNode) frame.remove(); } catch (e) { /* ignore */ }
+      }
+    }
+
+    mismatches.sort();
+    return {
+      workerSkipped: workerSkipped,
+      workerOk: !workerSkipped && worker && !worker.error && worker.available !== false,
+      iframeOk: !!(iframeResult && !iframeResult.error),
+      detachedScreenZero: detachedResult ? detachedResult.screenZero : null,
+      mismatches: mismatches
+    };
+  }, 4000);
 
   // --- WebRTC --------------------------------------------------------------
 
@@ -1431,7 +2179,8 @@
         var addressMatch = /^candidate:\S+\s+\d+\s+\S+\s+\d+\s+(\S+)\s+\d+\s+typ\s+/i.exec(candidate);
         var type = typeMatch ? typeMatch[1] : 'unknown';
         var address = addressMatch ? addressMatch[1] : '';
-        var kind = address.indexOf('.local') !== -1 ? 'mdns' :
+        var kind = !address ? 'unknown' :
+          address.indexOf('.local') !== -1 ? 'mdns' :
           address.indexOf(':') !== -1 ? 'ipv6' : 'ipv4';
         if (types.indexOf(type) === -1) types.push(type);
         if (addressKinds.indexOf(kind) === -1) addressKinds.push(kind);
@@ -1451,6 +2200,7 @@
   // ------------------------------------------------------------- pass runner
 
   async function runPass(onProgress, phase, active) {
+    resetPassState();
     var out = {};
     var list = active || PROBES;
     var total = list.length;
@@ -1464,8 +2214,10 @@
           probe.timeout,
           probe.id
         );
+        var skipped = skippedReason(value);
         result = {
           ok: true,
+          s: skipped,
           v: value,
           h: hashString(canon(value)),
           ms: Number((performance.now() - started).toFixed(1))
@@ -1473,6 +2225,7 @@
       } catch (error) {
         result = {
           ok: false,
+          s: null,
           v: null,
           h: null,
           err: errText(error),
@@ -1514,6 +2267,7 @@
         h: result.h,
         v: pack(result.v),
         ok: result.ok,
+        s: result.s || null,
         err: result.err || null,
         ms: result.ms,
         n: !!noise[probe.id]
@@ -1524,7 +2278,7 @@
       var out = [];
       for (var j = 0; j < ids.length; j++) {
         var item = probes[ids[j]];
-        if (item.ok && !item.n) out.push(ids[j]);
+        if (item.ok && !item.n && !item.s) out.push(ids[j]);
       }
       return out;
     }
@@ -1539,9 +2293,12 @@
 
     var hardNoisy = [];
     var hardErr = [];
+    var hardSkipped = [];
     for (var m = 0; m < hardIds.length; m++) {
-      if (probes[hardIds[m]].n) hardNoisy.push(hardIds[m]);
-      if (!probes[hardIds[m]].ok) hardErr.push(hardIds[m]);
+      var item = probes[hardIds[m]];
+      if (item.n) hardNoisy.push(hardIds[m]);
+      if (!item.ok) hardErr.push(hardIds[m]);
+      if (item.s) hardSkipped.push(hardIds[m]);
     }
 
     var hardStableIds = stableIds(hardIds);
@@ -1560,16 +2317,18 @@
       noise: Object.keys(noise),
       hardHash: hashOf(hardStableIds),
       sessionHash: hashOf(sessionIds),
-      hardStable: hardNoisy.length === 0,
+      hardStable: hardNoisy.length === 0 && hardErr.length === 0 && hardSkipped.length === 0,
       hardNoisy: hardNoisy,
       hardErr: hardErr,
+      hardSkipped: hardSkipped,
       counts: {
         total: list.length,
         hard: hardIds.length,
         context: contextIds.length,
         hardStable: hardStableIds.length,
         hardNoisy: hardNoisy.length,
-        hardErr: hardErr.length
+        hardErr: hardErr.length,
+        hardSkipped: hardSkipped.length
       }
     };
   }
@@ -1623,19 +2382,50 @@
     var strict = !!options.strict;
     var rows = [];
 
+    var byId = {};
+    for (var d = 0; d < PROBES.length; d++) byId[PROBES[d].id] = PROBES[d];
+
+    var baseProbes = (base && base.probes) ? base.probes : {};
+    var curProbes = (current && current.probes) ? current.probes : {};
+    var ids = [];
+    var seen = {};
     for (var i = 0; i < PROBES.length; i++) {
-      var probe = PROBES[i];
-      var b = base && base.probes ? base.probes[probe.id] : null;
-      var c = current && current.probes ? current.probes[probe.id] : null;
+      var pid = PROBES[i].id;
+      if (Object.prototype.hasOwnProperty.call(baseProbes, pid) ||
+          Object.prototype.hasOwnProperty.call(curProbes, pid)) {
+        ids.push(pid);
+        seen[pid] = true;
+      }
+    }
+    var extraKeys = Object.keys(baseProbes).concat(Object.keys(curProbes));
+    for (var e = 0; e < extraKeys.length; e++) {
+      if (!seen[extraKeys[e]]) {
+        seen[extraKeys[e]] = true;
+        ids.push(extraKeys[e]);
+      }
+    }
+
+    for (var r = 0; r < ids.length; r++) {
+      var id = ids[r];
+      var b = Object.prototype.hasOwnProperty.call(baseProbes, id) ? baseProbes[id] : null;
+      var c = Object.prototype.hasOwnProperty.call(curProbes, id) ? curProbes[id] : null;
+      var def = byId[id];
+      var cls = def ? def.cls : ((b && b.c) || (c && c.c) || 'hard');
+      var bSkipped = probeSkippedReason(b);
+      var cSkipped = probeSkippedReason(c);
       var status;
 
-      if (probe.cls === 'volatile') {
+      if (cls === 'volatile') {
         status = 'volatile';
       } else if (!b || !c) {
         status = 'missing';
       } else if (!b.ok && !c.ok) {
         status = 'absent';
       } else if (!b.ok || !c.ok) {
+        status = 'changed';
+      } else if (bSkipped && cSkipped) {
+        status = 'skipped';
+      } else if (bSkipped || cSkipped) {
         status = 'changed';
       } else if (b.n || c.n) {
         status = 'noisy';
@@ -1646,10 +2436,10 @@
       }
 
       rows.push({
-        id: probe.id,
-        group: probe.group,
-        title: probe.title,
-        cls: probe.cls,
+        id: id,
+        group: def ? def.group : 'unknown',
+        title: def ? def.title : id,
+        cls: cls,
         status: status,
         base: b,
         cur: c
@@ -1658,13 +2448,15 @@
 
     function stats(filter) {
       var subset = rows.filter(filter);
-      var denominator = subset.filter(function (row) { return row.status !== 'absent'; }).length;
+      var denominator = subset.filter(function (row) {
+        return row.status !== 'absent' && row.status !== 'skipped';
+      }).length;
       var same = subset.filter(function (row) { return row.status === 'same'; }).length;
       return {
         total: subset.length,
         same: same,
         denominator: denominator,
-        pct: denominator ? Math.round((same / denominator) * 1000) / 10 : 100
+        pct: denominator ? Math.round((same / denominator) * 1000) / 10 : (subset.length ? 0 : 100)
       };
     }
 
@@ -1674,6 +2466,7 @@
     var context = stats(function (row) { return row.cls === 'context'; });
 
     var hardMissing = hardRows.filter(function (row) { return row.status === 'missing'; });
+    var hardSkipped = hardRows.filter(function (row) { return row.status === 'skipped'; });
     var hardBad = hardRows.filter(function (row) {
       return row.status === 'changed' || row.status === 'noisy';
     });
@@ -1682,10 +2475,10 @@
     });
 
     var verdict = 'STABLE';
-    if (hardMissing.length) {
-      verdict = 'INCOMPLETE';
-    } else if (hardBad.length) {
+    if (hardBad.length) {
       verdict = 'UNSTABLE';
+    } else if (hardMissing.length || hardRows.length === 0 || hard.denominator === 0) {
+      verdict = 'INCOMPLETE';
     } else if (contextBad.length && strict) {
       verdict = 'REVIEW';
     } else if (contextBad.length) {
@@ -1698,6 +2491,7 @@
       context: context,
       hardBad: hardBad,
       hardMissing: hardMissing,
+      hardSkipped: hardSkipped,
       contextBad: contextBad,
       verdict: verdict,
       strict: strict

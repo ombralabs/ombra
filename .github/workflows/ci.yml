@@ -34,3 +34,34 @@ jobs:
 
       - name: Compile the checker
         run: python -m py_compile tools/check_repo.py
+
+  checks:
+    name: Fingerprint benchmark and probe self-tests
+    if: ${{ github.repository_visibility == 'public' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Syntax-check Python benchmark tools
+        run: python -m py_compile checks/benchmark/compare.py checks/benchmark/serve.py
+
+      - name: Run Python compare unit tests
+        run: python -m unittest discover -s checks/benchmark/tests -p "test_*.py" -v
+
+      - name: Compare committed benchmark results
+        run: python checks/benchmark/compare.py checks/results/
+
+      - name: Syntax-check JavaScript probe and runner
+        run: node --check checks/benchmark/lib.mjs checks/benchmark/run.mjs checks/benchmark/probe/fp-core.js checks/benchmark/probe/app.js
+
+      - name: Run Node benchmark unit tests
+        run: node --test checks/benchmark/tests/*.test.mjs

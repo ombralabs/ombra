@@ -9,6 +9,7 @@
     changed: { label: 'изменилось', cls: 'changed' },
     noisy: { label: 'шум', cls: 'noisy' },
     missing: { label: 'нет в базе', cls: 'missing' },
+    skipped: { label: 'пропущено', cls: 'absent' },
     absent: { label: 'нет API', cls: 'absent' },
     volatile: { label: 'волатильно', cls: 'volatile' }
   };
@@ -112,7 +113,16 @@
   }
 
   function valuePreview(probe) {
-    var value = probe ? probe.v : null;
+    if (!probe) return '—';
+    if (!probe.ok) return 'error: ' + (probe.err || 'unavailable');
+    var skipReason = (typeof probe.s === 'string' && probe.s)
+      ? probe.s
+      : (probe.v && typeof probe.v === 'object' && typeof probe.v.skipped === 'string' ? probe.v.skipped : null);
+    if (skipReason) return 'пропущено (' + skipReason + ')';
+    if (!Object.prototype.hasOwnProperty.call(probe, 'v')) {
+      return probe.h ? ('hash=' + probe.h + ' (скрыто)') : '(скрыто)';
+    }
+    var value = probe.v;
     if (value && typeof value === 'object' && typeof value.url === 'string' && value.url.indexOf('data:image/') === 0) {
       return 'canvas ' + value.width + '×' + value.height + ' · ' + value.url.length + ' симв.';
     }
@@ -267,11 +277,27 @@
     }
 
     if (!base || base.id === current.id) {
-      panel.classList.add('stable');
-      badge.textContent = 'BASE';
-      title.textContent = 'Это база';
-      text.textContent = 'Первый слепок зафиксирован. Полностью закройте браузер, запустите снова и снимите второй слепок с той же меткой профиля.';
+      var baseNoisy = (current.hardNoisy || []).length;
+      var baseErr = (current.hardErr || []).length;
+      var baseSkipped = (current.hardSkipped || []).length;
+      if (baseNoisy) {
+        panel.classList.add('unstable');
+        badge.textContent = 'BASE / NOISE';
+        title.textContent = 'База содержит шумные hard-пробы';
+        text.textContent = 'Уже на двойном прогоне базы обнаружен шум (' + current.hardNoisy.slice(0, 4).join(', ') + '). Разберите причину до сравнения с последующими стартами.';
+      } else if (baseErr || baseSkipped) {
+        panel.classList.add('context');
+        badge.textContent = 'BASE / GAPS';
+        title.textContent = 'База снята с пропусками или ошибками';
+        text.textContent = 'Часть hard-проб недоступна или пропущена (ошибок: ' + baseErr + ', пропущено: ' + baseSkipped + '). Для полного baseline используйте локальный HTTP-сервер.';
+      } else {
+        panel.classList.add('stable');
+        badge.textContent = 'BASE';
+        title.textContent = 'Это база';
+        text.textContent = 'Первый слепок зафиксирован. Полностью закройте браузер, запустите снова и снимите второй слепок с той же меткой профиля.';
+      }
       mini.textContent = 'hard ' + (current.counts ? current.counts.hardStable + '/' + current.counts.hard : '—') +
+        (baseSkipped ? ' · пропущено ' + baseSkipped : '') +
         ' · hash ' + current.hardHash;
       return;
     }
@@ -418,7 +444,8 @@
       if (!probe) continue;
       total++;
 
-      var status = statusById[definition.id] || (probe.ok ? (probe.n ? 'noisy' : 'same') : 'absent');
+      var isSkipped = !!(probe.s || (probe.v && typeof probe.v === 'object' && probe.v.skipped));
+      var status = statusById[definition.id] || (probe.ok ? (isSkipped ? 'skipped' : (probe.n ? 'noisy' : 'same')) : 'absent');
       if (state.filter === 'hard' && definition.cls !== 'hard') continue;
       if (state.filter === 'changes' && ['changed', 'noisy', 'missing'].indexOf(status) === -1) continue;
       if (state.filter === 'noisy' && status !== 'noisy') continue;
@@ -504,7 +531,9 @@
       ' · hash=' + (probe.h || '—') +
       (probe.err ? ' · error=' + probe.err : '');
     var pre = document.createElement('pre');
-    pre.textContent = formatValue(probe.v, 4000);
+    pre.textContent = Object.prototype.hasOwnProperty.call(probe, 'v')
+      ? formatValue(probe.v, 4000)
+      : ('[redacted value · hash=' + (probe.h || '—') + ']');
     body.appendChild(meta);
     body.appendChild(pre);
 
@@ -721,10 +750,22 @@
     reader.onload = function () {
       try {
         var data = JSON.parse(String(reader.result));
-        var snapshots = Array.isArray(data) ? data : (data && Array.isArray(data.snapshots) ? data.snapshots : null);
-        if (!snapshots) throw new Error('ожидался объект с массивом snapshots');
+        var snapshots = Array.isArray(data)
+          ? data
+          : (data && Array.isArray(data.snapshots)
+              ? data.snapshots
+              : (data && data.checks && Array.isArray(data.checks.runs) ? data.checks.runs : null));
+        if (!snapshots) throw new Error('ожидался объект с массивом snapshots или checks.runs');
+        var reportProfile = data && data.environment && data.environment.mode
+          ? 'benchmark-' + data.environment.mode
+          : null;
         var valid = snapshots.filter(function (snapshot) {
           return snapshot && typeof snapshot.id === 'string' && snapshot.probes && typeof snapshot.probes === 'object';
+        }).map(function (snapshot) {
+          if (!snapshot.profile && reportProfile) {
+            return Object.assign({}, snapshot, { profile: reportProfile });
+          }
+          return snapshot;
         });
         if (!valid.length) throw new Error('в файле нет валидных слепков');
 
@@ -770,16 +811,24 @@
     lines.push('- Context: ' + result.context.pct + '% (' + result.context.same + '/' + result.context.denominator + ')');
     lines.push('- Шумных проб: ' + (current.noise || []).length);
     lines.push('');
-    if (result.hardBad.length || result.contextBad.length) {
+    if ((result.hardMissing && result.hardMissing.length) || result.hardBad.length || result.contextBad.length) {
       lines.push('## Изменения');
       lines.push('');
       lines.push('| Класс | Проба | Статус | База | Текущее |');
       lines.push('|---|---|---|---|---|');
-      var rows = result.hardBad.concat(result.contextBad);
+      var rows = (result.hardMissing || []).concat(result.hardBad).concat(result.contextBad);
       for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         lines.push('| ' + row.cls + ' | `' + row.id + '` | ' + row.status + ' | ' +
           mdCell(valuePreview(row.base)) + ' | ' + mdCell(valuePreview(row.cur)) + ' |');
+      }
+      lines.push('');
+    }
+    if (result.hardSkipped && result.hardSkipped.length) {
+      lines.push('## Пропущенные hard-пробы');
+      lines.push('');
+      for (var s = 0; s < result.hardSkipped.length; s++) {
+        lines.push('- `' + result.hardSkipped[s].id + '` (' + valuePreview(result.hardSkipped[s].cur) + ')');
       }
       lines.push('');
     }

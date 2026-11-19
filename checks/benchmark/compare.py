@@ -2,13 +2,15 @@
 """
 compare.py — compare Ombra local-probe snapshots without a browser.
 
-Reads an export JSON ({"snapshots": [...]}) or one/many snapshot JSON files,
-compares every snapshot against a baseline by per-probe hashes and prints a
-rule-based verdict. No network, no LLM, stdlib only.
+Reads benchmark reports ({"checks": {"runs": [...]}}), export JSONs
+({"snapshots": [...]}), single snapshot JSONs, or directories of any of them.
+Compares snapshots within each compatible group (by engine/mode/os/probe or
+profile, unless --no-group or --baseline is given) and prints a rule-based
+verdict. No network, no LLM, stdlib only.
 
 Exit codes:
   0  hard-stable (context changes allowed unless --strict/--fail-on context)
-  1  hard probe changed/noisy/missing
+  1  hard probe changed/noisy/missing or single-snapshot hard noise/errors
   2  context changed and --strict / --fail-on context was requested
   3  no usable snapshots
 """
@@ -20,6 +22,7 @@ import glob
 import json
 import os
 import sys
+from collections import OrderedDict
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 VOLATILE = "volatile"
@@ -27,24 +30,48 @@ HARD = "hard"
 CONTEXT = "context"
 
 
+def is_snapshot(value: Any) -> bool:
+    return isinstance(value, dict) and isinstance(value.get("id"), str) and isinstance(value.get("probes"), dict)
+
+
+def _attach_meta(snapshot: Dict[str, Any], group_key: str, source: str) -> Dict[str, Any]:
+    copy = dict(snapshot)
+    copy["_group"] = group_key
+    copy["_source"] = source
+    return copy
+
+
 def load_file(path: str) -> List[Dict[str, Any]]:
     with open(path, "r", encoding="utf-8") as handle:
         data = json.load(handle)
     if isinstance(data, list):
-        return [item for item in data if is_snapshot(item)]
+        return [
+            _attach_meta(item, str(item.get("profile") or "default"), path)
+            for item in data if is_snapshot(item)
+        ]
     if isinstance(data, dict) and isinstance(data.get("snapshots"), list):
-        return [item for item in data["snapshots"] if is_snapshot(item)]
+        return [
+            _attach_meta(item, str(item.get("profile") or "default"), path)
+            for item in data["snapshots"] if is_snapshot(item)
+        ]
     if isinstance(data, dict) and isinstance(data.get("checks"), dict):
         runs = data["checks"].get("runs")
         if isinstance(runs, list):
-            return [item for item in runs if is_snapshot(item)]
+            env = data.get("environment") or {}
+            eng = data.get("engine") or {}
+            probe_ver = data["checks"].get("probe_version") or "unknown"
+            mode = env.get("mode") or "unknown"
+            os_name = env.get("os") or "unknown"
+            eng_ver = eng.get("version") or "unknown"
+            platform_part = f" · platform={env['profile_platform']}" if env.get("profile_platform") else ""
+            group_key = f"{eng_ver} · {mode} · {os_name} · probe {probe_ver}{platform_part}"
+            return [
+                _attach_meta(item, group_key, path)
+                for item in runs if is_snapshot(item)
+            ]
     if is_snapshot(data):
-        return [data]
-    raise ValueError(f"{path}: expected snapshot or export with snapshots[]")
-
-
-def is_snapshot(value: Any) -> bool:
-    return isinstance(value, dict) and isinstance(value.get("id"), str) and isinstance(value.get("probes"), dict)
+        return [_attach_meta(data, str(data.get("profile") or "default"), path)]
+    raise ValueError(f"{path}: expected snapshot, export with snapshots[], or report with checks.runs[]")
 
 
 def collect(paths: Iterable[str]) -> List[Dict[str, Any]]:
@@ -64,6 +91,16 @@ def collect(paths: Iterable[str]) -> List[Dict[str, Any]]:
     result = list(unique.values())
     result.sort(key=lambda item: (str(item.get("createdAt") or ""), item["id"]))
     return result
+
+
+def group_snapshots(snapshots: List[Dict[str, Any]], group_by_context: bool) -> List[Tuple[str, List[Dict[str, Any]]]]:
+    if not group_by_context:
+        return [("all", snapshots)]
+    groups: "OrderedDict[str, List[Dict[str, Any]]]" = OrderedDict()
+    for snapshot in snapshots:
+        key = str(snapshot.get("_group") or snapshot.get("profile") or "default")
+        groups.setdefault(key, []).append(snapshot)
+    return list(groups.items())
 
 
 def pick_baseline(snapshots: List[Dict[str, Any]], selector: Optional[str]) -> Dict[str, Any]:
@@ -89,12 +126,30 @@ def probe_class(base_probe: Optional[Dict[str, Any]], current_probe: Optional[Di
     return str(probe.get("c") or HARD)
 
 
+def skipped_reason(probe: Optional[Dict[str, Any]]) -> Optional[str]:
+    if not isinstance(probe, dict):
+        return None
+    short = probe.get("s")
+    if isinstance(short, str) and short:
+        return short
+    val = probe.get("v")
+    if isinstance(val, dict) and isinstance(val.get("skipped"), str) and val["skipped"]:
+        return val["skipped"]
+    return None
+
+
 def status_of(base_probe: Optional[Dict[str, Any]], current_probe: Optional[Dict[str, Any]]) -> str:
     if base_probe is None or current_probe is None:
         return "missing"
     if not base_probe.get("ok") and not current_probe.get("ok"):
         return "absent"
     if not base_probe.get("ok") or not current_probe.get("ok"):
+        return "changed"
+    base_skip = skipped_reason(base_probe)
+    cur_skip = skipped_reason(current_probe)
+    if base_skip and cur_skip:
+        return "skipped"
+    if base_skip or cur_skip:
         return "changed"
     if base_probe.get("n") or current_probe.get("n"):
         return "noisy"
@@ -125,25 +180,36 @@ def compare(base: Dict[str, Any], current: Dict[str, Any], strict: bool = False)
 
     def metrics(cls: str) -> Dict[str, Any]:
         items = subset(cls)
-        denominator = [row for row in items if row["status"] != "absent"]
+        denominator = [row for row in items if row["status"] not in ("absent", "skipped")]
         same = [row for row in items if row["status"] == "same"]
+        skipped = [row for row in items if row["status"] == "skipped"]
+        if denominator:
+            pct = round(100.0 * len(same) / len(denominator), 1)
+        elif items:
+            pct = 0.0
+        else:
+            pct = 100.0
         return {
             "total": len(items),
             "denominator": len(denominator),
             "same": len(same),
-            "pct": round(100.0 * len(same) / len(denominator), 1) if denominator else 100.0,
+            "skipped": len(skipped),
+            "pct": pct,
         }
 
     hard_rows = subset(HARD)
     context_rows = subset(CONTEXT)
+    hard_metrics = metrics(HARD)
+    context_metrics = metrics(CONTEXT)
     hard_missing = [row for row in hard_rows if row["status"] == "missing"]
+    hard_skipped = [row for row in hard_rows if row["status"] == "skipped"]
     hard_bad = [row for row in hard_rows if row["status"] in ("changed", "noisy")]
     context_bad = [row for row in context_rows if row["status"] in ("changed", "noisy", "missing")]
 
-    if hard_missing:
-        verdict = "INCOMPLETE"
-    elif hard_bad:
+    if hard_bad:
         verdict = "UNSTABLE"
+    elif hard_missing or not hard_rows or hard_metrics["denominator"] == 0:
+        verdict = "INCOMPLETE"
     elif context_bad and strict:
         verdict = "REVIEW"
     elif context_bad:
@@ -153,10 +219,11 @@ def compare(base: Dict[str, Any], current: Dict[str, Any], strict: bool = False)
 
     return {
         "rows": rows,
-        "hard": metrics(HARD),
-        "context": metrics(CONTEXT),
+        "hard": hard_metrics,
+        "context": context_metrics,
         "hard_bad": hard_bad,
         "hard_missing": hard_missing,
+        "hard_skipped": hard_skipped,
         "context_bad": context_bad,
         "verdict": verdict,
     }
@@ -167,6 +234,12 @@ def preview(probe: Optional[Dict[str, Any]], limit: int = 180) -> str:
         return "—"
     if not probe.get("ok"):
         return f"error: {probe.get('err') or 'unavailable'}"
+    skip = skipped_reason(probe)
+    if skip:
+        return f"skipped ({skip})"
+    if "v" not in probe:
+        digest = probe.get("h")
+        return f"hash={digest} (redacted)" if digest else "(redacted)"
     value = probe.get("v")
     if isinstance(value, dict) and isinstance(value.get("url"), str) and value["url"].startswith("data:image/"):
         return f"canvas {value.get('width')}x{value.get('height')} ({len(value['url'])} chars)"
@@ -183,9 +256,14 @@ def preview(probe: Optional[Dict[str, Any]], limit: int = 180) -> str:
     return text
 
 
-def print_report(base: Dict[str, Any], snapshots: List[Dict[str, Any]], strict: bool, fail_on: str) -> int:
-    hard = "hard"
-    print("Ombra checks — offline comparison")
+def evaluate_group(
+    group_name: str,
+    base: Dict[str, Any],
+    snapshots: List[Dict[str, Any]],
+    strict: bool,
+    fail_on: str,
+) -> Tuple[int, Dict[str, Any]]:
+    print(f"=== Group: {group_name} ===")
     print(f"baseline: {base.get('label') or '(no label)'} · {base.get('profile') or 'default'} · "
           f"{base.get('createdAt') or '?'} · id={base['id']}")
     print(f"hard hash: {base.get('hardHash') or '—'}")
@@ -193,25 +271,37 @@ def print_report(base: Dict[str, Any], snapshots: List[Dict[str, Any]], strict: 
     print()
 
     if len(snapshots) == 1:
+        noisy = list(base.get("hardNoisy") or [])
+        errs = list(base.get("hardErr") or [])
+        if (noisy or errs) and fail_on != "none":
+            if noisy:
+                print(f"  NOISY   hard  {', '.join(noisy)}")
+            if errs:
+                print(f"  ERROR   hard  {', '.join(errs)}")
+            print("GROUP RESULT: FAIL (single snapshot already has hard noise or hard probe errors)")
+            print()
+            return 1, {"group": group_name, "baseline": base["id"], "comparisons": [], "exitCode": 1}
         print("Only one snapshot — nothing to compare. Take at least two cold starts.")
-        return 0
+        print()
+        return 0, {"group": group_name, "baseline": base["id"], "comparisons": [], "exitCode": 0}
 
     failures = 0
     context_changed = False
+    comparisons_out: List[Dict[str, Any]] = []
 
     for current in snapshots:
         if current["id"] == base["id"]:
             continue
         result = compare(base, current, strict=strict)
+        skip_suffix = f" · skipped {result['hard']['skipped']}" if result["hard"]["skipped"] else ""
         print(f"— {current.get('label') or '(no label)'} · {current.get('profile') or 'default'} · "
               f"{current.get('createdAt') or '?'}")
-        print(f"  hard {result['hard']['pct']:.1f}% ({result['hard']['same']}/{result['hard']['denominator']}) · "
+        print(f"  hard {result['hard']['pct']:.1f}% ({result['hard']['same']}/{result['hard']['denominator']}){skip_suffix} · "
               f"context {result['context']['pct']:.1f}% ({result['context']['same']}/{result['context']['denominator']}) · "
               f"verdict {result['verdict']}")
 
-        if result["hard_missing"]:
-            for row in result["hard_missing"]:
-                print(f"    MISSING hard  {row['id']}")
+        for row in result["hard_missing"]:
+            print(f"    MISSING  hard  {row['id']}")
         for row in result["hard_bad"]:
             print(f"    {row['status'].upper():8} hard  {row['id']}")
             print(f"             base: {preview(row['base'])}")
@@ -227,30 +317,39 @@ def print_report(base: Dict[str, Any], snapshots: List[Dict[str, Any]], strict: 
             context_changed = True
         print()
 
+        entry = {"snapshot": current["id"], **result}
+        entry.pop("rows", None)
+        comparisons_out.append(entry)
+
     context_is_failure = context_changed and (strict or fail_on == "context") and fail_on != "none"
-    overall = "FAIL" if failures and fail_on != "none" else ("REVIEW" if context_is_failure else "PASS")
-    print(f"OVERALL: {overall}")
-    if failures:
-        if fail_on == "none":
-            print("Hard probes changed, became noisy, or disappeared (ignored by --fail-on none).")
-            return 0
-        print("Hard probes changed, became noisy, or disappeared. This is a real fingerprint change.")
-        return 1
-    if context_changed and (strict or fail_on == "context"):
-        print("Context changed under strict/fail-on-context mode.")
-        return 0 if fail_on == "none" else 2
-    if context_changed:
-        print("Context changes are present (allowed; use --strict to fail on them).")
-    return 0
+    if failures and fail_on != "none":
+        code = 1
+        status = "FAIL"
+    elif context_is_failure:
+        code = 2
+        status = "REVIEW"
+    else:
+        code = 0
+        status = "PASS"
+
+    print(f"GROUP RESULT: {status}")
+    print()
+    return code, {
+        "group": group_name,
+        "baseline": base["id"],
+        "comparisons": comparisons_out,
+        "exitCode": code,
+    }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Compare FP Stability Auditor snapshots offline.",
+        description="Compare Ombra local-probe snapshots offline.",
     )
-    parser.add_argument("paths", nargs="+", help="export JSON, snapshot JSON, or directory")
-    parser.add_argument("--baseline", help="snapshot id or label substring (default: first)")
+    parser.add_argument("paths", nargs="+", help="report JSON, export JSON, snapshot JSON, or directory")
+    parser.add_argument("--baseline", help="snapshot id or label substring (disables auto-grouping)")
     parser.add_argument("--profile", help="only snapshots with this profile")
+    parser.add_argument("--no-group", action="store_true", help="compare all loaded snapshots against one baseline")
     parser.add_argument("--strict", action="store_true", help="context changes count as failure")
     parser.add_argument("--fail-on", choices=("hard", "context", "none"), default="hard",
                         help="which class makes the process fail (default: hard)")
@@ -273,38 +372,53 @@ def main() -> int:
     if args.list:
         for item in snapshots:
             print(f"{item['id']}  {item.get('createdAt') or '?'}  "
-                  f"{item.get('profile') or 'default'}  {item.get('label') or ''}")
+                  f"{item.get('profile') or 'default'}  [{item.get('_group')}]  {item.get('label') or ''}")
         return 0
 
-    try:
-        base = pick_baseline(snapshots, args.baseline)
-    except ValueError as error:
-        print(f"error: {error}", file=sys.stderr)
-        return 3
+    use_groups = not args.no_group and not args.baseline
+    groups = group_snapshots(snapshots, group_by_context=use_groups)
 
-    code = print_report(base, snapshots, args.strict, args.fail_on)
+    print("Ombra checks — offline comparison")
+    print(f"groups: {len(groups)} · snapshots: {len(snapshots)}")
+    print()
+
+    worst_code = 0
+    group_reports: List[Dict[str, Any]] = []
+    for group_name, items in groups:
+        try:
+            base = pick_baseline(items, args.baseline)
+        except ValueError as error:
+            print(f"error: {error}", file=sys.stderr)
+            return 3
+        code, group_report = evaluate_group(group_name, base, items, args.strict, args.fail_on)
+        group_reports.append(group_report)
+        if code == 1:
+            worst_code = 1
+        elif code == 2 and worst_code == 0:
+            worst_code = 2
+
+    overall = "FAIL" if worst_code == 1 else ("REVIEW" if worst_code == 2 else "PASS")
+    print(f"OVERALL: {overall}")
+    if worst_code == 1:
+        print("Hard probes changed, became noisy, or disappeared. This is a real fingerprint change.")
+    elif worst_code == 2:
+        print("Context changed under strict/fail-on-context mode.")
 
     if args.json_out:
-        report = {
-            "baseline": base["id"],
+        payload: Dict[str, Any] = {
             "strict": args.strict,
             "failOn": args.fail_on,
-            "comparisons": [
-                {
-                    "snapshot": item["id"],
-                    **compare(base, item, strict=args.strict),
-                }
-                for item in snapshots if item["id"] != base["id"]
-            ],
-            "exitCode": code,
+            "groups": group_reports,
+            "exitCode": worst_code,
         }
-        for comparison in report["comparisons"]:
-            comparison.pop("rows", None)
+        if len(group_reports) == 1:
+            payload["baseline"] = group_reports[0]["baseline"]
+            payload["comparisons"] = group_reports[0]["comparisons"]
         with open(args.json_out, "w", encoding="utf-8") as handle:
-            json.dump(report, handle, ensure_ascii=False, indent=2)
+            json.dump(payload, handle, ensure_ascii=False, indent=2)
         print(f"json: {args.json_out}")
 
-    return code
+    return worst_code
 
 
 if __name__ == "__main__":
