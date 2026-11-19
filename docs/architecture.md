@@ -127,9 +127,9 @@ The SDK never modifies an engine binary in place. A new version lands in a new c
 
 ## Repository boundaries
 
-- **This repository** owns the launch contract, SDK sources, conformance cases, and documentation. It publishes no engine binaries and stores no profile data.
+- **This repository** owns the launch contract, SDK sources, conformance cases, local desktop catalog, shared controls and their documentation. It publishes no engine binaries and stores no profile data.
 - **The engine repository** owns patches, QA, builds, and release artifacts. It is the source of truth for fingerprint behavior.
-- **The app repository** owns the GUI and its product surfaces. It is not a source of truth for the SDK.
+- **The legacy Desktop repository** holds the complete 1.2.1 GUI and its runtime integrations. Development of the independent local profile components is tracked here. [Desktop source](../desktop/README.md).
 - **The docs site** owns user-facing product guides. This repository owns developer-facing integration docs.
 
 When a change crosses a boundary, the contract changes first, then the engine or SDK, then the docs. An SDK pull request that depends on undocumented engine flags is rejected.

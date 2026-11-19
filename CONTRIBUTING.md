@@ -87,4 +87,4 @@ Use the pull request template. Keep the diff focused; do not reformat unrelated 
 
 ## License
 
-By contributing, you agree that your contribution is licensed under the [Apache License 2.0](LICENSE), without a separate contributor license agreement. You retain copyright to your work.
+Contributions to the SDKs are licensed under the [Apache License 2.0](LICENSE), without a separate contributor license agreement. The desktop components are covered by the existing desktop terms in [NOTICE](NOTICE). You retain copyright to your work.

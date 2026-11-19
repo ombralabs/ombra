@@ -1,0 +1,26 @@
+{
+  "name": "ombra-desktop-components",
+  "private": true,
+  "version": "1.2.1",
+  "type": "module",
+  "scripts": {
+    "check": "vue-tsc --noEmit -p tsconfig.app.json && vitest run",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "vue": "^3.5.42",
+    "vue-i18n": "^11.4.12",
+    "reka-ui": "^2.10.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.5.1",
+    "@vue/tsconfig": "^0.9.1",
+    "happy-dom": "^20.14.5",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.3",
+    "vue-tsc": "^3.3.11"
+  }
+}

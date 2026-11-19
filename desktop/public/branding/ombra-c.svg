@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Ombra — C</title>
+  <defs>
+    <mask id="shape" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+      <rect x="1" y="2.5" width="62" height="59" rx="12.5" fill="white"/>
+      <rect x="18.5" y="17.5" width="27" height="31.5" rx="5" fill="black"/>
+      <path d="M 33 65 L 65 24.5" stroke="black" stroke-width="2.2"/>
+    </mask>
+  </defs>
+  <g mask="url(#shape)">
+    <rect width="64" height="64" fill="#202939"/>
+    <path d="M 33 65 L 65 24.5 L 65 65 Z" fill="#6E87E8"/>
+  </g>
+</svg>
