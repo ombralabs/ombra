@@ -14,7 +14,6 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
-from ombrabrowser._version import DEFAULT_ENGINE_VERSION
 from ombrabrowser.config import DEFAULT_DOWNLOAD_URL, get_managed_engines_dir, get_platform_info
 
 _CACHE_SIGNING_KEY = Ed25519PrivateKey.from_private_bytes(bytes(range(32)))
@@ -55,7 +54,7 @@ def isolated_ombra_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 def make_fake_engine(
     base_dir: Path,
     *,
-    version: str = DEFAULT_ENGINE_VERSION,
+    version: str = "151.0.7922.108",
     chromium: str | None = None,
     platform_name: str | None = None,
     script_body: str = "#!/bin/sh\necho \"Chromium 151.0.7922.108\"\n",

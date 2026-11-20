@@ -35,7 +35,7 @@ version = "0.1.0"
 
 [tool.ombra]
 contract = ">=0.1,<0.2"
-engine = ">=151.0.7922.108,<152"
+engine = ">=151.0.7922.108,<159"
 ```
 
 An SDK that meets an engine build outside its range must fail with `UnsupportedEngine`, naming both versions. It must not attempt a best-effort launch.
@@ -51,6 +51,11 @@ remove imports from `ombrabrowser.captcha` or `@ombralabs/sdk/captcha`.
 Generic CDP sessions, humanize controls, and native agent commands remain available.
 
 ## Engine compatibility
+
+The Python and Node.js SDK sources default to Chromium family `158.0.8127.37`
+and accept `>=151.0.7922.108,<159`. Existing 151 release pins and verified caches
+remain supported; Chromium 159 requires a compatibility update. These source
+changes take effect in the next SDK package releases.
 
 The SDK resolves an engine binary and reports it through `binary_info()`:
 
@@ -70,7 +75,7 @@ Rules:
 - `binary_info().version` is the first thing in a bug report.
 - The SDK does not silently upgrade the engine in the middle of a launch.
 - `OMBRA_VERSION` pins the engine version; `OMBRA_AUTO_UPDATE` controls update checks.
-- A new engine build does not require an SDK release unless a launch option or flag changes.
+- A new engine build does not require an SDK release unless it falls outside the declared range or a launch option or flag changes.
 - An SDK release is tested against the current engine build and the previous one.
 
 ## Automation client compatibility

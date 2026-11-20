@@ -11,7 +11,7 @@
 | Package | `ombrabrowser` (`0.1.3`) |
 | Registry | PyPI |
 | Python | 3.10+ |
-| Engine range | `>=151.0.7922.108,<152` |
+| Engine range | `>=151.0.7922.108,<159` (default Chromium family `158.0.8127.37`) |
 | Returns | `playwright.sync_api.Browser` / `playwright.async_api.Browser` |
 | Playwright | `>=1.60,<2.0` (installed automatically) |
 | Status | Alpha |

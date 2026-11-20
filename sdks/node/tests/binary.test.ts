@@ -457,6 +457,7 @@ describe("binary resolution, archive safety, and Ed25519 download verification",
   it("reports uninstalled schema-compliant BinaryInfo when no engine exists", async () => {
     await withIsolatedEnv(async () => {
       const info = await binaryInfo();
+      assert.equal(info.version, "158.0.8127.37");
       assert.equal(info.installed, false);
       assert.equal(info.source, "none");
       assert.equal(info.path, null);
@@ -501,13 +502,23 @@ describe("binary resolution, archive safety, and Ed25519 download verification",
     });
   });
 
+  for (const version of ["151.0.7922.108-9", "158.0.8127.37-2"]) {
+    it(`resolves supported engine ${version} with a Chromium-family pin`, async () => {
+      await withIsolatedEnv(async ({ tmpRoot }) => {
+        const bin = makeFakeEngine(tmpRoot, { version });
+        assert.equal(await ensureBinary({ binaryPath: bin, version: version.split("-")[0] }), bin);
+        assert.equal((await binaryInfo({ binaryPath: bin })).version, version);
+      });
+    });
+  }
+
   it("rejects unsupported engine versions and tampered binary.sha256 markers", async () => {
     await withIsolatedEnv(async ({ tmpRoot }) => {
       const plat = getPlatformInfo();
       const oldBin = makeFakeEngine(path.join(tmpRoot, "old"), { version: "150.0.7000.1" });
       assert.throws(() => verifyBinary(oldBin, plat, { receiptDir: null }), UnsupportedEngineError);
 
-      const futureBin = makeFakeEngine(path.join(tmpRoot, "future"), { version: "152.0.1.1" });
+      const futureBin = makeFakeEngine(path.join(tmpRoot, "future"), { version: "159.0.1.1" });
       assert.throws(() => verifyBinary(futureBin, plat, { receiptDir: null }), UnsupportedEngineError);
 
       const validDir = path.join(tmpRoot, "tampered");

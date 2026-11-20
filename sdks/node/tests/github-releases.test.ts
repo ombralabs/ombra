@@ -19,9 +19,8 @@ async function withGitHubFixture(run: (fixture: {
   statuses: Map<string, number>;
   requests: string[];
   cacheDir: string;
-}) => Promise<void>): Promise<void> {
+}) => Promise<void>, version = "151.0.7922.108-9"): Promise<void> {
   await withIsolatedEnv(async ({ tmpRoot, cacheDir }) => {
-    const version = "151.0.7922.108-9";
     const plat = getPlatformInfo();
     const signer = createTestSigningKeypair();
     const keys = [...BINARY_SIGNING_PUBKEYS];
@@ -89,6 +88,23 @@ async function withGitHubFixture(run: (fixture: {
 }
 
 describe("GitHub browser releases", () => {
+  for (const releaseChannel of ["stable", "beta"]) {
+    for (const requestedVersion of [undefined, "158.0.8127.37", "158.0.8127.37-2"]) {
+      it(`installs Chromium 158 from GitHub ${releaseChannel} with pin ${requestedVersion ?? "latest"}`, async () => {
+        await withGitHubFixture(async ({ version, release, routes, requests }) => {
+          routes.set(`${API}?per_page=10&page=1`, [release(version, releaseChannel === "beta")]);
+          const options = { version: requestedVersion, releaseChannel };
+          const installed = await ensureBinary(options);
+          assert.equal((await binaryInfo(options)).version, "158.0.8127.37-2");
+          process.env.OMBRA_DOWNLOAD_URL = "off";
+          const calls = requests.length;
+          assert.equal((await resolveBinary({ ...options, download: false })).path, installed);
+          assert.equal(requests.length, calls);
+        }, "158.0.8127.37-2");
+      });
+    }
+  }
+
   it("finds stable browser tags across pages and installs signed GitHub assets", async () => {
     await withGitHubFixture(async ({ version, release, routes, requests }) => {
       routes.set(`${API}/latest`, { tag_name: "v1.2.1", draft: false, prerelease: false });
