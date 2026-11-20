@@ -1,74 +1,66 @@
-<div align="center">
-  <img src="assets/logo.svg" width="72" height="72" alt="Логотип Ombra">
-  <h1>Ombra SDK</h1>
-  <p><strong>Stealth Chromium для Playwright и Puppeteer.</strong></p>
-  <p>Тот же API. Тот же код. Поменяйте импорт.<br>Восемь языков, один патченный движок, один контракт запуска.</p>
+# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
-  [![License](https://img.shields.io/badge/license-Apache--2.0-202939?style=flat-square)](LICENSE)
-  [![Status](https://img.shields.io/badge/status-developer%20preview-6E87E8?style=flat-square)](#статус)
-  [![SDKs](https://img.shields.io/badge/SDKs-8-6E87E8?style=flat-square)](#матрица-sdk)
-  [![Contract](https://img.shields.io/badge/contract-0.1.0-202939?style=flat-square)](docs/sdk-contract.md)
-  [![Stealth checkup](https://img.shields.io/badge/docs-stealth%20checkup-202939?style=flat-square)](docs/stealth-checkup.md)
+В Python и Node.js `launch()` запускает Ombra Chromium и возвращает объект `Browser` из Playwright. Для Puppeteer в Node.js используйте `launchPuppeteer()`.
 
-  <sub><a href="README.md">English version</a> · <a href="https://ombrabrowser.dev">ombrabrowser.dev</a></sub>
-</div>
+**[Установка](#установка)** · <a href="README.md">English</a>
 
----
+<details>
+<summary>Языки</summary>
 
-> **Developer preview.** Контракт API находится на версии `0.1.0`; каталоги языков — заготовки, и ни один пакет ещё не опубликован в реестре. Python и Node.js выходят первыми и задают поведение, которому должны соответствовать остальные SDK.
+[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
+[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
+[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
+[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
+[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
+[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
 
-## Stealth, который переживает обновление браузера
+</details>
 
-Большинство stealth-инструментов работают на уровне конфигурации: JavaScript-шим, патченный драйвер, другой `navigator.webdriver`. Они ломаются с выходом новой версии Chromium, а сам патч становится отпечатком.
+## Настройка отпечатка в Chromium
 
-Ombra идёт другим путём. Поверхности отпечатка изменяются в исходниках Chromium и компилируются в браузер: canvas, WebGL, аудио, шрифты, число аппаратных потоков, client rects, строки GPU, работа с часовым поясом и поверхность автоматизации. TLS и HTTP/2 берутся из собственного сетевого стека Chromium, поэтому совпадают с браузером, из которого собран движок. Ввод очеловечивается внутри процесса браузера, а не синтетическими DOM-событиями.
+В Ombra настройки отпечатка встроены в Chromium. Они охватывают canvas, WebGL, аудио, шрифты, число аппаратных потоков, координаты и размеры элементов, строки GPU, часовые пояса и признаки автоматизации. За TLS и HTTP/2 отвечает сетевой стек Chromium, а за имитацию пользовательского ввода — процесс браузера.
 
-SDK намеренно остаются маленькими. `launch()` запускает движок, ждёт CDP-эндпоинт, подключает Playwright или Puppeteer и возвращает обычный объект браузера. Не нужно учить новый page API, нет диалекта селекторов и нет обёртки вокруг вашего кода.
-
-```python
-from ombra import launch
-
-browser = launch()
-page = browser.new_page()
-page.goto("https://example.com")  # your existing Playwright code
-print(page.title())
-browser.close()
-```
-
-SDK запускает движок напрямую, поэтому работает в скрипте, контейнере или CI без запущенного десктопного приложения.
+SDK запускает движок локально и подключает клиент автоматизации через Chrome DevTools Protocol (CDP). Движок можно запускать из скрипта, в контейнере или в CI без установки настольного приложения Ombra.
 
 ## Статус
 
-| Направление | Состояние |
-|---|---|
-| Контракт API SDK | Черновик `0.1.0` — [docs/sdk-contract.md](docs/sdk-contract.md) |
-| Python, Node.js | Заготовки; референсные реализации выходят первыми |
-| .NET, Java, Go | Заготовки |
-| PHP, Ruby, Rust | Заготовки |
-| Общие схемы | [spec/schemas](spec/schemas) |
-| Кросс-языковой conformance | Кейсы описаны — [conformance](conformance) |
-| Stealth-чекап | Методика описана — [docs/stealth-checkup.md](docs/stealth-checkup.md) |
+Примеры используют опубликованные альфа-версии пакетов для Python и Node.js. В этом репозитории также хранятся общий контракт запуска и заготовки для восьми SDK.
 
-Имена пакетов и команды установки ниже — цели релиза, а не опубликованные артефакты. Доступность в реестрах проверяется перед первым релизом.
+| Компонент | Состояние |
+|---|---|
+| [Контракт SDK](docs/sdk-contract.md) | Черновик `0.1.0` |
+| SDK для Python | Альфа `0.1.3` · [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
+| SDK для Node.js | Альфа `0.1.0` · [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| [Общие схемы](spec/schemas) | Параметры запуска и сведения о файле движка |
+| [Проверка соответствия контракту](conformance) | Общие проверки для двух SDK |
+| [Методика проверки движка](docs/stealth-checkup.ru.md) | Критерии проверки и шаблон отчёта |
 
 ## Установка
 
-```bash
-# Python
-pip install ombra
+**Python**
 
-# Node.js
-npm install @ombra/sdk
+```bash
+python -m pip install ombrabrowser
 ```
 
-Бинарник движка определяется при первом запуске: явный `binary_path`, затем `OMBRA_BINARY_PATH`, затем движок, установленный приложением Ombra, затем кеш SDK, затем проверенная загрузка. `ensure_binary()` выполняет тот же шаг, не запуская браузер.
+**Node.js / TypeScript**
+
+```bash
+npm install @ombralabs/sdk "playwright-core@^1.60.0"
+```
+
+Для Puppeteer установите `puppeteer-core` вместо `playwright-core`. Поддерживаемые версии клиентов и Node.js указаны [на странице пакета в npm](https://www.npmjs.com/package/@ombralabs/sdk).
+
+Сначала SDK проверяет путь, указанный в параметре `binary_path` (Python) или `binaryPath` (Node.js). Затем ищет движок по пути из `OMBRA_BINARY_PATH`, в каталоге настольного приложения и, наконец, в кеше SDK. Если движок не найден, SDK скачивает и проверяет его.
+
+Чтобы отключить загрузку, передайте `download=False` в Python или `download: false` в Node.js. Чтобы подготовить движок без запуска браузера, вызовите `ensure_binary()` в Python или `ensureBinary()` в Node.js.
 
 ## Быстрый старт
 
 **Python**
 
 ```python
-from ombra import launch
+from ombrabrowser import launch
 
 browser = launch()
 page = browser.new_page()
@@ -77,7 +69,7 @@ print(page.title())
 browser.close()
 ```
 
-С постоянным профилем и прокси:
+Чтобы использовать файлы cookie и данные сайтов из именованного профиля, откройте страницу в его существующем контексте. В этом примере также задан прокси.
 
 ```python
 browser = launch(
@@ -86,12 +78,15 @@ browser = launch(
     proxy="socks5://user:pass@proxy:1080",
     fingerprint={"seed": 20261116, "os": "macos"},
 )
+page = browser.contexts[0].new_page()
+page.goto("https://example.com")
+browser.close()
 ```
 
 **Node.js / TypeScript**
 
 ```ts
-import { launch } from "@ombra/sdk";
+import { launch } from "@ombralabs/sdk";
 
 const browser = await launch();
 const page = await browser.newPage();
@@ -100,50 +95,46 @@ console.log(await page.title());
 await browser.close();
 ```
 
-Puppeteer использует отдельную точку входа, потому что тип возвращаемого значения другой:
+Чтобы получить объект `Browser` из Puppeteer, вызовите `launchPuppeteer()`.
 
 ```ts
-import { launchPuppeteer } from "@ombra/sdk";
+import { launchPuppeteer } from "@ombralabs/sdk";
 
 const browser = await launchPuppeteer({ headless: false });
+await browser.close();
 ```
-
-В каждом языке SDK возвращает нативный объект клиента: браузер Playwright или Puppeteer там, где эти клиенты есть, сессию chromedp в Go, браузер Ferrum в Ruby и браузер chromiumoxide в Rust. Это никогда не обёртка.
 
 ## Миграция без переписывания
 
-Существующему коду Playwright нужен один импорт и одна строка:
+Установите `ombrabrowser` и замените в скрипте на Python импорт и код запуска браузера. Методы страниц, типы и селекторы по-прежнему предоставляет Playwright.
 
 ```diff
 - from playwright.sync_api import sync_playwright
-- playwright = sync_playwright().start()
-- browser = playwright.chromium.launch(headless=False)
-+ from ombra import launch
-+ browser = launch(headless=False)
+- pw = sync_playwright().start()
+- browser = pw.chromium.launch()
++ from ombrabrowser import launch
++ browser = launch()
 
   page = browser.new_page()
   page.goto("https://example.com")
-  # the rest of the script is unchanged
 ```
 
-Node.js:
+В Node.js достаточно заменить две строки.
 
 ```diff
 - import { chromium } from "playwright";
 - const browser = await chromium.launch();
-+ import { launch } from "@ombra/sdk";
++ import { launch } from "@ombralabs/sdk";
 + const browser = await launch();
 ```
-
-Возвращённый объект — настоящий Playwright `Browser` (или настоящий Puppeteer `Browser` из `launchPuppeteer()`). Проверки типов, вспомогательные библиотеки и существующие page objects продолжают работать.
 
 ## Как это работает
 
 ```mermaid
 flowchart LR
     Script["Ваш скрипт<br/>Playwright · Puppeteer"]
-    SDK["Ombra SDK<br/>launch() + CDP-мост"]
-    Engine["Ombra Chromium<br/>патченный движок"]
+    SDK["Ombra SDK<br/>launch() и подключение по CDP"]
+    Engine["Ombra Chromium<br/>модифицированный движок"]
     Client["Нативный клиент автоматизации"]
     Profile[("Профиль<br/>seed · cookies · расширения")]
 
@@ -155,130 +146,135 @@ flowchart LR
     Engine --> Profile
 ```
 
-1. SDK находит и проверяет бинарник движка или скачивает его при первом использовании.
-2. Он определяет каталог профиля и seed персоны и запускает прокси-релей, если прокси требует аутентификации.
-3. Он запускает движок с loopback-портом отладки, каталогом профиля и опциями запуска.
-4. Он ждёт `DevToolsActivePort`, подключает Playwright или Puppeteer по CDP и возвращает браузер.
-5. При `browser.close()` SDK завершает движок и освобождает блокировку профиля.
+1. `launch()` находит или скачивает движок и проверяет файл.
+2. SDK выбирает каталог профиля и начальное значение отпечатка (`seed`). Если прокси требует аутентификации, SDK запускает локальный ретранслятор.
+3. SDK запускает Chromium с выбранным профилем, параметрами запуска и локальным портом отладки.
+4. Когда появляется `DevToolsActivePort`, SDK подключает Playwright или Puppeteer по CDP и возвращает объект `Browser` выбранного клиента.
+5. `browser.close()` останавливает движок и снимает блокировку профиля.
 
-После установки CDP-соединения SDK не находится в пути запросов. Он не может переписывать заголовки, внедрять скрипты или наблюдать за страницами. Именно это делает его маленьким и проверяемым.
+После запуска клиент отправляет команды для работы со страницами напрямую в Chromium.
 
 ## Матрица SDK
 
-| Язык | Пакет (цель) | Среда выполнения | Что возвращает `launch()` | Статус |
-|---|---|---|---|---|
-| Python | `ombra` (PyPI) | 3.10+ | Playwright `Browser` | Заготовка |
-| Node.js / TypeScript | `@ombra/sdk` (npm) | Node 20+ | Playwright `Browser`; Puppeteer через `launchPuppeteer()` | Заготовка |
-| C# / .NET | `Ombra` (NuGet) | .NET 8+ | Playwright `IBrowser` | Заготовка |
-| Java | `dev.ombra:ombra` (Maven Central) | 17+ | Playwright `Browser` | Заготовка |
-| Go | `github.com/ombralabs/ombra/sdks/go` | 1.22+ | Сессия, готовая для chromedp | Заготовка |
-| PHP | `ombralabs/ombra` (Packagist) | 8.2+ | `Ombra\Browser` (CDP-хендл) | Заготовка |
-| Ruby | `ombra` (RubyGems) | 3.2+ | `Ferrum::Browser` | Заготовка |
-| Rust | `ombra` (crates.io) | 1.78+ | `chromiumoxide::Browser` | Заготовка |
+| Среда выполнения | Опубликованный пакет | Объект браузера |
+|---|---|---|
+| Python 3.10+ | `ombrabrowser` | `launch()` → `Browser` из Playwright |
+| Node.js 20+ | `@ombralabs/sdk` | `launch()` → `Browser` из Playwright<br>`launchPuppeteer()` → `Browser` из Puppeteer |
 
-Каждый SDK следует раскладке своей экосистемы, а не навязанному общему дереву — `src/ombra` для Python, `src/Ombra` для .NET, `src/main/java` для Java, `lib/ombra` для Ruby, корень пакета для Go. Машиночитаемый источник истины — [sdks/manifest.json](sdks/manifest.json); соглашения — в [sdks/README.md](sdks/README.md).
+Для шести других SDK подготовлены каталоги. Планируемые имена пакетов и клиенты перечислены в [манифесте SDK](sdks/manifest.json). Структура каталогов описана в [руководстве для разработчиков](sdks/README.md).
+
+| Целевая среда | Имя будущего пакета | Клиент или возвращаемый тип |
+|---|---|---|
+| .NET 8+ | `Ombra` (NuGet) | Microsoft.Playwright `IBrowser` |
+| Java 17+ | `dev.ombra:ombra` (Maven Central) | Playwright `Browser` |
+| Go 1.22+ | `github.com/ombralabs/ombra/sdks/go` | chromedp |
+| PHP 8.2+ | `ombralabs/ombra` (Packagist) | `Ombra\Browser` (CDP) |
+| Ruby 3.2+ | `ombra` (RubyGems) | `Ferrum::Browser` |
+| Rust 1.78+ | `ombra` (crates.io) | `chromiumoxide::Browser` |
 
 ## Опции запуска
+
+В таблице указаны имена параметров из Python и контракта SDK. В Node.js они записываются в camelCase, например `timeoutMs`, `userDataDir` и `binaryPath`.
 
 | Опция | По умолчанию | Значение |
 |---|---|---|
 | `headless` | `true` | Запускать движок без окна |
-| `proxy` | нет | URL прокси или объект; прокси с аутентификацией используют loopback-релей |
-| `fingerprint` | нет | Подсказки seed и персоны: ОС, часовой пояс, локаль, экран, GPU |
-| `profile` | нет | Именованный профиль с постоянными cookies, storage и seed |
-| `user_data_dir` | временный | Явный каталог профиля, взаимоисключающий с `profile` |
+| `proxy` | нет | URL прокси или объект с настройками. Для прокси с аутентификацией SDK запускает локальный ретранслятор |
+| `fingerprint` | нет | `seed` и параметры отпечатка, включая ОС, часовой пояс, локаль, экран и GPU |
+| `profile` | нет | Именованный профиль сохраняет файлы cookie, данные сайтов и `seed` |
+| `user_data_dir` | временный каталог | Путь к каталогу профиля. Используется отдельно от `profile` |
 | `args` | `[]` | Дополнительные флаги движка, передаваемые без изменений |
-| `timeout_ms` | `30000` | Дедлайн запуска и готовности CDP |
+| `timeout_ms` | `30000` | Время на запуск и подключение по CDP, в миллисекундах |
 | `humanize` | по умолчанию в движке | `false`, `true` или пресет |
 | `captcha` | `false` | Включить модуль движка с необязательными лимитами |
-| `binary_path` | определяется | Использовать конкретный бинарник движка |
+| `binary_path` | определяется автоматически | Путь к исполняемому файлу движка |
+| `download` | `true` | Скачать движок, если его нет на диске |
 
-Полная таблица опций, таксономия ошибок и семантика профиля — в [docs/sdk-contract.md](docs/sdk-contract.md).
+В [контракте SDK](docs/sdk-contract.md) перечислены все параметры запуска, типы ошибок и правила работы с профилями.
 
 ## Управление бинарником
 
 ```python
-from ombra import binary_info, ensure_binary, clear_cache
+from ombrabrowser import binary_info, ensure_binary, clear_cache
 
 print(binary_info())
 # {'version': '151.0.7922.108', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
-ensure_binary()   # download and verify without launching
-clear_cache()     # remove SDK-managed binaries; profiles are untouched
+ensure_binary()   # скачать и проверить движок без запуска
+clear_cache()     # удалить загруженные движки, сохранив профили
 ```
 
-SDK проверяет SHA-256 перед запуском. `OMBRA_SKIP_CHECKSUM=1` существует для локальных dev-сборок и никогда не должен использоваться в продакшене.
+Перед запуском SDK проверяет контрольную сумму SHA-256 файла движка. В рабочей среде оставляйте проверку включённой. Отключать её через `OMBRA_SKIP_CHECKSUM=1` можно только для локальных сборок при разработке.
 
 ## Конфигурация
 
 | Переменная | По умолчанию | Значение |
 |---|---|---|
-| `OMBRA_BINARY_PATH` | не задана | Явный бинарник движка |
-| `OMBRA_CACHE_DIR` | `~/.ombra` | Управляемые бинарники и именованные профили |
-| `OMBRA_DOWNLOAD_URL` | эндпоинт релиза | Базовый URL для загрузки бинарников |
-| `OMBRA_VERSION` | последняя совместимая | Версия движка, которую нужно определить |
+| `OMBRA_BINARY_PATH` | не задана | Путь к исполняемому файлу движка |
+| `OMBRA_CACHE_DIR` | `~/.ombra` | Каталог для загруженных движков и именованных профилей |
+| `OMBRA_DOWNLOAD_URL` | адрес сервера релизов | Базовый URL для загрузки движка |
+| `OMBRA_VERSION` | последняя совместимая | Версия движка для запуска |
 | `OMBRA_AUTO_UPDATE` | `true` | Проверять наличие более нового движка при запуске |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Только для разработки |
 | `OMBRA_LICENSE_KEY` | не задана | Передаётся движку |
-| `OMBRA_TIMEOUT_MS` | `30000` | Дедлайн запуска по умолчанию |
+| `OMBRA_TIMEOUT_MS` | `30000` | Время ожидания запуска по умолчанию, в миллисекундах |
 | `OMBRA_LOG_LEVEL` | `warn` | `error`, `warn`, `info`, `debug` |
 
-Приоритет: явная опция, затем переменная окружения, затем метаданные профиля, затем значение по умолчанию.
+Сначала SDK использует значение из параметров запуска, затем проверяет переменные окружения и метаданные профиля. Если значение нигде не задано, применяется значение по умолчанию.
 
 ## Сравнение
 
-| | Playwright | playwright-stealth | undetected-chromedriver | Ombra |
+| Возможность | Playwright | playwright-stealth | undetected-chromedriver | Ombra |
 |---|---|---|---|---|
 | API | Playwright | Playwright | Selenium | Playwright или Puppeteer |
 | Уровень патча | нет | JavaScript на странице | флаги конфигурации | исходники движка |
 | Seed отпечатка | нет | нет | частично | на профиль |
-| Очеловеченный ввод | нет | нет | нет | движок |
+| Имитация пользовательского ввода | нет | нет | нет | движок |
 | Изоляция профиля | контекст браузера | контекст браузера | нет | каталог данных пользователя |
 | Миграция без переписывания | — | смена импорта | переписывание | смена импорта |
 
-Это сравнение об архитектуре, а не о баллах. Результат детектора зависит от сайта, IP выхода и профиля; [чекап](docs/stealth-checkup.md) — это то, как такие результаты получают.
+Результат проверки зависит от сайта, выходного IP-адреса и профиля. Порядок измерений описан в [методике проверки движка](docs/stealth-checkup.ru.md).
 
 ## Stealth — свойство движка
 
-SDK намеренно не имеют власти над значениями отпечатка. Это дизайн, а не недостающая функция.
+SDK передаёт движку значение `seed` из профиля и параметры запуска. Движок применяет настройки отпечатка.
 
-| Слой | Где Ombra его обеспечивает |
+| Компонент | Как он устроен в Ombra |
 |---|---|
 | TLS и HTTP/2 | Собственный сетевой стек Chromium, согласованный по версии со сборкой движка |
 | Идентичность браузера | Патчи движка на уровне исходников, управляемые seed профиля |
-| Поверхность автоматизации | Скруб WebDriver, гигиена CDP, отсутствие `Runtime.enable` со стороны SDK |
-| Ввод | Очеловеченные указатель, клавиатура и прокрутка внутри процесса браузера |
-| Согласованность сети | Выход прокси и часовой пояс/локаль профиля проверяются вместе |
-| Состояние | Один профиль, один каталог данных, без утечек между профилями |
+| Признаки автоматизации | Движок обрабатывает признаки WebDriver, а SDK не вызывает `Runtime.enable` |
+| Ввод | Движения указателя, нажатия клавиш и прокрутку имитирует процесс браузера |
+| Согласованность сети | Определение часового пояса и локали с учётом прокси |
+| Состояние | Отдельный каталог данных для каждого профиля |
 
-### Чего каждый SDK не должен делать никогда
+### Границы SDK
 
-1. Внедрять stealth-JavaScript — никаких `addScriptToEvaluateOnNewDocument`, `evaluateOnNewDocument` и шимов свойств.
-2. Вызывать `Runtime.enable`; готовность проверяется через HTTP-эндпоинт CDP или `Browser.getVersion`.
-3. Использовать `Emulation.setUserAgentOverride`, `setTimezoneOverride`, `setLocaleOverride` или `setDeviceMetricsOverride`.
-4. Добавлять `--enable-automation`, `--disable-blink-features=AutomationControlled` или `--no-sandbox` втайне от пользователя.
-5. Переопределять user agent или идентичность на уровне Playwright/Puppeteer.
-6. Выводить, рандомизировать или молча менять seed профиля.
-7. Выставлять CDP-порт за пределы loopback.
-8. Логировать учётные данные прокси, лицензионные ключи, cookies или телеметрию.
+- Порт отладки CDP принимает только локальные подключения через интерфейс loopback.
+- Учётные данные прокси, лицензионные ключи и файлы cookie не попадают в журналы. SDK не отправляет телеметрию.
+- Существующий профиль сохраняет своё значение `seed`, пока вы явно не передадите новое.
+- SDK не внедряет скрипты через `addScriptToEvaluateOnNewDocument` или `evaluateOnNewDocument` и не подменяет свойства страницы.
+- Готовность браузера SDK проверяет через HTTP-интерфейс CDP или `Browser.getVersion`. Для этой проверки он не вызывает `Runtime.enable`.
+- За идентификационные данные браузера отвечает движок. SDK не подменяет User-Agent или другие данные через Playwright и Puppeteer и не вызывает `Emulation.setUserAgentOverride`, `setTimezoneOverride`, `setLocaleOverride` и `setDeviceMetricsOverride`.
+- SDK не добавляет флаги `--enable-automation`, `--disable-blink-features=AutomationControlled` и `--no-sandbox` без явного указания.
 
 ## Stealth-чекап
 
-Чекап организован по слоям, от сети до поведения. Релиз-кандидат не принимается по одному удачному скриншоту.
+Выполняйте эти проверки для сборки движка, клиента автоматизации и профиля, которые собираетесь использовать.
 
-| Слой | Примеры целей | Жёсткий гейт |
+| Уровень | Примеры проверок | Критерии прохождения |
 |---|---|---|
-| L0 Транспорт | TrackMe, проверки утечки IP/WebRTC | Только IP выхода; JA4 и HTTP/2 совпадают с Chromium движка |
+| L0 Транспорт | TrackMe, проверки утечки IP/WebRTC | Виден только выходной IP. JA4 и HTTP/2 соответствуют сборке Chromium |
 | L1 Идентичность | Локальная проба, Sannysoft, Intoli | Нет противоречий между UA, UA-CH, платформой, GPU, шрифтами, экраном |
-| L2 Отпечаток | CreepJS, FingerprintJS, BrowserScan | Нет маркеров headless или «лжи»; стабильность между перезагрузками |
+| L2 Отпечаток | CreepJS, FingerprintJS, BrowserScan | Нет признаков headless или пометок о подмене данных. Отпечаток стабилен при перезагрузке |
 | L3 Автоматизация | rebrowser, brotector, botd | Нет утечек CDP, init-скриптов или WebDriver |
-| L4 Поведение | Достоверность ввода, трассы humanize, Cloudflare smoke | Доверенные события, реалистичный порядок, челлендж проходит |
+| L4 Поведение | Проверки ввода, трассировка humanize, базовая проверка Cloudflare | События доверенные, их порядок реалистичен, проверка завершается успешно |
 | L5 Стабильность | Seed, воркеры, iframe, cross-origin | Один seed даёт одну и ту же персону между запусками |
 
-Полный ранбук, модель статусов, таблица триажа и шаблон отчёта — в [docs/stealth-checkup.md](docs/stealth-checkup.md). Русский перевод — [docs/stealth-checkup.ru.md](docs/stealth-checkup.ru.md).
+Методика описывает статусы, разбор результатов и формат отчёта. Она доступна [на русском](docs/stealth-checkup.ru.md) и [на английском](docs/stealth-checkup.md).
 
-Мы не публикуем stealth-числа без условий, при которых они получены. Чекап существует, чтобы результат можно было воспроизвести, сравнить с базлайном и заблокировать при регрессии.
+В отчёте укажите сборку движка, версии клиента и детектора, настройки профиля и выходной IP-адрес прокси. Это позволит воспроизвести и сравнить результаты.
 
 ## Карта репозитория
 
@@ -286,91 +282,94 @@ SDK намеренно не имеют власти над значениями 
 .
 ├── README.md                  # английский оригинал
 ├── README.ru.md               # этот файл (русский)
-├── desktop/                   # локальный каталог профилей и компоненты интерфейса
+├── desktop/                   # автономный менеджер профилей
 ├── docs/
 │   ├── desktop/               # документация менеджера профилей
-│   ├── architecture.md        # компоненты, поток запуска, границы
+│   ├── architecture.md        # компоненты, порядок запуска и границы SDK
 │   ├── sdk-contract.md        # контракт запуска v0 и поведение SDK
-│   ├── stealth-checkup.md     # методика и ранбук stealth-проверки
+│   ├── stealth-checkup.md     # методика проверки движка
 │   ├── stealth-checkup.ru.md  # русский перевод
 │   └── versioning.md          # совместимость SDK, движка и клиента
 ├── spec/
-│   └── schemas/               # JSON Schema для опций запуска и информации о бинарнике
+│   └── schemas/               # схемы JSON для параметров запуска и сведений о движке
 ├── sdks/
 │   ├── manifest.json          # машиночитаемый реестр SDK
-│   ├── README.md              # раскладка и правила участия
-│   ├── _template/             # стартовая точка для нового языка
+│   ├── README.md              # структура каталогов и правила участия
+│   ├── _template/             # заготовка для нового языка
 │   ├── python/  node/  dotnet/  java/
 │   └── go/  php/  ruby/  rust/
-├── conformance/               # языконезависимые кейсы запуска и stealth
+├── conformance/               # общие сценарии проверки запуска и поведения движка
 ├── tools/check_repo.py        # проверка структуры и ссылок (CI)
 └── .github/workflows/ci.yml
 ```
 
-Здесь вместе с SDK ведутся разработка локального каталога профилей и общих компонентов Desktop. Движок и исходники полной версии Desktop 1.2.1 находятся в своих репозиториях. [Исходники Desktop](desktop/README.md) · [Документация менеджера](docs/desktop/README.md).
+В этом репозитории находятся заготовки SDK, контракт запуска, общие проверки и автономный менеджер профилей. У движка Chromium и полной версии Desktop 1.2.1 свои репозитории. [Исходники и сборка Desktop](desktop/README.md) · [Документация менеджера профилей](docs/desktop/README.md)
 
 ## Контракт
 
-- **Одна точка входа.** `launch(options)` запускает движок и возвращает нативный объект браузера.
-- **Бинарник проверен.** Проверки SHA-256 и платформы перед запуском; загрузки необязательны и явны.
-- **Профили сохраняют seed.** Именованный профиль хранит cookies, storage и seed персоны между запусками.
-- **Нет control plane.** SDK общается с движком по CDP; между вашим скриптом и браузером нет сервиса.
-- **Никаких скрытых повторов.** Неудачный запуск — типизированная ошибка; SDK убирает процесс.
-- **Версионирование.** Диапазоны версий SDK, движка и клиента автоматизации раздельны; `binary_info()` сообщает сборку движка.
+- `launch(options)` запускает движок и возвращает объект `Browser` выбранного клиента. Дальше клиент обращается к Chromium напрямую по CDP.
+- Перед запуском SDK проверяет платформу и контрольную сумму SHA-256 файла движка. Если файла нет и загрузка разрешена, SDK скачивает его.
+- Именованный профиль сохраняет файлы cookie, данные сайтов и значение `seed` между запусками.
+- Если запуск не удался, SDK завершает созданный процесс. Вызывающий код получает типизированную ошибку и сам решает, повторять ли запуск.
+- У SDK, движка и клиента автоматизации свои диапазоны версий. Узнать сборку движка можно через `binary_info()` в Python или `binaryInfo()` в Node.js.
 
 ## Совместимость
 
-| Элемент | Цель |
+| Компонент | Поддержка |
 |---|---|
-| Движок | Сборка, определяемая SDK; сообщается через `binary_info()` |
+| Движок | Сборку выбирает SDK. Её можно узнать через `binary_info()` или `binaryInfo()` |
 | macOS | Apple Silicon и Intel |
 | Windows | x64 |
 | Linux | x64 |
-| Python | 3.10+; поддерживаемый диапазон Playwright |
-| Node.js | 20+; поддерживаемые диапазоны Playwright и Puppeteer |
-| .NET | 8+; поддерживаемый диапазон Microsoft.Playwright |
-| Java | 17+; поддерживаемый диапазон Playwright |
+| Python | 3.10+ с поддерживаемой версией Playwright |
+| Node.js | 20+ с поддерживаемой версией Playwright или Puppeteer |
 
-Версия пакета SDK и версия движка развиваются независимо. Несовпадение контракта сообщается типизированной ошибкой с обеими версиями в сообщении и никогда — как тихое ухудшение.
+Версии SDK и движка меняются независимо. При несовместимости SDK выдаёт типизированную ошибку с обеими версиями.
 
 ## Участие
 
-Самый быстрый способ повлиять на SDK — открыть issue с API, которого вам не хватает. Для вклада в код прочитайте [CONTRIBUTING.md](CONTRIBUTING.md), затем начните с conformance-кейса, прежде чем писать лаунчер.
+Порядок работы над изменениями описан в [правилах участия](CONTRIBUTING.md), а инструкции по сборке — в [руководстве по SDK](sdks/README.md).
 
-- Новый язык? Скопируйте [sdks/_template](sdks/_template), добавьте запись в [sdks/manifest.json](sdks/manifest.json) и откройте draft PR.
-- Опция запуска? Сначала обновите [docs/sdk-contract.md](docs/sdk-contract.md) и [spec/schemas](spec/schemas).
-- Изменение stealth? Им владеет движок; сторона SDK должна остаться неизменной и пройти чекап.
-- Проблема безопасности? Не открывайте публичный issue — см. [SECURITY.md](SECURITY.md).
+- Если меняете поведение SDK, обновите соответствующую реализацию и добавьте тест или общий сценарий проверки контракта.
+- Для SDK на новом языке скопируйте [шаблон](sdks/_template), добавьте пакет в [манифест](sdks/manifest.json) и откройте черновой PR.
+- Для нового параметра запуска сначала обновите [контракт SDK](docs/sdk-contract.md) и [схемы](spec/schemas).
+- Изменения механизмов stealth вносят в репозиторий движка. SDK должен по-прежнему проходить проверку.
+- Об уязвимостях сообщайте по закрытому каналу, указанному в [политике безопасности](SECURITY.md).
 
 ## FAQ
 
-**Это форк Playwright?**
-Нет. Он возвращает официальный объект браузера Playwright. Вы продолжаете использовать типы, помощники и page objects Playwright.
+### Это форк Playwright?
 
-**Нужно ли десктопное приложение Ombra?**
-Нет. SDK запускает движок напрямую. Приложение нужно для ручного управления профилями и не входит в путь SDK.
+Нет. SDK подключает официальный клиент Playwright к Ombra Chromium. Вы можете использовать привычные типы, вспомогательные функции и объекты страниц Playwright.
 
-**Чем это отличается от playwright-stealth?**
-`playwright-stealth` внедряет JavaScript и патчит свойства после старта страницы. Ombra патчит Chromium до компиляции. В странице нет шима, который можно обнаружить, и SDK его не добавляет.
+### Нужно ли настольное приложение Ombra?
 
-**Решает ли он CAPTCHA?**
-В движке есть опциональный модуль CAPTCHA, включаемый для каждого запуска. Поддержка зависит от типа задания, сборки и доступных моделей. Это не гарантия, и в SDK он не реализован.
+SDK запускает движок напрямую. В настольном приложении можно управлять профилями вручную.
 
-**Можно использовать свой прокси?**
-Да. Передайте его в `launch()`. Прокси с аутентификацией проходят через loopback-релей, поэтому учётные данные никогда не появляются в командной строке процесса.
+### Чем Ombra отличается от playwright-stealth?
 
-**Какие версии Playwright и Puppeteer поддерживаются?**
-Диапазоны объявляются в манифесте пакета и отслеживаются в [docs/versioning.md](docs/versioning.md). SDK не вендорит ни одну из библиотек.
+В Ombra изменения отпечатка встроены в Chromium. SDK не добавляет скрипты на страницы.
 
-**Пройдёт ли это каждую проверку на ботов?**
-Ни один честный проект не может это обещать. Детект — гонка вооружений, и результат зависит от сайта, региона, репутации IP, версии детектора и согласованности профиля. Ombra даёт воспроизводимый чекап вместо гарантии.
+### Умеет ли Ombra решать CAPTCHA?
+
+В движке есть необязательный модуль CAPTCHA. Поддержка зависит от типа задания, сборки движка и доступных моделей. SDK передаёт настройки при запуске и предоставляет доступ к модулю через CDP.
+
+### Можно ли использовать свой прокси?
+
+Да. Передайте его в `launch()`. Для прокси с аутентификацией SDK запускает локальный ретранслятор, поэтому учётные данные не попадают в командную строку движка.
+
+### Какие версии Playwright и Puppeteer поддерживаются?
+
+Поддерживаемые версии указаны в манифесте каждого SDK и в [руководстве по совместимости](docs/versioning.md). Сами клиенты поставляются как отдельные зависимости.
+
+### Проходит ли Ombra все проверки на ботов?
+
+Результат зависит от сайта, региона, репутации выходного IP-адреса, версии детектора и настроек профиля. Порядок проверки конкретной конфигурации описан в [методике проверки движка](docs/stealth-checkup.ru.md).
 
 ## Лицензия
 
-Исходники SDK в этом репозитории лицензированы по [Apache License 2.0](LICENSE). Лицензия не даёт прав на движок Ombra, имя Ombra или логотип. См. [NOTICE](NOTICE) о товарных знаках и сторонних атрибуциях.
+Исходный код SDK в этом репозитории распространяется по [лицензии Apache 2.0](LICENSE). Лицензия не даёт прав на движок, название и логотип Ombra. Сведения о товарных знаках и сторонних материалах приведены в [NOTICE](NOTICE).
 
 ---
 
-<div align="center">
-  <sub>Сделано <a href="https://github.com/ombralabs">Ombra Labs</a> · <a href="https://ombrabrowser.dev">ombrabrowser.dev</a></sub>
-</div>
+[Ombra Labs](https://github.com/ombralabs) · [ombrabrowser.dev](https://ombrabrowser.dev)
