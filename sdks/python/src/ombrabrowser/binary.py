@@ -32,6 +32,7 @@ from ._version import (
 )
 from .config import (
     BINARY_SIGNING_PUBKEYS,
+    DEFAULT_DOWNLOAD_URL,
     PlatformInfo,
     binary_relative_path,
     get_app_engines_dir,
@@ -63,6 +64,16 @@ _VERSION_PARTS_RE = re.compile(
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 _UPDATE_CHECK_INTERVAL_S = 3600.0
 _DOWNLOAD_RETRIES = 2  # Contract §11: download may retry twice with backoff
+_GITHUB_DOWNLOAD_URL = "https://github.com/ombralabs/ombra/releases/download"
+
+
+@dataclass(frozen=True)
+class _ReleaseEntry:
+    version: str
+    url: str
+    sha256: str
+    size: int | None
+    github_evidence: str | None = None
 
 
 @dataclass(frozen=True)
@@ -474,6 +485,10 @@ def _latest_marker_path(channel: str, plat: PlatformInfo) -> Path:
     return get_managed_engines_dir() / f".latest_{channel}_{plat.cdn_name}"
 
 
+def _github_latest_marker_path(channel: str, plat: PlatformInfo) -> Path:
+    return get_managed_engines_dir() / f".latest_github_{channel}_{plat.cdn_name}"
+
+
 def _serial_marker_path(channel: str) -> Path:
     return get_managed_engines_dir() / f".serial_{channel}"
 
@@ -483,11 +498,30 @@ def _last_update_check_path(channel: str, plat: PlatformInfo) -> Path:
 
 
 def _read_latest_marker(channel: str, plat: PlatformInfo) -> str | None:
+    base_url = get_download_base_url()
+    if base_url in {DEFAULT_DOWNLOAD_URL, None}:
+        try:
+            evidence = json.loads(_github_latest_marker_path(channel, plat).read_text("utf-8"))
+            if (
+                isinstance(evidence, dict)
+                and evidence.get("source") == DEFAULT_DOWNLOAD_URL
+                and evidence.get("channel") == channel
+                and isinstance(evidence.get("envelope"), str)
+                and _github_release_version(evidence.get("release"), channel=channel) is not None
+            ):
+                entry = _github_signed_release_entry(
+                    evidence["release"], evidence["envelope"].encode(), plat
+                )
+                return entry.version
+        except (OSError, ValueError, TypeError, OmbraError):
+            pass
+        if base_url == DEFAULT_DOWNLOAD_URL:
+            return None
     try:
         ver = _latest_marker_path(channel, plat).read_text(encoding="utf-8").strip()
         if ver and _VERSION_PARTS_RE.fullmatch(ver):
             return ver
-    except OSError:
+    except (OSError, UnicodeError):
         pass
     return None
 
@@ -649,7 +683,10 @@ def _http_get_bytes(url: str, *, timeout: float = 15.0) -> bytes:
         resp.raise_for_status()
         return bytes(resp.content)
     except Exception as exc:
-        raise DownloadFailedError(f"Failed to download {url}: {exc}") from exc
+        raise DownloadFailedError(
+            f"Failed to download {url}: {exc}",
+            details={"url": url, "status": getattr(getattr(exc, "response", None), "status_code", None)},
+        ) from exc
 
 
 def _http_download_file(url: str, dest: Path, *, expected_size: int | None = None) -> None:
@@ -714,26 +751,148 @@ def _verify_ed25519_envelope(raw: bytes) -> dict[str, Any]:
     )
 
 
+def _github_release_version(release: Any, *, channel: str | None = None) -> str | None:
+    if (
+        not isinstance(release, dict)
+        or release.get("draft") is not False
+        or not isinstance(release.get("prerelease"), bool)
+    ):
+        return None
+    tag = release.get("tag_name")
+    if not isinstance(tag, str) or not tag.startswith("v"):
+        return None
+    version = tag[1:]
+    if not _VERSION_PARTS_RE.fullmatch(version) or parse_version_key(version)[2]:
+        return None
+    if channel is not None and release["prerelease"] != (channel == "beta"):
+        return None
+    return version
+
+
+def _github_asset(release: dict[str, Any], filename: str, version: str) -> dict[str, Any]:
+    assets = release.get("assets")
+    matches = [
+        asset for asset in assets
+        if isinstance(asset, dict) and asset.get("name") == filename
+    ] if isinstance(assets, list) else []
+    expected_url = f"{_GITHUB_DOWNLOAD_URL}/v{version}/{filename}"
+    if (
+        len(matches) != 1
+        or matches[0].get("browser_download_url") != expected_url
+        or type(matches[0].get("size")) is not int
+        or matches[0]["size"] <= 0
+    ):
+        raise ChecksumMismatchError(f"Missing or invalid GitHub release asset {filename!r}.")
+    return matches[0]
+
+
+def _github_signed_release_entry(
+    release: dict[str, Any], raw: bytes, plat: PlatformInfo
+) -> _ReleaseEntry:
+    version = _github_release_version(release)
+    if version is None:
+        raise ChecksumMismatchError("Invalid GitHub browser release metadata.")
+    manifest = _verify_ed25519_envelope(raw)
+    if manifest.get("version") != version:
+        raise ChecksumMismatchError("GitHub tag does not match signed release manifest version.")
+    platforms = manifest.get("platforms")
+    entry = platforms.get(plat.cdn_name) if isinstance(platforms, dict) else None
+    if not isinstance(entry, dict):
+        raise UnsupportedPlatformError(f"Engine {version} has no build for {plat.sdk_name}.")
+    filename = f"ombra-engine-{version}-{plat.cdn_name}{plat.archive_ext}"
+    sha256 = entry.get("sha256")
+    size = entry.get("size")
+    if (
+        entry.get("file") != filename
+        or not isinstance(sha256, str)
+        or not _SHA256_RE.fullmatch(sha256.lower())
+        or type(size) is not int
+        or size <= 0
+    ):
+        raise ChecksumMismatchError("Signed release entry has invalid file, sha256, or size.")
+    _github_asset(release, "release.json", version)
+    asset = _github_asset(release, filename, version)
+    if asset["size"] != size:
+        raise ChecksumMismatchError("GitHub asset size does not match signed release manifest.")
+    check_engine_compatibility(version)
+    return _ReleaseEntry(version, asset["browser_download_url"], sha256.lower(), size)
+
+
+def _resolve_github_release_entry(
+    plat: PlatformInfo, *, requested_version: str | None, channel: str
+) -> _ReleaseEntry:
+    def get_json(url: str) -> Any:
+        try:
+            return json.loads(_http_get_bytes(url))
+        except (ValueError, UnicodeError) as exc:
+            raise DownloadFailedError(f"Malformed GitHub releases response from {url}.") from exc
+
+    release = None
+    if requested_version and "-" in requested_version:
+        release = get_json(f"{DEFAULT_DOWNLOAD_URL}/tags/v{requested_version}")
+        if _github_release_version(release) != requested_version:
+            raise ChecksumMismatchError("GitHub release tag does not match requested version.")
+    elif requested_version is None and channel == "stable":
+        try:
+            latest = get_json(f"{DEFAULT_DOWNLOAD_URL}/latest")
+        except DownloadFailedError as exc:
+            if exc.details.get("status") != 404:
+                raise
+        else:
+            if _github_release_version(latest, channel=channel) is not None:
+                release = latest
+
+    page = 1
+    while release is None:
+        releases = get_json(f"{DEFAULT_DOWNLOAD_URL}?per_page=100&page={page}")
+        if not isinstance(releases, list):
+            raise DownloadFailedError("Malformed GitHub release list; expected an array.")
+        for candidate in releases:
+            version = _github_release_version(candidate, channel=channel)
+            if version and (requested_version is None or _version_matches(version, requested_version)):
+                release = candidate
+                break
+        if release is None and len(releases) < 100:
+            raise DownloadFailedError(
+                f"No published Ombra browser release on GitHub for channel {channel!r}"
+                + (f" matching {requested_version!r}." if requested_version else ".")
+            )
+        page += 1
+
+    version = _github_release_version(release)
+    assert version is not None
+    asset = _github_asset(release, "release.json", version)
+    raw = _http_get_bytes(asset["browser_download_url"])
+    entry = _github_signed_release_entry(release, raw, plat)
+    evidence = json.dumps({
+        "source": DEFAULT_DOWNLOAD_URL, "channel": channel,
+        "release": release, "envelope": raw.decode("utf-8"),
+    }) if requested_version is None else None
+    return _ReleaseEntry(entry.version, entry.url, entry.sha256, entry.size, evidence)
+
+
 def _resolve_release_entry(
     base_url: str,
     plat: PlatformInfo,
     *,
     requested_version: str | None,
     channel: str,
-) -> tuple[str, str, str, int | None]:
+) -> _ReleaseEntry:
     """Fetch and verify channel/release metadata.
 
-    Returns ``(version, download_url, expected_sha256, expected_size)``.
+    The default source is GitHub Releases; explicit mirrors retain signed channels.
     """
+    if base_url == DEFAULT_DOWNLOAD_URL:
+        return _resolve_github_release_entry(plat, requested_version=requested_version, channel=channel)
     if requested_version and "-" not in requested_version:
-        entry = _resolve_release_entry(base_url, plat, requested_version=None, channel=channel)
-        if not _version_matches(entry[0], requested_version):
+        channel_entry = _resolve_release_entry(base_url, plat, requested_version=None, channel=channel)
+        if not _version_matches(channel_entry.version, requested_version):
             raise UnsupportedEngineError(
-                f"Channel {channel!r} provides {entry[0]!r}, which does not match "
+                f"Channel {channel!r} provides {channel_entry.version!r}, which does not match "
                 f"requested Chromium version {requested_version!r}. "
                 "Specify the full engine release version, including its '-N' suffix."
             )
-        return entry
+        return channel_entry
 
     if requested_version:
         manifest_url = f"{base_url}/engine/releases/{requested_version}/release.json"
@@ -757,7 +916,7 @@ def _resolve_release_entry(
         if not isinstance(filename, str) or not _SHA256_RE.fullmatch(sha256):
             raise ChecksumMismatchError("Release manifest entry is missing file or valid sha256.")
         check_engine_compatibility(requested_version)
-        return (
+        return _ReleaseEntry(
             requested_version,
             f"{base_url}/engine/releases/{requested_version}/{filename}",
             sha256,
@@ -811,7 +970,7 @@ def _resolve_release_entry(
         )
 
     _write_text_atomic(serial_path, str(serial))
-    return (
+    return _ReleaseEntry(
         version,
         f"{base_url}{rel_path}",
         sha256,
@@ -995,16 +1154,19 @@ def _download_with_retries(
     plat: PlatformInfo,
     requested_version: str | None,
     channel: str,
+    release: _ReleaseEntry | None = None,
 ) -> ResolvedBinary:
     last_err: Exception | None = None
     for attempt in range(_DOWNLOAD_RETRIES + 1):
         try:
-            version, archive_url, expected_sha, expected_size = _resolve_release_entry(
+            entry = release or _resolve_release_entry(
                 base_url,
                 plat,
                 requested_version=requested_version,
                 channel=channel,
             )
+            version, archive_url = entry.version, entry.url
+            expected_sha, expected_size = entry.sha256, entry.size
             resolved = _verified_cached_release(version, plat)
             if resolved is None:
                 with tempfile.NamedTemporaryFile(suffix=plat.archive_ext, delete=False) as tmp:
@@ -1043,7 +1205,10 @@ def _download_with_retries(
                 )
 
             if requested_version is None:
-                _write_text_atomic(_latest_marker_path(channel, plat), version)
+                if entry.github_evidence is not None:
+                    _write_text_atomic(_github_latest_marker_path(channel, plat), entry.github_evidence)
+                else:
+                    _write_text_atomic(_latest_marker_path(channel, plat), version)
                 _write_text_atomic(_last_update_check_path(channel, plat), str(time.time()))
             return resolved
         except (ChecksumMismatchError, UnsupportedPlatformError, UnsupportedEngineError):
@@ -1110,18 +1275,18 @@ def resolve_binary(
         and (force_update_check or _should_check_auto_update(channel, plat))
     ):
         try:
-            latest_ver, _, _, _ = _resolve_release_entry(
+            latest = _resolve_release_entry(
                 base_url, plat, requested_version=None, channel=channel
             )
             _write_text_atomic(_last_update_check_path(channel, plat), str(time.time()))
-            if version_newer(latest_ver, local.version):
+            if version_newer(latest.version, local.version):
                 updated = _download_with_retries(
                     base_url=base_url,
                     plat=plat,
-                    requested_version=latest_ver,
+                    requested_version=None,
                     channel=channel,
+                    release=latest,
                 )
-                _write_text_atomic(_latest_marker_path(channel, plat), updated.version)
                 return updated
         except (ChecksumMismatchError, UnsupportedEngineError):
             raise

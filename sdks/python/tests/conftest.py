@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
@@ -10,9 +11,13 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 from ombrabrowser._version import DEFAULT_ENGINE_VERSION
-from ombrabrowser.config import get_managed_engines_dir, get_platform_info
+from ombrabrowser.config import DEFAULT_DOWNLOAD_URL, get_managed_engines_dir, get_platform_info
+
+_CACHE_SIGNING_KEY = Ed25519PrivateKey.from_private_bytes(bytes(range(32)))
 
 _ENV_VARS_TO_ISOLATE = (
     "OMBRA_BINARY_PATH",
@@ -41,6 +46,9 @@ def isolated_ombra_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("OMBRA_CACHE_DIR", str(cache_dir))
     monkeypatch.setenv("OMBRA_APP_ENGINES_DIR", str(app_engines))
     monkeypatch.setenv("OMBRA_AUTO_UPDATE", "false")
+    monkeypatch.setattr("ombrabrowser.binary.BINARY_SIGNING_PUBKEYS", [base64.b64encode(
+        _CACHE_SIGNING_KEY.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
+    ).decode()])
     return tmp_path
 
 
@@ -102,4 +110,28 @@ def make_fake_engine(
     )
     if channel and base_dir.parent == get_managed_engines_dir():
         (base_dir.parent / f".latest_{channel}_{plat.cdn_name}").write_text(base_dir.name)
+        filename = f"ombra-engine-{base_dir.name}-{plat.cdn_name}{plat.archive_ext}"
+        signed = json.dumps({
+            "version": base_dir.name,
+            "platforms": {plat.cdn_name: {"file": filename, "sha256": "0" * 64, "size": 1}},
+        })
+        envelope = json.dumps({
+            "signed": signed,
+            "sig": base64.b64encode(_CACHE_SIGNING_KEY.sign(signed.encode())).decode(),
+        })
+        root = f"https://github.com/ombralabs/ombra/releases/download/v{base_dir.name}"
+        marker = {
+            "source": DEFAULT_DOWNLOAD_URL,
+            "channel": channel,
+            "release": {
+                "tag_name": f"v{base_dir.name}", "draft": False, "prerelease": channel == "beta",
+                "assets": [
+                    {"name": "release.json", "browser_download_url": f"{root}/release.json",
+                     "size": len(envelope)},
+                    {"name": filename, "browser_download_url": f"{root}/{filename}", "size": 1},
+                ],
+            },
+            "envelope": envelope,
+        }
+        (base_dir.parent / f".latest_github_{channel}_{plat.cdn_name}").write_text(json.dumps(marker))
     return exe

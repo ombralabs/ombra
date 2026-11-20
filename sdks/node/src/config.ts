@@ -7,7 +7,7 @@ import os from "node:os";
 import path from "node:path";
 import { InvalidOptionError, UnsupportedPlatformError } from "./errors.js";
 
-export const DEFAULT_DOWNLOAD_URL = "https://dl.ombrabrowser.dev";
+export const DEFAULT_DOWNLOAD_URL = "https://api.github.com/repos/ombralabs/ombra/releases";
 export const DEFAULT_TIMEOUT_MS = 30_000;
 export const MIN_TIMEOUT_MS = 1_000;
 export const MAX_TIMEOUT_MS = 600_000;
