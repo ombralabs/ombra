@@ -80,7 +80,7 @@ print(binary_info(version=engine_version))
 
 `version` overrides `OMBRA_VERSION` and disables automatic upgrades for that launch.
 Include the release suffix (`-9`) for an exact build; a Chromium-only pin accepts
-local releases or the channel release with that Chromium version. A conflicting `binary_path` or
+local releases or a GitHub channel release with that Chromium version. A conflicting `binary_path` or
 `OMBRA_BINARY_PATH` raises `UnsupportedEngineError`. If the requested build is
 missing and `download=False`, launch raises `BinaryNotFoundError`.
 
@@ -149,11 +149,23 @@ clear_cache()
 ```bash
 ombrabrowser info      # Print JSON diagnostics (or `ombrabrowser doctor`)
 ombrabrowser install   # Download and verify Ed25519 + SHA-256 engine archive
-ombrabrowser update    # Check channel manifest and update cached engine
+ombrabrowser update    # Check GitHub Releases and update cached engine
 ombrabrowser clear-cache
 ombrabrowser login     # Save license key to ~/.ombra/license.key (chmod 600)
 ombrabrowser logout
 ```
+
+By default, browser versions come from [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+The SDK downloads the signed `release.json` and platform archive from the selected `v<version>`
+release, then verifies the pinned Ed25519 signature, archive SHA-256, and size. Stable excludes
+prereleases; `release_channel="beta"` (or `OMBRA_RELEASE_CHANNEL=beta`) uses GitHub prereleases.
+SDK and desktop release tags are ignored.
+
+Verified installations and channel evidence are cached for offline use. Older channel caches are
+revalidated against GitHub once before default channel selection; exact version pins can reuse local
+installations. Set `OMBRA_DOWNLOAD_URL=off` to disable downloads, or set an explicit custom URL for a
+legacy mirror serving signed `/engine/channels/*.json` and `/engine/releases/<version>/` files.
+There is no automatic fallback to a CDN.
 
 `launch()` returns a real Playwright `Browser`. There is no wrapper and no new page API.
 

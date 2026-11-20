@@ -13,7 +13,7 @@ from .errors import InvalidOptionError, UnsupportedPlatformError
 
 logger = logging.getLogger("ombrabrowser")
 
-DEFAULT_DOWNLOAD_URL = "https://dl.ombrabrowser.dev"
+DEFAULT_DOWNLOAD_URL = "https://api.github.com/repos/ombralabs/ombra/releases"
 DEFAULT_TIMEOUT_MS = 30_000
 MIN_TIMEOUT_MS = 1_000
 MAX_TIMEOUT_MS = 600_000
@@ -39,10 +39,10 @@ _VERSION_PIN_RE = re.compile(
 
 @dataclass(frozen=True)
 class PlatformInfo:
-    """Host platform metadata across SDK schema and CDN conventions."""
+    """Host platform metadata across SDK schema and release manifests."""
 
     sdk_name: str      # spec/schemas/binary-info.schema.json (e.g. macos-arm64)
-    cdn_name: str      # CDN release manifest key (e.g. darwin-arm64)
+    cdn_name: str      # Release manifest key (e.g. darwin-arm64)
     archive_ext: str   # .tar.gz | .tar.xz | .zip
     system: str
     machine: str
