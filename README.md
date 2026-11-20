@@ -745,7 +745,7 @@ Precedence order: **explicit launch option → environment variable → profile 
 |---|---|---|
 | `OMBRA_BINARY_PATH` | unset | Explicit path to an engine binary |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Directory for cached engines and named profiles |
-| `OMBRA_DOWNLOAD_URL` | `https://dl.ombrabrowser.dev` | Base URL / mirror for engine downloads (`none`/`off` disables downloads) |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Base URL / mirror for engine downloads (`none`/`off` disables downloads) |
 | `OMBRA_VERSION` | latest compatible | Pinned engine version (for example, `158.0.8127.37-2`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | Engine release channel: `stable` or `beta` |
 | `OMBRA_AUTO_UPDATE` | `true` | Check for newer engine builds on launch |
