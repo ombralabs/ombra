@@ -2,17 +2,17 @@
 
 In Python and Node.js, `launch()` starts Ombra Chromium and returns a Playwright `Browser`. For Puppeteer in Node.js, use `launchPuppeteer()`.
 
-**[Install](#install)** · <a href="README.ru.md">Русский</a>
+**[Install](#install)** · <a href="translations/ru/README.md">Русский</a>
 
 <details>
 <summary>Languages</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](README.md) · [Русский](translations/ru/README.md) · [Deutsch](translations/de/README.md) · [Español](translations/es/README.md) ·
+[Français](translations/fr/README.md) · [Italiano](translations/it/README.md) · [Nederlands](translations/nl/README.md) · [Polski](translations/pl/README.md) ·
+[Português](translations/pt/README.md) · [Română](translations/ro/README.md) · [Türkçe](translations/tr/README.md) · [Українська](translations/uk/README.md) ·
+[Tiếng Việt](translations/vi/README.md) · [Bahasa Indonesia](translations/id/README.md) · [简体中文](translations/zh-Hans/README.md) · [繁體中文](translations/zh-Hant/README.md) ·
+[日本語](translations/ja/README.md) · [한국어](translations/ko/README.md) · [ไทย](translations/th/README.md) · [हिंदी](translations/hi/README.md) ·
+[Filipino](translations/fil/README.md) · [ខ្មែរ](translations/km/README.md)
 
 </details>
 
@@ -281,7 +281,8 @@ Record the engine build, client version, profile settings, proxy exit, and detec
 ```text
 .
 ├── README.md                  # this file (English)
-├── README.ru.md               # Russian translation
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # offline profile manager
 ├── docs/
 │   ├── desktop/               # profile manager documentation

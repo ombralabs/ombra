@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 W Pythonie i Node.js funkcja `launch()` uruchamia Ombra Chromium i zwraca obiekt `Browser` biblioteki Playwright. Aby korzystać z Puppeteera w Node.js, wywołaj `launchPuppeteer()`.
 
-**[Instalacja](#instalacja)** · <a href="README.md">English</a>
+**[Instalacja](#instalacja)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Języki</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ Przykłady korzystają z opublikowanych pakietów alfa dla Pythona i Node.js. W 
 
 | Komponent | Stan |
 |---|---|
-| [Kontrakt SDK](docs/sdk-contract.md) | Wersja robocza `0.1.0` |
+| [Kontrakt SDK](../../docs/sdk-contract.md) | Wersja robocza `0.1.0` |
 | SDK dla Pythona | `0.1.3` alfa · [`ombrabrowser` w PyPI](https://pypi.org/project/ombrabrowser/) |
 | SDK dla Node.js | `0.1.0` alfa · [`@ombralabs/sdk` w npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Wspólne schematy](spec/schemas) | Opcje uruchomienia i metadane pliku binarnego silnika |
-| [Zgodność między językami](conformance) | Wspólne przypadki testowe dla obu SDK |
-| [Audyt stealth](docs/stealth-checkup.md) | Kryteria testów i szablon raportu |
+| [Wspólne schematy](../../spec/schemas) | Opcje uruchomienia i metadane pliku binarnego silnika |
+| [Zgodność między językami](../../conformance) | Wspólne przypadki testowe dla obu SDK |
+| [Audyt stealth](../../docs/stealth-checkup.md) | Kryteria testów i szablon raportu |
 
 ## Instalacja
 
@@ -161,7 +161,7 @@ Po uruchomieniu klient wysyła polecenia dotyczące stron bezpośrednio do Chrom
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-W repozytorium przygotowano katalogi dla sześciu kolejnych SDK. [Manifest SDK](sdks/manifest.json) wymienia planowane pakiety i klientów. [Przewodnik po SDK](sdks/README.md) opisuje układ katalogów.
+W repozytorium przygotowano katalogi dla sześciu kolejnych SDK. [Manifest SDK](../../sdks/manifest.json) wymienia planowane pakiety i klientów. [Przewodnik po SDK](../../sdks/README.md) opisuje układ katalogów.
 
 | Docelowe środowisko | Planowany pakiet | Klient lub zwracany typ |
 |---|---|---|
@@ -190,7 +190,7 @@ Nazwy opcji w tabeli pochodzą z API Pythona i kontraktu SDK. W Node.js obowiąz
 | `binary_path` | ustalany | Użycie konkretnego pliku binarnego silnika |
 | `download` | `true` | Pobieranie brakującego pliku binarnego silnika |
 
-[Kontrakt SDK](docs/sdk-contract.md) zawiera pełną listę opcji uruchomienia oraz opis typów błędów i działania profili.
+[Kontrakt SDK](../../docs/sdk-contract.md) zawiera pełną listę opcji uruchomienia oraz opis typów błędów i działania profili.
 
 ## Zarządzanie plikiem binarnym
 
@@ -234,7 +234,7 @@ SDK wybiera pierwszą dostępną wartość. Sprawdza kolejno opcje uruchomienia,
 | Izolacja profilu | kontekst przeglądarki | kontekst przeglądarki | nie | katalog danych użytkownika |
 | Migracja bez przepisywania | — | zmiana importu | przepisanie | zmiana importu |
 
-Wyniki detektora zależą od witryny, wyjściowego adresu IP i profilu. Procedura [audytu stealth](docs/stealth-checkup.md) opisuje sposób pomiaru.
+Wyniki detektora zależą od witryny, wyjściowego adresu IP i profilu. Procedura [audytu stealth](../../docs/stealth-checkup.md) opisuje sposób pomiaru.
 
 ## Stealth jest cechą silnika
 
@@ -272,7 +272,7 @@ Przeprowadź te kontrole dla kompilacji silnika, klienta automatyzacji i profilu
 | L4 Zachowanie | Wierność wprowadzania, ślady humanizacji, smoke test Cloudflare | Zaufane zdarzenia, realistyczna kolejność, rozwiązanie wyzwania |
 | L5 Stabilność | Ziarno, workery, ramki iframe, różne źródła | To samo ziarno daje tę samą tożsamość przy kolejnych uruchomieniach |
 
-Procedura testowa opisuje możliwe statusy, diagnozowanie problemów i przygotowanie raportu. Jest dostępna po [angielsku](docs/stealth-checkup.md) i [rosyjsku](docs/stealth-checkup.ru.md).
+Procedura testowa opisuje możliwe statusy, diagnozowanie problemów i przygotowanie raportu. Jest dostępna po [angielsku](../../docs/stealth-checkup.md) i [rosyjsku](../../docs/stealth-checkup.ru.md).
 
 Przy każdym wyniku zapisuj kompilację silnika, wersję klienta, ustawienia profilu, adres wyjściowy proxy i wersję detektora, aby przebiegi można było odtworzyć i porównać.
 
@@ -281,7 +281,8 @@ Przy każdym wyniku zapisuj kompilację silnika, wersję klienta, ustawienia pro
 ```text
 .
 ├── README.md                  # oryginał angielski
-├── README.ru.md               # tłumaczenie rosyjskie
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # menedżer profili działający offline
 ├── docs/
 │   ├── desktop/               # dokumentacja menedżera profili
@@ -303,7 +304,7 @@ Przy każdym wyniku zapisuj kompilację silnika, wersję klienta, ustawienia pro
 └── .github/workflows/ci.yml
 ```
 
-Repozytorium zawiera szkielety SDK, kontrakt uruchomienia, testy zgodności i menedżer profili działający offline. Silnik Chromium i pełne wydanie Desktop 1.2.1 mają osobne repozytoria. [Kod źródłowy Desktop i instrukcja kompilacji](desktop/README.md) · [Dokumentacja menedżera profili](docs/desktop/README.md)
+Repozytorium zawiera szkielety SDK, kontrakt uruchomienia, testy zgodności i menedżer profili działający offline. Silnik Chromium i pełne wydanie Desktop 1.2.1 mają osobne repozytoria. [Kod źródłowy Desktop i instrukcja kompilacji](../../desktop/README.md) · [Dokumentacja menedżera profili](../../docs/desktop/README.md)
 
 ## Kontrakt
 
@@ -328,13 +329,13 @@ SDK i silnik są wersjonowane niezależnie. Jeśli ich wersje są niezgodne, SDK
 
 ## Współtworzenie
 
-[Przewodnik dla współtwórców](CONTRIBUTING.md) opisuje proces przeglądu zmian. Instrukcje kompilacji znajdziesz w [przewodniku po SDK](sdks/README.md).
+[Przewodnik dla współtwórców](../../CONTRIBUTING.md) opisuje proces przeglądu zmian. Instrukcje kompilacji znajdziesz w [przewodniku po SDK](../../sdks/README.md).
 
 - Gdy zmieniasz działanie SDK, zaktualizuj odpowiednią implementację i dodaj test lub wspólny przypadek testowy sprawdzający zgodność.
-- Aby dodać obsługę kolejnego języka, skopiuj [szablon SDK](sdks/_template), dodaj wpis w [manifeście](sdks/manifest.json) i otwórz roboczy pull request.
-- Przy dodawaniu opcji uruchomienia najpierw zaktualizuj [kontrakt SDK](docs/sdk-contract.md) i [schematy](spec/schemas).
+- Aby dodać obsługę kolejnego języka, skopiuj [szablon SDK](../../sdks/_template), dodaj wpis w [manifeście](../../sdks/manifest.json) i otwórz roboczy pull request.
+- Przy dodawaniu opcji uruchomienia najpierw zaktualizuj [kontrakt SDK](../../docs/sdk-contract.md) i [schematy](../../spec/schemas).
 - Zmiany w mechanizmach stealth silnika wprowadzaj w repozytorium silnika. SDK musi nadal przechodzić audyt.
-- Problemy z bezpieczeństwem zgłaszaj poufnie zgodnie z [polityką bezpieczeństwa](SECURITY.md).
+- Problemy z bezpieczeństwem zgłaszaj poufnie zgodnie z [polityką bezpieczeństwa](../../SECURITY.md).
 
 ## FAQ
 
@@ -360,15 +361,15 @@ Tak. Przekaż go do `launch()`. Jeśli proxy wymaga uwierzytelnienia, lokalny pr
 
 ### Które wersje Playwrighta i Puppeteera są obsługiwane?
 
-Każdy SDK podaje obsługiwane wersje klientów w manifeście swojego pakietu. Klienty są oddzielnymi zależnościami. Zakresy wersji znajdziesz w [przewodniku po wersjonowaniu](docs/versioning.md).
+Każdy SDK podaje obsługiwane wersje klientów w manifeście swojego pakietu. Klienty są oddzielnymi zależnościami. Zakresy wersji znajdziesz w [przewodniku po wersjonowaniu](../../docs/versioning.md).
 
 ### Czy Ombra przejdzie każdą kontrolę antybotową?
 
-Wyniki zależą od witryny, regionu, reputacji wyjściowego adresu IP, wersji detektora i ustawień profilu. [Audyt stealth](docs/stealth-checkup.md) opisuje, jak ocenić konkretną konfigurację.
+Wyniki zależą od witryny, regionu, reputacji wyjściowego adresu IP, wersji detektora i ustawień profilu. [Audyt stealth](../../docs/stealth-checkup.md) opisuje, jak ocenić konkretną konfigurację.
 
 ## Licencja
 
-Źródła SDK w tym repozytorium są objęte licencją [Apache License 2.0](LICENSE). Licencja nie przyznaje praw do silnika Ombra, nazwy Ombra ani logo. Informacje o znakach towarowych i atrybucjach stron trzecich znajdziesz w [NOTICE](NOTICE).
+Źródła SDK w tym repozytorium są objęte licencją [Apache License 2.0](../../LICENSE). Licencja nie przyznaje praw do silnika Ombra, nazwy Ombra ani logo. Informacje o znakach towarowych i atrybucjach stron trzecich znajdziesz w [NOTICE](../../NOTICE).
 
 ---
 

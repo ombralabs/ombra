@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 În Python și Node.js, `launch()` pornește Ombra Chromium și returnează un obiect `Browser` din Playwright. Pentru Puppeteer în Node.js, folosiți `launchPuppeteer()`.
 
-**[Instalare](#instalare)** · <a href="README.md">English</a>
+**[Instalare](#instalare)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Limbi</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ Exemplele folosesc pachetele alfa publicate pentru Python și Node.js. Depozitul
 
 | Componentă | Stare |
 |---|---|
-| [Contractul SDK-urilor](docs/sdk-contract.md) | Versiune de lucru `0.1.0` |
+| [Contractul SDK-urilor](../../docs/sdk-contract.md) | Versiune de lucru `0.1.0` |
 | SDK pentru Python | `0.1.3` alfa · [`ombrabrowser` pe PyPI](https://pypi.org/project/ombrabrowser/) |
 | SDK pentru Node.js | `0.1.0` alfa · [`@ombralabs/sdk` pe npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Scheme comune](spec/schemas) | Opțiuni de lansare și metadate despre executabilul motorului |
-| [Conformitate între limbaje](conformance) | Cazuri de testare comune celor două SDK-uri |
-| [Verificare stealth](docs/stealth-checkup.md) | Criterii de testare și șablon de raport |
+| [Scheme comune](../../spec/schemas) | Opțiuni de lansare și metadate despre executabilul motorului |
+| [Conformitate între limbaje](../../conformance) | Cazuri de testare comune celor două SDK-uri |
+| [Verificare stealth](../../docs/stealth-checkup.md) | Criterii de testare și șablon de raport |
 
 ## Instalare
 
@@ -161,7 +161,7 @@ După lansare, clientul trimite comenzile pentru pagini direct către Chromium.
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-Depozitul include directoare pentru alte șase SDK-uri. [Manifestul SDK-urilor](sdks/manifest.json) enumeră pachetele și clienții planificați. [Ghidul SDK-urilor](sdks/README.md) descrie structura directoarelor.
+Depozitul include directoare pentru alte șase SDK-uri. [Manifestul SDK-urilor](../../sdks/manifest.json) enumeră pachetele și clienții planificați. [Ghidul SDK-urilor](../../sdks/README.md) descrie structura directoarelor.
 
 | Mediu de rulare vizat | Pachet planificat | Client sau tip returnat |
 |---|---|---|
@@ -190,7 +190,7 @@ Opțiunile urmează convențiile de denumire din API-ul Python și din contractu
 | `binary_path` | determinat | Folosește un binar specific al motorului |
 | `download` | `true` | Descarcă binarul motorului dacă lipsește |
 
-[Contractul SDK-urilor](docs/sdk-contract.md) enumeră toate opțiunile de lansare și descrie tipurile de erori și comportamentul profilurilor.
+[Contractul SDK-urilor](../../docs/sdk-contract.md) enumeră toate opțiunile de lansare și descrie tipurile de erori și comportamentul profilurilor.
 
 ## Gestionarea binarului
 
@@ -234,7 +234,7 @@ SDK-ul ia prima valoare disponibilă după ce verifică, în ordine, opțiunile 
 | Izolarea profilului | context de browser | context de browser | nu | director de date de utilizator |
 | Migrare fără rescriere | — | schimbare de import | rescriere | schimbare de import |
 
-Rezultatele unui detector depind de site, de adresa IP de ieșire și de profil. [Procedura de verificare](docs/stealth-checkup.md) descrie metoda de măsurare.
+Rezultatele unui detector depind de site, de adresa IP de ieșire și de profil. [Procedura de verificare](../../docs/stealth-checkup.md) descrie metoda de măsurare.
 
 ## Stealth-ul este o proprietate a motorului
 
@@ -272,7 +272,7 @@ Rulați aceste verificări pe compilarea motorului, clientul de automatizare și
 | L4 Comportament | Fidelitatea inputului, urme de humanize, test rapid Cloudflare | Evenimente de încredere, ordine realistă, provocarea este rezolvată |
 | L5 Stabilitate | Seed, workeri, iframe-uri, cross-origin | Același seed produce aceeași identitate la fiecare lansare |
 
-Procedura de testare descrie stările posibile, diagnosticarea problemelor și întocmirea raportului. Este disponibilă în [engleză](docs/stealth-checkup.md) și în [rusă](docs/stealth-checkup.ru.md).
+Procedura de testare descrie stările posibile, diagnosticarea problemelor și întocmirea raportului. Este disponibilă în [engleză](../../docs/stealth-checkup.md) și în [rusă](../../docs/stealth-checkup.ru.md).
 
 Pentru fiecare rezultat, notați versiunea compilării motorului, versiunea clientului, setările profilului, adresa IP de ieșire a proxy-ului și versiunea detectorului. Aceste date vă permit să reproduceți și să comparați testele.
 
@@ -281,7 +281,8 @@ Pentru fiecare rezultat, notați versiunea compilării motorului, versiunea clie
 ```text
 .
 ├── README.md                  # originalul în engleză
-├── README.ru.md               # traducere în rusă
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # manager de profiluri offline
 ├── docs/
 │   ├── desktop/               # documentația managerului de profiluri
@@ -303,7 +304,7 @@ Pentru fiecare rezultat, notați versiunea compilării motorului, versiunea clie
 └── .github/workflows/ci.yml
 ```
 
-Depozitul conține structurile de bază ale SDK-urilor, contractul de lansare, testele de conformitate și managerul de profiluri offline. Motorul Chromium și versiunea completă Desktop 1.2.1 au depozite separate. [Codul sursă și ghidul de compilare pentru Desktop](desktop/README.md) · [Documentația managerului de profiluri](docs/desktop/README.md)
+Depozitul conține structurile de bază ale SDK-urilor, contractul de lansare, testele de conformitate și managerul de profiluri offline. Motorul Chromium și versiunea completă Desktop 1.2.1 au depozite separate. [Codul sursă și ghidul de compilare pentru Desktop](../../desktop/README.md) · [Documentația managerului de profiluri](../../docs/desktop/README.md)
 
 ## Contractul
 
@@ -328,13 +329,13 @@ SDK-ul și motorul au numere de versiune independente. Dacă versiunile sunt inc
 
 ## Contribuții
 
-[Ghidul pentru contribuții](CONTRIBUTING.md) descrie procesul de revizuire a modificărilor. Instrucțiunile de compilare se găsesc în [ghidul SDK-urilor](sdks/README.md).
+[Ghidul pentru contribuții](../../CONTRIBUTING.md) descrie procesul de revizuire a modificărilor. Instrucțiunile de compilare se găsesc în [ghidul SDK-urilor](../../sdks/README.md).
 
 - Dacă schimbați comportamentul unui SDK, actualizați implementarea afectată și adăugați un test sau un caz comun de conformitate.
-- Pentru un limbaj nou, copiați [șablonul SDK](sdks/_template), înregistrați noul SDK în [manifest](sdks/manifest.json) și deschideți un pull request în stadiu de ciornă.
-- Pentru o opțiune nouă de lansare, actualizați mai întâi [contractul SDK-urilor](docs/sdk-contract.md) și [schemele](spec/schemas).
+- Pentru un limbaj nou, copiați [șablonul SDK](../../sdks/_template), înregistrați noul SDK în [manifest](../../sdks/manifest.json) și deschideți un pull request în stadiu de ciornă.
+- Pentru o opțiune nouă de lansare, actualizați mai întâi [contractul SDK-urilor](../../docs/sdk-contract.md) și [schemele](../../spec/schemas).
 - Modificările funcțiilor stealth ale motorului se fac în depozitul acestuia. SDK-ul trebuie să treacă în continuare verificările.
-- Raportați problemele de securitate în privat, conform [politicii de securitate](SECURITY.md).
+- Raportați problemele de securitate în privat, conform [politicii de securitate](../../SECURITY.md).
 
 ## Întrebări frecvente
 
@@ -360,15 +361,15 @@ Da. Transmiteți-l funcției `launch()`. Dacă proxy-ul necesită autentificare,
 
 ### Ce versiuni de Playwright și Puppeteer sunt acceptate?
 
-Fiecare SDK indică versiunile de client acceptate în manifestul pachetului. Clienții sunt dependențe separate. Intervalele de versiuni sunt descrise în [ghidul de versionare](docs/versioning.md).
+Fiecare SDK indică versiunile de client acceptate în manifestul pachetului. Clienții sunt dependențe separate. Intervalele de versiuni sunt descrise în [ghidul de versionare](../../docs/versioning.md).
 
 ### Trece Ombra toate verificările antibot?
 
-Rezultatele depind de site, regiune, reputația adresei IP de ieșire, versiunea detectorului și setările profilului. [Procedura de verificare stealth](docs/stealth-checkup.md) explică modul de evaluare a unei configurații concrete.
+Rezultatele depind de site, regiune, reputația adresei IP de ieșire, versiunea detectorului și setările profilului. [Procedura de verificare stealth](../../docs/stealth-checkup.md) explică modul de evaluare a unei configurații concrete.
 
 ## Licență
 
-Sursele SDK din acest depozit sunt licențiate conform [Apache License 2.0](LICENSE). Licența nu acordă drepturi asupra motorului Ombra, asupra numelui Ombra sau asupra logo-ului. Consultați [NOTICE](NOTICE) pentru mărci comerciale și atribuiri ale terților.
+Sursele SDK din acest depozit sunt licențiate conform [Apache License 2.0](../../LICENSE). Licența nu acordă drepturi asupra motorului Ombra, asupra numelui Ombra sau asupra logo-ului. Consultați [NOTICE](../../NOTICE) pentru mărci comerciale și atribuiri ale terților.
 
 ---
 

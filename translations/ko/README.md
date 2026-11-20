@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 Python과 Node.js에서 `launch()`를 호출하면 Ombra Chromium이 시작되고 Playwright의 `Browser`가 반환됩니다. Node.js에서 Puppeteer를 쓰려면 `launchPuppeteer()`를 호출하세요.
 
-**[설치](#설치)** · <a href="README.md">English</a>
+**[설치](#설치)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>언어</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ SDK는 로컬에서 엔진을 시작하고 Chrome DevTools Protocol(CDP)로 자�
 
 | 구성 요소 | 상태 |
 |---|---|
-| [SDK 계약](docs/sdk-contract.md) | 초안 `0.1.0` |
+| [SDK 계약](../../docs/sdk-contract.md) | 초안 `0.1.0` |
 | Python SDK | `0.1.3` 알파 · [PyPI의 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | Node.js SDK | `0.1.0` 알파 · [npm의 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [공용 스키마](spec/schemas) | 실행 옵션과 엔진 바이너리 메타데이터 |
-| [언어 간 적합성 검사](conformance) | 두 SDK가 공유하는 테스트 사례 |
-| [스텔스 점검](docs/stealth-checkup.md) | 검사 기준과 보고서 양식 |
+| [공용 스키마](../../spec/schemas) | 실행 옵션과 엔진 바이너리 메타데이터 |
+| [언어 간 적합성 검사](../../conformance) | 두 SDK가 공유하는 테스트 사례 |
+| [스텔스 점검](../../docs/stealth-checkup.md) | 검사 기준과 보고서 양식 |
 
 ## 설치
 
@@ -161,7 +161,7 @@ flowchart LR
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-이 저장소에는 다른 SDK 6개를 위한 디렉터리도 있습니다. 개발 예정인 패키지와 클라이언트는 [SDK 매니페스트](sdks/manifest.json)에서, 디렉터리 구조는 [SDK 가이드](sdks/README.md)에서 확인할 수 있습니다.
+이 저장소에는 다른 SDK 6개를 위한 디렉터리도 있습니다. 개발 예정인 패키지와 클라이언트는 [SDK 매니페스트](../../sdks/manifest.json)에서, 디렉터리 구조는 [SDK 가이드](../../sdks/README.md)에서 확인할 수 있습니다.
 
 | 대상 런타임 | 배포 예정 패키지 | 클라이언트 또는 반환 타입 |
 |---|---|---|
@@ -190,7 +190,7 @@ flowchart LR
 | `binary_path` | 자동 결정 | 특정 엔진 바이너리 사용 |
 | `download` | `true` | 없는 엔진 바이너리 내려받기 |
 
-전체 실행 옵션과 오류 타입, 프로필 동작은 [SDK 계약](docs/sdk-contract.md)에서 확인할 수 있습니다.
+전체 실행 옵션과 오류 타입, 프로필 동작은 [SDK 계약](../../docs/sdk-contract.md)에서 확인할 수 있습니다.
 
 ## 바이너리 관리
 
@@ -234,7 +234,7 @@ SDK는 실행 옵션, 환경 변수, 프로필 메타데이터, 기본값 순으
 | 프로필 격리 | 브라우저 컨텍스트 | 브라우저 컨텍스트 | 없음 | 사용자 데이터 디렉터리 |
 | 드롭인 마이그레이션 | — | import 변경 | 재작성 | import 변경 |
 
-탐지 결과는 사이트, 출구 IP, 프로필에 따라 달라집니다. 측정 방법은 [스텔스 점검](docs/stealth-checkup.md)에 설명되어 있습니다.
+탐지 결과는 사이트, 출구 IP, 프로필에 따라 달라집니다. 측정 방법은 [스텔스 점검](../../docs/stealth-checkup.md)에 설명되어 있습니다.
 
 ## 스텔스는 엔진의 속성입니다
 
@@ -272,7 +272,7 @@ SDK는 실행 옵션, 환경 변수, 프로필 메타데이터, 기본값 순으
 | L4 동작 | 입력 충실도, 인간화 흔적, Cloudflare 스모크 테스트 | 신뢰할 수 있는 이벤트, 사실적인 순서, 챌린지 해결 |
 | L5 안정성 | 시드, 워커, iframe, 교차 출처 | 동일한 시드는 실행할 때마다 동일한 페르소나를 생성 |
 
-검사 절차에는 결과별 상태, 문제 해결, 보고 방법이 나와 있습니다. [영어판](docs/stealth-checkup.md)과 [러시아어판](docs/stealth-checkup.ru.md)을 제공합니다.
+검사 절차에는 결과별 상태, 문제 해결, 보고 방법이 나와 있습니다. [영어판](../../docs/stealth-checkup.md)과 [러시아어판](../../docs/stealth-checkup.ru.md)을 제공합니다.
 
 각 결과에 엔진 빌드, 클라이언트 버전, 프로필 설정, 프록시 출구 IP, 탐지기 버전을 함께 기록해야 실행을 재현하고 비교할 수 있습니다.
 
@@ -281,7 +281,8 @@ SDK는 실행 옵션, 환경 변수, 프로필 메타데이터, 기본값 순으
 ```text
 .
 ├── README.md                  # 영어 원본
-├── README.ru.md               # 러시아어 번역
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # 오프라인 프로필 관리자
 ├── docs/
 │   ├── desktop/               # 프로필 관리자 문서
@@ -303,7 +304,7 @@ SDK는 실행 옵션, 환경 변수, 프로필 메타데이터, 기본값 순으
 └── .github/workflows/ci.yml
 ```
 
-이 저장소에는 각 SDK의 기본 프로젝트 구조와 실행 계약, 적합성 테스트 사례, 오프라인 프로필 관리자가 있습니다. Chromium 엔진과 Desktop 1.2.1 전체 배포본은 각각 별도 저장소에서 관리합니다. [Desktop 소스 및 빌드 가이드](desktop/README.md) · [프로필 관리자 문서](docs/desktop/README.md)
+이 저장소에는 각 SDK의 기본 프로젝트 구조와 실행 계약, 적합성 테스트 사례, 오프라인 프로필 관리자가 있습니다. Chromium 엔진과 Desktop 1.2.1 전체 배포본은 각각 별도 저장소에서 관리합니다. [Desktop 소스 및 빌드 가이드](../../desktop/README.md) · [프로필 관리자 문서](../../docs/desktop/README.md)
 
 ## 계약 사항
 
@@ -328,13 +329,13 @@ SDK와 엔진의 버전은 독립적으로 관리합니다. 두 버전이 호환
 
 ## 기여
 
-검토 절차는 [기여 가이드](CONTRIBUTING.md)에, 빌드 방법은 [SDK 가이드](sdks/README.md)에 나와 있습니다.
+검토 절차는 [기여 가이드](../../CONTRIBUTING.md)에, 빌드 방법은 [SDK 가이드](../../sdks/README.md)에 나와 있습니다.
 
 - SDK 동작을 바꾸려면 해당 구현을 수정하고 테스트 또는 공통 적합성 테스트 사례를 추가하세요.
-- 새 언어용 SDK를 추가하려면 [SDK 템플릿](sdks/_template)을 복사한 후 [매니페스트](sdks/manifest.json)에 등록하고 초안 PR을 여세요.
-- 새 실행 옵션을 추가하려면 먼저 [SDK 계약](docs/sdk-contract.md)과 [스키마](spec/schemas)를 수정하세요.
+- 새 언어용 SDK를 추가하려면 [SDK 템플릿](../../sdks/_template)을 복사한 후 [매니페스트](../../sdks/manifest.json)에 등록하고 초안 PR을 여세요.
+- 새 실행 옵션을 추가하려면 먼저 [SDK 계약](../../docs/sdk-contract.md)과 [스키마](../../spec/schemas)를 수정하세요.
 - 엔진 수준의 스텔스 기능은 엔진 저장소에서 수정하세요. 수정 후에도 SDK는 점검을 통과해야 합니다.
-- 보안 문제는 [보안 정책](SECURITY.md)에 따라 비공개로 신고하세요.
+- 보안 문제는 [보안 정책](../../SECURITY.md)에 따라 비공개로 신고하세요.
 
 ## FAQ
 
@@ -360,15 +361,15 @@ Ombra의 지문 제어 기능은 Chromium 빌드에 포함됩니다. SDK는 페�
 
 ### 어떤 버전의 Playwright와 Puppeteer를 지원하나요?
 
-각 SDK는 패키지 매니페스트에서 지원하는 클라이언트 버전을 지정합니다. 클라이언트는 별도의 의존성입니다. 지원 범위는 [버전 관리 가이드](docs/versioning.md)에서 확인할 수 있습니다.
+각 SDK는 패키지 매니페스트에서 지원하는 클라이언트 버전을 지정합니다. 클라이언트는 별도의 의존성입니다. 지원 범위는 [버전 관리 가이드](../../docs/versioning.md)에서 확인할 수 있습니다.
 
 ### Ombra는 모든 봇 탐지 검사를 통과하나요?
 
-결과는 사이트, 지역, 출구 IP의 평판, 탐지기 버전, 프로필 설정에 따라 달라집니다. 특정 구성으로 측정하는 방법은 [스텔스 점검](docs/stealth-checkup.md)에 나와 있습니다.
+결과는 사이트, 지역, 출구 IP의 평판, 탐지기 버전, 프로필 설정에 따라 달라집니다. 특정 구성으로 측정하는 방법은 [스텔스 점검](../../docs/stealth-checkup.md)에 나와 있습니다.
 
 ## 라이선스
 
-이 저장소의 SDK 소스는 [Apache License 2.0](LICENSE)에 따라 라이선스가 부여됩니다. 이 라이선스는 Ombra 엔진, Ombra 이름, 로고에 대한 권리를 부여하지 않습니다. 상표 및 제3자 저작자 표시에 대해서는 [NOTICE](NOTICE)를 참고하시기 바랍니다.
+이 저장소의 SDK 소스는 [Apache License 2.0](../../LICENSE)에 따라 라이선스가 부여됩니다. 이 라이선스는 Ombra 엔진, Ombra 이름, 로고에 대한 권리를 부여하지 않습니다. 상표 및 제3자 저작자 표시에 대해서는 [NOTICE](../../NOTICE)를 참고하시기 바랍니다.
 
 ---
 
