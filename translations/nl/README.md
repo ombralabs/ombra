@@ -1,8 +1,29 @@
-# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+<p align="center">
+<img src="../../assets/logo.svg" width="72" height="72" alt="Ombra">
+</p>
 
-In Python en Node.js start `launch()` Ombra Chromium en krijg je een `Browser`-object van Playwright terug. Gebruik `launchPuppeteer()` voor Puppeteer in Node.js.
+<h1 align="center">Ombra</h1>
 
-**[Installatie](#installatie)** · <a href="../../README.md">English</a>
+<p align="center">
+<a href="https://pypi.org/project/ombrabrowser/"><img src="https://img.shields.io/pypi/v/ombrabrowser?label=PyPI" alt="PyPI"></a>
+<a href="https://www.npmjs.com/package/@ombralabs/sdk"><img src="https://img.shields.io/npm/v/@ombralabs/sdk?label=npm" alt="npm"></a>
+<a href="../../LICENSE"><img src="https://img.shields.io/github/license/ombralabs/ombra" alt="Licentie"></a>
+<a href="https://github.com/ombralabs/ombra"><img src="https://img.shields.io/github/last-commit/ombralabs/ombra" alt="Laatste commit"></a>
+<br>
+<a href="https://github.com/ombralabs/ombra"><img src="https://img.shields.io/github/stars/ombralabs/ombra" alt="Sterren"></a>
+<a href="https://pypi.org/project/ombrabrowser/"><img src="https://img.shields.io/pepy/dt/ombrabrowser?label=pypi&logo=pypi&logoColor=white" alt="PyPI-downloads"></a>
+<a href="https://www.npmjs.com/package/@ombralabs/sdk"><img src="https://img.shields.io/npm/dt/@ombralabs/sdk?label=npm&logo=npm&logoColor=white" alt="npm-downloads"></a>
+<a href="https://github.com/ombralabs/ombra/releases"><img src="https://img.shields.io/github/v/release/ombralabs/ombra?label=release" alt="Release"></a>
+</p>
+
+<p align="center">
+<a href="#installatie"><strong>Installatie</strong></a> ·
+<a href="#python-api">Python-API</a> ·
+<a href="#api-voor-nodejs-en-typescript">Node.js-API</a> ·
+<a href="#vermenselijkte-invoer">Vermenselijkte invoer</a> ·
+<a href="#ombra-desktop">Ombra Desktop</a> ·
+<a href="../../README.md">English</a>
+</p>
 
 <details>
 <summary>Talen</summary>
@@ -16,48 +37,29 @@ In Python en Node.js start `launch()` Ombra Chromium en krijg je een `Browser`-o
 
 </details>
 
-## Fingerprint-aansturing in Chromium
+<br>
 
-Ombra regelt de browserfingerprint in Chromium zelf. Dat geldt voor canvas, WebGL, audio, lettertypen, het aantal logische processors, de afmetingen van pagina-elementen, GPU-identificatie, tijdzones en automatiseringssignalen. De engine gebruikt de TLS- en HTTP/2-stack van Chromium en verwerkt mensachtige invoer in het browserproces.
+<h3 align="center">Chromium met fingerprintbeheer op C++-broncodeniveau en native vermenselijkte invoer.</h3>
 
-De SDK start de engine lokaal en maakt via het Chrome DevTools Protocol (CDP) verbinding met de automatiseringsclient. Je kunt de SDK in een script, een container of een CI-taak gebruiken zonder de desktopapp van Ombra te installeren.
+<table><tr><td>
+Geen bundel startvlaggen en geen JavaScript-injectie boven op de pagina. Een echte Chromium-binary met fingerprintpatches gecompileerd in de C++-broncode en invoersimulatie die in het browserproces zelf draait. Verbind officiële Playwright of Puppeteer via lokale CDP — zonder wrapperobjecten en zonder paginacode te herschrijven.
+</td></tr></table>
 
-## Status
+<br>
 
-De voorbeelden gebruiken de gepubliceerde alfapakketten voor Python en Node.js. Deze repository bevat ook het gedeelde startcontract en de basisstructuur voor acht SDK’s.
+<p align="center">
+Drop-in startvervanging voor Playwright en Puppeteer in Python en Node.js.<br>
+Dezelfde API, dezelfde selectors en types — vervang alleen de import en de <code>launch()</code>-aanroep.
+</p>
 
-| Onderdeel | Status |
-|---|---|
-| [SDK-contract](../../docs/sdk-contract.md) | Concept `0.1.0` |
-| Python-SDK | `0.1.3` alfa · [`ombrabrowser` op PyPI](https://pypi.org/project/ombrabrowser/) |
-| Node.js-SDK | `0.1.0` alfa · [`@ombralabs/sdk` op npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Gedeelde schema’s](../../spec/schemas) | Startopties en metadata van het uitvoerbare enginebestand |
-| [Conformiteitstests voor meerdere talen](../../conformance) | Gedeelde testgevallen voor beide SDK’s |
-| [Stealth-checkup](../../docs/stealth-checkup.md) | Testcriteria en rapportsjabloon |
+- **Chromium-patches op broncodeniveau** — canvas, WebGL, WebGPU, audio, lettertypen, GPU, scherm, CSS-mediaqueries, hardwarerapportage, WebRTC zonder STUN-lekken, TLS ClientHello, tijdzone, locale en verwijdering van automatiseringssignalen (`navigator.webdriver`, `Runtime.enable`, headless-markeringen).
+- **Native vermenselijkte invoer in het browserproces (`humanize=True`)** — aanwijzertrajecten (`cursory-rs`), gerichte klikken met indruktijd, typritme met zelfcorrectie van typefouten en scrollfysica draaien binnen Chromium zelf. De SDK retourneert een gewone native `Browser` zonder proxywrappers.
+- **Zelfstandige werking zonder sleutels of accounts** — actuele engine-builds (`151.0.7922.108-9` en nieuwer) en Ombra Desktop draaien lokaal zonder registratie, licentiesleutels, hardware-ID's of een licentieserver.
+- **Automatische installatie en cryptografische binary-verificatie** — `pip install ombrabrowser` of `npm install @ombralabs/sdk`; bij de eerste start downloadt de SDK de build voor jouw platform en verifieert de Ed25519-handtekening en de SHA-256-checksum.
+- **Persistente profielen en veilige proxy-relay** — profielen met een naam bewaren cookies, `localStorage`, IndexedDB en `seed` tussen sessies met vergrendeling tussen processen; geauthenticeerde proxy's (HTTP, HTTPS, SOCKS5) lopen via een lokale loopback-relay zodat inloggegevens nooit in procesargumenten verschijnen.
+- **Offline profielbeheerder Ombra Desktop** — een native desktopapplicatie in deze repository ([`desktop/`](../../desktop/README.md)) met vooraf gebouwde installatieprogramma's voor macOS, Linux en Windows.
 
-## Installatie
-
-**Python**
-
-```bash
-python -m pip install ombrabrowser
-```
-
-**Node.js / TypeScript**
-
-```bash
-npm install @ombralabs/sdk "playwright-core@^1.60.0"
-```
-
-Installeer voor Puppeteer `puppeteer-core` in plaats van `playwright-core`. Op de [pakketpagina op npm](https://www.npmjs.com/package/@ombralabs/sdk) staan de ondersteunde versies van Node.js en de clients.
-
-De SDK controleert eerst het pad dat je in Python als `binary_path` of in Node.js als `binaryPath` meegeeft. Daarna kijkt de SDK achtereenvolgens naar `OMBRA_BINARY_PATH`, de enginemap van de desktopapp en de SDK-cache. Vindt de SDK geen engine, dan downloadt en controleert hij er een.
-
-Met `download=False` in Python of `download: false` in Node.js schakel je downloads uit. Roep `ensure_binary()` in Python of `ensureBinary()` in Node.js aan om de engine klaar te zetten zonder een browser te openen.
-
-## Snel aan de slag
-
-**Python**
+**Python (Playwright):**
 
 ```python
 from ombrabrowser import launch
@@ -69,21 +71,7 @@ print(page.title())
 browser.close()
 ```
 
-Open bij een profiel met een naam nieuwe pagina’s in de bestaande browsercontext. Zo gebruik je dezelfde cookies en opgeslagen sitegegevens. In dit voorbeeld stel je ook een proxy in.
-
-```python
-browser = launch(
-    profile="pricing-eu",
-    headless=False,
-    proxy="socks5://user:pass@proxy:1080",
-    fingerprint={"seed": 20261116, "os": "macos"},
-)
-page = browser.contexts[0].new_page()
-page.goto("https://example.com")
-browser.close()
-```
-
-**Node.js / TypeScript**
+**Node.js / TypeScript (Playwright):**
 
 ```ts
 import { launch } from "@ombralabs/sdk";
@@ -95,18 +83,75 @@ console.log(await page.title());
 await browser.close();
 ```
 
-Gebruik `launchPuppeteer()` om een `Browser`-object van Puppeteer te krijgen.
+Puppeteer wordt ook ondersteund via `import { launch } from "@ombralabs/sdk/puppeteer"` of `launchPuppeteer()` ([details](#puppeteer)).
 
-```ts
-import { launchPuppeteer } from "@ombralabs/sdk";
+**Voor sites met antibotbescherming** combineer je een residentiële proxy, een persistent profiel en onderling samenhangende omgevingsinstellingen:
 
-const browser = await launchPuppeteer({ headless: false });
-await browser.close();
+```python
+from ombrabrowser import launch_persistent_context
+
+context = launch_persistent_context(
+    profile="pricing-eu",
+    proxy="socks5://user:pass@residential-proxy:1080",  # residentieel IP heeft de voorkeur boven datacenter
+    fingerprint={"timezone": "auto", "locale": "auto"},  # stem tijdzone en locale af op de proxy-exit
+    headless=False,                                      # sommige sites detecteren verschillen in headless-modus
+    humanize=True,                                       # native simulatie van muis, toetsenbord en scrollen
+)
+page = context.new_page()
+page.goto("https://example.com")
+context.close()
 ```
 
-## Migratie zonder herschrijven
+```ts
+import { launchPersistentContext } from "@ombralabs/sdk";
 
-Als je een Python-script van Playwright wilt overzetten, installeer je `ombrabrowser` en wijzig je de import en de aanroep die de browser start. Paginamethoden, typen en selectors blijven van Playwright komen.
+const context = await launchPersistentContext({
+  profile: "pricing-eu",
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: { timezone: "auto", locale: "auto" },
+  headless: false,
+  humanize: true,
+});
+const page = await context.newPage();
+await page.goto("https://example.com");
+await context.close();
+```
+
+Zie [Probleemoplossing](#probleemoplossing) voor veelvoorkomende problemen op Linux, in containers en op beveiligde doelsites.
+
+## Installatie
+
+**Python (3.10+):**
+
+```bash
+python -m pip install ombrabrowser
+
+# Optioneel: tijdzone en locale automatisch detecteren vanaf de proxy-exit (timezone="auto", locale="auto")
+python -m pip install "ombrabrowser[geoip]"
+```
+
+**Node.js / TypeScript (20+):**
+
+```bash
+# Met Playwright (1.60.0+, geen download van standaard Chromium nodig)
+npm install @ombralabs/sdk "playwright-core@^1.60.0"
+
+# Of met Puppeteer
+npm install @ombralabs/sdk puppeteer-core
+
+# Optioneel: offline GeoIP-databaselezer voor timezone: "auto" en locale: "auto"
+npm install mmdb-lib
+```
+
+---
+
+Bij het starten zoekt de SDK de engine in strikte volgorde: `binary_path` (`binaryPath` in Node.js), `OMBRA_BINARY_PATH`, de enginemap van Ombra Desktop en de SDK-cache (`~/.ombra/engines`). Als er geen compatibele engine wordt gevonden, downloadt de SDK een build vanaf het ondertekende releasekanaal, verifieert de Ed25519-handtekening en de SHA-256-checksum, en slaat deze lokaal in de cache op. Het uitvoeren van `playwright install chromium` is niet nodig.
+
+Om automatisch downloaden uit te schakelen geef je `download=False` (`download: false` in Node.js) mee. Om de engine vooraf te downloaden en te verifiëren (bijvoorbeeld tijdens het bouwen van een container) roep je `ensure_binary()` (`ensureBinary()`) aan of gebruik je de CLI-opdracht `install`.
+
+> **Zelfstandig starten:** actuele engine-builds (`151.0.7922.108-9` en nieuwer) zijn gratis en vereisen geen account of licentiesleutel. `OMBRA_LICENSE_KEY` en de opdracht `login` blijven alleen beschikbaar voor compatibiliteit met oudere gelicentieerde builds.
+
+**Migreren vanaf Playwright** kost twee regels — alle pagina-operaties, locators en wachttijden blijven ongewijzigd:
 
 ```diff
 - from playwright.sync_api import sync_playwright
@@ -117,9 +162,8 @@ Als je een Python-script van Playwright wilt overzetten, installeer je `ombrabro
 
   page = browser.new_page()
   page.goto("https://example.com")
+  # de rest van je code blijft ongewijzigd werken
 ```
-
-In Node.js wijzig je hiervoor twee regels.
 
 ```diff
 - import { chromium } from "playwright";
@@ -128,249 +172,843 @@ In Node.js wijzig je hiervoor twee regels.
 + const browser = await launch();
 ```
 
+> ⭐ **Geef de repository een ster** als je het project nuttig vindt en gebruik **[Watch releases](https://github.com/ombralabs/ombra/subscription)** om meldingen te ontvangen over nieuwe builds van de engine, de SDK en Ombra Desktop.
+
+---
+
+## Huidige status en releases
+
+Elk onderdeel in het ecosysteem volgt het gedeelde startcontract en wordt onafhankelijk geversioneerd.
+
+| Onderdeel | Status / versie | Locatie |
+|---|---|---|
+| **SDK-contract** | Concept `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python-SDK** | Alfa `0.1.3` | [`ombrabrowser` op PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js- / TypeScript-SDK** | Alfa `0.1.0` | [`@ombralabs/sdk` op npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Ombra Chromium-engine** | Chromium `151.0.7922.108` | Automatisch gedownload door de SDK (`-9` voor macOS ARM64 / Linux x64 / Windows x64, `-7` voor Intel macOS) |
+| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
+| **Losstaande browser** | `v158.0.8127.37-1` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-1) |
+| **Schema's en conformiteit** | JSON Schema + gedeelde testcases | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Stealth-checkupmethode** | 6 lagen (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
+
+Inbegrepen in de huidige releases:
+
+- **Patches op broncodeniveau** — seed-coherente afleiding van fingerprints, uitlijning van WebGL / WebGPU en extensies, realistische lettertypetabellen per besturingssysteem, native TLS ClientHello-profiel (`chrome-<major>`), onderdrukking van `Runtime.enable`- en `UtilityScript`-stacklekken, en bescherming tegen WebRTC-lekken van het host-IP.
+- **`Ombra` CDP-domein op browserniveau** — directe besturing van vermenselijkte invoer (`getHumanizeState`, `setHumanize`) in Python en Node.js zonder de browser opnieuw te starten.
+- **Native invoersimulatie in het browserproces** — aanwijzerplanner `cursory-rs`, scrollprofielen voor muiswiel en trackpad, typritme met zelfcorrectie van typefouten en veilig plakken van lange tekst via een geïsoleerd klembord.
+- **Zelfstandige builds zonder sleutels** — actuele engine-builds (`151.0.7922.108-9`) en Ombra Desktop `1.2.2` draaien volledig lokaal zonder accounts, sleutels of telemetrie.
+- **Vastzetten van de engineversie (`version`)** — zet een exacte build vast via `launch(version="151.0.7922.108-9")`, `OMBRA_VERSION` of via de CLI-opdracht `install --version`.
+- **Geünificeerde proxy-relay** — geauthenticeerde HTTP-, HTTPS- en SOCKS5-proxy's zonder inloggegevens bloot te stellen op de opdrachtregel van Chromium, in logbestanden of in profielmetadata.
+- **Persistente profielen met naam** — sla `seed`, cookies, `localStorage` en IndexedDB op onder `~/.ombra/profiles/<slug>` met vergrendeling tussen processen (`ProfileBusyError`).
+- **Cryptografische supply-chaincontroles** — verificatie van Ed25519-handtekeningen van release-enveloppen en SHA-256-verificatie van archieven vóór het uitpakken.
+
+Zie [CHANGELOG.md](../../CHANGELOG.md) voor de volledige releasegeschiedenis.
+
+## Waarom Ombra
+
+- **Patches op configuratie- en JS-niveau gaan snel stuk.** Tools zoals `playwright-stealth`, `puppeteer-extra` en `undetected-chromedriver` injecteren JavaScript in pagina's of passen startvlaggen aan. Chrome-updates maken ze regelmatig stuk, en moderne detectoren herkennen de patches zelf (`Function.prototype.toString`, prototype-anomalieën, `addScriptToEvaluateOnNewDocument`).
+- **Wijzigingen worden gecompileerd in de broncode van Chromium.** Fingerprints worden op C++-niveau gegenereerd en consistent toegepast op het hoofdframe, workers en iframes. De SDK injecteert geen scripts in pagina's en voert geen `Emulation.*`-overschrijvingen uit.
+- **Invoersimulatie leeft in het browserproces, niet boven op Playwright.** Omdat muisbanen, toetsaanslagen en scrollen in Chromium zelf worden afgehandeld, verpakt de SDK geen Playwright- of Puppeteer-objecten — elke locator, elk frame en elke bibliotheek van derden blijft normaal werken.
+- **Lokale architectuur zonder extra services.** Geen achtergronddaemon als control plane en geen netwerksprong tussen jouw script en de browser: één engineproces, lokale loopback-CDP op `127.0.0.1` en geen limieten op het aantal profielen of gelijktijdigheid.
+
+## Ombra Desktop
+
+**Een lokale offline profielbeheerder met een grafische interface (GUI).** De broncode staat direct in deze repository ([`desktop/`](../../desktop/README.md)) en is gebouwd met Tauri (Rust + Vue).
+
+- **Volledig offline en lokaal** — de profielcatalogus staat in een lokale SQLite-database op jouw machine met een lokale encryptiesleutel; geen account, cloudservice of netwerktoegang vereist.
+- **Gestructureerd profielbeheer** — maak profielen aan, zoek op naam, notitie of nummer, bewerk beschrijvingen en organiseer items met groepen, tags, labels en bladwijzers in de Rust-catalogus.
+- **Veilige Prullenbak** — wanneer je een profiel naar de Prullenbak verplaatst, blijven de bestanden op schijf bewaard zodat je het later kunt herstellen.
+- **Geen limieten per profiel** — geen staffels per profiel of cloudquota: alle gegevens blijven van jou.
+- **Vooraf gebouwde installatieprogramma's** — macOS Apple Silicon (`.dmg`, ondertekend met Apple Developer ID en genotariseerd), Linux (`.deb` en `.rpm`) en Windows x64 (`setup.exe`).
+- **Geïsoleerde catalogi** — stel `OMBRA_DESKTOP_DATA_DIR` in om met een aparte testcatalogus of een reservekopie te werken.
+
+[Download `desktop-v1.2.2` →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [Desktop README](../../desktop/README.md) · [Handleiding voor profielen en lokale sleutels](../../docs/desktop/README.md)
+
+## Fingerprintverificatie en stealth-checkup
+
+In plaats van algemene beloften over "100% ondetecteerbaar" te doen, vertrouwt Ombra op een herhaalbare verificatieprocedure onder vastgelegde omstandigheden. Praktijkresultaten op elke site hangen altijd af van de reputatie van het exit-IP, de regio, de profielgeschiedenis, de versie van de detector en de startconfiguratie.
+
+### Oppervlakken afgehandeld door de engine en SDK
+
+| Oppervlak / signaal | Standaard Playwright | Ombra | Implementatie |
+|---|---|---|---|
+| `navigator.webdriver` | `true` | `false` | C++-enginepatch |
+| `window.chrome` | ontbreekt in headless | volledig object | Komt overeen met reguliere Chrome |
+| `navigator.plugins` | `0` in headless | coherente pluginset | Op engineniveau |
+| User-Agent en Client Hints | `HeadlessChrome`, merkmismatch | `Google Chrome` + uitgelijnde `Sec-CH-UA*` | Patch `010-user-agent-and-webdriver` |
+| CDP-artefacten (`Runtime.enable`, `UtilityScript`) | gemarkeerd door detectoren | onderdrukt door engine; SDK roept nooit `Runtime.enable` aan | Patch `110-runtime-enable` + invariant `SI-02` |
+| WebRTC-IP-lek | legt lokaal/host-IP bloot | rapporteert exit-IP zonder echte STUN-verzoeken te versturen | Patch `100-webrtc-leak` (`--webrtc-ip`) |
+| TLS en HTTP/2 | afhankelijk van opzet | Chromium-netwerkstack + `chrome-<major>` ClientHello-profiel | Patch `210-tls-network-persona` |
+| WebGL en WebGPU | softwarerenderer / GPU-mismatch | geünificeerde WebGL/WebGPU-limieten en extensietabellen | Patches `070`, `071`, `075`, `955` |
+| Lettertypen, locale en tijdzone | hostwaarden, `Intl`-afwijking | coherente lettertypetabellen, ICU-locale en tijdzone | Patches `040`, `090`, `092`, `230` |
+| Invoersimulatie | cursorteleportatie, directe `fill()` | `cursory-rs`-curven, typritme, scrollfysica | Patch `135-ombra-humanize` in het browserproces |
+| Fingerprintstabiliteit | verandert of lekt hostgegevens | deterministisch per `seed` over herstarts en frames heen | Patches `001`, `002` + persistent profiel |
+
+### Zes lagen van de checkup
+
+Voer vóór het uitbrengen of uitrollen van een configuratie alle zes checkuplagen uit met exact de engine-build, automatiseringsclient en proxy die je wilt gaan gebruiken:
+
+| Laag | Voorbeelddoelen | Slagingscriteria |
+|---|---|---|
+| **L0 Transport** | TrackMe, IP/WebRTC-lekpagina's, header-echo | Alleen het proxy-exit-IP is zichtbaar; JA4 en HTTP/2 komen overeen met de Chromium-build; geen proxy-inloggegevens in argv |
+| **L1 Identiteit** | Lokale probe, Sannysoft, Intoli, UA-CH-controle | Geen tegenstrijdigheden tussen UA, Client Hints, platform, GPU, lettertypen, scherm en locale |
+| **L2 Fingerprint** | CreepJS, FingerprintJS, BrowserScan, Pixelscan | Geen headless- of `lie`-markeringen; fingerprint blijft stabiel bij herladen |
+| **L3 Automatisering** | rebrowser, brotector, botd, audit van CDP-opdrachten | Geen lekken van `Runtime.enable`, init-scripts, bindings of `navigator.webdriver` |
+| **L4 Gedrag** | Probe voor invoernauwkeurigheid, humanize-traces, live uitdagingstest | `isTrusted: true`-events, natuurlijke volgorde en timing, realistische aanwijzercurven en scrollgedrag |
+| **L5 Stabiliteit** | Herhaalde starts, workers, same/cross-origin iframes, pariteit tussen SDK's | Dezelfde `seed` reproduceert een identieke fingerprint in alle contexten |
+
+Volledige procedure, statussen (`PASS` / `DEGRADED` / `FAIL` / `UNREACHABLE`), signaalchecklist en rapportagesjabloon: [Engels (`docs/stealth-checkup.md`)](../../docs/stealth-checkup.md) en [Russisch (`docs/stealth-checkup.ru.md`)](../../docs/stealth-checkup.ru.md).
+
+## Vergelijking
+
+| Functie | Playwright | playwright-stealth | undetected-chromedriver | Ombra |
+|---|---|---|---|---|
+| Automatiserings-API | Playwright | Playwright | Selenium | **Playwright en Puppeteer** |
+| Patchniveau | Geen | JS-injectie in de pagina | Configuratievlaggen | **C++-broncode (Chromium)** |
+| Coherente fingerprint-`seed` | Nee | Nee | Gedeeltelijk | **Ja, per profiel en eTLD+1** |
+| Invoersimulatie (`humanize`) | Nee | Nee | Nee | **Ingebouwd in het browserproces** |
+| Onderdrukking van `Runtime.enable` / CDP-lekken | Nee | Nee | Gedeeltelijk | **Enginepatch + SDK-invarianten** |
+| Geauthenticeerde proxy's zonder CLI-lekken | Nee | Nee | Beperkt | **Lokale loopback-relay** |
+| Profielisolatie | Browsercontext | Browsercontext | Nee | **Profielmap + bestandsvergrendeling** |
+| Offline profielbeheerder (GUI) | Nee | Nee | Nee | **Ombra Desktop (macOS, Linux, Windows)** |
+| Migratie vanaf Playwright | — | Importwijziging | Code herschrijven | **Import en `launch()` vervangen** |
+
 ## Hoe het werkt
 
 ```mermaid
 flowchart LR
     Script["Jouw script<br/>Playwright · Puppeteer"]
     SDK["Ombra SDK<br/>launch() + CDP-brug"]
-    Engine["Ombra Chromium<br/>gepatchte engine"]
-    Client["Native automatiseringsclient"]
-    Profile[("Profiel<br/>seed · cookies · extensies")]
+    Relay["Lokale proxy-relay<br/>indien authenticatie vereist is"]
+    Engine["Ombra Chromium<br/>in C++ gepatchte engine"]
+    Client["Native client<br/>Playwright · Puppeteer"]
+    Profile[("Profiel<br/>seed · cookies · opslag")]
 
-    Script -->|launch()| SDK
-    SDK -->|starten| Engine
-    SDK -->|verbinden via CDP| Client
-    Script --> Client
-    Client -->|CDP| Engine
+    Script -->|"launch()"| SDK
+    SDK -->|"verifiëren + starten"| Engine
+    SDK -.->|"proxy-authenticatie"| Relay
+    Relay -.-> Engine
+    SDK -->|"verbinden via CDP"| Client
+    Script -->|"pagina-API"| Client
+    Client -->|"loopback-CDP"| Engine
     Engine --> Profile
 ```
 
-1. `launch()` zoekt de engine of downloadt deze en verifieert het uitvoerbare bestand.
-2. De SDK kiest de profielmap en de seed. Als de proxy authenticatie vereist, start de SDK een lokale relay.
-3. De SDK start Chromium met het gekozen profiel, de startopties en een debugpoort op de loopbackinterface.
-4. Zodra `DevToolsActivePort` beschikbaar is, verbindt de SDK Playwright of Puppeteer via CDP met Chromium en geeft hij het `Browser`-object van die client terug.
-5. `browser.close()` stopt de engine en geeft de profielvergrendeling vrij.
+1. **`launch()` zoekt of downloadt de engine** en verifieert de Ed25519-handtekening en de SHA-256-checksum.
+2. **Profiel en `seed` worden voorbereid.** Een profiel met naam verkrijgt een vergrendeling tussen processen; als de proxy inloggegevens vereist, start de SDK een lokale loopback-relay in het geheugen.
+3. **Ombra Chromium start** met het geselecteerde profiel, de fingerprintopties en een lokale debugpoort (`--remote-debugging-port=0`).
+4. **De officiële client maakt verbinding.** Zodra `DevToolsActivePort` verschijnt, koppelt de SDK Playwright (met `no_defaults=True`) of Puppeteer via `127.0.0.1` en retourneert het native `Browser`-object.
+5. **Netjes afsluiten.** `browser.close()` stuurt `Browser.close`, beëindigt de procesboom van de engine, stopt de relay en geeft de profielvergrendeling vrij.
 
-Na het starten stuurt de client de opdrachten voor pagina’s rechtstreeks naar Chromium.
+Na het starten verlaat de SDK het gegevenspad: alle pagina-opdrachten gaan rechtstreeks van Playwright of Puppeteer naar Chromium.
 
-## SDK-matrix
+### Grenzen van de SDK en stealth-invarianten
 
-| Runtime | Gepubliceerd pakket | Browserobject |
-|---|---|---|
-| Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
-| Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
+Het [v0.1 SDK-contract (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) legt strikte invarianten op aan elke officiële SDK:
 
-Deze repository heeft al mappen voor zes andere SDK’s. In het [SDK-manifest](../../sdks/manifest.json) staan de geplande pakketten en clients. De [SDK-handleiding](../../sdks/README.md) beschrijft de mapstructuur.
+- **Geen stealth-scripts op pagina's.** De SDK roept nooit `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` aan en patcht geen DOM-eigenschappen.
+- **Geen `Runtime.enable`.** Gereedheidscontroles gebruiken alleen het lokale CDP HTTP-endpoint of `Browser.getVersion`; de SDK schakelt nooit `Runtime`, `Debugger` of `Log` in.
+- **Geen `Emulation.*`-overschrijvingen.** De SDK roept nooit `Emulation.setUserAgentOverride`, `setTimezoneOverride`, `setLocaleOverride` of `setDeviceMetricsOverride` aan — de browseridentiteit komt uit de engine.
+- **Standaard geen verboden vlaggen.** De SDK voegt uit zichzelf nooit `--enable-automation`, `--disable-blink-features=AutomationControlled`, `--no-sandbox` of `--user-agent` toe.
+- **Uitsluitend loopback-CDP.** De debugpoort bindt altijd aan `127.0.0.1`; het meegeven van een niet-loopback `--remote-debugging-address` wordt geweigerd.
+- **Geen telemetrie en geen lekken van geheimen.** Proxy-inloggegevens, sleutels en cookies worden weggelakt uit logbestanden en foutmeldingen.
 
-| Beoogde runtime | Gepland pakket | Client of retourtype |
-|---|---|---|
-| .NET 8+ | `Ombra` (NuGet) | Microsoft.Playwright `IBrowser` |
-| Java 17+ | `dev.ombra:ombra` (Maven Central) | Playwright `Browser` |
-| Go 1.22+ | `github.com/ombralabs/ombra/sdks/go` | chromedp |
-| PHP 8.2+ | `ombralabs/ombra` (Packagist) | `Ombra\Browser` (CDP) |
-| Ruby 3.2+ | `ombra` (RubyGems) | `Ferrum::Browser` |
-| Rust 1.78+ | `ombra` (crates.io) | `chromiumoxide::Browser` |
+## Python-API
 
-## Startopties
-
-De optienamen volgen de Python-API en het SDK-contract. In Node.js schrijf je ze in camelCase, bijvoorbeeld `timeoutMs`, `userDataDir` en `binaryPath`.
-
-| Optie | Standaard | Betekenis |
-|---|---|---|
-| `headless` | `true` | De engine zonder venster uitvoeren |
-| `proxy` | geen | Proxy-URL of configuratieobject. Proxy’s met authenticatie gebruiken een lokale relay |
-| `fingerprint` | geen | Seed en instellingen voor besturingssysteem, tijdzone, taal en regio, scherm en GPU |
-| `profile` | geen | Profiel met een naam dat cookies, sitegegevens en de seed bewaart |
-| `user_data_dir` | tijdelijk | Expliciete profielmap, niet te combineren met `profile` |
-| `args` | `[]` | Extra engine-flags, ongewijzigd doorgegeven |
-| `timeout_ms` | `30000` | Tijd in milliseconden om te starten en de CDP-verbinding op te zetten |
-| `humanize` | standaard van de engine | `false`, `true` of een preset |
-| `captcha` | `false` | De enginemodule met optionele limieten inschakelen |
-| `binary_path` | automatisch bepaald | Een specifieke engine-binary gebruiken |
-| `download` | `true` | Een ontbrekende engine-binary downloaden |
-
-Het [SDK-contract](../../docs/sdk-contract.md) beschrijft alle startopties, de fouttypen en het gedrag van profielen.
-
-## Beheer van de engine-binary
+### `launch()`
 
 ```python
-from ombrabrowser import binary_info, ensure_binary, clear_cache
+from ombrabrowser import launch
 
-print(binary_info())
-# {'version': '151.0.7922.108', 'platform': 'macos-arm64',
-#  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
+# Basisstart (standaard headless)
+browser = launch()
 
-ensure_binary()   # download and verify without launching
-clear_cache()     # remove SDK-managed binaries; profiles are untouched
+# Zichtbaar browservenster (headed)
+browser = launch(headless=False)
+
+# HTTP- of SOCKS5-proxy (inloggegevens afgehandeld via lokale loopback-relay)
+browser = launch(proxy="http://user:pass@proxy:8080")
+browser = launch(proxy="socks5://user:pass@proxy:1080")
+
+# Proxy-object met bypass-lijst
+browser = launch(
+    proxy={
+        "type": "socks5",
+        "host": "proxy.example.com",
+        "port": 1080,
+        "username": "user",
+        "password": "pass",
+        "bypass": ".local,127.0.0.1",
+    }
+)
+
+# Fingerprintinstellingen (seed, OS, automatische tijdzone/locale via proxy, scherm, GPU)
+# Voor timezone="auto" / locale="auto", installeer: pip install "ombrabrowser[geoip]"
+browser = launch(
+    proxy="socks5://user:pass@proxy:1080",
+    fingerprint={
+        "seed": 20261116,
+        "os": "macos",
+        "timezone": "auto",
+        "locale": "auto",
+        "screen": {"width": 1440, "height": 900},
+    },
+)
+
+# Native simulatie van muis, toetsenbord en scrollen
+browser = launch(humanize=True)
+browser = launch(humanize={"preset": "careful"})
+
+# Zet een exacte engine-build vast en geef extra Chromium-vlaggen mee
+browser = launch(
+    version="151.0.7922.108-9",
+    args=["--webrtc-ip=203.0.113.10"],
+)
 ```
 
-De SDK controleert vóór het starten de SHA-256-controlesom van de engine. Laat deze controle in productie ingeschakeld. `OMBRA_SKIP_CHECKSUM=1` is bedoeld voor lokale ontwikkelbuilds.
+Retourneert een standaard `playwright.sync_api.Browser`. Alle Playwright-methoden werken normaal (`new_page()`, `new_context()`, `close()`, enz.). Nieuwe pagina's gebruiken standaard `no_viewport=True` zodat de vensterafmetingen van het profiel niet worden overschreven.
 
-## Configuratie
+### `launch_async()`
 
-| Variabele | Standaard | Betekenis |
+```python
+import asyncio
+from ombrabrowser import launch_async
+
+async def main() -> None:
+    browser = await launch_async(headless=False, humanize=True)
+    page = await browser.new_page()
+    await page.goto("https://example.com")
+    print(await page.title())
+    await browser.close()
+
+asyncio.run(main())
+```
+
+### `launch_context()` en `launch_context_async()`
+
+Hulpfunctie die de browser start en direct een `BrowserContext` retourneert (het sluiten van de context beëindigt ook het engineproces). Extra sleutelwoordargumenten worden doorgestuurd naar `browser.new_context()` — zoals `storage_state`, `permissions` of `extra_http_headers`:
+
+```python
+from ombrabrowser import launch_context
+
+context = launch_context(
+    proxy="socks5://user:pass@residential-proxy:1080",
+    fingerprint={"timezone": "auto", "locale": "auto"},
+    headless=False,
+    humanize=True,
+    storage_state="state.json",
+)
+page = context.new_page()
+page.goto("https://example.com")
+context.storage_state(path="state.json")
+context.close()
+```
+
+Asynchrone tegenhanger: `await launch_context_async(...)`.
+
+### `launch_persistent_context()` en `launch_persistent_context_async()`
+
+Start de browser met een persistent profiel en retourneert de standaard `BrowserContext`. Cookies, `localStorage`, IndexedDB, cache en de fingerprint-`seed` blijven behouden tussen sessies.
+
+- Het meegeven van `profile="pricing-eu"` maakt het profiel aan onder `~/.ombra/profiles/pricing-eu` met metadata in `.ombra/profile.json` en een vergrendelingsbestand.
+- Het meegeven van `user_data_dir="./my-profile"` (of een positioneel padargument) gebruikt die expliciete map.
+- Het gelijktijdig starten van hetzelfde profiel vanuit een ander proces werpt `ProfileBusyError` in plaats van profielgegevens te beschadigen.
+
+```python
+from ombrabrowser import launch_persistent_context
+
+# Via een profiel met naam (opgeslagen in ~/.ombra/profiles/)
+ctx = launch_persistent_context(profile="pricing-eu", headless=False)
+page = ctx.new_page()
+page.goto("https://example.com")
+ctx.close()  # cookies, opslag en seed blijven bewaard
+
+# Via een expliciet pad (bijvoorbeeld om Chrome-extensies te laden)
+ctx = launch_persistent_context(
+    "./my-profile",
+    headless=False,
+    args=[
+        "--disable-extensions-except=./my-extension",
+        "--load-extension=./my-extension",
+    ],
+)
+```
+
+Asynchrone tegenhanger: `await launch_persistent_context_async(...)`.
+
+### Hulpfuncties en diagnostiek (Python)
+
+```python
+from ombrabrowser import (
+    binary_info,
+    build_launch_options,
+    check_engine_health,
+    clear_cache,
+    ensure_binary,
+    last_launch_info,
+    launch,
+)
+
+# Inspecteer de gevonden engine-binary
+print(binary_info())
+# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+#  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
+
+# Download en verifieer de engine zonder een browser te starten
+ensure_binary(version="151.0.7922.108-9")
+
+# Verwijder door de SDK beheerde engine-binaries (profielen onder ~/.ombra/profiles blijven ongemoeid)
+clear_cache()
+
+# Inspecteer het samengestelde startcommando zonder Chromium te starten
+cmd = build_launch_options(profile="pricing-eu", humanize=True)
+
+# Lees runtime-metadata uit (CDP-poort, ws_url, seed, pid) en controleer de gezondheid van het proces
+browser = launch()
+print(last_launch_info(browser))
+check_engine_health(browser)
+browser.close()
+```
+
+### CLI (Python)
+
+```bash
+ombrabrowser install                             # download en verifieer de engine (Ed25519 + SHA-256)
+ombrabrowser install --version 151.0.7922.108-9  # installeer een specifieke engine-build
+ombrabrowser info                                # diagnostiek van omgeving, binary en afhankelijkheden (alias: doctor)
+ombrabrowser info --quick --json                 # snel machineleesbaar rapport zonder de binary te starten
+ombrabrowser info --proxy socks5://user:pass@host:1080  # test detectie van exit-IP, tijdzone en locale via proxy
+ombrabrowser update                              # controleer het releasekanaal en werk de gecachete engine bij
+ombrabrowser clear-cache                         # wis gecachete engine-binaries (profielen blijven behouden)
+ombrabrowser login                               # sla licentiesleutel op in ~/.ombra/license.key (alleen oudere builds)
+ombrabrowser logout                              # verwijder opgeslagen licentiesleutel
+```
+
+Dezelfde opdrachten zijn beschikbaar via `python -m ombrabrowser <command>`.
+
+## API voor Node.js en TypeScript
+
+`@ombralabs/sdk` levert duale ESM + CommonJS-builds met volledige TypeScript-definities (`.d.ts`). Zowel Playwright als Puppeteer draaien onder de motorkap op dezelfde engine.
+
+### Playwright (standaard)
+
+```ts
+import { launch, launchContext, launchPersistentContext } from "@ombralabs/sdk";
+
+// Basisstart met proxy, fingerprint en invoersimulatie
+const browser = await launch({
+  profile: "pricing-eu",
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: {
+    seed: 20261116,
+    os: "macos",
+    timezone: "auto",
+    locale: "auto",
+    screen: { width: 1440, height: 900 },
+  },
+  headless: false,
+  humanize: { preset: "careful" },
+});
+
+// Handige start: browser + context in één aanroep
+const context = await launchContext({
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: { timezone: "auto", locale: "auto" },
+  headless: false,
+  humanize: true,
+  contextOptions: { storageState: "state.json" },
+});
+const page = await context.newPage();
+
+// Persistent profiel — cookies, localStorage en seed blijven behouden tussen sessies
+const persistentCtx = await launchPersistentContext({
+  userDataDir: "./chrome-profile",
+  headless: false,
+  humanize: true,
+});
+```
+
+> Elk fragment hierboven staat op zichzelf. Om een bestaande Playwright-starter te migreren kun je de import ook vervangen door `import * as chromium from "@ombralabs/sdk"` en `await chromium.launch(...)` behouden.
+
+### Puppeteer
+
+Gebruik `launchPuppeteer()` uit `@ombralabs/sdk` of importeer uit `@ombralabs/sdk/puppeteer`:
+
+```ts
+import { launch } from "@ombralabs/sdk/puppeteer";
+
+const browser = await launch({
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: { timezone: "auto", locale: "auto" },
+  headless: false,
+  humanize: true,
+});
+const page = await browser.newPage();
+await page.goto("https://example.com");
+await browser.close();
+```
+
+> **Opmerking over Puppeteer:** Puppeteer verstuurt standaard meer CDP-verkeer dan Playwright met `connectOverCDP({ noDefaults: true })`. Voor sites met strenge CDP-controles wordt Playwright aanbevolen.
+
+### Hulpfuncties en CLI (Node.js)
+
+```ts
+import {
+  binaryInfo,
+  buildLaunchOptions,
+  checkEngineHealth,
+  clearCache,
+  ensureBinary,
+  lastLaunchInfo,
+} from "@ombralabs/sdk";
+
+console.log(await binaryInfo());
+await ensureBinary({ version: "151.0.7922.108-9" });
+await clearCache();
+```
+
+```bash
+npx --no-install ombra-sdk install [--version <v>] [--channel <stable|beta>]
+npx --no-install ombra-sdk info [--quick] [--json] [--proxy <url>]
+npx --no-install ombra-sdk doctor
+npx --no-install ombra-sdk update [--channel <stable|beta>]
+npx --no-install ombra-sdk clear-cache
+npx --no-install ombra-sdk login [<license-key>]
+npx --no-install ombra-sdk logout
+```
+
+## Vermenselijkte invoer
+
+In Ombra wordt invoersimulatie (`humanize`) **native gecompileerd in het Chromium-browserproces** (aangedreven door `cursory-rs` en de invoerplanner van de engine) in plaats van geïmplementeerd te zijn als een JS-wrapper rond de automatiseringsclient. Dit betekent:
+
+- Elke standaardactie van Playwright en Puppeteer (`page.click()`, `page.fill()`, `page.type()`, `page.mouse.*`, `page.keyboard.*`, `locator.*`, `ElementHandle.*`) verloopt via één invoerwachtrij per tabblad in de browser.
+- Gedragsparameters worden deterministisch afgeleid uit de `seed` van het profiel (`--fingerprint-humanize-seed`).
+- De SDK verpakt `Page` of `Browser` nooit in proxyklassen — native types en clientgedrag blijven intact.
+
+```python
+browser = launch(humanize=True)
+page = browser.new_page()
+page.goto("https://example.com")
+page.locator("#email").fill("user@example.com")
+page.locator("button[type=submit]").click()
+```
+
+**Wat verandert er met `humanize=True`:**
+
+| Actie | Zonder `humanize` | Met `humanize=True` |
 |---|---|---|
-| `OMBRA_BINARY_PATH` | niet ingesteld | Expliciete engine-binary |
-| `OMBRA_CACHE_DIR` | `~/.ombra` | Beheerde binaries en benoemde profielen |
-| `OMBRA_DOWNLOAD_URL` | release-endpoint | Basis-URL voor het downloaden van binaries |
-| `OMBRA_VERSION` | nieuwste compatibele versie | Te bepalen engineversie |
-| `OMBRA_AUTO_UPDATE` | `true` | Bij het starten controleren op een nieuwere engine |
-| `OMBRA_SKIP_CHECKSUM` | `false` | Alleen voor ontwikkeling |
-| `OMBRA_LICENSE_KEY` | niet ingesteld | Wordt aan de engine doorgegeven |
-| `OMBRA_TIMEOUT_MS` | `30000` | Standaardtime-out voor het starten, in milliseconden |
-| `OMBRA_LOG_LEVEL` | `warn` | `error`, `warn`, `info`, `debug` |
+| Muisbeweging | Directe teleportatie | `cursory-rs`-curven met versnelling, pauzes en lichte doorschietbeweging |
+| Klikken en slepen | Direct indrukken | Richtpunt binnen het doel, pauze vóór de klik en indruktijd |
+| Tekstinvoer | Waarde direct instellen | Typen per teken met ingesteld ritme en toetsenbordindeling, incidentele typefouten en zelfcorrectie; zeer lange tekst wordt geplakt via een geïsoleerd klembord zonder het systeemklembord aan te raken |
+| Scrollen | Enkele sprong | Reeks muiswiel-/trackpadevents volgens gemeten vertragingsprofielen |
+| Rustintervallen | Statische cursor | In de preset `careful` subtiele cursorbewegingen in rust tussen acties |
 
-De SDK gebruikt de eerste beschikbare waarde uit achtereenvolgens de startopties, omgevingsvariabelen, profielmetadata en standaardwaarden.
+**Presets** — `default` (normaal tempo), `careful` (langzamer, weloverwogen, met microbewegingen in rust) en `fast` (hoger tempo). Geef `humanize=False` (`humanize: false`) mee om invoersimulatie expliciet uit te schakelen.
 
-## Vergelijking
+```python
+browser = launch(humanize={"preset": "careful"})
+```
 
-| Kenmerk | Playwright | playwright-stealth | undetected-chromedriver | Ombra |
-|---|---|---|---|---|
-| API | Playwright | Playwright | Selenium | Playwright of Puppeteer |
-| Patchniveau | geen | JavaScript op de pagina | configuratie-flags | enginebroncode |
-| Fingerprint-seed | nee | nee | gedeeltelijk | per profiel |
-| Gehumaniseerde invoer | nee | nee | nee | engine |
-| Profielisolatie | browsercontext | browsercontext | nee | gebruikersgegevensmap |
-| Migratie zonder herschrijven | — | importwijziging | herschrijven | importwijziging |
+```ts
+const browser = await launch({ humanize: { preset: "careful" } });
+```
 
-De resultaten van een detector hangen af van de site, het uitgaande IP-adres en het profiel. De [checkup](../../docs/stealth-checkup.md) beschrijft hoe je die resultaten meet.
+Je kunt de modus tijdens runtime in- of uitschakelen of van preset wisselen zonder de browser opnieuw te starten via het `Ombra` CDP-domein:
 
-## Stealth is een eigenschap van de engine
+```python
+from ombrabrowser import ombra_cdp
 
-De engine past de fingerprintinstellingen toe. De SDK’s geven de seed van het profiel en de expliciete startopties aan de engine door.
+with ombra_cdp(browser) as cdp:
+    cdp.set_humanize(enabled=True, preset="careful")
+    print(cdp.get_humanize_state())
+```
 
-| Laag | Waar Ombra het regelt |
+```ts
+import { ombraCdp } from "@ombralabs/sdk";
+
+const cdp = await ombraCdp(browser);
+await cdp.setHumanize({ enabled: true, preset: "careful" });
+console.log(await cdp.getHumanizeState());
+```
+
+## Beheer van fingerprints en profielen
+
+De engine leidt een samenhangende browserconfiguratie af uit één enkele `seed`. Wanneer `seed` wordt weggelaten:
+
+| Scenario | Gedrag |
 |---|---|
-| TLS en HTTP/2 | De netwerkstack van de Chromium-versie waarop de engine is gebouwd |
-| Browseridentiteit | Enginepatches op broncodeniveau, aangestuurd door de seed van het profiel |
-| Automatiseringsoppervlak | De engine bevat patches voor WebDriver-signalen. De SDK roept `Runtime.enable` niet aan |
-| Invoer | Gehumaniseerde muis-, toetsenbord- en scrolinvoer in het browserproces |
-| Netwerkcoherentie | Tijdzone en taal- en regio-instellingen op basis van de proxy |
-| Toestand | Een aparte gebruikersgegevensmap per profiel |
+| **`launch()` zonder profiel** | De SDK genereert een willekeurige `seed` voor de sessie en maakt een tijdelijke map aan die na `close()` wordt verwijderd. |
+| **`profile="name"` of `user_data_dir="./dir"`** | De `seed` wordt opgeslagen in `.ombra/profile.json` en bij elke start hergebruikt — sites zien een terugkerende bezoeker met hetzelfde apparaat en dezelfde cookies. |
+| **`fingerprint={"seed": N, ...}`** | Deterministische fingerprint op basis van de expliciete `seed`; aanvullende velden overschrijven afzonderlijke instellingen terwijl de rest coherent blijft. |
 
-### SDK-grenzen
+Canvas- en audioruis worden gesleuteld per `eTLD+1` (stabiel op dezelfde site, niet koppelbaar tussen verschillende sites). Pixelruis voor 2D-canvas en WebGL `readPixels` is standaard uitgeschakeld om detectoren voor "Canvas Tampering / Masking" niet te activeren, en kan expliciet worden ingeschakeld via `--fingerprint-pixel-noise`.
 
-- De CDP-debugpoort accepteert alleen lokale verbindingen via de loopbackinterface.
-- De SDK schrijft geen inloggegevens van proxy’s, licentiesleutels of cookies naar de logs. Hij verstuurt geen telemetrie.
-- Een bestaand profiel behoudt zijn seed, tenzij je uitdrukkelijk een nieuwe opgeeft.
-- De SDK injecteert geen stealthscripts met `addScriptToEvaluateOnNewDocument` of `evaluateOnNewDocument` en wijzigt geen pagina-eigenschappen.
-- Om te controleren of de browser klaar is, gebruikt de SDK het HTTP-eindpunt van CDP of `Browser.getVersion`. Hij roept hiervoor nooit `Runtime.enable` aan.
-- De engine bepaalt de browseridentiteit. De SDK overschrijft de user-agent of andere identiteitsgegevens niet via Playwright of Puppeteer. Hij roept `Emulation.setUserAgentOverride`, `setTimezoneOverride`, `setLocaleOverride` en `setDeviceMetricsOverride` niet aan.
-- De SDK voegt nooit uit zichzelf de vlaggen `--enable-automation`, `--disable-blink-features=AutomationControlled` of `--no-sandbox` toe.
+> **Tip:** gebruik bij herhaalde bezoeken aan dezelfde site een persistent profiel (`profile="name"` of `launch_persistent_context()`) in plaats van een vaste `seed` mee te geven aan een tijdelijke `launch()` — zo blijven cookies, cache en `localStorage` consistent naast de fingerprint.
 
-## Stealth-checkup
+### Velden van het `fingerprint`-object
 
-Voer deze controles uit met de engine-build, de automatiseringsclient en het profiel die je wilt gebruiken.
+De onderstaande veldnamen volgen Python (`snake_case`); Node.js accepteert zowel `camelCase` (`osVersion`, `hardwareConcurrency`, `deviceMemory`) als `snake_case`:
 
-| Laag | Voorbeelddoelen | Slaagcriteria |
+| Veld | Type | Beschrijving |
 |---|---|---|
-| L0 Transport | TrackMe, lekcontroles voor IP/WebRTC | Alleen het uitgaande IP-adres is zichtbaar. JA4 en HTTP/2 komen overeen met de Chromium-build van de engine |
-| L1 Identiteit | Lokale probe, Sannysoft, Intoli | Geen tegenstrijdigheden tussen UA, UA-CH, platform, GPU, lettertypen en scherm |
-| L2 Fingerprint | CreepJS, FingerprintJS, BrowserScan | Geen aanwijzingen voor headless-gebruik of vervalste waarden. De fingerprint blijft stabiel bij het opnieuw laden |
-| L3 Automatisering | rebrowser, brotector, botd | Geen CDP-, init-script- of WebDriver-lekken |
-| L4 Gedrag | Invoergetrouwheid, humanize-sporen, Cloudflare-smoketest | Vertrouwde events, realistische volgorde, challenge wordt opgelost |
-| L5 Stabiliteit | Seed, workers, iframes, cross-origin | Dezelfde seed levert bij elke start dezelfde persona op |
+| `seed` | `int` (`>= 0`) | Generator-seed die de algehele fingerprintconfiguratie bepaalt |
+| `os` | `"macos"` \| `"windows"` \| `"linux"` | Doel-OS (`navigator.platform`, UA, GPU- en lettertypepools) |
+| `os_version` | `string` | Hint voor de OS-versie ten behoeve van Client Hints |
+| `timezone` | IANA-zone of `"auto"` | Tijdzone (bijv. `"Europe/Berlin"`). `"auto"` bepaalt de zone vanaf de proxy-exit via GeoIP |
+| `locale` | BCP-47 of `"auto"` | Locale (`Accept-Language`, `navigator.languages`, ICU `Intl`). `"auto"` bepaalt de locale vanaf de proxy-exit |
+| `screen` | `{"width", "height"}` of `"auto"` | Scherm- en werkgebiedafmetingen rekening houdend met de taakbalk / menubalk van het doel-OS |
+| `gpu` | `{"vendor", "renderer"}` of `"auto"` | Expliciete WebGL-strings `UNMASKED_VENDOR` / `UNMASKED_RENDERER` |
+| `hardware_concurrency` | `int` of `"auto"` | Gerapporteerde `navigator.hardwareConcurrency` |
+| `device_memory` | `int` of `"auto"` | Gerapporteerde `navigator.deviceMemory` (in GB) |
+| `noise` | `bool` | Fingerprintruis in-/uitschakelen (`False` geeft `--disable-fingerprint-noise` mee) |
 
-De testprocedure beschrijft de mogelijke statussen, het opsporen van fouten en het opstellen van een rapport. Lees de [Engelse](../../docs/stealth-checkup.md) of [Russische versie](../../docs/stealth-checkup.ru.md).
+> Houd `seed` aan als primaire bron van fingerprintparameters: het overschrijven van losse waarden zonder ze op elkaar af te stemmen (zoals het combineren van een OS met een incompatibele GPU) kan tegenstrijdigheden voor detectoren veroorzaken.
 
-Leg bij elk resultaat de engine-build, de clientversie, de profielinstellingen, het uitgaande IP-adres van de proxy en de detectorversie vast. Zo kun je metingen herhalen en vergelijken.
+### Aanvullende enginevlaggen (`args`)
 
-## Repository-overzicht
+Vlaggen die door de engine worden ondersteund maar niet automatisch door de SDK worden ingesteld (meegeven via `args=[...]`):
+
+| Vlag | Doel |
+|---|---|
+| `--fingerprint-brand=chrome\|edge\|opera\|vivaldi` | Browsermerk in `Sec-CH-UA` (de SDK gebruikt standaard `chrome`) |
+| `--fingerprint-tls-profile=chrome-<major>` | TLS ClientHello-profiel dat overeenkomt met de opgegeven hoofdversie van Chrome (automatisch door de SDK ingesteld op basis van de engineversie) |
+| `--webrtc-ip=<ip>` | Vervangend IP-adres in WebRTC ICE-kandidaten zonder echt STUN-verkeer te versturen |
+| `--fingerprint-location=<lat,lon>` | Coördinaten die door `navigator.geolocation` worden gerapporteerd |
+| `--fingerprint-storage-quota=<MB>` | Opslagquotum dat door `navigator.storage.estimate()` wordt gerapporteerd |
+| `--fingerprint-max-touch-points=<N>` | Aantal aanraakpunten (`navigator.maxTouchPoints` en pointer-mediaqueries) |
+| `--fingerprint-device-pixel-ratio=<ratio>` | Pixeldichtheid van het scherm (`window.devicePixelRatio`) |
+| `--fingerprint-color-depth=<bits>` | Kleurdiepte van het scherm |
+| `--disable-gpu-fingerprint` | Geef de echte GPU van de host door (WebGL/WebGPU-strings, limieten en extensies) |
+| `--disable-gpu-string-spoof` | Geef echte GPU-strings door terwijl andere profielinstellingen behouden blijven |
+| `--disable-fingerprint-noise` | Schakel canvas-/WebGL-/audioruis uit terwijl identiteitsparameters actief blijven |
+| `--fingerprint-pixel-noise` | Schakel opt-in idempotente pixelruis in voor 2D-canvas en `readPixels` |
+| `--profile-label=<text>` | Profiellabel weergegeven in de adresbalk van de browser (alleen UI; onzichtbaar voor webpagina's) |
+
+### Lettertypen instellen op Linux
+
+Minimale Linux-servers en containers missen vaak emoji- en CJK-lettertypen, waardoor verborgen canvastekst en emoji-rendering ongebruikelijke hashes opleveren.
+
+**1. Basislaag (emoji en CJK):**
+
+```bash
+sudo apt-get update && sudo apt-get install -y \
+    fonts-noto-color-emoji fonts-freefont-ttf fonts-unifont \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-tlwg-loma-otf
+```
+
+**2. Windows-lettertypen voor Windows-profielen (`os="windows"`):**
+Wanneer je een Windows-configuratie op Linux uitvoert, verbetert het installeren van echte lettertypen uit `C:\Windows\Fonts\` (waaronder `Segoe UI`, `Calibri`, `Consolas`, `Courier New`, `Arial`, `Times New Roman`, `MS UI Gothic`) de samenhang bij lettertype-enumeratie aanzienlijk:
+
+```bash
+mkdir -p ~/.local/share/fonts/windows
+cp -r /path/to/windows/Fonts/. ~/.local/share/fonts/windows/
+fc-cache -f
+```
+
+**3. macOS-lettertypen voor macOS-profielen (`os="macos"`):**
+Kopieer op dezelfde manier bij gebruik van `os="macos"` op Linux de lettertypen uit `/System/Library/Fonts/`, `/System/Library/Fonts/Supplemental/` en `/Library/Fonts/` naar `~/.local/share/fonts/mac/` en voer `fc-cache -f` uit.
+
+Plaats lettertypen in een `Dockerfile` in de systeemmap `/usr/local/share/fonts/`:
+
+```dockerfile
+COPY windows-fonts/ /usr/local/share/fonts/windows/
+RUN fc-cache -f
+```
+
+## Startopties, configuratie en fouten
+
+### Opties van `launch()`
+
+Optienamen volgen de Python-API en het [SDK-contract](../../docs/sdk-contract.md); Node.js gebruikt `camelCase`-equivalenten (`timeoutMs`, `userDataDir`, `binaryPath`, `licenseKey`) en accepteert ook `snake_case`-aliassen. Onbekende opties worden geweigerd met `InvalidOptionError`.
+
+| Optie | Standaard | Beschrijving |
+|---|---|---|
+| `headless` | `true` | Uitvoeren zonder venster (`--headless=new`) |
+| `proxy` | geen | Proxy-URL (`http`, `https`, `socks5`) of object; geauthenticeerde proxy's gebruiken een loopback-relay |
+| `fingerprint` | geen | Instellingen voor `seed`, OS, tijdzone, locale, scherm, GPU, geheugen en ruis |
+| `profile` | geen | Persistent profiel met naam onder `~/.ombra/profiles/<slug>` (sluit elkaar uit met `user_data_dir`) |
+| `user_data_dir` | tijdelijk | Expliciet pad naar een profielmap (sluit elkaar uit met `profile`) |
+| `args` | `[]` | Extra Chromium-argumenten (ongewijzigd doorgegeven) |
+| `binary_path` | automatisch bepaald | Expliciet pad naar een uitvoerbaar enginebestand |
+| `version` | env / auto | Vastgezette engineversie (bijvoorbeeld `151.0.7922.108-9`), overschrijft `OMBRA_VERSION` |
+| `timeout_ms` | `30000` | Deadline voor het starten van de engine en de CDP-verbinding (1000–600000 ms) |
+| `humanize` | standaard van engine | `False`, `True` of `{"preset": "default" \| "careful" \| "fast"}` |
+| `license_key` | env / bestand | Sleutel voor oudere gelicentieerde builds (niet nodig op `151.0.7922.108-9+`; wordt nooit gelogd) |
+| `env` | `{}` | Extra omgevingsvariabelen voor het engineproces |
+| `download` | `True` | Automatisch downloaden van een ontbrekende engine-binary toestaan |
+
+### Omgevingsvariabelen
+
+Voorrangsvolgorde: **expliciete startoptie → omgevingsvariabele → profielmetadata → standaardwaarde**.
+
+| Variabele | Standaard | Beschrijving |
+|---|---|---|
+| `OMBRA_BINARY_PATH` | niet ingesteld | Expliciet pad naar een engine-binary |
+| `OMBRA_CACHE_DIR` | `~/.ombra` | Map voor gecachete engines en profielen met naam |
+| `OMBRA_DOWNLOAD_URL` | `https://dl.ombrabrowser.dev` | Basis-URL / mirror voor enginedownloads (`none`/`off` schakelt downloads uit) |
+| `OMBRA_VERSION` | nieuwste compatibele | Vastgezette engineversie (bijvoorbeeld `151.0.7922.108-9`) |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | Releasekanaal van de engine: `stable` of `beta` |
+| `OMBRA_AUTO_UPDATE` | `true` | Bij het starten controleren op nieuwere engine-builds |
+| `OMBRA_SKIP_CHECKSUM` | `false` | Alleen voor lokale ontwikkeling: schakelt SHA-256-verificatie uit (logt een waarschuwing) |
+| `OMBRA_LICENSE_KEY` | niet ingesteld | Sleutel voor oudere gelicentieerde builds (wordt nooit gelogd) |
+| `OMBRA_TIMEOUT_MS` | `30000` | Standaard starttime-out (ms) |
+| `OMBRA_LOG_LEVEL` | `warn` | Uitgebreidheid van logboek: `error`, `warn`, `info`, `debug` |
+
+### Getypte fouten
+
+Bij elke fout beëindigt de SDK het gestarte engineproces, geeft de profielvergrendeling vrij en werpt een subklasse van `OmbraError` met een stabiele `kind` en `details` waaruit geheimen zijn weggelakt:
+
+`InvalidOptionError` · `BinaryNotFoundError` · `DownloadFailedError` · `ChecksumMismatchError` · `UnsupportedPlatformError` · `UnsupportedEngineError` · `ProxyError` · `ProfileBusyError` · `LaunchTimeoutError` · `CDPConnectError` · `EngineExitedError` · `EngineCrashedError` · `LicenseError`
+
+De volledige foutentaxonomie en regels voor opnieuw proberen zijn gedocumenteerd in het [SDK-contract (`docs/sdk-contract.md`)](../../docs/sdk-contract.md).
+
+## Platformen, integraties en containers
+
+### Ondersteunde platformen en runtimes
+
+| Onderdeel | Ondersteuning | Opmerkingen |
+|---|---|---|
+| **macOS ARM64 (Apple Silicon)** | ✅ | Zelfstandige build `151.0.7922.108-9`; Ombra Desktop is ondertekend met Developer ID en genotariseerd |
+| **macOS x64 (Intel)** | ✅ | Build `151.0.7922.108-7` is beschikbaar op het stabiele kanaal van de SDK |
+| **Linux x64** | ✅ | Zelfstandige build `151.0.7922.108-9`; vereist `xz-utils` (`xz`) om `.tar.xz` uit te pakken |
+| **Windows x64** | ✅ | Zelfstandige build `151.0.7922.108-9` en installatieprogramma voor Ombra Desktop |
+| **Python** | `3.10+` | Playwright `>=1.60,<2.0` wordt automatisch geïnstalleerd met `ombrabrowser` |
+| **Node.js** | `20+` | Playwright `>=1.60,<2.0` of Puppeteer `>=22` (Puppeteer 25+ vereist Node.js `>=22.12`) |
+
+### Integraties met frameworks en AI-agents
+
+Ombra werkt met elke automatiseringstool en elk AI-agentframework dat een aangepaste Chromium-binary accepteert of via CDP verbindt (`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain` en andere):
+
+```python
+# Optie 1: haal het geverifieerde pad naar de binary en de engine-argumenten op voor je eigen runner
+from ombrabrowser import build_launch_options
+
+cmd = build_launch_options(profile="agent-1", humanize=True)
+binary_path = cmd["binary_path"]
+engine_args = cmd["args"]
+
+# Optie 2: start via de Ombra SDK en geef het lokale CDP-endpoint door aan je framework
+from ombrabrowser import launch_async, last_launch_info
+
+browser = await launch_async(profile="agent-1", humanize=True)
+info = last_launch_info(browser)
+ws_url = info["ws_url"]             # ws://127.0.0.1:<port>/devtools/browser/...
+cdp_http = f"http://127.0.0.1:{info['cdp_port']}"
+# Verbind je framework met ws_url of cdp_http — fingerprintinstellingen en humanize
+# draaien in de engine en blijven actief voor elke CDP-client
+```
+
+### Uitvoeren in Docker en op Linux-servers
+
+Voorbeeld van een `Dockerfile` die de engine vooraf downloadt en verifieert tijdens het bouwen van de image:
+
+```dockerfile
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    xz-utils xvfb \
+    fonts-noto-color-emoji fonts-freefont-ttf fonts-unifont \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-tlwg-loma-otf \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir ombrabrowser "ombrabrowser[geoip]" \
+    && playwright install-deps chromium \
+    && ombrabrowser install
+
+WORKDIR /app
+COPY your_script.py /app/
+CMD ["python", "/app/your_script.py"]
+```
+
+> **Containers en webservers:**
+> - Als jouw container de Chromium-sandbox niet kan initialiseren, geef dan expliciet `--no-sandbox` mee via `args=["--no-sandbox"]` (de SDK voegt deze vlag nooit uit zichzelf toe).
+> - Gebruik `Xvfb` om met `headless=False` te draaien op een server zonder beeldscherm (zie [hieronder](#probleemoplossing)).
+> - Geef bij het uitvoeren onder `uvicorn` met `uvloop` de optie `--loop asyncio` mee om vastlopers op subprocess-pipes te voorkomen.
+
+## Probleemoplossing
+
+### Site blokkeert de headless-modus
+
+Sommige antibotsystemen controleren gedrags- en renderingverschillen in de headless-modus, zelfs met C++-patches. Draai met `headless=False` op een virtueel scherm via `Xvfb`:
+
+```bash
+sudo apt-get install -y xvfb
+Xvfb :99 -screen 0 1920x1080x24 &
+export DISPLAY=:99
+```
+
+Start vervolgens met een residentiële SOCKS5/HTTP-proxy, een persistent profiel, afgestemde tijdzone/locale, `headless=False` en `humanize=True`:
+
+```python
+context = launch_persistent_context(
+    profile="site-eu",
+    proxy="socks5://user:pass@residential-proxy:1080",
+    fingerprint={"timezone": "auto", "locale": "auto"},
+    headless=False,
+    humanize=True,
+)
+```
+
+Als de blokkades op Linux aanhouden, raadpleeg dan [Lettertypen instellen op Linux](#lettertypen-instellen-op-linux).
+
+### Site vraagt bij elk bezoek opnieuw om verificatie
+
+Wanneer je `launch()` aanroept zonder `profile`, start de browser elke keer met een lege tijdelijke map en een nieuwe `seed`, waardoor de site elke sessie behandelt als een gloednieuwe bezoeker zonder cookies. Stap over op `profile="..."` of `launch_persistent_context(...)` zodat cookies, `localStorage` en `seed` tussen sessies bewaard blijven.
+
+### `ProfileBusyError`
+
+Een profiel met naam of `user_data_dir` kan maar door één proces tegelijk geopend zijn. Wijs aan elke parallelle worker een eigen profielnaam toe (`profile=f"worker-{i}"`). Verouderde vergrendelingen die zijn achtergebleven na gecrashte processen worden automatisch gedetecteerd en opgeruimd.
+
+### Moet ik `playwright install chromium` uitvoeren?
+
+Nee. Ombra draait zijn eigen engine-binary en gebruikt niet de standaard Chromium van Playwright. Op Linux heb je alleen systeembibliotheken en `xz-utils` nodig:
+
+```bash
+sudo apt-get install -y xz-utils
+playwright install-deps chromium
+```
+
+### Updaten, wisselen van kanaal en terugdraaien van de engine
+
+Werk de SDK bij naar de nieuwste release:
+
+```bash
+python -m pip install -U ombrabrowser
+npm install @ombralabs/sdk@latest
+```
+
+Test het `beta`-kanaal of zet een exacte engine-build vast / draai deze terug:
+
+```python
+# Zet een exacte build vast voor een specifieke start
+browser = launch(version="151.0.7922.108-9")
+```
+
+```bash
+# Of configureer via omgevingsvariabelen / CLI
+export OMBRA_VERSION=151.0.7922.108-9
+export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser install --version 151.0.7922.108-9
+
+# Of verwijs naar een lokaal gebouwde binary
+export OMBRA_BINARY_PATH=/path/to/ombra/chromium
+```
+
+### macOS: Gatekeeper blokkeert een lokale build
+
+Officiële Ombra-releases voor Apple Silicon macOS zijn ondertekend met een Apple Developer ID-certificaat en genotariseerd. Als je een lokale, niet-ondertekende ontwikkelaarsbuild draait en macOS deze in quarantaine plaatst, verwijder je het quarantaineattribuut eenmalig:
+
+```bash
+xattr -cr ~/.ombra/engines/*/Chromium.app
+```
+
+### Wachten op een pagina in synchrone Python
+
+In synchrone Playwright pauzeert één lange `time.sleep(15)` na `page.goto()` de eventloop van Playwright, waardoor verificatiepagina's kunnen blijven hangen. Wacht in plaats daarvan in korte stappen met een lichte contextaanroep:
+
+```python
+import time
+
+for _ in range(15):
+    page.context.cookies()  # houdt Playwright actief zonder de DOM van de pagina aan te raken
+    time.sleep(1)
+```
+
+Gebruik in asynchrone Python `await asyncio.sleep(...)`; gebruik in Node.js `await new Promise(r => setTimeout(r, ms))`. Vermijd ook frequente `page.wait_for_timeout()`- en onnodige `page.evaluate()`-aanroepen vóór controles, zodat je geen extra CDP-verkeer genereert.
+
+## Beveiliging
+
+- **Authenticiteit en integriteit van de engine.** Vóór het uitpakken verifieert de SDK de Ed25519-handtekening van de release-envelop tegen een vastgezette publieke sleutel en controleert de SHA-256-digest van zowel het archief als het uitvoerbare bestand.
+- **Uitsluitend lokale CDP.** De debugpoort bindt strikt aan `127.0.0.1`. Stel een CDP-poort nooit bloot aan een openbaar netwerk zonder extra authenticatie — CDP geeft volledige controle over de browser.
+- **Isolatie van geheimen.** Proxy-inloggegevens bestaan alleen in het geheugen van de lokale loopback-relay en verschijnen nooit in procesopdrachtregels, profielmetadata, logbestanden of foutdetails.
+- **Geen telemetrie.** De SDK verstuurt geen analyses, crashrapporten of verborgen netwerkpings.
+
+Meld beveiligingsproblemen vertrouwelijk volgens [SECURITY.md](../../SECURITY.md).
+
+## Overzicht van de repository
 
 ```text
 .
-├── README.md                  # Engelse originele versie
+├── README.md                    # Engelse hoofd-README
 ├── translations/
-│   └── <locale>/README.md
-├── desktop/                   # offline profielbeheer
+│   ├── nl/README.md             # dit bestand (Nederlands)
+│   ├── ru/README.md             # Russische vertaling
+│   └── <locale>/README.md       # 19 aanvullende lokalisaties
+├── desktop/                     # Ombra Desktop (Tauri: Rust-catalogus + Vue-UI)
 ├── docs/
-│   ├── desktop/               # documentatie van de profielbeheerder
-│   ├── architecture.md        # componenten, startproces, grenzen
-│   ├── sdk-contract.md        # startcontract v0 en SDK-gedrag
-│   ├── stealth-checkup.md     # methode en runbook voor stealthvalidatie
-│   ├── stealth-checkup.ru.md  # Russische vertaling
-│   └── versioning.md          # compatibiliteit van SDK, engine en client
+│   ├── architecture.md          # architectuur, vertrouwensgrenzen, levenscyclus
+│   ├── sdk-contract.md          # v0.1 startcontract, opties, fouten, invarianten
+│   ├── stealth-checkup.md       # checkupmethode (Engels)
+│   ├── stealth-checkup.ru.md    # checkupmethode (Russisch)
+│   ├── versioning.md            # versionering van SDK, engine en client
+│   └── desktop/                 # handleidingen voor lokale Desktop-profielen en sleutels
 ├── spec/
-│   └── schemas/               # JSON Schema voor startopties en binary-info
+│   └── schemas/                 # JSON-schema's voor startopties en binary-metadata
 ├── sdks/
-│   ├── manifest.json          # machineleesbaar SDK-register
-│   ├── README.md              # opzet en regels voor bijdragen
-│   ├── _template/             # basisstructuur voor een nieuwe taal
-│   ├── python/  node/  dotnet/  java/
-│   └── go/  php/  ruby/  rust/
-├── conformance/               # taalneutrale start- en stealthscenario's
-├── tools/check_repo.py        # validatie van structuur en links (CI)
+│   ├── manifest.json            # machineleesbaar SDK-register
+│   ├── README.md                # SDK-structuur en regels voor bijdragen
+│   ├── python/                  # Python-SDK (gepubliceerd als ombrabrowser)
+│   ├── node/                    # Node.js- / TypeScript-SDK (gepubliceerd als @ombralabs/sdk)
+│   └── ...                      # contract-scaffolds voor andere talen (Go, Rust, C#, Java, PHP, Ruby)
+├── conformance/                 # taaloverschrijdende start- en stealth-invariantcases
+├── tools/check_repo.py          # validator voor structuur, schema's en links (CI)
 └── .github/workflows/ci.yml
 ```
 
-Deze repository bevat de basisstructuur voor de SDK’s, het startcontract, de conformiteitstests en de offline profielbeheerder. De Chromium-engine en de volledige versie van Desktop 1.2.1 hebben elk een eigen repository. [Broncode en bouwinstructies voor Desktop](../../desktop/README.md) · [Documentatie van de profielbeheerder](../../docs/desktop/README.md)
-
-## Het contract
-
-- `launch(options)` start de engine en geeft het `Browser`-object van de client terug. Daarna communiceert de client rechtstreeks met Chromium via CDP.
-- Vóór het starten controleert de SDK het platform en de SHA-256-controlesom van de engine. Als het uitvoerbare bestand ontbreekt en downloads zijn ingeschakeld, downloadt de SDK het.
-- Profielen met een naam bewaren cookies, opgeslagen sitegegevens en de seed tussen browsersessies.
-- Als het starten mislukt, ruimt de SDK het gestarte proces op en meldt hij een getypeerde fout. De aanroepende code bepaalt of er een nieuwe poging volgt.
-- De SDK, de engine en de automatiseringsclient hebben elk hun eigen versiebereik. Vraag de engine-build op met `binary_info()` in Python of `binaryInfo()` in Node.js.
-
-## Compatibiliteit
-
-| Onderdeel | Ondersteund platform of versie |
-|---|---|
-| Engine | Door de SDK gekozen build, op te vragen met `binary_info()` of `binaryInfo()` |
-| macOS | Apple Silicon en Intel |
-| Windows | x64 |
-| Linux | x64 |
-| Python | 3.10+ met een ondersteunde versie van Playwright |
-| Node.js | 20+ met een ondersteunde versie van Playwright of Puppeteer |
-
-De SDK en de engine hebben elk hun eigen versienummers. Zijn de versies niet compatibel, dan noemt de SDK beide versies in een getypeerde fout.
-
-## Bijdragen
-
-De [bijdragehandleiding](../../CONTRIBUTING.md) beschrijft hoe de beoordeling van wijzigingen verloopt. Bouwinstructies staan in de [SDK-handleiding](../../sdks/README.md).
-
-- Als je het gedrag van een SDK wijzigt, pas dan de betreffende implementatie aan en voeg een test of een gedeelde conformiteitstest toe.
-- Kopieer voor een nieuwe taal het [SDK-sjabloon](../../sdks/_template), voeg de SDK toe aan het [manifest](../../sdks/manifest.json) en open een concept-pullrequest.
-- Werk bij een nieuwe startoptie eerst het [SDK-contract](../../docs/sdk-contract.md) en de [schema’s](../../spec/schemas) bij.
-- Wijzigingen aan de stealthfuncties van de engine horen in de repository van de engine. De SDK moet de checkup blijven doorstaan.
-- Meld beveiligingsproblemen privé volgens het [beveiligingsbeleid](../../SECURITY.md).
+Deze repository bevat het SDK-contract, schema's, conformiteitscases, documentatie en de broncode van Ombra Desktop. Patches voor de Chromium-engine worden in een aparte repository onderhouden; gecompileerde builds worden gepubliceerd via het downloadkanaal en [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## Veelgestelde vragen
 
-### Is Ombra een fork van Playwright?
+### Is dit een fork van Playwright?
 
-Nee. De SDK verbindt de officiële Playwright-client met Ombra Chromium. Je kunt de typen, hulpfuncties en paginaobjecten van Playwright blijven gebruiken.
+Nee. De SDK verbindt de officiële Playwright- (of Puppeteer-)client via lokale CDP met Ombra Chromium. Alle types, locators, wachttijden en paginaobjecten blijven standaard.
 
-### Heb ik de desktopapp van Ombra nodig?
+### Is Ombra gratis en heb ik een licentiesleutel nodig?
 
-De SDK start de engine rechtstreeks. Met de optionele desktopapp kun je profielen handmatig beheren.
+De broncode van de SDK in deze repository is open source onder de Apache License 2.0. Actuele engine-builds (`151.0.7922.108-9` en nieuwer) en de lokale profielbeheerder Ombra Desktop (`desktop-v1.2.2`) draaien gratis en zelfstandig — zonder account, licentiesleutel, hardware-ID of limiet op het aantal profielen. `license_key` en `OMBRA_LICENSE_KEY` zijn alleen nodig voor oudere gelicentieerde builds.
 
-### Waarin verschilt Ombra van playwright-stealth?
+### Moet ik Ombra Desktop installeren om de SDK te gebruiken?
 
-De fingerprintaanpassingen van Ombra worden in Chromium meegecompileerd. De SDK laat de scripts van de pagina met rust.
+Nee. De SDK start de engine rechtstreeks als kindproces, waardoor deze geschikt is voor scripts, containers en CI. Ombra Desktop is optioneel wanneer je een lokale profielcatalogus via een GUI wilt beheren.
 
-### Lost Ombra CAPTCHA’s op?
+### Waarin verschilt Ombra van `playwright-stealth`?
 
-De engine heeft een optionele CAPTCHA-module. De ondersteuning hangt af van het soort taak, de engine-build en de beschikbare modellen. De SDK geeft de instellingen per start door en stelt de CDP-commando’s van de module beschikbaar.
+`playwright-stealth` injecteert JavaScript in pagina's boven op een reguliere browser, en moderne detectoren herkennen vaak de patches zelf. Ombra compileert zijn aanpassingen in de broncode van Chromium en de SDK injecteert geen scripts in pagina's.
 
 ### Kan ik mijn eigen proxy gebruiken?
 
-Ja. Geef de proxy mee aan `launch()`. Als de proxy authenticatie vereist, houdt een lokale relay de inloggegevens uit de opdrachtregel van de engine.
+Ja. Geef een `http://`-, `https://`- of `socks5://`-proxy mee in `proxy`. Wanneer er inloggegevens aanwezig zijn, draait de SDK een lokale loopback-relay zodat ze nooit in procesargumenten verschijnen. Let op dat de eigen `context.request`- / `page.request`-client van Playwright de proxy-instellingen op browserniveau kan omzeilen — voer `fetch()` uit vanuit de paginacontext om te garanderen dat het verkeer via de proxy loopt.
 
 ### Welke versies van Playwright en Puppeteer worden ondersteund?
 
-Elke SDK vermeldt de ondersteunde clientversies in het pakketmanifest. De clients zijn afzonderlijke afhankelijkheden. In de [handleiding voor versiebeheer](../../docs/versioning.md) staan de ondersteunde versiebereiken.
+De Python-SDK vereist Playwright `>=1.60,<2.0` (automatisch geïnstalleerd met `ombrabrowser`). De Node.js-SDK ondersteunt `playwright-core@^1.60.0` of `puppeteer-core >=22.0.0`. Zie de [versioneringshandleiding](../../docs/versioning.md) voor compatibiliteitsregels.
 
-### Doorstaat Ombra elke botcontrole?
+### Garandeert Ombra dat elke botcontrole wordt gepasseerd?
 
-Het resultaat hangt af van de site, de regio, de reputatie van het uitgaande IP-adres, de detectorversie en de profielinstellingen. De [stealth-checkup](../../docs/stealth-checkup.md) beschrijft hoe je een specifieke configuratie test.
+Nee. Detectie is een bewegend doel dat afhangt van de site, regio, IP-reputatie, profielgeschiedenis en versie van de detector. Gebruik de [stealth-checkupmethode](../../docs/stealth-checkup.md) om een specifieke configuratie objectief te meten en te volgen.
+
+### Voor welke toepassingen is Ombra gebouwd?
+
+Ombra is gebouwd voor geautoriseerde automatisering, QA-testen, monitoring, onderzoek en het beheren van geïsoleerde werkprofielen. Ongeautoriseerde toegang, credential stuffing en misbruik worden niet ondersteund.
+
+## Bijdragen
+
+Richtlijnen voor bijdragen staan in [CONTRIBUTING.md](../../CONTRIBUTING.md), gedragsregels voor de community in [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) en SDK-instructies in [sdks/README.md](../../sdks/README.md).
+
+- Werk het [SDK-contract](../../docs/sdk-contract.md) en de [schema's](../../spec/schemas) bij voordat je een nieuwe startoptie toevoegt.
+- Werk bij wijzigingen in het SDK-gedrag ook de implementatie, tests en gedeelde cases in [conformance](../../conformance/README.md) bij.
+- Voer `python3 tools/check_repo.py` uit voordat je een pull request opent om de repositorystructuur en links te valideren.
 
 ## Licentie
 
-De SDK-bronnen in deze repository vallen onder de [Apache License 2.0](../../LICENSE). De licentie verleent geen rechten op de Ombra-engine, de naam Ombra of het logo. Zie [NOTICE](../../NOTICE) voor informatie over handelsmerken en vermeldingen van derden.
+De SDK-broncode in deze repository is gelicentieerd onder de [Apache License 2.0](../../LICENSE). De licentie verleent geen rechten op handelsmerken van Ombra, de Ombra Chromium-engine of Ombra Desktop — zie [NOTICE](../../NOTICE) voor handelsmerkvoorwaarden en voorwaarden van derden.
 
----
+## Links
 
-[Ombra Labs](https://github.com/ombralabs) · [ombrabrowser.dev](https://ombrabrowser.dev)
+- 🌐 **Website** — [ombrabrowser.dev](https://ombrabrowser.dev)
+- 📦 **PyPI** — [pypi.org/project/ombrabrowser](https://pypi.org/project/ombrabrowser/)
+- 📦 **npm** — [npmjs.com/package/@ombralabs/sdk](https://www.npmjs.com/package/@ombralabs/sdk)
+- 🚀 **Releases (engine & Desktop)** — [GitHub Releases](https://github.com/ombralabs/ombra/releases)
+- 📋 **Changelog** — [CHANGELOG.md](../../CHANGELOG.md)
+- 🐛 **Bugs & functieverzoeken** — [GitHub Issues](https://github.com/ombralabs/ombra/issues)
+- 🏢 **Organisatie** — [Ombra Labs](https://github.com/ombralabs)
