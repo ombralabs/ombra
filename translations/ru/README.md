@@ -20,7 +20,7 @@
 <a href="#установка"><strong>Установка</strong></a> ·
 <a href="#python-api">Python API</a> ·
 <a href="#nodejs-и-typescript-api">Node.js API</a> ·
-<a href="#встроенный-модуль-captcha">CAPTCHA</a> ·
+<a href="#имитация-пользовательского-ввода">Humanize</a> ·
 <a href="#ombra-desktop">Ombra Desktop</a> ·
 <a href="../../README.md">English</a>
 </p>
@@ -39,10 +39,10 @@
 
 <br>
 
-<h3 align="center">Chromium с управлением отпечатком на уровне C++, нативной имитацией ввода и встроенным модулем CAPTCHA.</h3>
+<h3 align="center">Chromium с управлением отпечатком на уровне C++ и нативной имитацией ввода.</h3>
 
 <table><tr><td>
-Не набор флагов запуска и не JavaScript-инъекция поверх страницы. Настоящий бинарник Chromium с патчами отпечатка на уровне исходного кода, имитацией пользовательского ввода внутри процесса браузера и встроенным модулем CAPTCHA. Вы подключаете официальный Playwright или Puppeteer по локальному CDP — без обёрток и без переписывания кода страниц.
+Не набор флагов запуска и не JavaScript-инъекция поверх страницы. Настоящий бинарник Chromium с патчами отпечатка на уровне исходного кода и имитацией пользовательского ввода внутри процесса браузера. Вы подключаете официальный Playwright или Puppeteer по локальному CDP — без обёрток и без переписывания кода страниц.
 </td></tr></table>
 
 <br>
@@ -52,8 +52,7 @@
 Тот же API, те же селекторы и типы — достаточно заменить импорт и вызов <code>launch()</code>.
 </p>
 
-- **48 патчей на уровне исходного кода Chromium** — canvas, WebGL, WebGPU, аудио, шрифты, GPU, экран, CSS media queries, аппаратные характеристики, WebRTC без утечек STUN, TLS ClientHello, часовой пояс, локаль и удаление признаков автоматизации (`navigator.webdriver`, `Runtime.enable`, маркеры headless).
-- **Встроенный модуль CAPTCHA (`captcha=True`)** — обнаружение, 9 событий жизненного цикла и управление политикой через браузерный CDP-домен `Ombra`; поддержка заданий `reCAPTCHA v2`, `Cloudflare Turnstile` и `GeeTest v4` локальными моделями и нативным вводом движка (зависит от сборки и типа задания).
+- **Патчи на уровне исходного кода Chromium** — canvas, WebGL, WebGPU, аудио, шрифты, GPU, экран, CSS media queries, аппаратные характеристики, WebRTC без утечек STUN, TLS ClientHello, часовой пояс, локаль и удаление признаков автоматизации (`navigator.webdriver`, `Runtime.enable`, маркеры headless).
 - **Нативная имитация ввода в процессе браузера (`humanize=True`)** — траектории указателя (`cursory-rs`), клики с прицеливанием и удержанием, ритм печати с исправлением опечаток и физика прокрутки работают внутри Chromium. SDK возвращает чистый нативный `Browser` без прокси-обёрток.
 - **Автономная работа без ключей и аккаунтов** — актуальные сборки движка (`151.0.7922.108-9` и новее) и Ombra Desktop запускаются локально без регистрации, лицензионного ключа, аппаратного ID и сервера лицензирования.
 - **Автоматическая установка и криптографическая проверка движка** — `pip install ombrabrowser` или `npm install @ombralabs/sdk`; при первом запуске SDK скачивает сборку под вашу платформу и проверяет подпись Ed25519 и контрольную сумму SHA-256.
@@ -97,7 +96,6 @@ context = launch_persistent_context(
     fingerprint={"timezone": "auto", "locale": "auto"},  # подбор часового пояса и локали по выходу прокси
     headless=False,                                      # часть сайтов проверяет отличия headless-режима
     humanize=True,                                       # нативная имитация мыши, клавиатуры и прокрутки
-    captcha=True,                                        # встроенный модуль обнаружения и решения CAPTCHA
 )
 page = context.new_page()
 page.goto("https://example.com")
@@ -113,7 +111,6 @@ const context = await launchPersistentContext({
   fingerprint: { timezone: "auto", locale: "auto" },
   headless: false,
   humanize: true,
-  captcha: true,
 });
 const page = await context.newPage();
 await page.goto("https://example.com");
@@ -188,7 +185,7 @@ npm install mmdb-lib
 | **Контракт SDK** | Черновик `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Альфа `0.1.3` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Альфа `0.1.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Движок Ombra Chromium** | Chromium `151.0.7922.108` (48 патчей) | Автоматическая загрузка через SDK (`-9` для macOS ARM64 / Linux x64 / Windows x64, `-7` для Intel macOS) |
+| **Движок Ombra Chromium** | Chromium `151.0.7922.108` | Автоматическая загрузка через SDK (`-9` для macOS ARM64 / Linux x64 / Windows x64, `-7` для Intel macOS) |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **Автономный браузер** | `v158.0.8127.37-1` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-1) |
 | **Схемы и проверка соответствия** | JSON Schema + кейсы | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
@@ -196,8 +193,8 @@ npm install mmdb-lib
 
 Что входит в текущие релизы:
 
-- **48 патчей на уровне исходного кода** — согласованная генерация параметров отпечатка из `seed`, выравнивание WebGL / WebGPU и расширений, реальные таблицы шрифтов по ОС, нативный TLS ClientHello-профиль (`chrome-<major>`), подавление утечек `Runtime.enable` и стеков `UtilityScript`, защита WebRTC от утечки IP хоста.
-- **Браузерный CDP-домен `Ombra`** — 9 событий жизненного цикла CAPTCHA (`captchaDetected`, `captchaSolving`, `captchaSolved`, `captchaFailed` и др.), команды `getCaptchaState`, `setCaptchaPolicy`, `solveCaptcha`, а также живое управление имитацией ввода (`getHumanizeState`, `setHumanize`) в Python и Node.js.
+- **Патчи на уровне исходного кода** — согласованная генерация параметров отпечатка из `seed`, выравнивание WebGL / WebGPU и расширений, реальные таблицы шрифтов по ОС, нативный TLS ClientHello-профиль (`chrome-<major>`), подавление утечек `Runtime.enable` и стеков `UtilityScript`, защита WebRTC от утечки IP хоста.
+- **Браузерный CDP-домен `Ombra`** — живое управление имитацией ввода (`getHumanizeState`, `setHumanize`) в Python и Node.js без перезапуска браузера.
 - **Нативная имитация ввода в процессе браузера** — планировщик траекторий `cursory-rs`, профили колёсика и трекпада, ритм печати с исправлением опечаток и безопасная вставка длинных строк через изолированный буфер обмена.
 - **Автономные сборки без ключа** — актуальные сборки движка `151.0.7922.108-9` и Ombra Desktop `1.2.2` работают полностью локально без аккаунтов, ключей и телеметрии.
 - **Закрепление версии движка (`version`)** — явный pin конкретной сборки в `launch(version="151.0.7922.108-9")`, `OMBRA_VERSION` или через CLI `install --version`.
@@ -211,7 +208,6 @@ npm install mmdb-lib
 
 - **Патчи на уровне конфигурации и JS быстро ломаются.** Инструменты вроде `playwright-stealth`, `puppeteer-extra` и `undetected-chromedriver` внедряют JavaScript на страницу или подбирают флаги запуска. Очередное обновление Chrome ломает их, а современные детекторы обнаруживают сами следы подмены (`Function.prototype.toString`, аномалии прототипов, `addScriptToEvaluateOnNewDocument`).
 - **Изменения встроены в исходный код Chromium.** Отпечаток формируется на уровне C++ и применяется согласованно в главном фрейме, воркерах и iframe. SDK не внедряет скрипты на страницу и не вызывает `Emulation.*`-переопределения.
-- **Встроенный модуль CAPTCHA вместо внешней связки.** В отличие от решений, которые лишь снижают частоту проверок, движок Ombra содержит собственный модуль обнаружения и решения поддерживаемых CAPTCHA, работающий внутри профиля тем же механизмом имитации ввода.
 - **Имитация ввода в процессе браузера, а не поверх Playwright.** Поскольку траектории мыши, набор текста и прокрутка обрабатываются в самом движке, SDK не подменяет объекты Playwright и Puppeteer — работают любые локаторы, фреймы и сторонние библиотеки.
 - **Локальная архитектура без лишних сервисов.** Нет отдельного фонового сервера-контроллера и сетевых прослоек между скриптом и браузером: один процесс движка, локальный CDP на `127.0.0.1`, никаких ограничений на количество профилей и потоков.
 
@@ -246,7 +242,6 @@ npm install mmdb-lib
 | WebGL и WebGPU | программный рендерер / расхождение с GPU | единая таблица лимитов и расширений WebGL/WebGPU | Патчи `070`, `071`, `075`, `955` |
 | Шрифты, локаль и часовой пояс | значения хоста, дрейф `Intl` | согласованные таблицы шрифтов, ICU-локаль и TZ | Патчи `040`, `090`, `092`, `230` |
 | Имитация ввода | телепортация курсора, мгновенный `fill()` | траектории `cursory-rs`, ритм печати, физика прокрутки | Патч `135-ombra-humanize` в процессе браузера |
-| CAPTCHA | только ручное решение или внешние сервисы | встроенный детектор, 9 CDP-событий и нативный решатель | Патч `970-ombra-captcha` + домен `Ombra` |
 | Стабильность отпечатка | меняется или выдаёт хост | детерминирована по `seed` между перезапусками и фреймами | Патчи `001`, `002` + постоянный профиль |
 
 ### Шесть слоёв методики проверки
@@ -259,7 +254,7 @@ npm install mmdb-lib
 | **L1 Идентичность** | Локальная проба, Sannysoft, Intoli, проверка UA-CH | Нет противоречий между UA, Client Hints, платформой, GPU, шрифтами, экраном и локалью |
 | **L2 Отпечаток** | CreepJS, FingerprintJS, BrowserScan, Pixelscan | Нет маркеров headless и «лжи» (`lie`); стабильный отпечаток при перезагрузках |
 | **L3 Автоматизация** | rebrowser, brotector, botd, аудит команд CDP | Нет утечек `Runtime.enable`, init-скриптов, биндингов и `navigator.webdriver` |
-| **L4 Поведение** | Проба достоверности ввода, трассы humanize, smoke живого челленджа | События `isTrusted: true`, естественный порядок и тайминги, корректные переходы состояний CAPTCHA |
+| **L4 Поведение** | Проба достоверности ввода, трассы humanize, smoke живого челленджа | События `isTrusted: true`, естественный порядок и тайминги, реалистичные траектории и прокрутка |
 | **L5 Согласованность** | Повторные запуски, воркеры, same/cross-origin iframe, разные SDK | Один и тот же `seed` воспроизводит идентичный отпечаток во всех контекстах |
 
 Полная методика, статусы (`PASS` / `DEGRADED` / `FAIL` / `UNREACHABLE`), чеклист сигналов и шаблон отчёта: [на русском (`docs/stealth-checkup.ru.md`)](../../docs/stealth-checkup.ru.md) и [на английском (`docs/stealth-checkup.md`)](../../docs/stealth-checkup.md).
@@ -272,7 +267,6 @@ npm install mmdb-lib
 | Уровень модификации | Нет | JS-инъекции на страницу | Флаги конфигурации | **Исходный код C++ (Chromium)** |
 | Согласованный `seed` отпечатка | Нет | Нет | Частично | **Да, на профиль и eTLD+1** |
 | Имитация ввода (`humanize`) | Нет | Нет | Нет | **Встроена в процесс браузера** |
-| Встроенный модуль CAPTCHA | Нет | Нет | Нет | **Да (детекция, CDP-события, решатель)** |
 | Подавление `Runtime.enable` / CDP-утечек | Нет | Нет | Частично | **Патч движка + инварианты SDK** |
 | Прокси с авторизацией без утечки в CLI | Нет | Нет | Ограничено | **Локальный loopback-ретранслятор** |
 | Изоляция профилей | Контекст браузера | Контекст браузера | Нет | **Каталог профиля + блокировка** |
@@ -364,10 +358,6 @@ browser = launch(
 # Нативная имитация мыши, клавиатуры и прокрутки
 browser = launch(humanize=True)
 browser = launch(humanize={"preset": "careful"})
-
-# Встроенный модуль CAPTCHA
-browser = launch(captcha=True)
-browser = launch(captcha={"solve": True, "max_attempts": 3, "time_budget_ms": 45_000})
 
 # Закрепление точной сборки движка и дополнительные флаги Chromium
 browser = launch(
@@ -505,7 +495,7 @@ ombrabrowser logout                              # удалить сохранё
 ```ts
 import { launch, launchContext, launchPersistentContext } from "@ombralabs/sdk";
 
-// Базовый запуск с прокси, отпечатком, имитацией ввода и модулем CAPTCHA
+// Базовый запуск с прокси, отпечатком и имитацией ввода
 const browser = await launch({
   profile: "pricing-eu",
   proxy: "socks5://user:pass@residential-proxy:1080",
@@ -518,7 +508,6 @@ const browser = await launch({
   },
   headless: false,
   humanize: { preset: "careful" },
-  captcha: true,
 });
 
 // Удобный запуск: браузер + контекст в одном вызове
@@ -642,75 +631,6 @@ await cdp.setHumanize({ enabled: true, preset: "careful" });
 console.log(await cdp.getHumanizeState());
 ```
 
-## Встроенный модуль CAPTCHA
-
-Одно из главных отличий Ombra — встроенный модуль обнаружения и решения CAPTCHA внутри движка Chromium. Он работает в контексте профиля, использует ту же нативную имитацию ввода и не требует внешних сервисов для поддерживаемых локальных заданий.
-
-- **Браузерный CDP-домен `Ombra`** автоматически транслирует 9 событий жизненного цикла без вызова `enable`: `captchaDetected`, `captchaStateChanged`, `captchaInvisible`, `captchaBlocked`, `captchaHardMode`, `captchaGone`, `captchaSolving`, `captchaSolved`, `captchaFailed`.
-- **Гибкие режимы работы:** можно включить только детекцию и события (`solve=False`), автоматическое решение (`captcha=True`), ограничить бюджет времени и число попыток (`time_budget_ms`, `max_attempts`) или включить ручной режим (`manual_mode=True`) с автоматической паузой при живом вводе человека (`manual_resume_ms`).
-- **Поддерживаемые семейства заданий** (зависят от версии сборки движка и установленных моделей): `reCAPTCHA v2` (чекбокс и сетки 3×3 / 4×4), `Cloudflare Turnstile`, `GeeTest v4` (one-click, слайдер, nine, word, icon, match, gobang).
-
-> **Точность ожиданий:** поддержка зависит от типа задания, версии сборки и наличия локальных моделей. Ombra не обещает стопроцентного прохождения любой CAPTCHA.
-
-**Python (`ombra_cdp`):**
-
-```python
-from ombrabrowser import launch, ombra_cdp
-
-# Режим только детекции (или captcha=True для автоматического решения)
-browser = launch(captcha={"solve": False, "max_attempts": 3, "time_budget_ms": 45_000})
-page = browser.new_page()
-
-with ombra_cdp(browser) as cdp:
-    with cdp.record_captcha_events() as rec:
-        page.goto("https://example.com")
-        event = rec.wait_for(("captchaDetected", "captchaSolved"), timeout_ms=15_000, page=page)
-        print(event["event"], event.get("captcha"))
-
-    # Чтение текущего состояния и переключение политики на лету
-    print(cdp.get_captcha_state())
-    cdp.set_captcha_policy(solve=True, max_attempts=3)
-    cdp.solve_captcha()
-
-browser.close()
-```
-
-Для асинхронного кода используйте `async with ombra_cdp_async(browser) as cdp:`.
-
-**Node.js / TypeScript (`ombraCdp`):**
-
-```ts
-import { launch, ombraCdp } from "@ombralabs/sdk";
-
-const browser = await launch({
-  captcha: {
-    solve: false,
-    manualMode: true,
-    manualResumeMs: 2000,
-    maxAttempts: 3,
-    timeBudgetMs: 45_000,
-  },
-});
-
-const cdp = await ombraCdp(browser); // работает с Playwright Browser/BrowserContext и Puppeteer Browser
-const recorder = cdp.recordCaptchaEvents();
-
-const page = await browser.newPage();
-await page.goto("https://example.com");
-
-const state = await cdp.getCaptchaState();
-console.log(state.signaturesVersion, state.captchas);
-
-await cdp.setCaptchaPolicy({ solve: true, maxAttempts: 3 });
-await cdp.solveCaptcha();
-
-recorder.stop();
-await cdp.detach();
-await browser.close();
-```
-
-Те же хелперы экспортируются из подмодулей `@ombralabs/sdk/cdp` и `@ombralabs/sdk/captcha`.
-
 ## Управление отпечатком и профилями
 
 Движок формирует согласованный набор параметров браузера из одного `seed`. Если `seed` не передан:
@@ -813,7 +733,6 @@ RUN fc-cache -f
 | `version` | из env / авто | Закрепление версии движка (например, `151.0.7922.108-9`), переопределяет `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Лимит времени на старт движка и подключение по CDP (1000–600000 мс) |
 | `humanize` | по умолчанию движка | `False`, `True` или `{"preset": "default" \| "careful" \| "fast"}` |
-| `captcha` | `False` | `True` или объект политики (`solve`, `types`, `time_budget_ms`, `max_attempts`, `allow_llm`, `manual_mode`, `manual_resume_ms`) |
 | `license_key` | из env / файла | Ключ для старых лицензируемых сборок (не требуется на `151.0.7922.108-9+`; не логируется) |
 | `env` | `{}` | Дополнительные переменные окружения для процесса движка |
 | `download` | `True` | Разрешить автоматическую загрузку отсутствующего движка |
@@ -871,11 +790,11 @@ engine_args = cmd["args"]
 # Вариант 2: запустить через Ombra SDK и передать локальный WebSocket CDP фреймворку
 from ombrabrowser import launch_async, last_launch_info
 
-browser = await launch_async(profile="agent-1", humanize=True, captcha=True)
+browser = await launch_async(profile="agent-1", humanize=True)
 info = last_launch_info(browser)
 ws_url = info["ws_url"]             # ws://127.0.0.1:<port>/devtools/browser/...
 cdp_http = f"http://127.0.0.1:{info['cdp_port']}"
-# Подключите фреймворк по ws_url или cdp_http — humanize и модуль CAPTCHA
+# Подключите фреймворк по ws_url или cdp_http — настройка отпечатка и humanize
 # работают внутри движка и сохраняются для любого CDP-клиента
 ```
 
@@ -927,7 +846,6 @@ context = launch_persistent_context(
     fingerprint={"timezone": "auto", "locale": "auto"},
     headless=False,
     humanize=True,
-    captcha=True,
 )
 ```
 
@@ -986,7 +904,7 @@ xattr -cr ~/.ombra/engines/*/Chromium.app
 
 ### Как ждать на странице в синхронном Python
 
-В синхронном Playwright один длинный `time.sleep(15)` после `page.goto()` останавливает цикл обработки событий Playwright, из-за чего страница с челленджем или события `Ombra.captcha*` могут обрабатываться с задержкой. Ждите короткими шагами с лёгким вызовом контекста:
+В синхронном Playwright один длинный `time.sleep(15)` после `page.goto()` останавливает цикл обработки событий Playwright, из-за чего страница с проверкой может зависать на этапе верификации. Ждите короткими шагами с лёгким вызовом контекста:
 
 ```python
 import time
@@ -1055,10 +973,6 @@ for _ in range(15):
 ### Чем Ombra отличается от `playwright-stealth`?
 
 `playwright-stealth` внедряет JavaScript на страницу поверх обычного браузера, и современные детекторы часто находят сами патчи. В Ombra модификации встроены в исходный код Chromium, а SDK не внедряет на страницу никаких скриптов.
-
-### Умеет ли Ombra решать CAPTCHA?
-
-Да, в движке есть встроенный модуль обнаружения и решения CAPTCHA с 9 событиями и управлением через CDP-домен `Ombra`. Поддержка конкретных заданий (`reCAPTCHA v2`, `Cloudflare Turnstile`, `GeeTest v4`) зависит от версии сборки и доступных локальных моделей; 100% решение всех вариантов не гарантируется.
 
 ### Можно ли использовать свой прокси?
 
