@@ -1,8 +1,29 @@
-# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+<p align="center">
+<img src="../../assets/logo.svg" width="72" height="72" alt="Ombra">
+</p>
 
-У Python і Node.js функція `launch()` запускає Ombra Chromium і повертає об’єкт `Browser` клієнта Playwright. Для роботи з Puppeteer у Node.js використовуйте `launchPuppeteer()`.
+<h1 align="center">Ombra</h1>
 
-**[Встановлення](#встановлення)** · <a href="../../README.md">English</a>
+<p align="center">
+<a href="https://pypi.org/project/ombrabrowser/"><img src="https://img.shields.io/pypi/v/ombrabrowser?label=PyPI" alt="PyPI"></a>
+<a href="https://www.npmjs.com/package/@ombralabs/sdk"><img src="https://img.shields.io/npm/v/@ombralabs/sdk?label=npm" alt="npm"></a>
+<a href="../../LICENSE"><img src="https://img.shields.io/github/license/ombralabs/ombra" alt="Ліцензія"></a>
+<a href="https://github.com/ombralabs/ombra"><img src="https://img.shields.io/github/last-commit/ombralabs/ombra" alt="Останній коміт"></a>
+<br>
+<a href="https://github.com/ombralabs/ombra"><img src="https://img.shields.io/github/stars/ombralabs/ombra" alt="Зірки"></a>
+<a href="https://pypi.org/project/ombrabrowser/"><img src="https://img.shields.io/pepy/dt/ombrabrowser?label=pypi&logo=pypi&logoColor=white" alt="Завантаження з PyPI"></a>
+<a href="https://www.npmjs.com/package/@ombralabs/sdk"><img src="https://img.shields.io/npm/dt/@ombralabs/sdk?label=npm&logo=npm&logoColor=white" alt="Завантаження з npm"></a>
+<a href="https://github.com/ombralabs/ombra/releases"><img src="https://img.shields.io/github/v/release/ombralabs/ombra?label=release" alt="Реліз"></a>
+</p>
+
+<p align="center">
+<a href="#встановлення"><strong>Встановлення</strong></a> ·
+<a href="#python-api">Python API</a> ·
+<a href="#nodejs-та-typescript-api">Node.js API</a> ·
+<a href="#імітація-людського-введення">Імітація введення</a> ·
+<a href="#ombra-desktop">Ombra Desktop</a> ·
+<a href="../../README.md">English</a>
+</p>
 
 <details>
 <summary>Мови</summary>
@@ -16,48 +37,29 @@
 
 </details>
 
-## Керування відбитком у Chromium
+<br>
 
-Ombra керує цифровим відбитком браузера в самому Chromium. Налаштування охоплюють canvas, WebGL, аудіо, шрифти, кількість логічних процесорів, розміри й координати елементів, рядки з відомостями про GPU, часові пояси та ознаки автоматизації. Рушій використовує стек TLS і HTTP/2 Chromium, а події введення, що імітують дії людини, обробляє в процесі браузера.
+<h3 align="center">Chromium із контролем відбитка на рівні вихідного коду C++ та нативною імітацією людського введення.</h3>
 
-SDK запускає рушій локально й підключає клієнт автоматизації через протокол Chrome DevTools (CDP). Ви можете використовувати SDK у скрипті, контейнері чи завданні безперервної інтеграції (CI) без встановлення настільного застосунку Ombra.
+<table><tr><td>
+Не набір прапорців запуску і не ін'єкція JavaScript поверх сторінки. Це справжній бінарник Chromium із патчами відбитка, скомпільованими у вихідний код C++, та імітацією введення, що працює всередині процесу браузера. Підключайте офіційні Playwright або Puppeteer через локальний CDP — без об'єктів-обгорток і без переписування коду сторінки.
+</td></tr></table>
 
-## Статус
+<br>
 
-У прикладах використано опубліковані альфа-версії пакетів для Python і Node.js. У цьому репозиторії також зберігаються спільний контракт запуску та заготовки восьми SDK.
+<p align="center">
+Пряма заміна запуску для Playwright і Puppeteer у Python та Node.js.<br>
+Той самий API, ті самі селектори й типи — достатньо змінити імпорт і виклик <code>launch()</code>.
+</p>
 
-| Компонент | Статус |
-|---|---|
-| [Контракт SDK](../../docs/sdk-contract.md) | Чернетка `0.1.0` |
-| SDK для Python | `0.1.3`, альфа · [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
-| SDK для Node.js | `0.1.0`, альфа · [`@ombralabs/sdk` у npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Спільні схеми](../../spec/schemas) | Параметри запуску та метадані виконуваного файлу рушія |
-| [Перевірка відповідності для різних мов](../../conformance) | Спільні тестові сценарії для обох SDK |
-| [Перевірка стелсу](../../docs/stealth-checkup.md) | Критерії перевірки та шаблон звіту |
+- **Патчі Chromium на рівні вихідного коду** — canvas, WebGL, WebGPU, аудіо, шрифти, GPU, екран, медіазапити CSS, параметри апаратного забезпечення, WebRTC без витоків STUN, TLS ClientHello, часовий пояс, локаль і видалення сигналів автоматизації (`navigator.webdriver`, `Runtime.enable`, маркери headless).
+- **Нативна імітація людського введення в процесі браузера (`humanize=True`)** — траєкторії курсора (`cursory-rs`), прицільні кліки з тривалістю утримання, ритм набору тексту із самовиправленням одруківок і фізика прокручування виконуються всередині Chromium. SDK повертає звичайний нативний `Browser` без проксі-обгорток.
+- **Автономна робота без ключів та облікових записів** — актуальні збірки рушія (`151.0.7922.108-9` і новіші) та Ombra Desktop працюють локально без реєстрації, ліцензійних ключів, апаратних ідентифікаторів чи сервера ліцензування.
+- **Автоматичне встановлення й криптографічна перевірка бінарника** — `pip install ombrabrowser` або `npm install @ombralabs/sdk`; під час першого запуску SDK завантажує збірку для вашої платформи й перевіряє її підпис Ed25519 і контрольну суму SHA-256.
+- **Постійні профілі та безпечний проксі-ретранслятор** — іменовані профілі зберігають cookies, `localStorage`, IndexedDB і `seed` між запусками з міжпроцесним блокуванням; проксі з автентифікацією (HTTP, HTTPS, SOCKS5) працюють через локальний loopback-ретранслятор, тому облікові дані ніколи не потрапляють в аргументи процесу.
+- **Офлайн-менеджер профілів Ombra Desktop** — нативний десктопний застосунок у цьому репозиторії ([`desktop/`](../../desktop/README.md)) із готовими інсталяторами для macOS, Linux і Windows.
 
-## Встановлення
-
-**Python**
-
-```bash
-python -m pip install ombrabrowser
-```
-
-**Node.js / TypeScript**
-
-```bash
-npm install @ombralabs/sdk "playwright-core@^1.60.0"
-```
-
-Для роботи з Puppeteer встановіть `puppeteer-core` замість `playwright-core`. Підтримувані версії клієнта й Node.js наведено на [сторінці пакета в npm](https://www.npmjs.com/package/@ombralabs/sdk).
-
-SDK спочатку шукає рушій за шляхом, указаним у `binary_path` для Python або `binaryPath` для Node.js. Потім по черзі перевіряє `OMBRA_BINARY_PATH`, каталог рушія настільного застосунку та кеш SDK. Якщо рушій не знайдено, SDK завантажує й перевіряє його виконуваний файл.
-
-Щоб вимкнути завантаження, передайте `download=False` у Python або `download: false` у Node.js. Щоб підготувати рушій без запуску браузера, викличте `ensure_binary()` у Python або `ensureBinary()` у Node.js.
-
-## Швидкий старт
-
-**Python**
+**Python (Playwright):**
 
 ```python
 from ombrabrowser import launch
@@ -69,21 +71,7 @@ print(page.title())
 browser.close()
 ```
 
-Якщо ви задали ім’я профілю, відкривайте сторінки в його наявному контексті браузера. Так ви зможете повторно використовувати файли cookie та дані зі сховищ сайтів. У прикладі також налаштовано проксі.
-
-```python
-browser = launch(
-    profile="pricing-eu",
-    headless=False,
-    proxy="socks5://user:pass@proxy:1080",
-    fingerprint={"seed": 20261116, "os": "macos"},
-)
-page = browser.contexts[0].new_page()
-page.goto("https://example.com")
-browser.close()
-```
-
-**Node.js / TypeScript**
+**Node.js / TypeScript (Playwright):**
 
 ```ts
 import { launch } from "@ombralabs/sdk";
@@ -95,18 +83,75 @@ console.log(await page.title());
 await browser.close();
 ```
 
-Щоб отримати об’єкт `Browser` клієнта Puppeteer, викличте `launchPuppeteer()`.
+Puppeteer також підтримується через `import { launch } from "@ombralabs/sdk/puppeteer"` або `launchPuppeteer()` ([детальніше](#puppeteer)).
 
-```ts
-import { launchPuppeteer } from "@ombralabs/sdk";
+**Для сайтів з антибот-захистом** поєднуйте резидентський проксі, постійний профіль та узгоджені параметри середовища:
 
-const browser = await launchPuppeteer({ headless: false });
-await browser.close();
+```python
+from ombrabrowser import launch_persistent_context
+
+context = launch_persistent_context(
+    profile="pricing-eu",
+    proxy="socks5://user:pass@residential-proxy:1080",  # резидентський IP кращий за IP дата-центру
+    fingerprint={"timezone": "auto", "locale": "auto"},  # узгодити часовий пояс і локаль із вихідним вузлом проксі
+    headless=False,                                      # деякі сайти виявляють відмінності headless-режиму
+    humanize=True,                                       # нативна імітація миші, клавіатури та прокручування
+)
+page = context.new_page()
+page.goto("https://example.com")
+context.close()
 ```
 
-## Міграція без переписування
+```ts
+import { launchPersistentContext } from "@ombralabs/sdk";
 
-Щоб перенести скрипт Python із Playwright, встановіть `ombrabrowser`, змініть імпорт і виклик, який запускає браузер. Методи сторінок, типи й селектори й надалі надає Playwright.
+const context = await launchPersistentContext({
+  profile: "pricing-eu",
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: { timezone: "auto", locale: "auto" },
+  headless: false,
+  humanize: true,
+});
+const page = await context.newPage();
+await page.goto("https://example.com");
+await context.close();
+```
+
+Див. розділ [Усунення проблем](#усунення-проблем) для типових ситуацій у Linux, контейнерах та на захищених сайтах.
+
+## Встановлення
+
+**Python (3.10+):**
+
+```bash
+python -m pip install ombrabrowser
+
+# Необов'язково: автовизначення часового поясу й локалі за вихідним вузлом проксі (timezone="auto", locale="auto")
+python -m pip install "ombrabrowser[geoip]"
+```
+
+**Node.js / TypeScript (20+):**
+
+```bash
+# Із Playwright (1.60.0+, завантажувати стандартний Chromium не потрібно)
+npm install @ombralabs/sdk "playwright-core@^1.60.0"
+
+# Або з Puppeteer
+npm install @ombralabs/sdk puppeteer-core
+
+# Необов'язково: офлайн-читач бази GeoIP для timezone: "auto" і locale: "auto"
+npm install mmdb-lib
+```
+
+---
+
+Під час запуску SDK шукає рушій у суворо визначеному порядку: `binary_path` (`binaryPath` у Node.js), `OMBRA_BINARY_PATH`, каталог рушія Ombra Desktop і кеш SDK (`~/.ombra/engines`). Якщо сумісного рушія не знайдено, SDK завантажує збірку з підписаного каналу релізів, перевіряє її підпис Ed25519 та контрольну суму SHA-256 і кешує локально. Запускати `playwright install chromium` не потрібно.
+
+Щоб вимкнути автоматичне завантаження, передайте `download=False` (`download: false` у Node.js). Щоб завантажити й перевірити рушій заздалегідь (наприклад, під час збирання контейнера), викличте `ensure_binary()` (`ensureBinary()`) або скористайтеся командою CLI `install`.
+
+> **Автономний запуск:** актуальні збірки рушія (`151.0.7922.108-9` і новіші) безкоштовні й не потребують облікового запису чи ліцензійного ключа. `OMBRA_LICENSE_KEY` і команда `login` залишені лише для сумісності зі старішими ліцензованими збірками.
+
+**Міграція з Playwright** займає два рядки — усі операції зі сторінками, локатори й очікування залишаються без змін:
 
 ```diff
 - from playwright.sync_api import sync_playwright
@@ -117,9 +162,8 @@ await browser.close();
 
   page = browser.new_page()
   page.goto("https://example.com")
+  # решта вашого коду працює без змін
 ```
-
-У Node.js для такого переходу достатньо змінити два рядки.
 
 ```diff
 - import { chromium } from "playwright";
@@ -128,244 +172,843 @@ await browser.close();
 + const browser = await launch();
 ```
 
+> ⭐ **Поставте зірку** репозиторію, якщо проєкт вам корисний, і натисніть **[Watch releases](https://github.com/ombralabs/ombra/subscription)**, щоб отримувати сповіщення про нові збірки рушія, SDK та Ombra Desktop.
+
+---
+
+## Поточний стан і релізи
+
+Кожен компонент екосистеми дотримується спільного контракту запуску та версіонується незалежно.
+
+| Компонент | Стан / версія | Розташування |
+|---|---|---|
+| **Контракт SDK** | Чернетка `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Альфа `0.1.3` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Альфа `0.1.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Рушій Ombra Chromium** | Chromium `151.0.7922.108` | Автоматично завантажується SDK (`-9` для macOS ARM64 / Linux x64 / Windows x64, `-7` для Intel macOS) |
+| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
+| **Окремий браузер** | `v158.0.8127.37-1` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-1) |
+| **Схеми та тести сумісності** | JSON Schema + спільні кейси | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Методика перевірки непомітності** | 6 рівнів (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
+
+Що входить до поточних релізів:
+
+- **Патчі на рівні вихідного коду** — узгоджена генерація відбитка на основі `seed`, узгодження WebGL / WebGPU та їхніх розширень, реалістичні таблиці шрифтів для кожної ОС, нативний профіль TLS ClientHello (`chrome-<major>`), придушення витоків `Runtime.enable` і стеку `UtilityScript`, а також захист від витоку хостової IP-адреси через WebRTC.
+- **Домен CDP `Ombra` рівня браузера** — динамічне керування імітацією людського введення (`getHumanizeState`, `setHumanize`) у Python і Node.js без перезапуску браузера.
+- **Нативна імітація введення в процесі браузера** — планувальник курсора `cursory-rs`, профілі прокручування коліщатком і трекпадом, ритм набору тексту із самовиправленням одруківок та безпечна вставка довгих текстів через ізольований буфер обміну.
+- **Автономні збірки без ключів** — поточні збірки рушія (`151.0.7922.108-9`) та Ombra Desktop `1.2.2` працюють повністю локально без облікових записів, ключів чи телеметрії.
+- **Фіксація версії рушія (`version`)** — закріплюйте точну збірку через `launch(version="151.0.7922.108-9")`, `OMBRA_VERSION` або команду CLI `install --version`.
+- **Єдиний проксі-ретранслятор** — підтримка проксі HTTP, HTTPS і SOCKS5 з автентифікацією без розкриття облікових даних у командному рядку Chromium, логах чи метаданих профілю.
+- **Постійні іменовані профілі** — збереження `seed`, cookies, `localStorage` та IndexedDB у `~/.ombra/profiles/<slug>` із міжпроцесним блокуванням (`ProfileBusyError`).
+- **Криптографічні перевірки ланцюжка постачання** — перевірка підпису Ed25519 конверта релізу та перевірка SHA-256 архівів перед розпакуванням.
+
+Повну історію змін див. у [CHANGELOG.md](../../CHANGELOG.md).
+
+## Чому Ombra
+
+- **Патчі на рівні конфігурації та JS легко ламаються.** Такі інструменти, як `playwright-stealth`, `puppeteer-extra` та `undetected-chromedriver`, вставляють JavaScript у сторінки або підкручують прапорці запуску. Оновлення Chrome регулярно ламають їх, а сучасні детектори виявляють самі патчі (`Function.prototype.toString`, аномалії прототипів, `addScriptToEvaluateOnNewDocument`).
+- **Зміни скомпільовано у вихідний код Chromium.** Відбитки генеруються на рівні C++ і застосовуються узгоджено в головному фреймі, воркерах та iframe. SDK не вставляє жодних скриптів у сторінки й не використовує перевизначення `Emulation.*`.
+- **Імітація введення працює в процесі браузера, а не поверх Playwright.** Оскільки траєкторії миші, натискання клавіш і прокручування обробляються всередині самого Chromium, SDK не загортає об'єкти Playwright або Puppeteer — кожен локатор, фрейм і стороння бібліотека продовжують працювати штатно.
+- **Локальна архітектура без зайвих сервісів.** Жодного фонового демона керування та жодного мережевого проміжного вузла між вашим скриптом і браузером: один процес рушія, локальний loopback CDP на `127.0.0.1` і жодних обмежень на кількість профілів чи паралелізм.
+
+## Ombra Desktop
+
+**Локальний офлайн-менеджер профілів із графічним інтерфейсом.** Його вихідний код міститься безпосередньо в цьому репозиторії ([`desktop/`](../../desktop/README.md)) і побудований на Tauri (Rust + Vue).
+
+- **Повністю офлайн і локально** — каталог профілів зберігається в локальній базі даних SQLite на вашому комп'ютері з локальним ключем шифрування; обліковий запис, хмарний сервіс чи доступ до мережі не потрібні.
+- **Структуроване керування профілями** — створюйте профілі, шукайте за назвою, нотаткою чи номером, редагуйте описи та впорядковуйте записи за допомогою груп, тегів, міток і закладок у каталозі на Rust.
+- **Безпечний кошик** — переміщення профілю до кошика зберігає його файли на диску, щоб ви могли відновити його пізніше.
+- **Жодних лімітів на профілі** — без тарифів за кількість профілів і хмарних квот: усі дані належать лише вам.
+- **Готові інсталятори** — macOS Apple Silicon (`.dmg`, підписаний сертифікатом Apple Developer ID і нотаризований), Linux (`.deb` і `.rpm`) та Windows x64 (`setup.exe`).
+- **Ізольовані каталоги** — задайте `OMBRA_DESKTOP_DATA_DIR`, щоб працювати з окремим тестовим каталогом або резервною копією.
+
+[Завантажити `desktop-v1.2.2` →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [README для Desktop](../../desktop/README.md) · [Посібник із профілів і локальних ключів](../../docs/desktop/README.md)
+
+## Перевірка відбитка та непомітності
+
+Замість голослівних обіцянок про «100% невидимість» Ombra спирається на відтворювану процедуру перевірки за зафіксованих умов. Реальні результати на конкретному сайті завжди залежать від репутації вихідної IP-адреси, регіону, історії профілю, версії детектора та конфігурації запуску.
+
+### Поверхні, які обробляють рушій і SDK
+
+| Поверхня / сигнал | Стандартний Playwright | Ombra | Реалізація |
+|---|---|---|---|
+| `navigator.webdriver` | `true` | `false` | C++-патч рушія |
+| `window.chrome` | відсутній у headless | повний об'єкт | Відповідає звичайному Chrome |
+| `navigator.plugins` | `0` у headless | узгоджений набір плагінів | На рівні рушія |
+| User-Agent та Client Hints | `HeadlessChrome`, розбіжність бренду | `Google Chrome` + узгоджені `Sec-CH-UA*` | Патч `010-user-agent-and-webdriver` |
+| Артефакти CDP (`Runtime.enable`, `UtilityScript`) | фіксуються детекторами | придушуються рушієм; SDK ніколи не викликає `Runtime.enable` | Патч `110-runtime-enable` + інваріант `SI-02` |
+| Витік IP через WebRTC | розкриває локальну/хостову IP-адресу | передає вихідну IP-адресу без реального STUN | Патч `100-webrtc-leak` (`--webrtc-ip`) |
+| TLS і HTTP/2 | залежить від конфігурації | мережевий стек Chromium + профіль ClientHello `chrome-<major>` | Патч `210-tls-network-persona` |
+| WebGL і WebGPU | програмний рендерер / невідповідність GPU | єдині ліміти й таблиці розширень WebGL/WebGPU | Патчі `070`, `071`, `075`, `955` |
+| Шрифти, локаль і часовий пояс | значення хоста, розсинхронізація `Intl` | узгоджені таблиці шрифтів, локаль ICU і часовий пояс | Патчі `040`, `090`, `092`, `230` |
+| Імітація введення | телепортація курсора, миттєвий `fill()` | криві `cursory-rs`, ритм набору, фізика прокручування | Патч `135-ombra-humanize` у процесі браузера |
+| Стабільність відбитка | змінюється або розкриває хост | детермінований для заданого `seed` між перезапусками та фреймами | Патчі `001`, `002` + постійний профіль |
+
+### Шість рівнів перевірки
+
+Перед релізом або розгортанням конфігурації виконайте всі шість рівнів перевірки на тій самій збірці рушія, з тим самим клієнтом автоматизації та проксі, які ви плануєте використовувати:
+
+| Рівень | Приклади перевірок | Критерії проходження |
+|---|---|---|
+| **L0 Транспорт** | TrackMe, сторінки перевірки витоків IP/WebRTC, ехо заголовків | Видима лише вихідна IP-адреса проксі; JA4 та HTTP/2 відповідають збірці Chromium; у argv немає облікових даних проксі |
+| **L1 Ідентичність** | Локальна проба, Sannysoft, Intoli, перевірка UA-CH | Немає суперечностей між UA, Client Hints, платформою, GPU, шрифтами, екраном і локаллю |
+| **L2 Відбиток** | CreepJS, FingerprintJS, BrowserScan, Pixelscan | Немає маркерів headless або `lie`; відбиток стабільний між перезавантаженнями |
+| **L3 Автоматизація** | rebrowser, brotector, botd, аудит команд CDP | Немає витоків `Runtime.enable`, init-скриптів, binding або `navigator.webdriver` |
+| **L4 Поведінка** | Проба достовірності введення, траси humanize, живий smoke-тест | Події з `isTrusted: true`, природний порядок і таймінги, реалістичні криві курсора й прокручування |
+| **L5 Стабільність** | Повторні запуски, воркери, same/cross-origin iframe, паритет між SDK | Той самий `seed` відтворює ідентичний відбиток у всіх контекстах |
+
+Повна процедура, статуси (`PASS` / `DEGRADED` / `FAIL` / `UNREACHABLE`), чекліст сигналів і шаблон звіту: [англійською (`docs/stealth-checkup.md`)](../../docs/stealth-checkup.md) та [російською (`docs/stealth-checkup.ru.md`)](../../docs/stealth-checkup.ru.md).
+
+## Порівняння
+
+| Можливість | Playwright | playwright-stealth | undetected-chromedriver | Ombra |
+|---|---|---|---|---|
+| API автоматизації | Playwright | Playwright | Selenium | **Playwright і Puppeteer** |
+| Рівень патчів | Немає | Ін'єкція JS на сторінку | Прапорці конфігурації | **Вихідний код C++ (Chromium)** |
+| Узгоджений `seed` відбитка | Ні | Ні | Частково | **Так, на профіль та eTLD+1** |
+| Імітація введення (`humanize`) | Ні | Ні | Ні | **Вбудовано в процес браузера** |
+| Придушення витоків `Runtime.enable` / CDP | Ні | Ні | Частково | **Патч рушія + інваріанти SDK** |
+| Проксі з автентифікацією без витоку в CLI | Ні | Ні | Обмежено | **Локальний loopback-ретранслятор** |
+| Ізоляція профілів | Контекст браузера | Контекст браузера | Ні | **Каталог профілю + файлове блокування** |
+| Офлайн-менеджер профілів (GUI) | Ні | Ні | Ні | **Ombra Desktop (macOS, Linux, Windows)** |
+| Міграція з Playwright | — | Зміна імпорту | Переписування коду | **Заміна імпорту та `launch()`** |
+
 ## Як це працює
 
 ```mermaid
 flowchart LR
     Script["Ваш скрипт<br/>Playwright · Puppeteer"]
-    SDK["Ombra SDK<br/>launch() + CDP-міст"]
-    Engine["Ombra Chromium<br/>модифікований рушій"]
-    Client["Нативний клієнт автоматизації"]
-    Profile[("Профіль<br/>початкове значення · файли cookie · розширення")]
+    SDK["Ombra SDK<br/>launch() + міст CDP"]
+    Relay["Локальний проксі-ретранслятор<br/>коли потрібна автентифікація"]
+    Engine["Ombra Chromium<br/>рушій із патчами C++"]
+    Client["Нативний клієнт<br/>Playwright · Puppeteer"]
+    Profile[("Профіль<br/>seed · cookies · сховище")]
 
-    Script -->|launch()| SDK
-    SDK -->|запуск| Engine
-    SDK -->|підключення через CDP| Client
-    Script --> Client
-    Client -->|CDP| Engine
+    Script -->|"launch()"| SDK
+    SDK -->|"перевірка + запуск"| Engine
+    SDK -.->|"автентифікація проксі"| Relay
+    Relay -.-> Engine
+    SDK -->|"підключення через CDP"| Client
+    Script -->|"API сторінки"| Client
+    Client -->|"локальний CDP"| Engine
     Engine --> Profile
 ```
 
-1. `launch()` знаходить рушій або завантажує його, а потім перевіряє виконуваний файл.
-2. SDK вибирає каталог профілю та початкове значення для генерації відбитка (seed). Якщо проксі потребує автентифікації, SDK запускає локальний ретранслятор.
-3. SDK запускає Chromium із вибраним профілем, параметрами запуску й портом налагодження на локальному інтерфейсі loopback.
-4. Щойно `DevToolsActivePort` готовий, SDK підключає Playwright або Puppeteer через CDP й повертає об’єкт `Browser` відповідного клієнта.
-5. `browser.close()` зупиняє рушій і знімає блокування профілю.
+1. **`launch()` знаходить або завантажує рушій** і перевіряє його підпис Ed25519 та контрольну суму SHA-256.
+2. **Готуються профіль і `seed`.** Іменований профіль захоплює міжпроцесне блокування; якщо проксі вимагає облікових даних, SDK запускає локальний loopback-ретранслятор у пам'яті.
+3. **Запускається Ombra Chromium** з обраним профілем, параметрами відбитка та локальним портом налагодження (`--remote-debugging-port=0`).
+4. **Підключається офіційний клієнт.** Щойно з'являється `DevToolsActivePort`, SDK підключає Playwright (із `no_defaults=True`) або Puppeteer через `127.0.0.1` і повертає нативний об'єкт `Browser`.
+5. **Чисте завершення роботи.** `browser.close()` надсилає `Browser.close`, завершує дерево процесів рушія, зупиняє ретранслятор і звільняє блокування профілю.
 
-Після запуску клієнт надсилає команди для роботи зі сторінками безпосередньо до Chromium.
+Після запуску SDK виходить із тракту даних: усі команди сторінки йдуть напряму від Playwright або Puppeteer до Chromium.
 
-## Матриця SDK
+### Межі SDK та інваріанти непомітності
 
-| Середовище виконання | Опублікований пакет | Об’єкт браузера |
-|---|---|---|
-| Python 3.10+ | `ombrabrowser` | `launch()` → `Browser` клієнта Playwright |
-| Node.js 20+ | `@ombralabs/sdk` | `launch()` → `Browser` клієнта Playwright<br>`launchPuppeteer()` → `Browser` клієнта Puppeteer |
+[Контракт SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) задає суворі інваріанти для кожного офіційного SDK:
 
-У репозиторії є каталоги ще для шести SDK. Заплановані пакети та клієнти перелічено в [маніфесті SDK](../../sdks/manifest.json). Структуру каталогів описано в [посібнику з SDK](../../sdks/README.md).
+- **Жодних скриптів маскування на сторінках.** SDK ніколи не викликає `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` і не патчить властивості DOM.
+- **Без `Runtime.enable`.** Перевірка готовності використовує лише локальний HTTP-ендпоінт CDP або `Browser.getVersion`; SDK ніколи не вмикає `Runtime`, `Debugger` або `Log`.
+- **Без перевизначень `Emulation.*`.** SDK ніколи не викликає `Emulation.setUserAgentOverride`, `setTimezoneOverride`, `setLocaleOverride` або `setDeviceMetricsOverride` — ідентичність браузера формує рушій.
+- **Без заборонених прапорців за замовчуванням.** SDK самостійно ніколи не додає `--enable-automation`, `--disable-blink-features=AutomationControlled`, `--no-sandbox` або `--user-agent`.
+- **Лише loopback CDP.** Порт налагодження завжди прив'язується до `127.0.0.1`; передача не-loopback адреси в `--remote-debugging-address` відхиляється.
+- **Без телеметрії та витоку секретів.** Облікові дані проксі, ключі та cookies приховуються в логах і повідомленнях про помилки.
 
-| Цільове середовище | Запланований пакет | Клієнт або тип поверненого значення |
-|---|---|---|
-| .NET 8+ | `Ombra` (NuGet) | Microsoft.Playwright `IBrowser` |
-| Java 17+ | `dev.ombra:ombra` (Maven Central) | Playwright `Browser` |
-| Go 1.22+ | `github.com/ombralabs/ombra/sdks/go` | chromedp |
-| PHP 8.2+ | `ombralabs/ombra` (Packagist) | `Ombra\Browser` (CDP) |
-| Ruby 3.2+ | `ombra` (RubyGems) | `Ferrum::Browser` |
-| Rust 1.78+ | `ombra` (crates.io) | `chromiumoxide::Browser` |
+## Python API
 
-## Параметри запуску
-
-У таблиці наведено назви з API Python і контракту SDK. Відповідні параметри в Node.js записують у camelCase, наприклад `timeoutMs`, `userDataDir` і `binaryPath`.
-
-| Параметр | Типове значення | Призначення |
-|---|---|---|
-| `headless` | `true` | Запускає рушій без вікна |
-| `proxy` | немає | URL або об’єкт налаштувань проксі. Для проксі з автентифікацією використовується локальний ретранслятор |
-| `fingerprint` | немає | Початкове значення та параметри ОС, часового поясу, локалі, екрана й GPU |
-| `profile` | немає | Іменований профіль, що зберігає файли cookie, дані сайтів і початкове значення |
-| `user_data_dir` | тимчасовий | Явно заданий каталог профілю. Несумісний із `profile` |
-| `args` | `[]` | Додаткові аргументи, які SDK передає рушію без змін |
-| `timeout_ms` | `30000` | Граничний час запуску та встановлення з’єднання CDP у мілісекундах |
-| `humanize` | типове значення рушія | `false`, `true` або готовий набір налаштувань |
-| `binary_path` | автоматичний пошук | Вибирає конкретний виконуваний файл рушія |
-| `download` | `true` | Завантажує виконуваний файл рушія, якщо його немає |
-
-У [контракті SDK](../../docs/sdk-contract.md) перелічено всі параметри запуску й описано типи помилок та поведінку профілів.
-
-## Керування бінарником
+### `launch()`
 
 ```python
-from ombrabrowser import binary_info, ensure_binary, clear_cache
+from ombrabrowser import launch
 
-print(binary_info())
-# {'version': '151.0.7922.108', 'platform': 'macos-arm64',
-#  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
+# Базовий запуск (headless за замовчуванням)
+browser = launch()
 
-ensure_binary()   # download and verify without launching
-clear_cache()     # remove SDK-managed binaries; profiles are untouched
+# Запуск із вікном браузера
+browser = launch(headless=False)
+
+# HTTP- або SOCKS5-проксі (облікові дані проходять через локальний loopback-ретранслятор)
+browser = launch(proxy="http://user:pass@proxy:8080")
+browser = launch(proxy="socks5://user:pass@proxy:1080")
+
+# Об'єкт проксі зі списком винятків (bypass)
+browser = launch(
+    proxy={
+        "type": "socks5",
+        "host": "proxy.example.com",
+        "port": 1080,
+        "username": "user",
+        "password": "pass",
+        "bypass": ".local,127.0.0.1",
+    }
+)
+
+# Керування відбитком (seed, ОС, автовизначення часового поясу й локалі через проксі, екран, GPU)
+# Для timezone="auto" / locale="auto" встановіть: pip install "ombrabrowser[geoip]"
+browser = launch(
+    proxy="socks5://user:pass@proxy:1080",
+    fingerprint={
+        "seed": 20261116,
+        "os": "macos",
+        "timezone": "auto",
+        "locale": "auto",
+        "screen": {"width": 1440, "height": 900},
+    },
+)
+
+# Нативна імітація миші, клавіатури та прокручування
+browser = launch(humanize=True)
+browser = launch(humanize={"preset": "careful"})
+
+# Фіксація точної збірки рушія та передача додаткових прапорців Chromium
+browser = launch(
+    version="151.0.7922.108-9",
+    args=["--webrtc-ip=203.0.113.10"],
+)
 ```
 
-Перед запуском SDK перевіряє контрольну суму SHA-256 виконуваного файлу рушія. У робочому середовищі залишайте перевірку ввімкненою. Параметр `OMBRA_SKIP_CHECKSUM=1` призначений для локальних збірок під час розробки.
+Повертає стандартний `playwright.sync_api.Browser`. Усі методи Playwright працюють штатно (`new_page()`, `new_context()`, `close()` тощо). Нові сторінки за замовчуванням створюються з `no_viewport=True`, щоб не перезаписувати розміри вікна профілю.
 
-## Конфігурація
+### `launch_async()`
 
-| Змінна | Типове значення | Призначення |
+```python
+import asyncio
+from ombrabrowser import launch_async
+
+async def main() -> None:
+    browser = await launch_async(headless=False, humanize=True)
+    page = await browser.new_page()
+    await page.goto("https://example.com")
+    print(await page.title())
+    await browser.close()
+
+asyncio.run(main())
+```
+
+### `launch_context()` і `launch_context_async()`
+
+Зручний помічник, який запускає браузер і одразу повертає `BrowserContext` (закриття контексту також завершує процес рушія). Додаткові іменовані аргументи передаються в `browser.new_context()` — наприклад, `storage_state`, `permissions` або `extra_http_headers`:
+
+```python
+from ombrabrowser import launch_context
+
+context = launch_context(
+    proxy="socks5://user:pass@residential-proxy:1080",
+    fingerprint={"timezone": "auto", "locale": "auto"},
+    headless=False,
+    humanize=True,
+    storage_state="state.json",
+)
+page = context.new_page()
+page.goto("https://example.com")
+context.storage_state(path="state.json")
+context.close()
+```
+
+Асинхронний аналог: `await launch_context_async(...)`.
+
+### `launch_persistent_context()` і `launch_persistent_context_async()`
+
+Запускає браузер із постійним профілем і повертає його типовий `BrowserContext`. Cookies, `localStorage`, IndexedDB, кеш і `seed` відбитка зберігаються між сесіями.
+
+- Передача `profile="pricing-eu"` створює профіль у `~/.ombra/profiles/pricing-eu` з метаданими в `.ombra/profile.json` і файлом блокування.
+- Передача `user_data_dir="./my-profile"` (або позиційного аргументу зі шляхом) використовує цей явний каталог.
+- Одночасний запуск того самого профілю з іншого процесу генерує помилку `ProfileBusyError`, запобігаючи пошкодженню даних профілю.
+
+```python
+from ombrabrowser import launch_persistent_context
+
+# За іменованим профілем (зберігається в ~/.ombra/profiles/)
+ctx = launch_persistent_context(profile="pricing-eu", headless=False)
+page = ctx.new_page()
+page.goto("https://example.com")
+ctx.close()  # cookies, сховище та seed зберігаються
+
+# За явним шляхом (наприклад, для завантаження розширень Chrome)
+ctx = launch_persistent_context(
+    "./my-profile",
+    headless=False,
+    args=[
+        "--disable-extensions-except=./my-extension",
+        "--load-extension=./my-extension",
+    ],
+)
+```
+
+Асинхронний аналог: `await launch_persistent_context_async(...)`.
+
+### Допоміжні функції та діагностика (Python)
+
+```python
+from ombrabrowser import (
+    binary_info,
+    build_launch_options,
+    check_engine_health,
+    clear_cache,
+    ensure_binary,
+    last_launch_info,
+    launch,
+)
+
+# Перевірити знайдений бінарник рушія
+print(binary_info())
+# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+#  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
+
+# Завантажити й перевірити рушій без запуску браузера
+ensure_binary(version="151.0.7922.108-9")
+
+# Видалити керовані SDK бінарники рушія (профілі в ~/.ombra/profiles залишаються недоторканими)
+clear_cache()
+
+# Переглянути сформовану команду запуску без старту Chromium
+cmd = build_launch_options(profile="pricing-eu", humanize=True)
+
+# Прочитати метадані виконання (порт CDP, ws_url, seed, pid) і перевірити стан процесу
+browser = launch()
+print(last_launch_info(browser))
+check_engine_health(browser)
+browser.close()
+```
+
+### CLI (Python)
+
+```bash
+ombrabrowser install                             # завантажити й перевірити рушій (Ed25519 + SHA-256)
+ombrabrowser install --version 151.0.7922.108-9  # встановити конкретну збірку рушія
+ombrabrowser info                                # діагностика середовища, бінарника та залежностей (псевдонім: doctor)
+ombrabrowser info --quick --json                 # швидкий машинозчитуваний звіт без запуску бінарника
+ombrabrowser info --proxy socks5://user:pass@host:1080  # перевірити визначення вихідного IP, часового поясу та локалі через проксі
+ombrabrowser update                              # перевірити канал релізів і оновити кешований рушій
+ombrabrowser clear-cache                         # очистити кешовані бінарники рушія (профілі зберігаються)
+ombrabrowser login                               # зберегти ліцензійний ключ у ~/.ombra/license.key (лише для застарілих збірок)
+ombrabrowser logout                              # видалити збережений ліцензійний ключ
+```
+
+Ті самі команди доступні через `python -m ombrabrowser <command>`.
+
+## Node.js та TypeScript API
+
+`@ombralabs/sdk` постачається у подвійній збірці ESM + CommonJS із повними описами типів TypeScript (`.d.ts`). І Playwright, і Puppeteer працюють поверх одного й того самого рушія.
+
+### Playwright (за замовчуванням)
+
+```ts
+import { launch, launchContext, launchPersistentContext } from "@ombralabs/sdk";
+
+// Базовий запуск із проксі, відбитком та імітацією введення
+const browser = await launch({
+  profile: "pricing-eu",
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: {
+    seed: 20261116,
+    os: "macos",
+    timezone: "auto",
+    locale: "auto",
+    screen: { width: 1440, height: 900 },
+  },
+  headless: false,
+  humanize: { preset: "careful" },
+});
+
+// Зручний запуск: браузер + контекст в одному виклику
+const context = await launchContext({
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: { timezone: "auto", locale: "auto" },
+  headless: false,
+  humanize: true,
+  contextOptions: { storageState: "state.json" },
+});
+const page = await context.newPage();
+
+// Постійний профіль — cookies, localStorage і seed зберігаються між запусками
+const persistentCtx = await launchPersistentContext({
+  userDataDir: "./chrome-profile",
+  headless: false,
+  humanize: true,
+});
+```
+
+> Кожен фрагмент вище є самодостатнім. Для міграції наявного коду запуску Playwright також можна замінити імпорт на `import * as chromium from "@ombralabs/sdk"` і залишити `await chromium.launch(...)`.
+
+### Puppeteer
+
+Використовуйте `launchPuppeteer()` з `@ombralabs/sdk` або імпортуйте з `@ombralabs/sdk/puppeteer`:
+
+```ts
+import { launch } from "@ombralabs/sdk/puppeteer";
+
+const browser = await launch({
+  proxy: "socks5://user:pass@residential-proxy:1080",
+  fingerprint: { timezone: "auto", locale: "auto" },
+  headless: false,
+  humanize: true,
+});
+const page = await browser.newPage();
+await page.goto("https://example.com");
+await browser.close();
+```
+
+> **Примітка щодо Puppeteer:** Puppeteer надсилає більше стандартного CDP-трафіку, ніж Playwright із `connectOverCDP({ noDefaults: true })`. Для сайтів із суворими перевірками CDP рекомендується Playwright.
+
+### Утиліти та CLI (Node.js)
+
+```ts
+import {
+  binaryInfo,
+  buildLaunchOptions,
+  checkEngineHealth,
+  clearCache,
+  ensureBinary,
+  lastLaunchInfo,
+} from "@ombralabs/sdk";
+
+console.log(await binaryInfo());
+await ensureBinary({ version: "151.0.7922.108-9" });
+await clearCache();
+```
+
+```bash
+npx --no-install ombra-sdk install [--version <v>] [--channel <stable|beta>]
+npx --no-install ombra-sdk info [--quick] [--json] [--proxy <url>]
+npx --no-install ombra-sdk doctor
+npx --no-install ombra-sdk update [--channel <stable|beta>]
+npx --no-install ombra-sdk clear-cache
+npx --no-install ombra-sdk login [<license-key>]
+npx --no-install ombra-sdk logout
+```
+
+## Імітація людського введення
+
+В Ombra імітація введення (`humanize`) скомпільована **нативно в процес браузера Chromium** (на базі `cursory-rs` та планувальника введення рушія), а не реалізована як JS-обгортка над клієнтом автоматизації. Це означає:
+
+- Усі стандартні дії Playwright і Puppeteer (`page.click()`, `page.fill()`, `page.type()`, `page.mouse.*`, `page.keyboard.*`, `locator.*`, `ElementHandle.*`) проходять через єдину чергу введення на вкладку всередині браузера.
+- Поведінкові параметри детерміновано обчислюються із `seed` профілю (`--fingerprint-humanize-seed`).
+- SDK ніколи не загортає `Page` чи `Browser` у проксі-класи — нативні типи та поведінка клієнта залишаються незмінними.
+
+```python
+browser = launch(humanize=True)
+page = browser.new_page()
+page.goto("https://example.com")
+page.locator("#email").fill("user@example.com")
+page.locator("button[type=submit]").click()
+```
+
+**Що змінюється з `humanize=True`:**
+
+| Дія | Без `humanize` | Із `humanize=True` |
 |---|---|---|
-| `OMBRA_BINARY_PATH` | не задано | Явно заданий шлях до виконуваного файлу рушія |
-| `OMBRA_CACHE_DIR` | `~/.ombra` | Каталог керованих виконуваних файлів та іменованих профілів |
-| `OMBRA_DOWNLOAD_URL` | сервер випусків | Базова URL-адреса для завантаження файлів рушія |
-| `OMBRA_VERSION` | найновіша сумісна | Версія рушія, яку має знайти SDK |
-| `OMBRA_AUTO_UPDATE` | `true` | Перевіряє наявність новішої версії рушія під час запуску |
-| `OMBRA_SKIP_CHECKSUM` | `false` | Лише для розробки |
-| `OMBRA_LICENSE_KEY` | не задано | Ключ, який SDK передає рушію |
-| `OMBRA_TIMEOUT_MS` | `30000` | Типовий граничний час запуску в мілісекундах |
-| `OMBRA_LOG_LEVEL` | `warn` | `error`, `warn`, `info`, `debug` |
+| Рух миші | Миттєва телепортація | Криві `cursory-rs` із прискоренням, паузами та легким перельотом |
+| Кліки й перетягування | Миттєве натискання | Точка прицілювання в межах елемента, пауза перед кліком і тривалість утримання |
+| Введення тексту | Миттєве встановлення значення | Посимвольний набір із заданим ритмом і розкладкою клавіатури, зрідка одруківки із самовиправленням; дуже довгий текст вставляється через ізольований буфер обміну, не зачіпаючи системний |
+| Прокручування | Один стрибок | Серія подій коліщатка/трекпада за виміряними профілями сповільнення |
+| Інтервали простою | Статичний курсор | У пресеті `careful` — ледь помітний дрейф курсора між діями |
 
-SDK бере перше доступне значення. Спочатку перевіряє параметри запуску, далі змінні середовища, потім метадані профілю й насамкінець типові значення.
+**Пресети** — `default` (звичайний темп), `careful` (повільніший, обережний, із мікрорухами під час простою) та `fast` (прискорений темп). Передайте `humanize=False` (`humanize: false`), щоб явно вимкнути імітацію введення.
 
-## Порівняння
+```python
+browser = launch(humanize={"preset": "careful"})
+```
 
-| Характеристика | Playwright | playwright-stealth | undetected-chromedriver | Ombra |
-|---|---|---|---|---|
-| API | Playwright | Playwright | Selenium | Playwright або Puppeteer |
-| Рівень модифікацій | немає | JavaScript на сторінці | параметри конфігурації | вихідний код рушія |
-| Початкове значення відбитка | ні | ні | частково | окремо для кожного профілю |
-| Імітація введення людиною | ні | ні | ні | у рушії |
-| Ізоляція профілю | контекст браузера | контекст браузера | немає | каталог даних користувача |
-| Міграція без переписування | — | зміна імпорту | переписування | зміна імпорту |
+```ts
+const browser = await launch({ humanize: { preset: "careful" } });
+```
 
-Результати перевірки залежать від сайту, вихідної IP-адреси та профілю. Методику вимірювання описано в [посібнику з перевірки](../../docs/stealth-checkup.md).
+Режим і пресет можна перемикати під час виконання без перезапуску браузера через домен CDP `Ombra`:
 
-## Стелс — властивість рушія
+```python
+from ombrabrowser import ombra_cdp
 
-Налаштування цифрового відбитка застосовує рушій. SDK передають йому початкове значення профілю та явно задані параметри запуску.
+with ombra_cdp(browser) as cdp:
+    cdp.set_humanize(enabled=True, preset="careful")
+    print(cdp.get_humanize_state())
+```
 
-| Рівень | Як його реалізує Ombra |
+```ts
+import { ombraCdp } from "@ombralabs/sdk";
+
+const cdp = await ombraCdp(browser);
+await cdp.setHumanize({ enabled: true, preset: "careful" });
+console.log(await cdp.getHumanizeState());
+```
+
+## Керування відбитком і профілями
+
+Рушій формує узгоджену конфігурацію браузера з єдиного `seed`. Якщо `seed` не вказано:
+
+| Сценарій | Поведінка |
 |---|---|
-| TLS і HTTP/2 | Мережевий стек саме тієї версії Chromium, на якій зібрано рушій |
-| Ідентичність браузера | Зміни у вихідному коді рушія, на роботу яких впливає початкове значення профілю |
-| Ознаки автоматизації | Ознаки WebDriver обробляє рушій. SDK не викликає `Runtime.enable` |
-| Введення | Імітація рухів вказівника, натискань клавіш і прокручування в процесі браузера |
-| Узгодженість мережевих параметрів | Визначення часового поясу й локалі з урахуванням проксі |
-| Стан | Окремий каталог даних користувача для кожного профілю |
+| **`launch()` без профілю** | SDK генерує випадковий `seed` на сесію і створює тимчасовий каталог, який видаляється після `close()`. |
+| **`profile="name"` або `user_data_dir="./dir"`** | Значення `seed` зберігається в `.ombra/profile.json` і повторно використовується під час кожного запуску — сайти бачать того самого відвідувача з тим самим пристроєм і cookies. |
+| **`fingerprint={"seed": N, ...}`** | Детермінований відбиток від явно заданого `seed`; додаткові поля перевизначають окремі параметри, зберігаючи узгодженість решти. |
 
-### Межі відповідальності SDK
+Шум canvas/аудіо прив'язаний до `eTLD+1` (стабільний у межах одного сайту й не пов'язується між різними сайтами). Піксельний шум для 2D canvas і WebGL `readPixels` вимкнено за замовчуванням, щоб не спрацьовували детектори «Canvas Tampering / Masking», і його можна явно ввімкнути через `--fingerprint-pixel-noise`.
 
-- Порт налагодження CDP приймає лише локальні з’єднання через інтерфейс loopback.
-- SDK не записує в журнали облікові дані проксі, ліцензійні ключі й файли cookie. Телеметрію не надсилає.
-- Наявний профіль зберігає своє початкове значення, доки ви явно не вкажете інше.
-- SDK не вставляє стелс-скрипти за допомогою `addScriptToEvaluateOnNewDocument` чи `evaluateOnNewDocument` і не змінює властивості сторінки.
-- Щоб перевірити готовність рушія, SDK звертається до HTTP-інтерфейсу CDP або викликає `Browser.getVersion`. Для цієї перевірки він ніколи не викликає `Runtime.enable`.
-- Ідентичність браузера визначає рушій. SDK не перевизначає ідентичність чи рядок User-Agent через Playwright або Puppeteer й не викликає `Emulation.setUserAgentOverride`, `setTimezoneOverride`, `setLocaleOverride` або `setDeviceMetricsOverride`.
-- SDK ніколи самостійно не додає `--enable-automation`, `--disable-blink-features=AutomationControlled` або `--no-sandbox`.
+> **Порада:** для повторних візитів на той самий сайт використовуйте постійний профіль (`profile="name"` або `launch_persistent_context()`), а не фіксований `seed` в ефемерному `launch()` — так cookies, кеш і `localStorage` залишаться узгодженими з відбитком.
 
-## Перевірка стелсу
+### Поля об'єкта `fingerprint`
 
-Виконуйте перевірки з тією збіркою рушія, клієнтом автоматизації та профілем, які плануєте використовувати.
+Назви полів нижче наведено у стилі Python (`snake_case`); Node.js приймає як `camelCase` (`osVersion`, `hardwareConcurrency`, `deviceMemory`), так і `snake_case`:
 
-| Рівень | Приклади перевірок | Критерії успіху |
+| Поле | Тип | Опис |
 |---|---|---|
-| L0 Транспорт | TrackMe, тести на витоки IP/WebRTC | Видно лише вихідну IP-адресу. JA4 і HTTP/2 відповідають збірці Chromium у рушії |
-| L1 Ідентичність | Локальний тест, Sannysoft, Intoli | Немає суперечностей між UA, UA-CH, платформою, GPU, шрифтами й екраном |
-| L2 Відбиток | CreepJS, FingerprintJS, BrowserScan | Немає ознак безвіконного режиму чи підміни даних. Відбиток стабільний під час перезавантаження сторінки |
-| L3 Автоматизація | rebrowser, brotector, botd | Не виявлено слідів CDP, скриптів ініціалізації чи WebDriver |
-| L4 Поведінка | Точність введення, трасування `humanize`, базова перевірка Cloudflare | Довірені події відбуваються в реалістичній послідовності, перевірку пройдено |
-| L5 Стабільність | Початкове значення, воркери, iframe, різні джерела | За однакового початкового значення браузер зберігає ту саму ідентичність під час кожного запуску |
+| `seed` | `int` (`>= 0`) | Початкове значення генератора, що визначає загальну конфігурацію відбитка |
+| `os` | `"macos"` \| `"windows"` \| `"linux"` | Цільова ОС (`navigator.platform`, UA, пули GPU та шрифтів) |
+| `os_version` | `string` | Підказка версії ОС для Client Hints |
+| `timezone` | зона IANA або `"auto"` | Часовий пояс (наприклад, `"Europe/Berlin"`). `"auto"` визначає зону за вихідним вузлом проксі через GeoIP |
+| `locale` | BCP-47 або `"auto"` | Локаль (`Accept-Language`, `navigator.languages`, ICU `Intl`). `"auto"` визначає локаль за вихідним вузлом проксі |
+| `screen` | `{"width", "height"}` або `"auto"` | Розміри екрана та робочої області з урахуванням панелі завдань / рядка меню цільової ОС |
+| `gpu` | `{"vendor", "renderer"}` або `"auto"` | Явні рядки WebGL `UNMASKED_VENDOR` / `UNMASKED_RENDERER` |
+| `hardware_concurrency` | `int` або `"auto"` | Значення `navigator.hardwareConcurrency` |
+| `device_memory` | `int` або `"auto"` | Значення `navigator.deviceMemory` (у ГБ) |
+| `noise` | `bool` | Увімкнути/вимкнути шум відбитка (`False` передає `--disable-fingerprint-noise`) |
 
-У процедурі перевірки описано можливі статуси, діагностику проблем та оформлення звіту. Вона доступна [англійською](../../docs/stealth-checkup.md) та [російською](../../docs/stealth-checkup.ru.md).
+> Залишайте `seed` основним джерелом параметрів відбитка: ручне перевизначення окремих значень без збереження їхньої узгодженості (наприклад, поєднання ОС із несумісним GPU) може створювати суперечності для детекторів.
 
-Щоб мати змогу відтворити й порівняти результати, записуйте для кожної перевірки збірку рушія, версію клієнта, налаштування профілю, вихідну IP-адресу проксі та версію детектора.
+### Додаткові прапорці рушія (`args`)
+
+Прапорці, які підтримує рушій, але SDK не додає автоматично (передаються через `args=[...]`):
+
+| Прапорець | Призначення |
+|---|---|
+| `--fingerprint-brand=chrome\|edge\|opera\|vivaldi` | Бренд браузера в `Sec-CH-UA` (за замовчуванням SDK задає `chrome`) |
+| `--fingerprint-tls-profile=chrome-<major>` | Профіль TLS ClientHello, що відповідає вказаній мажорній версії Chrome (автоматично задається SDK за версією рушія) |
+| `--webrtc-ip=<ip>` | Підстановка IP-адреси в ICE-кандидатах WebRTC без надсилання реального трафіку STUN |
+| `--fingerprint-location=<lat,lon>` | Координати, які повертає `navigator.geolocation` |
+| `--fingerprint-storage-quota=<MB>` | Квота сховища, яку повертає `navigator.storage.estimate()` |
+| `--fingerprint-max-touch-points=<N>` | Кількість точок дотику (`navigator.maxTouchPoints` та медіазапити pointer) |
+| `--fingerprint-device-pixel-ratio=<ratio>` | Щільність пікселів дисплея (`window.devicePixelRatio`) |
+| `--fingerprint-color-depth=<bits>` | Глибина кольору екрана |
+| `--disable-gpu-fingerprint` | Передати напряму реальний GPU хоста (рядки WebGL/WebGPU, ліміти та розширення) |
+| `--disable-gpu-string-spoof` | Передати напряму реальні рядки GPU, зберігши решту налаштувань профілю |
+| `--disable-fingerprint-noise` | Вимкнути шум canvas/WebGL/аудіо, залишивши активними параметри ідентичності |
+| `--fingerprint-pixel-noise` | Увімкнути опційний ідемпотентний піксельний шум для 2D canvas і `readPixels` |
+| `--profile-label=<text>` | Мітка профілю в адресному рядку браузера (лише інтерфейс; невидима для вебсторінок) |
+
+### Налаштування шрифтів у Linux
+
+На мінімальних серверах і в контейнерах Linux часто бракує шрифтів емодзі та CJK, через що прихований рендеринг тексту й емодзі в canvas дає нетипові хеші.
+
+**1. Базовий набір (емодзі та CJK):**
+
+```bash
+sudo apt-get update && sudo apt-get install -y \
+    fonts-noto-color-emoji fonts-freefont-ttf fonts-unifont \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-tlwg-loma-otf
+```
+
+**2. Шрифти Windows для профілів Windows (`os="windows"`):**
+Під час запуску конфігурації Windows на Linux встановлення справжніх шрифтів із `C:\Windows\Fonts\` (зокрема `Segoe UI`, `Calibri`, `Consolas`, `Courier New`, `Arial`, `Times New Roman`, `MS UI Gothic`) суттєво підвищує узгодженість переліку шрифтів:
+
+```bash
+mkdir -p ~/.local/share/fonts/windows
+cp -r /path/to/windows/Fonts/. ~/.local/share/fonts/windows/
+fc-cache -f
+```
+
+**3. Шрифти macOS для профілів macOS (`os="macos"`):**
+Аналогічно, якщо ви використовуєте `os="macos"` у Linux, скопіюйте шрифти з `/System/Library/Fonts/`, `/System/Library/Fonts/Supplemental/` та `/Library/Fonts/` у `~/.local/share/fonts/mac/` і виконайте `fc-cache -f`.
+
+У `Dockerfile` розміщуйте шрифти в системному каталозі `/usr/local/share/fonts/`:
+
+```dockerfile
+COPY windows-fonts/ /usr/local/share/fonts/windows/
+RUN fc-cache -f
+```
+
+## Параметри запуску, конфігурація та помилки
+
+### Параметри `launch()`
+
+Назви параметрів відповідають Python API та [контракту SDK](../../docs/sdk-contract.md); Node.js використовує аналоги у `camelCase` (`timeoutMs`, `userDataDir`, `binaryPath`, `licenseKey`), а також приймає псевдоніми `snake_case`. Невідомі параметри відхиляються з помилкою `InvalidOptionError`.
+
+| Параметр | За замовчуванням | Опис |
+|---|---|---|
+| `headless` | `true` | Запуск без вікна (`--headless=new`) |
+| `proxy` | немає | URL проксі (`http`, `https`, `socks5`) або об'єкт; проксі з автентифікацією працюють через loopback-ретранслятор |
+| `fingerprint` | немає | Налаштування `seed`, ОС, часового поясу, локалі, екрана, GPU, пам'яті та шуму |
+| `profile` | немає | Іменований постійний профіль у `~/.ombra/profiles/<slug>` (взаємовиключний із `user_data_dir`) |
+| `user_data_dir` | тимчасовий | Явний шлях до каталогу профілю (взаємовиключний із `profile`) |
+| `args` | `[]` | Додаткові аргументи Chromium (передаються без змін) |
+| `binary_path` | автовизначення | Явний шлях до виконуваного файлу рушія |
+| `version` | змінна / авто | Фіксація версії рушія (наприклад, `151.0.7922.108-9`), має пріоритет над `OMBRA_VERSION` |
+| `timeout_ms` | `30000` | Таймаут запуску рушія та підключення CDP (1000–600000 мс) |
+| `humanize` | типове для рушія | `False`, `True` або `{"preset": "default" \| "careful" \| "fast"}` |
+| `license_key` | змінна / файл | Ключ для застарілих ліцензованих збірок (не потрібен на `151.0.7922.108-9+`; ніколи не логується) |
+| `env` | `{}` | Додаткові змінні середовища для процесу рушія |
+| `download` | `True` | Дозволити автоматичне завантаження відсутнього бінарника рушія |
+
+### Змінні середовища
+
+Порядок пріоритету: **явний параметр запуску → змінна середовища → метадані профілю → значення за замовчуванням**.
+
+| Змінна | За замовчуванням | Опис |
+|---|---|---|
+| `OMBRA_BINARY_PATH` | не задано | Явний шлях до бінарника рушія |
+| `OMBRA_CACHE_DIR` | `~/.ombra` | Каталог для кешованих рушіїв та іменованих профілів |
+| `OMBRA_DOWNLOAD_URL` | `https://dl.ombrabrowser.dev` | Базовий URL / дзеркало для завантаження рушія (`none`/`off` вимикає завантаження) |
+| `OMBRA_VERSION` | остання сумісна | Зафіксована версія рушія (наприклад, `151.0.7922.108-9`) |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | Канал релізів рушія: `stable` або `beta` |
+| `OMBRA_AUTO_UPDATE` | `true` | Перевіряти наявність новіших збірок рушія під час запуску |
+| `OMBRA_SKIP_CHECKSUM` | `false` | Лише для локальної розробки: вимикає перевірку SHA-256 (виводить попередження) |
+| `OMBRA_LICENSE_KEY` | не задано | Ключ для застарілих ліцензованих збірок (ніколи не логується) |
+| `OMBRA_TIMEOUT_MS` | `30000` | Таймаут запуску за замовчуванням (мс) |
+| `OMBRA_LOG_LEVEL` | `warn` | Рівень деталізації логів: `error`, `warn`, `info`, `debug` |
+
+### Типізовані помилки
+
+У разі будь-якого збою SDK завершує запущений процес рушія, звільняє блокування профілю та генерує підклас `OmbraError` зі стабільним полем `kind` і очищеними від секретів даними `details`:
+
+`InvalidOptionError` · `BinaryNotFoundError` · `DownloadFailedError` · `ChecksumMismatchError` · `UnsupportedPlatformError` · `UnsupportedEngineError` · `ProxyError` · `ProfileBusyError` · `LaunchTimeoutError` · `CDPConnectError` · `EngineExitedError` · `EngineCrashedError` · `LicenseError`
+
+Повну таксономію помилок і правила повторних спроб задокументовано в [контракті SDK (`docs/sdk-contract.md`)](../../docs/sdk-contract.md).
+
+## Платформи, інтеграції та контейнери
+
+### Підтримувані платформи й середовища виконання
+
+| Компонент | Підтримка | Примітки |
+|---|---|---|
+| **macOS ARM64 (Apple Silicon)** | ✅ | Автономна збірка `151.0.7922.108-9`; Ombra Desktop підписаний Developer ID і нотаризований |
+| **macOS x64 (Intel)** | ✅ | Збірка `151.0.7922.108-7` доступна на стабільному каналі SDK |
+| **Linux x64** | ✅ | Автономна збірка `151.0.7922.108-9`; потрібен `xz-utils` (`xz`) для розпакування `.tar.xz` |
+| **Windows x64** | ✅ | Автономна збірка `151.0.7922.108-9` та інсталятор Ombra Desktop |
+| **Python** | `3.10+` | Playwright `>=1.60,<2.0` встановлюється автоматично разом з `ombrabrowser` |
+| **Node.js** | `20+` | Playwright `>=1.60,<2.0` або Puppeteer `>=22` (Puppeteer 25+ потребує Node.js `>=22.12`) |
+
+### Інтеграція з фреймворками та AI-агентами
+
+Ombra працює з будь-яким інструментом автоматизації або фреймворком AI-агентів, який приймає власний бінарник Chromium або підключається через CDP (`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain` тощо):
+
+```python
+# Варіант 1: отримати перевірений шлях до бінарника та аргументи рушія для власного раннера
+from ombrabrowser import build_launch_options
+
+cmd = build_launch_options(profile="agent-1", humanize=True)
+binary_path = cmd["binary_path"]
+engine_args = cmd["args"]
+
+# Варіант 2: запустити через Ombra SDK і передати локальну точку доступу CDP у ваш фреймворк
+from ombrabrowser import launch_async, last_launch_info
+
+browser = await launch_async(profile="agent-1", humanize=True)
+info = last_launch_info(browser)
+ws_url = info["ws_url"]             # ws://127.0.0.1:<port>/devtools/browser/...
+cdp_http = f"http://127.0.0.1:{info['cdp_port']}"
+# Підключіть ваш фреймворк до ws_url або cdp_http — налаштування відбитка та humanize
+# працюють усередині рушія й залишаються активними для будь-якого клієнта CDP
+```
+
+### Запуск у Docker і на серверах Linux
+
+Приклад `Dockerfile`, який заздалегідь завантажує й перевіряє рушій на етапі збирання образу:
+
+```dockerfile
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    xz-utils xvfb \
+    fonts-noto-color-emoji fonts-freefont-ttf fonts-unifont \
+    fonts-ipafont-gothic fonts-wqy-zenhei fonts-tlwg-loma-otf \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir ombrabrowser "ombrabrowser[geoip]" \
+    && playwright install-deps chromium \
+    && ombrabrowser install
+
+WORKDIR /app
+COPY your_script.py /app/
+CMD ["python", "/app/your_script.py"]
+```
+
+> **Контейнери та вебсервери:**
+> - Якщо ваш контейнер не може ініціалізувати пісочницю Chromium, передайте `--no-sandbox` явно через `args=["--no-sandbox"]` (SDK ніколи не додає цей прапорець самостійно).
+> - Щоб запускати з `headless=False` на сервері без дисплея, використовуйте `Xvfb` (див. [нижче](#усунення-проблем)).
+> - Під час запуску під `uvicorn` із `uvloop` передавайте `--loop asyncio`, щоб уникнути зависань каналів підпроцесів.
+
+## Усунення проблем
+
+### Сайт блокує headless-режим
+
+Деякі антибот-системи перевіряють поведінкові та графічні відмінності в headless-режимі навіть за наявності C++-патчів. Запускайте з `headless=False` на віртуальному дисплеї за допомогою `Xvfb`:
+
+```bash
+sudo apt-get install -y xvfb
+Xvfb :99 -screen 0 1920x1080x24 &
+export DISPLAY=:99
+```
+
+Після цього запускайте з резидентським SOCKS5/HTTP-проксі, постійним профілем, узгодженими часовим поясом/локаллю, `headless=False` і `humanize=True`:
+
+```python
+context = launch_persistent_context(
+    profile="site-eu",
+    proxy="socks5://user:pass@residential-proxy:1080",
+    fingerprint={"timezone": "auto", "locale": "auto"},
+    headless=False,
+    humanize=True,
+)
+```
+
+Якщо блокування на Linux тривають, перевірте розділ [Налаштування шрифтів у Linux](#налаштування-шрифтів-у-linux).
+
+### Сайт показує перевірку під час кожного візиту
+
+Виклик `launch()` без `profile` щоразу стартує з порожнього тимчасового каталогу та нового `seed`, тому сайт сприймає кожен запуск як абсолютно нового відвідувача без cookies. Перейдіть на `profile="..."` або `launch_persistent_context(...)`, щоб cookies, `localStorage` і `seed` зберігалися між запусками.
+
+### `ProfileBusyError`
+
+Іменований профіль або `user_data_dir` може бути відкритий одночасно лише в одному процесі. Призначайте кожному паралельному воркеру окрему назву профілю (`profile=f"worker-{i}"`). Застарілі блокування, що залишилися після аварійного завершення процесів, виявляються й очищуються автоматично.
+
+### Чи потрібно виконувати `playwright install chromium`?
+
+Ні. Ombra використовує власний бінарник рушія й не покладається на стандартний Chromium від Playwright. У Linux потрібні лише системні бібліотеки та `xz-utils`:
+
+```bash
+sudo apt-get install -y xz-utils
+playwright install-deps chromium
+```
+
+### Оновлення, перемикання каналів і відкат рушія
+
+Оновіть SDK до останнього релізу:
+
+```bash
+python -m pip install -U ombrabrowser
+npm install @ombralabs/sdk@latest
+```
+
+Протестуйте канал `beta` або зафіксуйте / відкотіть точну збірку рушія:
+
+```python
+# Зафіксувати точну збірку для конкретного запуску
+browser = launch(version="151.0.7922.108-9")
+```
+
+```bash
+# Або налаштувати через змінні середовища / CLI
+export OMBRA_VERSION=151.0.7922.108-9
+export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser install --version 151.0.7922.108-9
+
+# Або вказати шлях до локально зібраного бінарника
+export OMBRA_BINARY_PATH=/path/to/ombra/chromium
+```
+
+### macOS: Gatekeeper блокує локальну збірку
+
+Офіційні релізи Ombra для Apple Silicon macOS підписані сертифікатом Apple Developer ID і нотаризовані. Якщо ви запускаєте локальну непідписану збірку для розробки й macOS поміщає її в карантин, одноразово зніміть атрибут карантину:
+
+```bash
+xattr -cr ~/.ombra/engines/*/Chromium.app
+```
+
+### Очікування на сторінці в синхронному Python
+
+У синхронному Playwright один тривалий виклик `time.sleep(15)` після `page.goto()` зупиняє цикл подій Playwright, через що сторінки перевірки можуть зависати. Натомість очікуйте короткими інтервалами з легким зверненням до контексту:
+
+```python
+import time
+
+for _ in range(15):
+    page.context.cookies()  # підтримує роботу циклу подій Playwright без звернення до DOM сторінки
+    time.sleep(1)
+```
+
+В асинхронному Python використовуйте `await asyncio.sleep(...)`; у Node.js — `await new Promise(r => setTimeout(r, ms))`. Також уникайте частих викликів `page.wait_for_timeout()` і зайвих `page.evaluate()` до проходження перевірок, щоб не створювати додатковий трафік CDP.
+
+## Безпека
+
+- **Автентичність і цілісність рушія.** Перед розпакуванням SDK перевіряє підпис Ed25519 конверта релізу за закріпленим публічним ключем і звіряє дайджест SHA-256 як архіву, так і виконуваного файлу.
+- **Лише локальний CDP.** Порт налагодження прив'язується виключно до `127.0.0.1`. Ніколи не відкривайте порт CDP у публічну мережу без додаткової автентифікації — CDP надає повний контроль над браузером.
+- **Ізоляція секретів.** Облікові дані проксі існують лише в пам'яті локального loopback-ретранслятора й ніколи не потрапляють у командний рядок процесів, метадані профілю, логи чи деталі помилок.
+- **Без телеметрії.** SDK не надсилає аналітики, звітів про збої чи прихованих мережевих пінгів.
+
+Повідомляйте про проблеми безпеки конфіденційно відповідно до [SECURITY.md](../../SECURITY.md).
 
 ## Карта репозиторію
 
 ```text
 .
-├── README.md                  # англійський оригінал
+├── README.md                    # кореневий README (англійською)
 ├── translations/
-│   └── <locale>/README.md
-├── desktop/                   # автономний менеджер профілів
+│   ├── uk/README.md             # цей файл (Українська)
+│   ├── ru/README.md             # переклад російською
+│   └── <locale>/README.md       # 19 інших локалізацій
+├── desktop/                     # Ombra Desktop (Tauri: каталог на Rust + інтерфейс на Vue)
 ├── docs/
-│   ├── desktop/               # документація менеджера профілів
-│   ├── architecture.md        # компоненти, послідовність запуску, межі відповідальності
-│   ├── sdk-contract.md        # контракт запуску v0 і поведінка SDK
-│   ├── stealth-checkup.md     # методика й порядок перевірки стелсу
-│   ├── stealth-checkup.ru.md  # російський переклад
-│   └── versioning.md          # сумісність SDK, рушія й клієнта
+│   ├── architecture.md          # архітектура, межі довіри, життєвий цикл
+│   ├── sdk-contract.md          # контракт запуску v0.1, параметри, помилки, інваріанти
+│   ├── stealth-checkup.md       # методика перевірки (англійською)
+│   ├── stealth-checkup.ru.md    # методика перевірки (російською)
+│   ├── versioning.md            # версіонування SDK, рушія та клієнтів
+│   └── desktop/                 # посібники щодо локальних профілів і ключів Desktop
 ├── spec/
-│   └── schemas/               # JSON Schema для параметрів запуску й метаданих файлу рушія
+│   └── schemas/                 # JSON-схеми параметрів запуску та метаданих бінарника
 ├── sdks/
-│   ├── manifest.json          # машиночитаний реєстр SDK
-│   ├── README.md              # структура й правила долучення
-│   ├── _template/             # шаблон для додавання мови
-│   ├── python/  node/  dotnet/  java/
-│   └── go/  php/  ruby/  rust/
-├── conformance/               # спільні для різних мов тести запуску й стелсу
-├── tools/check_repo.py        # перевірка структури й посилань (CI)
+│   ├── manifest.json            # машинозчитуваний реєстр SDK
+│   ├── README.md                # структура SDK та правила внеску
+│   ├── python/                  # Python SDK (публікується як ombrabrowser)
+│   ├── node/                    # Node.js / TypeScript SDK (публікується як @ombralabs/sdk)
+│   └── ...                      # заготовки контракту для інших мов (Go, Rust, C#, Java, PHP, Ruby)
+├── conformance/                 # кросмовні тести запуску та інваріантів непомітності
+├── tools/check_repo.py          # валідатор структури, схем і посилань (CI)
 └── .github/workflows/ci.yml
 ```
 
-У цьому репозиторії зберігаються заготовки SDK, контракт запуску, тести на відповідність та автономний менеджер профілів. Рушій Chromium і повний випуск Desktop 1.2.1 мають окремі репозиторії. [Вихідний код та інструкції зі збирання Desktop](../../desktop/README.md) · [Документація менеджера профілів](../../docs/desktop/README.md)
+Цей репозиторій містить контракт SDK, схеми, тести сумісності, документацію та вихідний код Ombra Desktop. Патчі рушія Chromium підтримуються в окремому репозиторії, а скомпільовані збірки публікуються через канал завантаження та [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
-## Контракт
+## Часті запитання (FAQ)
 
-- `launch(options)` запускає рушій і повертає об’єкт `Browser` клієнта. Далі клієнт взаємодіє з Chromium безпосередньо через CDP.
-- Перед запуском SDK перевіряє платформу й контрольну суму SHA-256 рушія. Якщо виконуваного файлу немає, а завантаження дозволено, SDK його завантажує.
-- Іменовані профілі зберігають файли cookie, дані сайтів і початкове значення профілю між запусками.
-- Якщо запуск не вдався, SDK завершує створений ним процес і повідомляє про помилку відповідного типу. Рішення про повторну спробу приймає код, який викликав SDK.
-- SDK, рушій і клієнт автоматизації мають окремі діапазони версій. Щоб дізнатися збірку рушія, скористайтеся `binary_info()` у Python або `binaryInfo()` у Node.js.
+### Чи є це форком Playwright?
 
-## Сумісність
+Ні. SDK підключає офіційний клієнт Playwright (або Puppeteer) до Ombra Chromium через локальний CDP. Усі типи, локатори, очікування й об'єкти сторінки залишаються стандартними.
 
-| Компонент | Підтримувані версії або платформи |
-|---|---|
-| Рушій | Збірка, яку вибирає SDK. Її можна дізнатися за допомогою `binary_info()` або `binaryInfo()` |
-| macOS | Apple Silicon та Intel |
-| Windows | x64 |
-| Linux | x64 |
-| Python | 3.10+ із підтримуваною версією Playwright |
-| Node.js | 20+ із підтримуваною версією Playwright або Puppeteer |
+### Чи безкоштовний Ombra і чи потрібен ліцензійний ключ?
 
-SDK і рушій мають незалежні версії. У разі несумісності SDK повідомляє про обидві версії в помилці відповідного типу.
+Вихідний код SDK у цьому репозиторії відкритий за ліцензією Apache License 2.0. Поточні збірки рушія (`151.0.7922.108-9` і новіші) та локальний менеджер профілів Ombra Desktop (`desktop-v1.2.2`) працюють безкоштовно й автономно — без облікового запису, ліцензійного ключа, апаратного ідентифікатора чи обмеження на кількість профілів. `license_key` і `OMBRA_LICENSE_KEY` потрібні лише для застарілих ліцензованих збірок.
 
-## Як долучитися
+### Чи потрібно встановлювати Ombra Desktop для використання SDK?
 
-Процес розгляду змін описано в [посібнику для учасників проєкту](../../CONTRIBUTING.md). Інструкції зі збирання містяться в [посібнику з SDK](../../sdks/README.md).
+Ні. SDK запускає рушій безпосередньо як дочірній процес, що підходить для скриптів, контейнерів і CI. Ombra Desktop є опційним, якщо вам потрібен графічний інтерфейс для керування локальним каталогом профілів.
 
-- Якщо змінюєте поведінку SDK, оновіть відповідну реалізацію та додайте тест або спільний сценарій перевірки відповідності.
-- Щоб додати SDK для іншої мови, скопіюйте [шаблон SDK](../../sdks/_template), зареєструйте новий SDK у [маніфесті](../../sdks/manifest.json) і створіть чернетку pull request.
-- Для нового параметра запуску спочатку оновіть [контракт SDK](../../docs/sdk-contract.md) та [схеми](../../spec/schemas).
-- Зміни до стелсу на рівні рушія вносьте в репозиторій рушія. SDK має й надалі проходити перевірку стелсу.
-- Про проблеми безпеки повідомляйте приватно згідно з [політикою безпеки](../../SECURITY.md).
+### Чим Ombra відрізняється від `playwright-stealth`?
 
-## Поширені запитання
-
-### Чи є Ombra форком Playwright?
-
-Ні. SDK підключає офіційний клієнт Playwright до Ombra Chromium. Ви можете й надалі використовувати типи, допоміжні функції та об’єкти сторінок Playwright.
-
-### Чи потрібен настільний застосунок Ombra?
-
-SDK запускає рушій безпосередньо. Настільний застосунок необов’язковий і дає змогу керувати профілями вручну.
-
-### Чим Ombra відрізняється від playwright-stealth?
-
-Зміни цифрового відбитка Ombra вбудовано в Chromium під час компіляції. SDK залишає скрипти сторінок недоторканими.
+`playwright-stealth` вставляє JavaScript на сторінки поверх звичайного браузера, і сучасні детектори часто виявляють самі патчі. Ombra компілює модифікації у вихідний код Chromium, а SDK не вставляє жодних скриптів у сторінки.
 
 ### Чи можна використовувати власний проксі?
 
-Так. Передайте його у `launch()`. Якщо проксі потребує автентифікації, локальний ретранслятор дає змогу не передавати облікові дані в командному рядку рушія.
+Так. Передайте `http://`, `https://` або `socks5://` проксі в параметр `proxy`. За наявності облікових даних SDK запускає локальний loopback-ретранслятор, щоб вони ніколи не потрапляли в аргументи процесу. Зверніть увагу, що власний клієнт Playwright `context.request` / `page.request` може оминати налаштування проксі рівня браузера — щоб гарантувати проходження трафіку через проксі, викликайте `fetch()` із контексту сторінки.
 
 ### Які версії Playwright і Puppeteer підтримуються?
 
-Кожен SDK вказує підтримувані версії клієнтів у маніфесті свого пакета. Клієнти встановлюються як окремі залежності. Діапазони підтримуваних версій наведено в [посібнику з версій](../../docs/versioning.md).
+Python SDK потребує Playwright `>=1.60,<2.0` (встановлюється автоматично разом з `ombrabrowser`). Node.js SDK підтримує `playwright-core@^1.60.0` або `puppeteer-core >=22.0.0`. Правила сумісності див. у [посібнику з версіонування](../../docs/versioning.md).
 
-### Чи пройде Ombra всі перевірки на ботів?
+### Чи гарантує Ombra проходження будь-якої перевірки на ботів?
 
-Результати залежать від сайту, регіону, репутації вихідної IP-адреси, версії детектора та налаштувань профілю. У [посібнику з перевірки стелсу](../../docs/stealth-checkup.md) описано, як оцінити конкретну конфігурацію.
+Ні. Виявлення ботів постійно змінюється й залежить від сайту, регіону, репутації IP, історії профілю та версії детектора. Використовуйте [методику перевірки непомітності](../../docs/stealth-checkup.md), щоб об'єктивно вимірювати й відстежувати конкретну конфігурацію.
+
+### Для яких сценаріїв створено Ombra?
+
+Ombra створено для авторизованої автоматизації, QA-тестування, моніторингу, досліджень і керування ізольованими робочими профілями. Несанкціонований доступ, підбір облікових даних (credential stuffing) і зловживання не підтримуються.
+
+## Як зробити внесок
+
+Настанови щодо внеску наведено в [CONTRIBUTING.md](../../CONTRIBUTING.md), стандарти спільноти — в [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md), а інструкції щодо SDK — в [sdks/README.md](../../sdks/README.md).
+
+- Оновлюйте [контракт SDK](../../docs/sdk-contract.md) і [схеми](../../spec/schemas) перед додаванням нового параметра запуску.
+- Змінюючи поведінку SDK, оновлюйте реалізацію, тести та спільні кейси в [conformance](../../conformance/README.md).
+- Перед відкриттям pull request запускайте `python3 tools/check_repo.py` для перевірки структури репозиторію та посилань.
 
 ## Ліцензія
 
-Вихідний код SDK у цьому репозиторії поширюється за [ліцензією Apache 2.0](../../LICENSE). Ліцензія не надає прав на рушій Ombra, назву Ombra чи логотип. Відомості про торговельні марки та зазначення авторства третіх сторін наведено у файлі [NOTICE](../../NOTICE).
+Вихідний код SDK у цьому репозиторії ліцензовано на умовах [Apache License 2.0](../../LICENSE). Ліцензія не надає прав на торговельні марки Ombra, рушій Ombra Chromium або Ombra Desktop — умови щодо торговельних марок і сторонніх компонентів див. у [NOTICE](../../NOTICE).
 
----
+## Посилання
 
-[Ombra Labs](https://github.com/ombralabs) · [ombrabrowser.dev](https://ombrabrowser.dev)
+- 🌐 **Вебсайт** — [ombrabrowser.dev](https://ombrabrowser.dev)
+- 📦 **PyPI** — [pypi.org/project/ombrabrowser](https://pypi.org/project/ombrabrowser/)
+- 📦 **npm** — [npmjs.com/package/@ombralabs/sdk](https://www.npmjs.com/package/@ombralabs/sdk)
+- 🚀 **Релізи (рушій і Desktop)** — [GitHub Releases](https://github.com/ombralabs/ombra/releases)
+- 📋 **Історія змін** — [CHANGELOG.md](../../CHANGELOG.md)
+- 🐛 **Помилки та запити функцій** — [GitHub Issues](https://github.com/ombralabs/ombra/issues)
+- 🏢 **Організація** — [Ombra Labs](https://github.com/ombralabs)
