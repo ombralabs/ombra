@@ -1,7 +1,7 @@
 {
   "name": "@ombralabs/sdk",
   "version": "0.1.0",
-  "description": "Node.js / TypeScript SDK for Ombra stealth Chromium — drop-in Playwright and Puppeteer launcher over CDP.",
+  "description": "Node.js / TypeScript SDK for Ombra stealth Chromium \u2014 drop-in Playwright and Puppeteer launcher over CDP.",
   "license": "Apache-2.0",
   "type": "module",
   "engines": {
@@ -40,16 +40,6 @@
         "types": "./dist/cjs/cdp.d.ts",
         "default": "./dist/cjs/cdp.js"
       }
-    },
-    "./captcha": {
-      "import": {
-        "types": "./dist/esm/captcha.d.ts",
-        "default": "./dist/esm/captcha.js"
-      },
-      "require": {
-        "types": "./dist/cjs/captcha.d.ts",
-        "default": "./dist/cjs/captcha.js"
-      }
     }
   },
   "bin": {
@@ -71,8 +61,7 @@
     "cdp",
     "automation",
     "fingerprint",
-    "antidetect",
-    "captcha"
+    "antidetect"
   ],
   "repository": {
     "type": "git",

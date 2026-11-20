@@ -2,15 +2,41 @@
 
 from __future__ import annotations
 
-import json
+import asyncio
 import logging
 from pathlib import Path
 
 import pytest
 
+from ombrabrowser import build_launch_options
 from ombrabrowser.errors import InvalidOptionError, OmbraError, redact_secrets
 from ombrabrowser.options import build_engine_args, validate_launch_options
 from ombrabrowser.proxy import parse_proxy
+from conftest import make_fake_engine
+
+
+@pytest.mark.parametrize("captcha", [True, False, {}, {"solve": False}, None])
+def test_rejects_removed_captcha_launch_option(tmp_path: Path, captcha):
+    engine = make_fake_engine(tmp_path / "engine")
+    with pytest.raises(InvalidOptionError, match="Unknown launch option.*captcha"):
+        build_launch_options(binary_path=engine, captcha=captcha)
+
+
+@pytest.mark.parametrize("captcha", [False, None])
+@pytest.mark.parametrize("asynchronous", [False, True])
+def test_context_rejects_removed_captcha_before_launch(monkeypatch, captcha, asynchronous):
+    from ombrabrowser import launcher
+
+    def unexpected_launch(**kwargs):
+        pytest.fail("Context validation must run before launching the engine")
+
+    monkeypatch.setattr(launcher, "launch", unexpected_launch)
+    monkeypatch.setattr(launcher, "launch_async", unexpected_launch)
+    with pytest.raises(InvalidOptionError, match="captcha"):
+        if asynchronous:
+            asyncio.run(launcher.launch_context_async(captcha=captcha))
+        else:
+            launcher.launch_context(captcha=captcha)
 
 
 def test_rejects_unknown_top_level_options():
@@ -31,8 +57,6 @@ def test_rejects_unknown_nested_keys():
         validate_launch_options(fingerprint={"seed": 1, "canvas_hack": True})
     with pytest.raises(InvalidOptionError):
         validate_launch_options(humanize={"preset": "default", "speed": 99})
-    with pytest.raises(InvalidOptionError):
-        validate_launch_options(captcha={"unknown": 1})
 
 
 def test_validates_fingerprint_ranges_and_enums():
@@ -52,49 +76,11 @@ def test_validates_fingerprint_ranges_and_enums():
         validate_launch_options(fingerprint={"noise": "yes"})
 
 
-def test_validates_humanize_and_captcha_options():
+def test_validates_humanize_options():
     with pytest.raises(InvalidOptionError):
         validate_launch_options(humanize={"preset": "turbo"})
-    with pytest.raises(InvalidOptionError):
-        validate_launch_options(captcha={"time_budget_ms": 500})
-    with pytest.raises(InvalidOptionError):
-        validate_launch_options(captcha={"max_attempts": 11})
-    with pytest.raises(InvalidOptionError):
-        validate_launch_options(captcha={"types": ["unknown-task-type-xyz"]})
-    with pytest.raises(InvalidOptionError):
-        validate_launch_options(captcha={"types": ["image-grid-٣"]})
-
-    opts = validate_launch_options(
-        humanize={"preset": "careful"},
-        captcha={
-            "solve": False,
-            "types": ["checkbox", "image-grid-9"],
-            "time_budget_ms": 45000,
-            "max_attempts": 5,
-            "allow_llm": True,
-            "manual_mode": True,
-            "manual_resume_ms": 2000,
-        },
-    )
+    opts = validate_launch_options(humanize={"preset": "careful"})
     assert opts.humanize == {"preset": "careful"}
-    assert opts.captcha == {
-        "solve": False,
-        "types": ["checkbox", "image-grid-9"],
-        "time_budget_ms": 45000,
-        "max_attempts": 5,
-        "allow_llm": True,
-        "manual_mode": True,
-        "manual_resume_ms": 2000,
-    }
-
-    detect_only_args = build_engine_args(
-        options=validate_launch_options(captcha={"solve": False}),
-        profile_dir=Path("/tmp/p"),
-        seed=1,
-        proxy_args=[],
-    )
-    assert "--fingerprint-captcha=on" in detect_only_args
-    assert '--fingerprint-captcha-policy={"enabled":false}' in detect_only_args
 
 
 def test_timeout_precedence_and_bounds(monkeypatch: pytest.MonkeyPatch):
@@ -126,7 +112,6 @@ def test_build_engine_args_maps_all_contract_options(tmp_path: Path):
             "noise": False,
         },
         humanize={"preset": "fast"},
-        captcha={"types": ["checkbox"], "time_budget_ms": 30000, "max_attempts": 2},
         args=["--mute-audio"],
     )
     args = build_engine_args(
@@ -164,10 +149,7 @@ def test_build_engine_args_maps_all_contract_options(tmp_path: Path):
     assert "--fingerprint-humanize=on" in args
     assert "--fingerprint-humanize-seed=20261116" in args
     assert "--fingerprint-humanize-preset=fast" in args
-    assert "--fingerprint-captcha=on" in args
-    policy_arg = next(a for a in args if a.startswith("--fingerprint-captcha-policy="))
-    policy = json.loads(policy_arg.split("=", 1)[1])
-    assert policy == {"enabled": True, "types": ["checkbox"], "timeBudgetMs": 30000, "maxAttempts": 2}
+    assert not any(arg.startswith("--fingerprint-captcha") for arg in args)
     assert args[-1] == "--mute-audio"
 
 

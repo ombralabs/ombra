@@ -16,7 +16,7 @@ export {
   checkEngineHealth,
 } from "./launch.js";
 export { binaryInfo, ensureBinary, clearCache } from "./binary.js";
-export { ombraCdp, CAPTCHA_EVENTS, OmbraCDP, CaptchaEventRecorder } from "./cdp.js";
+export { ombraCdp, OmbraCDP } from "./cdp.js";
 export * from "./errors.js";
 export type {
   PuppeteerLaunchOptions as LaunchOptions,
@@ -24,9 +24,5 @@ export type {
   PuppeteerBrowserLike,
   BinaryInfo,
   LaunchInfo,
-  CaptchaEvent,
-  CaptchaEventName,
-  CaptchaInfo,
-  CaptchaState,
   HumanizeState,
 } from "./types.js";

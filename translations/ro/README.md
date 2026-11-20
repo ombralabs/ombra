@@ -186,7 +186,6 @@ Opțiunile urmează convențiile de denumire din API-ul Python și din contractu
 | `args` | `[]` | Flag-uri suplimentare pentru motor, transmise fără modificări |
 | `timeout_ms` | `30000` | Timpul alocat lansării și stabilirii conexiunii CDP, în milisecunde |
 | `humanize` | implicit în motor | `false`, `true` sau un preset |
-| `captcha` | `false` | Activează modulul din motor, cu limite opționale |
 | `binary_path` | determinat | Folosește un binar specific al motorului |
 | `download` | `true` | Descarcă binarul motorului dacă lipsește |
 
@@ -350,10 +349,6 @@ SDK-ul pornește motorul direct. Aplicația desktop este opțională și vă per
 ### Prin ce se deosebește Ombra de playwright-stealth?
 
 Modificările pe care Ombra le aduce amprentei browserului sunt integrate în Chromium la compilare. SDK-ul nu modifică scripturile paginilor.
-
-### Poate Ombra să rezolve CAPTCHA-uri?
-
-Motorul include un modul CAPTCHA opțional. Tipurile de sarcini acceptate depind de versiunea motorului și de modelele disponibile. SDK-ul transmite setările pentru fiecare lansare și oferă acces la comenzile CDP ale modulului.
 
 ### Pot folosi propriul proxy?
 

@@ -186,7 +186,6 @@ Option names below follow the Python API and the SDK contract. The Node.js equiv
 | `args` | `[]` | Extra engine flags, passed through unchanged |
 | `timeout_ms` | `30000` | Time allowed for launch and CDP connection, in milliseconds |
 | `humanize` | engine default | `false`, `true`, or a preset |
-| `captcha` | `false` | Enable the engine module with optional limits |
 | `binary_path` | resolved | Use a specific engine binary |
 | `download` | `true` | Download a missing engine binary |
 
@@ -350,10 +349,6 @@ The SDK launches the engine directly. The desktop app is optional and lets you m
 ### How does Ombra differ from playwright-stealth?
 
 Ombra’s fingerprint changes are compiled into Chromium. The SDK leaves page scripts alone.
-
-### Does Ombra solve CAPTCHAs?
-
-The engine has an optional CAPTCHA module. Support depends on the task type, engine build, and available models. The SDK passes the per-launch settings and exposes the module’s CDP controls.
 
 ### Can I use my own proxy?
 

@@ -80,7 +80,6 @@ const browser = await launch({
     screen: { width: 1440, height: 900 },
   },
   humanize: { preset: "careful" },
-  captcha: true,
 });
 ```
 
@@ -99,43 +98,23 @@ await page.goto("https://example.com");
 await browser.close();
 ```
 
-## Custom `Ombra` CDP domain & CAPTCHA events
+## Browser-level CDP controls
 
-Ombra Chromium exposes a browser-level `Ombra` CDP domain (`Ombra.pdl`) that streams 9 real-time CAPTCHA lifecycle events (`captchaDetected`, `captchaStateChanged`, `captchaInvisible`, `captchaBlocked`, `captchaHardMode`, `captchaGone`, `captchaSolving`, `captchaSolved`, `captchaFailed`) without calling any `enable` command:
+Use `ombraCdp()` with a Playwright Browser, BrowserContext, or Puppeteer Browser to control humanized input and run native agent tasks:
 
 ```ts
 import { launch, ombraCdp } from "@ombralabs/sdk";
 
-const browser = await launch({
-  captcha: {
-    solve: false, // detect & emit events without automatic solving
-    allowLLM: false,
-    manualMode: true,
-    manualResumeMs: 2000,
-  },
-});
-
-const cdp = await ombraCdp(browser); // works with Playwright Browser, BrowserContext, and Puppeteer Browser
-const recorder = cdp.recordCaptchaEvents();
-
-const page = await browser.newPage();
-await page.goto("https://example.com");
-
-// Wait for a specific CAPTCHA event or inspect live state
-const state = await cdp.getCaptchaState();
-console.log(state.signaturesVersion, state.captchas);
-
-// Trigger manual solve or update policy/humanize live
-await cdp.setCaptchaPolicy({ solve: true, maxAttempts: 3 });
-await cdp.solveCaptcha();
+const browser = await launch();
+const cdp = await ombraCdp(browser);
 await cdp.setHumanize({ enabled: true, preset: "careful" });
+console.log(await cdp.getHumanizeState());
 
-recorder.stop();
 await cdp.detach();
 await browser.close();
 ```
 
-Subpath entrypoints `@ombralabs/sdk/cdp` and `@ombralabs/sdk/captcha` export the same helpers (`ombraCdp`, `OmbraCDP`, `CaptchaEventRecorder`, `CAPTCHA_EVENTS`).
+The `@ombralabs/sdk/cdp` entrypoint exports `ombraCdp` and `OmbraCDP`.
 
 ## Binary management & health checks
 
@@ -180,7 +159,6 @@ sdks/node/
 │   ├── index.ts         # primary Playwright + shared exports
 │   ├── puppeteer.ts     # @ombralabs/sdk/puppeteer subpath
 │   ├── cdp.ts           # browser-level Ombra CDP domain client
-│   ├── captcha.ts       # @ombralabs/sdk/captcha subpath
 │   ├── launch.ts        # engine lifecycle, readiness probe, CDP attach
 │   ├── options.ts       # schema validation & CLI switch builder
 │   ├── binary.ts        # Ed25519 + SHA-256 verification & downloader
@@ -199,7 +177,7 @@ sdks/node/
     ├── binary.test.ts
     ├── proxy.test.ts
     ├── stealth.test.ts
-    ├── cdp-captcha.test.ts
+    ├── cdp.test.ts
     └── launch.test.ts
 ```
 

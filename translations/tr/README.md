@@ -186,7 +186,6 @@ Tablodaki seçenek adları Python API'sinde ve SDK sözleşmesinde kullanılan a
 | `args` | `[]` | Motora olduğu gibi aktarılan ek komut satırı seçenekleri |
 | `timeout_ms` | `30000` | Başlatma ve CDP bağlantısı için milisaniye cinsinden süre sınırı |
 | `humanize` | motorun varsayılanı | `false`, `true` veya hazır ayar |
-| `captcha` | `false` | Motorun ilgili modülünü etkinleştirir. İsteğe bağlı sınırlar tanımlanabilir |
 | `binary_path` | otomatik belirlenir | Motor için belirli bir çalıştırılabilir dosya seçer |
 | `download` | `true` | Motor dosyası eksikse indirir |
 
@@ -350,10 +349,6 @@ SDK motoru doğrudan başlatır. Masaüstü uygulaması isteğe bağlıdır ve p
 ### Ombra ile playwright-stealth arasındaki fark nedir?
 
 Ombra'nın parmak izi değişiklikleri Chromium'un içine derlenir. SDK sayfa betiklerine dokunmaz.
-
-### Ombra CAPTCHA çözebilir mi?
-
-Motorda isteğe bağlı bir CAPTCHA modülü bulunur. Destek, görevin türüne, motor derlemesine ve kullanılabilen modellere bağlıdır. SDK her başlatma için belirtilen ayarları iletir ve modülün CDP kontrollerine erişim sağlar.
 
 ### Kendi proxy'mi kullanabilir miyim?
 

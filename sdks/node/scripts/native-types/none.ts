@@ -1,7 +1,6 @@
 import { launch, type LaunchOptions, type PlaywrightBrowserLike } from '@ombralabs/sdk';
 import { launch as launchPuppeteer, type PuppeteerBrowserLike } from '@ombralabs/sdk/puppeteer';
 import { ombraCdp } from '@ombralabs/sdk/cdp';
-import { CaptchaEventRecorder } from '@ombralabs/sdk/captcha';
 const options: LaunchOptions = { headless: true };
 const custom: Promise<{ custom: true }> = launch<{ custom: true }>(options);
 const legacy: Promise<PlaywrightBrowserLike> = launch<PlaywrightBrowserLike>(options);

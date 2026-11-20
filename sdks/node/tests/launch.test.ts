@@ -657,12 +657,10 @@ describe("engine lifecycle, Playwright & Puppeteer launchers, CLI, and dual ESM/
     const cjsMain = req("../dist/cjs/index.js");
     const cjsPup = req("../dist/cjs/puppeteer.js");
     const cjsCdp = req("../dist/cjs/cdp.js");
-    const cjsCap = req("../dist/cjs/captcha.js");
 
     assert.equal(cjsMain.SDK_VERSION, SDK_VERSION);
     assert.equal(typeof cjsMain.launch, "function");
     assert.equal(typeof cjsPup.launch, "function");
-    assert.equal(cjsCdp.CAPTCHA_EVENTS.length, 9);
-    assert.equal(cjsCap.ombraCdp, cjsCdp.ombraCdp);
+    assert.equal(cjsCdp.ombraCdp, cjsMain.ombraCdp);
   });
 });

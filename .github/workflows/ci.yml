@@ -97,7 +97,7 @@ jobs:
 
       - name: Windows CDP and optional-loader unit tests (no fake executable launches)
         if: runner.os == 'Windows'
-        run: npm test -- cdp-captcha automation-loader
+        run: npm test -- cdp automation-loader
 
       - name: Verify clean tarball imports, executable CLI and native locks
         run: npm run test:package

@@ -186,7 +186,6 @@ De optienamen volgen de Python-API en het SDK-contract. In Node.js schrijf je ze
 | `args` | `[]` | Extra engine-flags, ongewijzigd doorgegeven |
 | `timeout_ms` | `30000` | Tijd in milliseconden om te starten en de CDP-verbinding op te zetten |
 | `humanize` | standaard van de engine | `false`, `true` of een preset |
-| `captcha` | `false` | De enginemodule met optionele limieten inschakelen |
 | `binary_path` | automatisch bepaald | Een specifieke engine-binary gebruiken |
 | `download` | `true` | Een ontbrekende engine-binary downloaden |
 
@@ -350,10 +349,6 @@ De SDK start de engine rechtstreeks. Met de optionele desktopapp kun je profiele
 ### Waarin verschilt Ombra van playwright-stealth?
 
 De fingerprintaanpassingen van Ombra worden in Chromium meegecompileerd. De SDK laat de scripts van de pagina met rust.
-
-### Lost Ombra CAPTCHA’s op?
-
-De engine heeft een optionele CAPTCHA-module. De ondersteuning hangt af van het soort taak, de engine-build en de beschikbare modellen. De SDK geeft de instellingen per start door en stelt de CDP-commando’s van de module beschikbaar.
 
 ### Kan ik mijn eigen proxy gebruiken?
 

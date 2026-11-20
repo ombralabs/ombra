@@ -2,7 +2,7 @@
  * @ombralabs/sdk — Official Node.js / TypeScript SDK for Ombra stealth Chromium.
  *
  * Launches Ombra's C++-patched Chromium with a seed-coherent fingerprint, optional
- * authenticated proxy relay, humanized input, and custom `Ombra` CAPTCHA CDP domain,
+ * authenticated proxy relay and humanized input,
  * returning native Playwright (`Browser` / `BrowserContext`) or Puppeteer (`Browser`) objects.
  */
 
@@ -38,12 +38,7 @@ export {
 
 export {
   ombraCdp,
-  CAPTCHA_EVENTS,
   OmbraCDP,
-  CaptchaEventRecorder,
-  type CaptchaEventFilter,
-  type WaitForCaptchaOptions,
-  type SolveCaptchaOptions,
   type SetHumanizeOptions,
   type AgentRunTaskOptions,
 } from "./cdp.js";
@@ -81,7 +76,6 @@ export type {
   PlaywrightProxyObject,
   ProxyInput,
   HumanizeOptions,
-  CaptchaOptions,
   LaunchOptions,
   LaunchContextOptions,
   LaunchPersistentContextOptions,
@@ -97,13 +91,6 @@ export type {
   PlaywrightBrowserLike,
   PuppeteerBrowser,
   PuppeteerBrowserLike,
-  CaptchaEventName,
-  CaptchaBBox,
-  CaptchaPoint,
-  CaptchaInfo,
-  CaptchaWirePolicy,
-  CaptchaState,
-  CaptchaEvent,
   HumanizeState,
   AgentRunResult,
 } from "./types.js";

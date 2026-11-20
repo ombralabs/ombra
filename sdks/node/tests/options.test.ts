@@ -8,13 +8,20 @@ import {
 } from "../dist/esm/index.js";
 import {
   buildEngineArgs,
-  isValidCaptchaTask,
-  normalizeCaptchaPolicyPatch,
   validateLaunchOptions,
 } from "../dist/esm/options.js";
 import { makeFakeEngine, withIsolatedEnv } from "./helpers.js";
 
 describe("launch options validation & CLI flag mapping", () => {
+  it("rejects the removed captcha launch option", () => {
+    for (const captcha of [true, false, {}, { solve: false }, null]) {
+      assert.throws(
+        () => validateLaunchOptions({ captcha } as any),
+        (err: any) => err instanceof InvalidOptionError && /Unknown launch option.*captcha/.test(err.message),
+      );
+    }
+  });
+
   it("validates engine pins and forwards them through buildLaunchOptions", async () => {
     await withIsolatedEnv(async ({ tmpRoot }) => {
       assert.equal(validateLaunchOptions({ version: " 151.0.7922.108-7 " }).version, "151.0.7922.108-7");
@@ -43,10 +50,6 @@ describe("launch options validation & CLI flag mapping", () => {
       InvalidOptionError,
     );
     assert.throws(
-      () => validateLaunchOptions({ captcha: { unknownPolicy: true } as any }),
-      InvalidOptionError,
-    );
-    assert.throws(
       () => validateLaunchOptions({ proxy: { host: "1.2.3.4", port: 80, type: "http", extra: 1 } as any }),
       InvalidOptionError,
     );
@@ -59,13 +62,6 @@ describe("launch options validation & CLI flag mapping", () => {
     );
     assert.throws(
       () => validateLaunchOptions({ timeoutMs: 5_000, timeout_ms: 5_000 }),
-      InvalidOptionError,
-    );
-    assert.throws(
-      () =>
-        validateLaunchOptions({
-          captcha: { allowLLM: true, allow_llm: false },
-        }),
       InvalidOptionError,
     );
   });
@@ -93,36 +89,7 @@ describe("launch options validation & CLI flag mapping", () => {
     );
   });
 
-  it("validates extended captcha policy and ASCII-only image-grid-N task types", () => {
-    assert.equal(isValidCaptchaTask("checkbox"), true);
-    assert.equal(isValidCaptchaTask("image-grid-9"), true);
-    assert.equal(isValidCaptchaTask("image-grid-0"), false);
-    assert.equal(isValidCaptchaTask("image-grid-٣"), false); // Arabic-Indic digit rejected
-
-    const wire = normalizeCaptchaPolicyPatch({
-      solve: false,
-      types: ["checkbox", "managed", "image-grid-9"],
-      time_budget_ms: 45_000,
-      maxAttempts: 4,
-      allow_llm: false,
-      manualMode: true,
-      manual_resume_ms: 2_500,
-    });
-    assert.deepEqual(wire, {
-      enabled: false,
-      types: ["checkbox", "managed", "image-grid-9"],
-      timeBudgetMs: 45_000,
-      maxAttempts: 4,
-      allowLLM: false,
-      manualMode: true,
-      manualResumeMs: 2_500,
-    });
-
-    const nullTypes = normalizeCaptchaPolicyPatch({ types: null });
-    assert.deepEqual(nullTypes, { types: null });
-  });
-
-  it("builds coherent engine CLI switches including brand, window-size, humanize, and captcha", async () => {
+  it("builds coherent engine CLI switches including brand, window-size, and humanize", async () => {
     await withIsolatedEnv(async ({ tmpRoot }) => {
       const bin = makeFakeEngine(tmpRoot, { version: "151.0.7922.108" });
       const built = await buildLaunchOptions({
@@ -142,12 +109,6 @@ describe("launch options validation & CLI flag mapping", () => {
           noise: false,
         },
         humanize: { preset: "careful" },
-        captcha: {
-          solve: false,
-          allowLLM: false,
-          manualMode: true,
-          manualResumeMs: 1_500,
-        },
       });
 
       assert.equal(built.binaryPath, bin);
@@ -166,16 +127,8 @@ describe("launch options validation & CLI flag mapping", () => {
       assert.ok(built.args.includes("--fingerprint-humanize=on"));
       assert.ok(built.args.includes("--fingerprint-humanize-seed=424242"));
       assert.ok(built.args.includes("--fingerprint-humanize-preset=careful"));
-      assert.ok(built.args.includes("--fingerprint-captcha=on"));
+      assert.ok(!built.args.some((arg) => arg.startsWith("--fingerprint-captcha")));
       assert.ok(!built.args.includes("--headless=new"));
-
-      const policySwitch = built.args.find((a) => a.startsWith("--fingerprint-captcha-policy="));
-      assert.ok(policySwitch);
-      const parsedPolicy = JSON.parse(policySwitch.slice("--fingerprint-captcha-policy=".length));
-      assert.equal(parsedPolicy.enabled, false);
-      assert.equal(parsedPolicy.allowLLM, false);
-      assert.equal(parsedPolicy.manualMode, true);
-      assert.equal(parsedPolicy.manualResumeMs, 1_500);
     });
   });
 

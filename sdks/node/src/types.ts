@@ -79,22 +79,6 @@ export interface HumanizeOptions {
   preset?: HumanizePreset;
 }
 
-export interface CaptchaOptions {
-  /** When false, enables detection and Ombra.* CDP events without automatic solving. */
-  solve?: boolean;
-  types?: string[] | null;
-  timeBudgetMs?: number;
-  time_budget_ms?: number;
-  maxAttempts?: number;
-  max_attempts?: number;
-  allowLLM?: boolean;
-  allow_llm?: boolean;
-  manualMode?: boolean;
-  manual_mode?: boolean;
-  manualResumeMs?: number;
-  manual_resume_ms?: number;
-}
-
 export interface LaunchOptions {
   headless?: boolean;
   proxy?: ProxyInput;
@@ -109,7 +93,6 @@ export interface LaunchOptions {
   timeoutMs?: number;
   timeout_ms?: number;
   humanize?: boolean | HumanizeOptions;
-  captcha?: boolean | CaptchaOptions;
   licenseKey?: string;
   license_key?: string;
   env?: Record<string, string>;
@@ -220,86 +203,8 @@ export interface PuppeteerBrowserLike {
 }
 
 // ---------------------------------------------------------------------------
-// Custom Ombra CDP domain types (patches 135, 200, 970)
+// Custom Ombra CDP domain types (patches 135 and 200)
 // ---------------------------------------------------------------------------
-
-export type CaptchaEventName =
-  | "captchaDetected"
-  | "captchaStateChanged"
-  | "captchaInvisible"
-  | "captchaBlocked"
-  | "captchaHardMode"
-  | "captchaGone"
-  | "captchaSolving"
-  | "captchaSolved"
-  | "captchaFailed";
-
-export interface CaptchaBBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-export interface CaptchaPoint {
-  x: number;
-  y: number;
-}
-
-export interface CaptchaInfo {
-  targetId: string;
-  frameId: string;
-  pageUrl: string;
-  id: number;
-  vendor: string;
-  variant: string;
-  taskType: string;
-  state: string;
-  bbox?: CaptchaBBox;
-  click?: CaptchaPoint;
-  ready: boolean;
-  rounds: number;
-  rejections: number;
-  suspectedHardMode: boolean;
-  taskServed: boolean;
-}
-
-export interface CaptchaWirePolicy {
-  enabled: boolean;
-  types: string[] | null;
-  timeBudgetMs: number;
-  maxAttempts: number;
-  allowLLM: boolean;
-  manualMode: boolean;
-  manualResumeMs: number;
-}
-
-export interface CaptchaState {
-  policy: CaptchaWirePolicy;
-  captchas: CaptchaInfo[];
-  signaturesVersion: string;
-}
-
-export interface CaptchaEvent {
-  event: CaptchaEventName;
-  cdpEvent: `Ombra.${CaptchaEventName}`;
-  timestamp: number;
-  captcha?: CaptchaInfo;
-  previousState?: string;
-  targetId?: string;
-  frameId?: string;
-  pageUrl?: string;
-  vendor?: string;
-  reason?: string;
-  diagnosis?: Record<string, unknown>;
-  strategy?: string;
-  strategies?: string[];
-  attempt?: number;
-  attempts?: number;
-  rounds?: number;
-  durationMs?: number;
-  [key: string]: unknown;
-}
 
 export interface HumanizeState {
   enabled: boolean;

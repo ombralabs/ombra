@@ -122,24 +122,16 @@ print(last_launch_info(persistent_ctx))
 persistent_ctx.close()
 ```
 
-Custom `Ombra` CDP domain (9 CAPTCHA events, live policy control, humanize, and native agent):
+Browser-level CDP controls for humanized input and native agent tasks:
 
 ```python
 from ombrabrowser import launch, ombra_cdp
 
-browser = launch(captcha={"solve": False})  # detect-only mode (or captcha=True to auto-solve)
-page = browser.new_page()
-
-# Attaches to a browser-level CDP session (works with Browser or BrowserContext):
+browser = launch()
+# Works with Browser or BrowserContext:
 with ombra_cdp(browser) as cdp:
-    with cdp.record_captcha_events() as rec:
-        page.goto("https://example.com")
-        # Pumps Playwright's sync loop while waiting for Ombra.captcha* events:
-        event = rec.wait_for(("captchaDetected", "captchaSolved"), timeout_ms=10_000, page=page)
-        print(event["event"], event.get("captcha"))
-
-    print(cdp.get_captcha_state())
-    cdp.set_captcha_policy(solve=True, max_attempts=3, time_budget_ms=30_000)
+    print(cdp.get_humanize_state())
+    cdp.set_humanize(enabled=True, preset="careful")
 
 browser.close()
 ```
@@ -179,7 +171,6 @@ sdks/python/
 │   ├── __main__.py       # `python -m ombrabrowser` / `ombrabrowser` CLI
 │   ├── _version.py       # SDK version, contract range, engine compatibility
 │   ├── binary.py         # Resolution order, Ed25519 + SHA-256 verification, cache
-│   ├── captcha.py        # Re-exports for custom CAPTCHA CDP events and commands
 │   ├── cdp.py            # Browser-level Ombra CDP domain client (sync & async)
 │   ├── config.py         # Env vars, platform detection, signing pubkeys, license resolution
 │   ├── errors.py         # Typed OmbraError hierarchy + secret redaction
@@ -192,7 +183,7 @@ sdks/python/
 └── tests/
     ├── conftest.py
     ├── test_binary.py
-    ├── test_cdp_captcha.py
+    ├── test_cdp.py
     ├── test_engine_versions.py
     ├── test_cli.py
     ├── test_launch.py

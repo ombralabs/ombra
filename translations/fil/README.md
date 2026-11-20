@@ -186,7 +186,6 @@ Ginagamit dito ang mga pangalan ng opsyon sa Python at sa kontrata ng SDK. Sa No
 | `args` | `[]` | Karagdagang flag ng engine, ipinapasa nang walang pagbabago |
 | `timeout_ms` | `30000` | Oras sa millisecond para mailunsad ang engine at maikonekta ang CDP |
 | `humanize` | default ng engine | `false`, `true`, o isang preset |
-| `captcha` | `false` | I-enable ang module ng engine na may opsyonal na limit |
 | `binary_path` | niresolba | Gumamit ng partikular na binary ng engine |
 | `download` | `true` | I-download ang nawawalang binary ng engine |
 
@@ -350,10 +349,6 @@ Direktang inilulunsad ng SDK ang engine. Opsyonal ang desktop app at magagamit i
 ### Ano ang kaibahan nito sa playwright-stealth?
 
 Ang mga pagbabago ng Ombra sa fingerprint ay naka-compile sa Chromium. Hindi nagdaragdag ang SDK ng stealth script sa antas ng page.
-
-### Nalulutas ba nito ang mga CAPTCHA?
-
-May opsyonal na module para sa CAPTCHA ang engine. Nakadepende ang suporta sa uri ng gawain, engine build, at mga modelong magagamit. Ipinapasa ng SDK ang mga setting sa bawat paglulunsad at nagbibigay ng access sa mga kontrol ng module sa pamamagitan ng CDP.
 
 ### Maaari ba akong gumamit ng sarili kong proxy?
 

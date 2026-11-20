@@ -8,7 +8,6 @@ import { expandTilde, getTimeoutMs, isLoopbackHost, logger, normalizeRequestedVe
 import { InvalidOptionError } from "./errors.js";
 import { parseProxy, type NormalizedProxy } from "./proxy.js";
 import type {
-  CaptchaOptions,
   FingerprintOptions,
   HumanizePreset,
   LaunchOptions,
@@ -29,7 +28,6 @@ const ALLOWED_TOP_KEYS = new Set([
   "timeoutMs",
   "timeout_ms",
   "humanize",
-  "captcha",
   "licenseKey",
   "license_key",
   "env",
@@ -54,44 +52,6 @@ const ALLOWED_FINGERPRINT_KEYS = new Set([
 ]);
 const ALLOWED_HUMANIZE_KEYS = new Set(["preset"]);
 const ALLOWED_HUMANIZE_PRESETS = new Set<HumanizePreset>(["default", "careful", "fast"]);
-const ALLOWED_CAPTCHA_KEYS = new Set([
-  "solve",
-  "types",
-  "timeBudgetMs",
-  "time_budget_ms",
-  "maxAttempts",
-  "max_attempts",
-  "allowLLM",
-  "allow_llm",
-  "manualMode",
-  "manual_mode",
-  "manualResumeMs",
-  "manual_resume_ms",
-]);
-const ALLOWED_CDP_POLICY_KEYS = new Set([...ALLOWED_CAPTCHA_KEYS, "enabled"]);
-
-const CAPTCHA_TASK_TYPES = new Set([
-  "checkbox",
-  "image-grid-3x3",
-  "image-grid-4x4",
-  "image-grid-4x2",
-  "image-dynamic-3x3",
-  "image-area",
-  "audio",
-  "text",
-  "slider",
-  "press-hold",
-  "managed",
-  "unknown",
-  "icon-click",
-  "text-click",
-  "text-order",
-  "icon-grid-3x3",
-  "icon-swap",
-  "icon-gobang",
-  "spatial",
-]);
-
 const WARN_USER_ARGS = new Set(["--no-sandbox", "--disable-setuid-sandbox"]);
 
 export interface ValidatedFingerprint {
@@ -118,7 +78,6 @@ export interface ValidatedLaunchOptions {
   version?: string;
   timeoutMs: number;
   humanize?: boolean | { preset: HumanizePreset };
-  captcha?: boolean | Record<string, unknown>;
   licenseKey?: string;
   env: Record<string, string>;
   download: boolean;
@@ -172,82 +131,6 @@ function pickDualField<T>(
     );
   }
   return (hasCamel ? raw[camel] : raw[snake]) as T | undefined;
-}
-
-export function isValidCaptchaTask(task: string): boolean {
-  if (CAPTCHA_TASK_TYPES.has(task)) return true;
-  if (task.startsWith("image-grid-")) {
-    const suffix = task.slice("image-grid-".length);
-    return /^[1-9]\d*$/.test(suffix);
-  }
-  return false;
-}
-
-function validateCaptchaTypes(types: unknown, fieldName = "captcha.types"): string[] | null {
-  if (types === null) return null;
-  if (!Array.isArray(types) || !types.every((item) => typeof item === "string")) {
-    throw new InvalidOptionError(`${fieldName} must be an array of strings or null.`);
-  }
-  if (types.length > 32) {
-    throw new InvalidOptionError(`${fieldName} supports at most 32 entries.`);
-  }
-  for (const item of types) {
-    if (!isValidCaptchaTask(item)) {
-      throw new InvalidOptionError(`Unknown captcha task type '${item}'.`);
-    }
-  }
-  return [...types];
-}
-
-export function normalizeCaptchaPolicyPatch(raw: Record<string, unknown>): Record<string, unknown> {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    throw new InvalidOptionError(`captcha policy must be an object, got ${typeof raw}.`);
-  }
-  rejectUnknownKeys(raw, ALLOWED_CDP_POLICY_KEYS, "captcha policy");
-  if ("solve" in raw && "enabled" in raw) {
-    throw new InvalidOptionError("Specify either 'solve' or 'enabled' in captcha policy, not both.");
-  }
-
-  const out: Record<string, unknown> = {};
-  if (raw.solve !== undefined) {
-    out.enabled = requireBool(raw.solve, "captcha.solve");
-  } else if (raw.enabled !== undefined) {
-    out.enabled = requireBool(raw.enabled, "captcha.enabled");
-  }
-
-  if ("types" in raw && raw.types !== undefined) {
-    out.types = validateCaptchaTypes(raw.types, "captcha.types");
-  }
-
-  const budget = pickDualField(raw, "timeBudgetMs", "time_budget_ms", "captcha");
-  if (budget !== undefined) {
-    out.timeBudgetMs = requireInt(budget, "captcha.timeBudgetMs", { min: 1_000, max: 600_000 });
-  }
-
-  const attempts = pickDualField(raw, "maxAttempts", "max_attempts", "captcha");
-  if (attempts !== undefined) {
-    out.maxAttempts = requireInt(attempts, "captcha.maxAttempts", { min: 1, max: 10 });
-  }
-
-  const allowLLM = pickDualField(raw, "allowLLM", "allow_llm", "captcha");
-  if (allowLLM !== undefined) {
-    out.allowLLM = requireBool(allowLLM, "captcha.allowLLM");
-  }
-
-  const manualMode = pickDualField(raw, "manualMode", "manual_mode", "captcha");
-  if (manualMode !== undefined) {
-    out.manualMode = requireBool(manualMode, "captcha.manualMode");
-  }
-
-  const manualResume = pickDualField(raw, "manualResumeMs", "manual_resume_ms", "captcha");
-  if (manualResume !== undefined) {
-    out.manualResumeMs = requireInt(manualResume, "captcha.manualResumeMs", {
-      min: 0,
-      max: 600_000,
-    });
-  }
-
-  return out;
 }
 
 function validateFingerprint(raw: FingerprintOptions | undefined): ValidatedFingerprint {
@@ -367,17 +250,6 @@ function validateHumanize(raw: unknown): boolean | { preset: HumanizePreset } | 
   throw new InvalidOptionError(`humanize must be a boolean or object, got ${typeof raw}.`);
 }
 
-function validateCaptcha(raw: unknown): boolean | Record<string, unknown> | undefined {
-  if (raw === undefined || raw === null) return undefined;
-  if (typeof raw === "boolean") return raw;
-  if (typeof raw === "object" && !Array.isArray(raw)) {
-    const obj = raw as Record<string, unknown>;
-    rejectUnknownKeys(obj, ALLOWED_CAPTCHA_KEYS, "captcha");
-    return normalizeCaptchaPolicyPatch(obj);
-  }
-  throw new InvalidOptionError(`captcha must be a boolean or object, got ${typeof raw}.`);
-}
-
 function validateExtraArgs(raw: unknown): string[] {
   if (raw === undefined || raw === null) return [];
   if (!Array.isArray(raw) || !raw.every((a) => typeof a === "string")) {
@@ -482,7 +354,6 @@ export function validateLaunchOptions(rawOptions: LaunchOptions = {}): Validated
     version,
     timeoutMs,
     humanize: validateHumanize(raw.humanize),
-    captcha: validateCaptcha(raw.captcha as CaptchaOptions | boolean | undefined),
     licenseKey,
     env,
     download,
@@ -611,18 +482,6 @@ export function buildEngineArgs(params: BuildEngineArgsParams): string[] {
     if (preset) {
       cmdArgs.push(`--fingerprint-humanize-preset=${preset}`);
     }
-  }
-
-  // Captcha switches (contract §9; engine patch 970)
-  if (options.captcha === true) {
-    cmdArgs.push("--fingerprint-captcha=on");
-  } else if (options.captcha && typeof options.captcha === "object") {
-    cmdArgs.push("--fingerprint-captcha=on");
-    const policy: Record<string, unknown> = {
-      enabled: true,
-      ...options.captcha,
-    };
-    cmdArgs.push(`--fingerprint-captcha-policy=${JSON.stringify(policy)}`);
   }
 
   cmdArgs.push(...options.args);

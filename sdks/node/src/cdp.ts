@@ -1,41 +1,21 @@
 /**
  * Browser-level CDP bridge for Ombra's custom `Ombra` and `Browser` domains
- * (engine patches 135, 200, and 970).
+ * (engine patches 135 and 200).
  *
  * Ombra Chromium registers its custom `Ombra` CDP domain (`Ombra.pdl`) exclusively on
  * browser-level CDP sessions:
  *   - Playwright: `await browser.newBrowserCDPSession()`
  *   - Puppeteer:  `await browser.target().createCDPSession()`
- *
- * All 9 `Ombra.captcha*` events stream automatically to every browser session without calling
- * an `Ombra.enable` method.
  */
 
 import { InvalidOptionError } from "./errors.js";
 import { resolveBrowserHandle } from "./launch.js";
-import { normalizeCaptchaPolicyPatch } from "./options.js";
 import type {
   AgentRunResult,
-  CaptchaEvent,
-  CaptchaEventName,
-  CaptchaOptions,
-  CaptchaState,
   CDPSessionLike,
   HumanizePreset,
   HumanizeState,
 } from "./types.js";
-
-export const CAPTCHA_EVENTS: readonly CaptchaEventName[] = Object.freeze([
-  "captchaDetected",
-  "captchaStateChanged",
-  "captchaInvisible",
-  "captchaBlocked",
-  "captchaHardMode",
-  "captchaGone",
-  "captchaSolving",
-  "captchaSolved",
-  "captchaFailed",
-]);
 
 const HUMANIZE_PRESETS = new Set<HumanizePreset>(["default", "careful", "fast"]);
 
@@ -56,49 +36,6 @@ function normalizeEventName(event: string): { shortName: string; fullName: strin
   return { shortName: trimmed, fullName: `Ombra.${trimmed}` };
 }
 
-export type CaptchaEventFilter =
-  | CaptchaEventName
-  | string
-  | ReadonlyArray<string>
-  | ((event: CaptchaEvent) => boolean)
-  | null
-  | undefined;
-
-function buildPredicate(filter: CaptchaEventFilter): (event: CaptchaEvent) => boolean {
-  if (filter === undefined || filter === null) {
-    return () => true;
-  }
-  if (typeof filter === "function") {
-    return filter;
-  }
-  if (typeof filter === "string") {
-    const { shortName } = normalizeEventName(filter);
-    return (ev) => ev.event === shortName;
-  }
-  if (Array.isArray(filter)) {
-    const wanted = new Set(filter.map((item) => normalizeEventName(item).shortName));
-    return (ev) => wanted.has(ev.event);
-  }
-  throw new InvalidOptionError(
-    "Event filter must be undefined, an event name, an array of event names, or a predicate function.",
-  );
-}
-
-export interface WaitForCaptchaOptions {
-  timeoutMs?: number;
-  timeout_ms?: number;
-}
-
-export interface SolveCaptchaOptions {
-  targetId?: string;
-  target_id?: string;
-  frameId?: string;
-  frame_id?: string;
-  id?: number;
-  captchaId?: number;
-  captcha_id?: number;
-}
-
 export interface SetHumanizeOptions {
   enabled?: boolean;
   preset?: HumanizePreset;
@@ -116,116 +53,17 @@ export interface AgentRunTaskOptions {
   plan_json?: string;
 }
 
-function makeTimeoutError(timeoutMs: number): Error {
-  const err = new Error(`Timed out after ${timeoutMs}ms waiting for Ombra CAPTCHA CDP event.`);
-  err.name = "TimeoutError";
-  return err;
-}
-
-/**
- * In-order, event-driven buffer of `Ombra.captcha*` CDP events.
- */
-export class CaptchaEventRecorder {
-  public readonly events: CaptchaEvent[] = [];
-  private unsubscribe: (() => void) | null;
-  private waiters: Set<(stopped?: boolean) => void> = new Set();
-
-  constructor(cdp: OmbraCDP) {
-    this.unsubscribe = cdp.onCaptcha((ev) => {
-      this.events.push(ev);
-      for (const wake of Array.from(this.waiters)) {
-        wake();
-      }
-    });
-  }
-
-  /** Clear already buffered events without unsubscribing. */
-  clear(): void {
-    this.events.length = 0;
-  }
-
-  /** Unsubscribe from further CDP events and reject pending waits. */
-  stop(): void {
-    if (this.unsubscribe) {
-      const fn = this.unsubscribe;
-      this.unsubscribe = null;
-      fn();
-    }
-    for (const wake of Array.from(this.waiters)) wake(true);
-  }
-
-  [Symbol.dispose](): void {
-    this.stop();
-  }
-
-  /**
-   * Wait for a matching `Ombra.captcha*` event (either already buffered or arriving before timeout).
-   */
-  waitFor(filter?: CaptchaEventFilter, options: WaitForCaptchaOptions = {}): Promise<CaptchaEvent> {
-    const predicate = buildPredicate(filter);
-    const timeoutMs = options.timeoutMs ?? options.timeout_ms ?? 30_000;
-    if (typeof timeoutMs !== "number" || !Number.isFinite(timeoutMs) || timeoutMs < 0) {
-      throw new InvalidOptionError("timeoutMs must be a non-negative number.");
-    }
-
-    for (const item of this.events) {
-      if (predicate(item)) {
-        return Promise.resolve(item);
-      }
-    }
-    if (!this.unsubscribe) {
-      return Promise.reject(new InvalidOptionError("CAPTCHA event recorder has stopped. Create a new recorder before waiting for further events."));
-    }
-    if (timeoutMs === 0) {
-      return Promise.reject(makeTimeoutError(0));
-    }
-
-    return new Promise<CaptchaEvent>((resolve, reject) => {
-      const cleanup = () => {
-        clearTimeout(timer);
-        this.waiters.delete(onWake);
-      };
-      const timer = setTimeout(() => {
-        cleanup();
-        reject(makeTimeoutError(timeoutMs));
-      }, timeoutMs);
-
-      const onWake = (stopped = false) => {
-        try {
-          if (stopped) {
-            throw new InvalidOptionError("CAPTCHA event recorder has stopped. Create a new recorder before waiting for further events.");
-          }
-          for (const item of this.events) {
-            if (predicate(item)) {
-              cleanup();
-              resolve(item);
-              return;
-            }
-          }
-        } catch (err) {
-          cleanup();
-          reject(err);
-        }
-      };
-
-      this.waiters.add(onWake);
-    });
-  }
-}
-
 /**
  * Browser-level CDP client for Ombra's custom `Ombra` and `Browser` domains.
  */
 export class OmbraCDP {
   public readonly browser: any;
   public readonly session: CDPSessionLike;
-  private readonly startHrTime: bigint;
   private detached = false;
 
   constructor(browser: any, session: CDPSessionLike) {
     this.browser = browser;
     this.session = session;
-    this.startHrTime = process.hrtime.bigint();
   }
 
   /** Detach this browser CDP session without closing the browser. */
@@ -264,110 +102,6 @@ export class OmbraCDP {
         // ignore
       }
     };
-  }
-
-  /**
-   * Subscribe `callback` to all 9 `Ombra.captcha*` events.
-   * Returns an `unsubscribe()` function.
-   */
-  onCaptcha(callback: (event: CaptchaEvent) => void | Promise<void>): () => void {
-    const unsubscribers: Array<() => void> = [];
-    for (const shortName of CAPTCHA_EVENTS) {
-      const fullName = `Ombra.${shortName}` as const;
-      const listener = (params: Record<string, unknown> | undefined) => {
-        const elapsedSec = Number(process.hrtime.bigint() - this.startHrTime) / 1e9;
-        const payload: CaptchaEvent = {
-          ...(params && typeof params === "object" ? params : {}),
-          event: shortName,
-          cdpEvent: fullName,
-          timestamp: Math.round(elapsedSec * 1000) / 1000,
-        };
-        try {
-          const maybePromise = callback(payload);
-          if (maybePromise && typeof (maybePromise as Promise<void>).catch === "function") {
-            (maybePromise as Promise<void>).catch(() => {});
-          }
-        } catch {
-          // Avoid crashing CDP event emitter on user callback error
-        }
-      };
-      unsubscribers.push(this.on(fullName, listener));
-    }
-    return () => {
-      for (const unsub of unsubscribers) {
-        unsub();
-      }
-    };
-  }
-
-  /** Start buffering all `Ombra.captcha*` events in arrival order. */
-  recordCaptchaEvents(): CaptchaEventRecorder {
-    return new CaptchaEventRecorder(this);
-  }
-
-  /** Call `Ombra.getCaptchaState` and return `{ policy, captchas, signaturesVersion }`. */
-  async getCaptchaState(): Promise<CaptchaState> {
-    const res = await this.session.send("Ombra.getCaptchaState");
-    return (res && typeof res === "object" && "state" in res ? res.state : res) as CaptchaState;
-  }
-
-  /** Validate and apply a live `Ombra.setCaptchaPolicy` update. */
-  async setCaptchaPolicy(
-    policy: CaptchaOptions & { enabled?: boolean },
-  ): Promise<CaptchaState> {
-    const wirePolicy = normalizeCaptchaPolicyPatch(policy as Record<string, unknown>);
-    const res = await this.session.send("Ombra.setCaptchaPolicy", { policy: wirePolicy });
-    return (res && typeof res === "object" && "state" in res ? res.state : res) as CaptchaState;
-  }
-
-  /**
-   * Trigger `Ombra.solveCaptcha` manually (works even when policy `solve: false`).
-   * Returns the number of matching CAPTCHAs queued for solving.
-   */
-  async solveCaptcha(options: SolveCaptchaOptions = {}): Promise<number> {
-    if (options.targetId !== undefined && options.target_id !== undefined) {
-      throw new InvalidOptionError("Specify either 'targetId' or 'target_id', not both.");
-    }
-    if (options.frameId !== undefined && options.frame_id !== undefined) {
-      throw new InvalidOptionError("Specify either 'frameId' or 'frame_id', not both.");
-    }
-    const idCandidates = [options.id, options.captchaId, options.captcha_id].filter(
-      (v) => v !== undefined,
-    );
-    if (idCandidates.length > 1) {
-      throw new InvalidOptionError("Specify only one of 'id', 'captchaId', or 'captcha_id'.");
-    }
-
-    const params: Record<string, unknown> = {};
-    const targetId = options.targetId ?? options.target_id;
-    if (targetId !== undefined) {
-      if (typeof targetId !== "string" || !targetId) {
-        throw new InvalidOptionError("targetId must be a non-empty string.");
-      }
-      params.targetId = targetId;
-    }
-
-    const frameId = options.frameId ?? options.frame_id;
-    if (frameId !== undefined) {
-      if (typeof frameId !== "string" || !frameId) {
-        throw new InvalidOptionError("frameId must be a non-empty string.");
-      }
-      params.frameId = frameId;
-    }
-
-    const captchaId = idCandidates[0];
-    if (captchaId !== undefined) {
-      if (typeof captchaId !== "number" || !Number.isInteger(captchaId) || captchaId < 0) {
-        throw new InvalidOptionError("captchaId must be a non-negative integer.");
-      }
-      params.id = captchaId;
-    }
-
-    const res = await this.session.send(
-      "Ombra.solveCaptcha",
-      Object.keys(params).length > 0 ? params : undefined,
-    );
-    return res && typeof res === "object" && typeof res.count === "number" ? res.count : 0;
   }
 
   /** Call `Ombra.getHumanizeState`. */

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import os
 import platform
 from dataclasses import dataclass, field
@@ -28,45 +27,6 @@ _ALLOWED_FINGERPRINT_KEYS = frozenset({
 })
 _ALLOWED_HUMANIZE_KEYS = frozenset({"preset"})
 _ALLOWED_HUMANIZE_PRESETS = frozenset({"default", "careful", "fast"})
-_ALLOWED_CAPTCHA_KEYS = frozenset({
-    "solve",
-    "types",
-    "time_budget_ms",
-    "max_attempts",
-    "allow_llm",
-    "manual_mode",
-    "manual_resume_ms",
-})
-_ALLOWED_CDP_POLICY_KEYS = _ALLOWED_CAPTCHA_KEYS | frozenset({
-    "enabled",
-    "timeBudgetMs",
-    "maxAttempts",
-    "allowLLM",
-    "manualMode",
-    "manualResumeMs",
-})
-_CAPTCHA_TASK_TYPES = frozenset({
-    "checkbox",
-    "image-grid-3x3",
-    "image-grid-4x4",
-    "image-grid-4x2",
-    "image-dynamic-3x3",
-    "image-area",
-    "audio",
-    "text",
-    "slider",
-    "press-hold",
-    "managed",
-    "unknown",
-    "icon-click",
-    "text-click",
-    "text-order",
-    "icon-grid-3x3",
-    "icon-swap",
-    "icon-gobang",
-    "spatial",
-})
-
 # Stealth invariants SI-05 / SI-07 / SI-11: flags SDK must never inject,
 # and container sandbox flags that trigger a warning when passed by caller.
 _WARN_USER_ARGS = frozenset({"--no-sandbox", "--disable-setuid-sandbox"})
@@ -86,7 +46,6 @@ class ValidatedLaunchOptions:
     version: str | None = None
     timeout_ms: int = 30_000
     humanize: bool | dict[str, Any] | None = None
-    captcha: bool | dict[str, Any] | None = None
     license_key: str | None = None
     env: dict[str, str] = field(default_factory=dict)
     download: bool = True
@@ -220,116 +179,6 @@ def _validate_humanize(raw: Any) -> bool | dict[str, Any] | None:
     raise InvalidOptionError(f"humanize must be a boolean or object, got {type(raw).__name__}.")
 
 
-def _is_valid_captcha_task(task: str) -> bool:
-    if task in _CAPTCHA_TASK_TYPES:
-        return True
-    if task.startswith("image-grid-"):
-        suffix = task[len("image-grid-") :]
-        return bool(suffix) and not suffix.startswith("0") and suffix.isascii() and suffix.isdigit()
-    return False
-
-
-def _validate_captcha_types_list(types: Any, field_name: str = "captcha.types") -> list[str] | None:
-    if types is None:
-        return None
-    if not isinstance(types, list) or not all(isinstance(t, str) for t in types):
-        raise InvalidOptionError(f"{field_name} must be a list of strings or null.")
-    if len(types) > 32:
-        raise InvalidOptionError(f"{field_name} supports at most 32 entries.")
-    for item in types:
-        if not _is_valid_captcha_task(item):
-            raise InvalidOptionError(f"Unknown captcha task type {item!r}.")
-    return list(types)
-
-
-def normalize_captcha_policy_patch(raw: dict[str, Any]) -> dict[str, Any]:
-    """Validate and convert a snake_case or camelCase captcha policy patch for CDP/CLI."""
-    if not isinstance(raw, dict):
-        raise InvalidOptionError(f"captcha policy must be a dict, got {type(raw).__name__}.")
-    _reject_unknown_keys(raw, _ALLOWED_CDP_POLICY_KEYS, "captcha policy")
-    if "solve" in raw and "enabled" in raw:
-        raise InvalidOptionError("Specify either 'solve' or 'enabled' in captcha policy, not both.")
-
-    policy: dict[str, Any] = {}
-    if "solve" in raw and raw["solve"] is not None:
-        policy["enabled"] = _require_bool(raw["solve"], "captcha.solve")
-    elif "enabled" in raw and raw["enabled"] is not None:
-        policy["enabled"] = _require_bool(raw["enabled"], "captcha.enabled")
-
-    if "types" in raw:
-        policy["types"] = _validate_captcha_types_list(raw["types"], "captcha.types")
-
-    for snake, camel in (
-        ("time_budget_ms", "timeBudgetMs"),
-        ("max_attempts", "maxAttempts"),
-        ("manual_resume_ms", "manualResumeMs"),
-    ):
-        if snake in raw and camel in raw:
-            raise InvalidOptionError(f"Specify either {snake!r} or {camel!r}, not both.")
-
-    budget_val = raw.get("time_budget_ms", raw.get("timeBudgetMs"))
-    if budget_val is not None:
-        policy["timeBudgetMs"] = _require_int(
-            budget_val, "captcha.time_budget_ms", minimum=1000, maximum=600_000
-        )
-
-    attempts_val = raw.get("max_attempts", raw.get("maxAttempts"))
-    if attempts_val is not None:
-        policy["maxAttempts"] = _require_int(
-            attempts_val, "captcha.max_attempts", minimum=1, maximum=10
-        )
-
-    resume_val = raw.get("manual_resume_ms", raw.get("manualResumeMs"))
-    if resume_val is not None:
-        policy["manualResumeMs"] = _require_int(
-            resume_val, "captcha.manual_resume_ms", minimum=0, maximum=600_000
-        )
-
-    if "allow_llm" in raw and "allowLLM" in raw:
-        raise InvalidOptionError("Specify either 'allow_llm' or 'allowLLM', not both.")
-    llm_val = raw.get("allow_llm", raw.get("allowLLM"))
-    if llm_val is not None:
-        policy["allowLLM"] = _require_bool(llm_val, "captcha.allow_llm")
-
-    if "manual_mode" in raw and "manualMode" in raw:
-        raise InvalidOptionError("Specify either 'manual_mode' or 'manualMode', not both.")
-    manual_val = raw.get("manual_mode", raw.get("manualMode"))
-    if manual_val is not None:
-        policy["manualMode"] = _require_bool(manual_val, "captcha.manual_mode")
-
-    return policy
-
-
-def _validate_captcha(raw: Any) -> bool | dict[str, Any] | None:
-    if raw is None or isinstance(raw, bool):
-        return raw
-    if isinstance(raw, dict):
-        _reject_unknown_keys(raw, _ALLOWED_CAPTCHA_KEYS, "captcha")
-        out: dict[str, Any] = {}
-        if "solve" in raw and raw["solve"] is not None:
-            out["solve"] = _require_bool(raw["solve"], "captcha.solve")
-        if "types" in raw:
-            out["types"] = _validate_captcha_types_list(raw["types"], "captcha.types")
-        if "time_budget_ms" in raw and raw["time_budget_ms"] is not None:
-            out["time_budget_ms"] = _require_int(
-                raw["time_budget_ms"], "captcha.time_budget_ms", minimum=1000, maximum=600_000
-            )
-        if "max_attempts" in raw and raw["max_attempts"] is not None:
-            out["max_attempts"] = _require_int(
-                raw["max_attempts"], "captcha.max_attempts", minimum=1, maximum=10
-            )
-        if "allow_llm" in raw and raw["allow_llm"] is not None:
-            out["allow_llm"] = _require_bool(raw["allow_llm"], "captcha.allow_llm")
-        if "manual_mode" in raw and raw["manual_mode"] is not None:
-            out["manual_mode"] = _require_bool(raw["manual_mode"], "captcha.manual_mode")
-        if "manual_resume_ms" in raw and raw["manual_resume_ms"] is not None:
-            out["manual_resume_ms"] = _require_int(
-                raw["manual_resume_ms"], "captcha.manual_resume_ms", minimum=0, maximum=600_000
-            )
-        return out
-    raise InvalidOptionError(f"captcha must be a boolean or object, got {type(raw).__name__}.")
-
-
 def _validate_extra_args(raw: Any) -> tuple[str, ...]:
     if raw is None:
         return ()
@@ -378,7 +227,6 @@ def validate_launch_options(
     version: str | None = None,
     timeout_ms: int | None = None,
     humanize: bool | dict[str, Any] | None = None,
-    captcha: bool | dict[str, Any] | None = None,
     license_key: str | None = None,
     env: dict[str, str] | None = None,
     download: bool = True,
@@ -434,7 +282,6 @@ def validate_launch_options(
         version=normalize_requested_version(version),
         timeout_ms=get_timeout_ms(timeout_ms),
         humanize=_validate_humanize(humanize),
-        captcha=_validate_captcha(captcha),
         license_key=license_key.strip() if isinstance(license_key, str) else None,
         env=_validate_env(env),
         download=_require_bool(download, "download"),
@@ -576,18 +423,5 @@ def build_engine_args(
         if preset:
             cmd_args.append(f"--fingerprint-humanize-preset={preset}")
 
-    # Captcha switches (contract §9; engine patch 970)
-    captcha = options.captcha
-    if captcha is True:
-        cmd_args.append("--fingerprint-captcha=on")
-    elif isinstance(captcha, dict):
-        cmd_args.append("--fingerprint-captcha=on")
-        policy = normalize_captcha_policy_patch(captcha)
-        policy.setdefault("enabled", True)
-        cmd_args.append(
-            f"--fingerprint-captcha-policy={json.dumps(policy, separators=(',', ':'))}"
-        )
-
-    # Caller extra args passed through unchanged.
     cmd_args.extend(options.args)
     return cmd_args

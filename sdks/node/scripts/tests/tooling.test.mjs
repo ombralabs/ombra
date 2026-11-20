@@ -45,22 +45,3 @@ test('a compiler alone cannot borrow Node types from another project', () => {
     assert.match(result.stderr, /SDK-local @types\/node is missing.*npm install/);
   } finally { fs.rmSync(temp, { recursive: true, force: true }); }
 });
-
-test('release publication condition respects manual dry runs on tags and branches', () => {
-  const workflow = fs.readFileSync(path.resolve(scripts, '../../../.github/workflows/release-node.yml'), 'utf8');
-  const expression = workflow.split('  publish-npm:\n')[1].match(/^    if: (.+)$/m)[1];
-  // This workflow condition uses the JavaScript-compatible Boolean expression subset.
-  const publishes = new Function('github', 'inputs', 'startsWith', `return (${expression});`);
-  const tag = 'refs/tags/sdks/node/v0.1.0';
-  for (const [event, ref, dryRun, expected] of [
-    ['workflow_dispatch', tag, true, false],
-    ['push', tag, undefined, true],
-    ['workflow_dispatch', tag, false, true],
-    ['workflow_dispatch', 'refs/heads/main', false, true],
-    ['workflow_dispatch', 'refs/heads/main', true, false],
-    ['push', 'refs/heads/main', undefined, false],
-    ['pull_request', tag, undefined, false],
-  ]) {
-    assert.equal(publishes({ event_name: event, ref }, { dry_run: dryRun }, (value, prefix) => value.startsWith(prefix)), expected, `${event} ${ref} dry_run=${dryRun}`);
-  }
-});

@@ -186,7 +186,6 @@ flowchart LR
 | `args` | `[]` | 额外的引擎参数，原样传递 |
 | `timeout_ms` | `30000` | 启动和建立 CDP 连接的超时时间，单位为毫秒 |
 | `humanize` | 引擎默认值 | `false`、`true` 或某个预设 |
-| `captcha` | `false` | 启用引擎模块（限制可选） |
 | `binary_path` | 已解析 | 使用指定的引擎二进制文件 |
 | `download` | `true` | 下载缺失的引擎二进制文件 |
 
@@ -350,10 +349,6 @@ SDK 会直接启动引擎。桌面应用是可选的，可用于手动管理配�
 ### Ombra 与 playwright-stealth 有何不同？
 
 Ombra 的指纹控制逻辑直接编译进了 Chromium。SDK 不会修改页面脚本。
-
-### Ombra 能处理 CAPTCHA 吗？
-
-引擎提供可选的 CAPTCHA 模块。支持范围取决于任务类型、引擎构建版本和可用模型。SDK 传入本次启动的设置，并通过 CDP 提供模块的控制接口。
 
 ### 可以使用自己的代理吗？
 
