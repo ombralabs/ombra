@@ -13,6 +13,7 @@ import { pipeline } from "node:stream/promises";
 import { safeExtractTarGz, safeExtractTarXz, safeExtractZip } from "./archive.js";
 import {
   BINARY_SIGNING_PUBKEYS,
+  DEFAULT_DOWNLOAD_URL,
   binaryCandidatesInDir,
   expandTilde,
   getAppEnginesDir,
@@ -46,6 +47,8 @@ import {
 } from "./version.js";
 
 const VERSION_PARTS_RE = /^(\d+\.\d+\.\d+\.\d+)(?:-([1-9]\d*|0\+dev\.[0-9a-fA-F]+))?$/;
+const GITHUB_TAG_RE = /^v(\d+\.\d+\.\d+\.\d+(?:-[1-9]\d*)?)$/;
+const GITHUB_DOWNLOAD_URL = "https://github.com/ombralabs/ombra/releases/download";
 const SHA256_RE = /^[a-f0-9]{64}$/;
 const UPDATE_CHECK_INTERVAL_MS = 3_600_000;
 const DOWNLOAD_RETRIES = 2; // Contract §11: download may retry twice with backoff
@@ -535,16 +538,16 @@ function writeMarker(markerPath: string, contents: string): void {
   }
 }
 
-function latestMarkerPath(channel: string, plat: PlatformInfo): string {
-  return path.join(getManagedEnginesDir(), `.latest_${channel}_${plat.cdnName}`);
+function latestMarkerPath(channel: string, plat: PlatformInfo, github = false): string {
+  return path.join(getManagedEnginesDir(), `.latest_${github ? "github_" : ""}${channel}_${plat.cdnName}`);
 }
 
 function serialMarkerPath(channel: string): string {
   return path.join(getManagedEnginesDir(), `.serial_${channel}`);
 }
 
-function lastUpdateCheckPath(channel: string, plat: PlatformInfo): string {
-  return path.join(getManagedEnginesDir(), `.last_check_${channel}_${plat.cdnName}`);
+function lastUpdateCheckPath(channel: string, plat: PlatformInfo, github = getDownloadBaseUrl() === DEFAULT_DOWNLOAD_URL): string {
+  return path.join(getManagedEnginesDir(), `.last_check_${github ? "github_" : ""}${channel}_${plat.cdnName}`);
 }
 
 function resolveCacheBinary(
@@ -559,12 +562,22 @@ function resolveCacheBinary(
   if (requestedVersion) {
     candidateDirs.push({ dir: path.join(enginesDir, requestedVersion), ver: requestedVersion });
   } else {
-    try {
-      const raw = fs.readFileSync(latestMarkerPath(channel, plat));
-      const latest = parseReleaseEntry(raw, { baseUrl: "https://dl.ombrabrowser.dev", plat, requestedVersion: null, channel });
-      candidateDirs.push({ dir: path.join(enginesDir, latest.version), ver: latest.version });
-    } catch {
-      // ignore
+    const baseUrl = getDownloadBaseUrl();
+    for (const github of baseUrl === null ? [true, false] : [baseUrl === DEFAULT_DOWNLOAD_URL]) {
+      try {
+        const raw = fs.readFileSync(latestMarkerPath(channel, plat, github));
+        let latest: ReleaseEntry;
+        if (github) {
+          const saved = JSON.parse(raw.toString("utf8"));
+          if (saved.source !== DEFAULT_DOWNLOAD_URL || saved.channel !== channel || typeof saved.envelope !== "string") continue;
+          latest = parseGitHubRelease(Buffer.from(saved.envelope), saved.release, { plat, requestedVersion: null, channel });
+        } else {
+          latest = parseReleaseEntry(raw, { baseUrl: baseUrl ?? "https://offline.invalid", plat, requestedVersion: null, channel });
+        }
+        candidateDirs.push({ dir: path.join(enginesDir, latest.version), ver: latest.version });
+      } catch {
+        // Invalid provenance must not select an unpinned cached engine.
+      }
     }
   }
 
@@ -777,7 +790,7 @@ async function fetchBytes(urlStr: string): Promise<Buffer> {
     let size = 0;
     for await (const chunk of Readable.fromWeb(response.body!)) {
       size += chunk.length;
-      if (size > 1024 * 1024) throw new DownloadFailedError("Signed manifest exceeds the 1 MiB metadata limit.");
+      if (size > 1024 * 1024) throw new DownloadFailedError("Release metadata exceeds the 1 MiB limit.");
       chunks.push(chunk);
     }
     return Buffer.concat(chunks);
@@ -796,6 +809,7 @@ export interface ReleaseEntry {
   sha256: string;
   size: number;
   channel?: { name: string; serial: number; envelope: string };
+  github?: { name: string; envelope: string; release: Record<string, any> };
 }
 
 export async function resolveReleaseEntry(params: {
@@ -814,6 +828,25 @@ async function fetchReleaseEntry(params: {
   channel: string;
 }): Promise<ReleaseEntry> {
   const { baseUrl, plat, requestedVersion, channel } = params;
+  if (baseUrl === DEFAULT_DOWNLOAD_URL) {
+    let release: any;
+    if (requestedVersion?.includes("-")) {
+      release = await fetchGitHubJson(`${baseUrl}/tags/v${requestedVersion}`);
+    } else {
+      for (let page = 1; ; page++) {
+        const releases = await fetchGitHubJson(`${baseUrl}?per_page=100&page=${page}`);
+        if (!Array.isArray(releases)) throw new DownloadFailedError("GitHub releases response must be an array.");
+        release = releases.find((item) => item && item.draft === false &&
+          item.prerelease === (channel === "beta") && typeof item.tag_name === "string" &&
+          GITHUB_TAG_RE.test(item.tag_name) && versionMatches(item.tag_name.slice(1), requestedVersion));
+        if (release) break;
+        if (releases.length < 100) throw new BinaryNotFoundError(`GitHub Releases has no published ${channel} browser release.`);
+      }
+    }
+    const version = githubReleaseVersion(release, requestedVersion, channel);
+    const manifestUrl = githubAssetUrl(release, version, "release.json");
+    return parseGitHubRelease(await fetchBytes(manifestUrl), release, params);
+  }
   const isRelease = requestedVersion !== null && requestedVersion.includes("-");
   const manifestUrl = isRelease
     ? `${baseUrl}/engine/releases/${requestedVersion}/release.json`
@@ -838,6 +871,50 @@ async function fetchReleaseEntry(params: {
   return entry;
 }
 
+async function fetchGitHubJson(url: string): Promise<any> {
+  const raw = await fetchBytes(url);
+  try {
+    return JSON.parse(raw.toString("utf8"));
+  } catch (err) {
+    throw new DownloadFailedError("GitHub releases response is not valid JSON.", { cause: err });
+  }
+}
+
+function githubReleaseVersion(release: any, requestedVersion: string | null, channel: string): string {
+  const match = typeof release?.tag_name === "string" ? GITHUB_TAG_RE.exec(release.tag_name) : null;
+  if (!match || release.draft !== false || typeof release.prerelease !== "boolean" ||
+      !versionMatches(match[1], requestedVersion) ||
+      (!requestedVersion?.includes("-") && release.prerelease !== (channel === "beta"))) {
+    throw new ChecksumMismatchError("GitHub release has an invalid browser tag, draft, or channel identity.");
+  }
+  return match[1];
+}
+
+function githubAssetUrl(release: any, version: string, filename: string, size?: number): string {
+  const matches = Array.isArray(release.assets) ? release.assets.filter((asset: any) => asset?.name === filename) : [];
+  const url = `${GITHUB_DOWNLOAD_URL}/v${version}/${filename}`;
+  if (matches.length !== 1 || matches[0].browser_download_url !== url ||
+      (size !== undefined && matches[0].size !== size)) {
+    throw new ChecksumMismatchError(`GitHub release has invalid or missing '${filename}' asset metadata.`);
+  }
+  return url;
+}
+
+function parseGitHubRelease(raw: Buffer, release: any, params: {
+  plat: PlatformInfo;
+  requestedVersion: string | null;
+  channel: string;
+}): ReleaseEntry {
+  const version = githubReleaseVersion(release, params.requestedVersion, params.channel);
+  githubAssetUrl(release, version, "release.json");
+  const entry = parseReleaseEntry(raw, { ...params, baseUrl: DEFAULT_DOWNLOAD_URL, requestedVersion: version });
+  githubAssetUrl(release, version, path.posix.basename(entry.archiveUrl), entry.size);
+  if (params.requestedVersion === null) {
+    entry.github = { name: params.channel, envelope: raw.toString("utf8"), release };
+  }
+  return entry;
+}
+
 function parseReleaseEntry(raw: Buffer, params: {
   baseUrl: string;
   plat: PlatformInfo;
@@ -845,7 +922,8 @@ function parseReleaseEntry(raw: Buffer, params: {
   channel: string;
 }): ReleaseEntry {
   const { baseUrl, plat, requestedVersion, channel } = params;
-  const isRelease = requestedVersion !== null && requestedVersion.includes("-");
+  const github = baseUrl === DEFAULT_DOWNLOAD_URL;
+  const isRelease = github || (requestedVersion !== null && requestedVersion.includes("-"));
   const inner = verifySignedEnvelope(raw, isRelease ? "release" : "channel");
 
   if (!isRelease && (inner.channel !== channel || !Number.isSafeInteger(inner.serial) || inner.serial < 0)) {
@@ -878,7 +956,7 @@ function parseReleaseEntry(raw: Buffer, params: {
       !Number.isSafeInteger(entry.size) || entry.size <= 0) {
     throw new ChecksumMismatchError("Manifest has invalid artifact path, SHA-256, or size.");
   }
-  const archiveUrl = `${baseUrl}${artifactPath}`;
+  const archiveUrl = github ? `${GITHUB_DOWNLOAD_URL}/v${version}/${filename}` : `${baseUrl}${artifactPath}`;
   validateDownloadUrl(archiveUrl);
 
   return {
@@ -954,6 +1032,14 @@ function verifiedCachedVersion(version: string, plat: PlatformInfo): ResolvedBin
 }
 
 function adoptChannel(entry: ReleaseEntry, plat: PlatformInfo): void {
+  if (entry.github) {
+    writeMarker(latestMarkerPath(entry.github.name, plat, true), JSON.stringify({
+      source: DEFAULT_DOWNLOAD_URL, channel: entry.github.name,
+      release: entry.github.release, envelope: entry.github.envelope,
+    }));
+    writeMarker(lastUpdateCheckPath(entry.github.name, plat, true), String(Date.now()) + "\n");
+    return;
+  }
   if (!entry.channel) return;
   writeMarker(latestMarkerPath(entry.channel.name, plat), entry.channel.envelope);
   writeMarker(lastUpdateCheckPath(entry.channel.name, plat), String(Date.now()) + "\n");
