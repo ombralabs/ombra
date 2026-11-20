@@ -43,11 +43,11 @@ Resolve or pre-download the signed and checksum-verified Ombra engine using your
 npx --no-install ombra-sdk install
 npx --no-install ombra-sdk info
 # Pin a release available for your platform:
-npx --no-install ombra-sdk install --version 151.0.7922.108-9
-npx --no-install ombra-sdk install --version=151.0.7922.108-9
+npx --no-install ombra-sdk install --version 158.0.8127.37-2
+npx --no-install ombra-sdk install --version=158.0.8127.37-2
 ```
 
-Browser versions come from [GitHub Releases](https://github.com/ombralabs/ombra/releases). The SDK uses `https://api.github.com/repos/ombralabs/ombra/releases/latest` for unpinned stable builds. If GitHub's latest selection is missing or is not a published stable browser build, it selects the first stable browser release from the paginated releases list. Drafts, development builds, and non-browser tags are excluded. `releaseChannel: "beta"` selects prereleases from the list. A revision pin such as `151.0.7922.108-9` queries `/releases/tags/vVERSION`; a Chromium-family pin such as `151.0.7922.108` selects a matching release on the requested channel. Every selected release must publish signed `release.json` and `ombra-engine-VERSION-PLATFORM.EXT` assets under `https://github.com/ombralabs/ombra/releases/download/vVERSION/`. The manifest's Ed25519 signature, version, platform filename, SHA-256, and size are verified. Automatic installation requires published GitHub assets for your platform; example pins above do not guarantee availability.
+Browser versions come from [GitHub Releases](https://github.com/ombralabs/ombra/releases). The SDK uses `https://api.github.com/repos/ombralabs/ombra/releases/latest` for unpinned stable builds. If GitHub's latest selection is missing or is not a published stable browser build, it selects the first stable browser release from the paginated releases list. Drafts, development builds, and non-browser tags are excluded. `releaseChannel: "beta"` selects prereleases from the list. A revision pin such as `158.0.8127.37-2` queries `/releases/tags/vVERSION`; a Chromium-family pin such as `158.0.8127.37` selects a matching release on the requested channel. Every selected release must publish signed `release.json` and `ombra-engine-VERSION-PLATFORM.EXT` assets under `https://github.com/ombralabs/ombra/releases/download/vVERSION/`. The manifest's Ed25519 signature, version, platform filename, SHA-256, and size are verified. Automatic installation requires published GitHub assets for your platform; example pins above do not guarantee availability.
 
 The SDK supports Chromium >=151.0.7922.108 and <159, with `158.0.8127.37` as the default Chromium family. Existing 151 release pins remain supported. GitHub stable and beta selections are recorded separately for offline reuse; old CDN channel caches need one online GitHub lookup before unpinned reuse. A previously installed, receipt-valid exact version remains usable offline with `version` and `download: false`. Set `OMBRA_DOWNLOAD_URL=off` to disable downloads; an explicit mirror URL retains the legacy `/engine/channels/CHANNEL.json` and `/engine/releases/VERSION/` layout. There is no automatic CDN fallback. Valid installed versions are reused rather than overwritten. Managed/app-cached binaries require their checksum receipt; explicit development binaries via `binaryPath` or `OMBRA_BINARY_PATH` are supported separately. `OMBRA_SKIP_CHECKSUM=1` is a warning-producing development bypass.
 
@@ -56,7 +56,7 @@ The SDK supports Chromium >=151.0.7922.108 and <159, with `158.0.8127.37` as the
 ```ts
 import { launch } from "@ombralabs/sdk";
 
-const browser = await launch({ version: "151.0.7922.108-9" });
+const browser = await launch({ version: "158.0.8127.37-2" });
 const page = await browser.newPage();
 await page.goto("https://example.com");
 console.log(await page.title());
@@ -94,7 +94,7 @@ Use `launchPuppeteer()` from `@ombralabs/sdk` or `launch()` from `@ombralabs/sdk
 ```ts
 import { launch } from "@ombralabs/sdk/puppeteer";
 
-const browser = await launch({ headless: false, version: "151.0.7922.108-9" });
+const browser = await launch({ headless: false, version: "158.0.8127.37-2" });
 const page = await browser.newPage();
 await page.goto("https://example.com");
 await browser.close();
@@ -129,8 +129,8 @@ import {
   checkEngineHealth,
 } from "@ombralabs/sdk";
 
-console.log(await binaryInfo({ version: "151.0.7922.108-9" }));
-await ensureBinary({ version: "151.0.7922.108-9" });
+console.log(await binaryInfo({ version: "158.0.8127.37-2" }));
+await ensureBinary({ version: "158.0.8127.37-2" });
 await clearCache(); // removes SDK-managed binaries; preserves ~/.ombra/profiles & license.key
 ```
 

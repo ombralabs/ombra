@@ -184,7 +184,7 @@ def normalize_requested_version(version: str | None = None) -> str | None:
     if not _VERSION_PIN_RE.fullmatch(cleaned):
         raise InvalidOptionError(
             f"Invalid engine version pin {raw!r}. Expected '<a.b.c.d>' or '<a.b.c.d>-<N>' "
-            "(for example '151.0.7922.108' or '151.0.7922.108-7').",
+            "(for example '158.0.8127.37' or '158.0.8127.37-2').",
             details={"version": cleaned},
         )
     return cleaned

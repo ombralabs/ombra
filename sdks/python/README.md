@@ -67,7 +67,7 @@ Pin an exact engine release with `version` in any `launch*()` helper:
 ```python
 from ombrabrowser import launch, binary_info, ensure_binary
 
-engine_version = "151.0.7922.108-9"
+engine_version = "158.0.8127.37-2"
 ensure_binary(version=engine_version)  # Optional: download and verify before launching
 browser = launch(version=engine_version)
 try:
@@ -79,14 +79,14 @@ print(binary_info(version=engine_version))
 ```
 
 `version` overrides `OMBRA_VERSION` and disables automatic upgrades for that launch.
-Include the release suffix (`-9`) for an exact build; a Chromium-only pin accepts
+Include the release suffix (`-2`) for an exact build; a Chromium-only pin accepts
 local releases or a GitHub channel release with that Chromium version. A conflicting `binary_path` or
 `OMBRA_BINARY_PATH` raises `UnsupportedEngineError`. If the requested build is
 missing and `download=False`, launch raises `BinaryNotFoundError`.
 
 ```bash
-ombrabrowser install --version 151.0.7922.108-9
-OMBRA_VERSION=151.0.7922.108-9 python your_script.py
+ombrabrowser install --version 158.0.8127.37-2
+OMBRA_VERSION=158.0.8127.37-2 python your_script.py
 ```
 
 With a persistent named profile, authenticated proxy relay, fingerprint, and native engine humanization:
