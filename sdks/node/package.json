@@ -1,0 +1,124 @@
+{
+  "name": "@ombralabs/sdk",
+  "version": "0.1.0",
+  "description": "Node.js / TypeScript SDK for Ombra stealth Chromium \u2014 drop-in Playwright and Puppeteer launcher over CDP.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./puppeteer": {
+      "import": {
+        "types": "./dist/esm/puppeteer.d.ts",
+        "default": "./dist/esm/puppeteer.js"
+      },
+      "require": {
+        "types": "./dist/cjs/puppeteer.d.ts",
+        "default": "./dist/cjs/puppeteer.js"
+      }
+    },
+    "./cdp": {
+      "import": {
+        "types": "./dist/esm/cdp.d.ts",
+        "default": "./dist/esm/cdp.js"
+      },
+      "require": {
+        "types": "./dist/cjs/cdp.d.ts",
+        "default": "./dist/cjs/cdp.js"
+      }
+    }
+  },
+  "bin": {
+    "ombra-sdk": "./dist/esm/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "keywords": [
+    "ombra",
+    "stealth",
+    "browser",
+    "chromium",
+    "playwright",
+    "puppeteer",
+    "cdp",
+    "automation",
+    "fingerprint",
+    "antidetect"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ombralabs/ombra.git",
+    "directory": "sdks/node"
+  },
+  "homepage": "https://ombrabrowser.dev",
+  "bugs": {
+    "url": "https://github.com/ombralabs/ombra/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "ombra": {
+    "contract": ">=0.1,<0.2",
+    "engine": ">=151.0.7922.108,<152"
+  },
+  "peerDependencies": {
+    "mmdb-lib": ">=2.0.0",
+    "playwright": ">=1.60.0 <2.0.0",
+    "playwright-core": ">=1.60.0 <2.0.0",
+    "puppeteer": ">=22.0.0",
+    "puppeteer-core": ">=22.0.0"
+  },
+  "peerDependenciesMeta": {
+    "mmdb-lib": {
+      "optional": true
+    },
+    "playwright": {
+      "optional": true
+    },
+    "playwright-core": {
+      "optional": true
+    },
+    "puppeteer": {
+      "optional": true
+    },
+    "puppeteer-core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "playwright-core": "^1.60.0",
+    "typescript": "^5.7.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "node scripts/build.mjs --noEmit",
+    "test": "node scripts/test.mjs",
+    "prepublishOnly": "npm run typecheck && npm test && npm run test:package",
+    "test:native-types": "node scripts/test-native-types.mjs",
+    "test:tooling": "node --test scripts/tests/tooling.test.mjs",
+    "test:package": "node scripts/test-package.mjs"
+  },
+  "dependencies": {
+    "fs-ext-extra-prebuilt": "2.2.17",
+    "import-meta-resolve": "4.2.0"
+  }
+}

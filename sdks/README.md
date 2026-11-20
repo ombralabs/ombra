@@ -8,8 +8,8 @@ The machine-readable registry is [`manifest.json`](manifest.json). It is the sou
 
 | SDK | Package (target) | Registry | Runtime | `launch()` returns | Status |
 |---|---|---|---|---|---|
-| [Python](python/README.md) | `ombra` | PyPI | 3.10+ | Playwright `Browser` | Scaffold |
-| [Node.js](node/README.md) | `@ombra/sdk` | npm | Node 20+ | Playwright `Browser`; Puppeteer via `launchPuppeteer()` | Scaffold |
+| [Python](python/README.md) | `ombrabrowser` | PyPI | 3.10+ | Playwright `Browser` | Alpha |
+| [Node.js](node/README.md) | `@ombralabs/sdk` | npm | Node 20+ | Playwright `Browser`; Puppeteer via `launchPuppeteer()` | Alpha |
 | [.NET](dotnet/README.md) | `Ombra` | NuGet | .NET 8+ | Playwright `IBrowser` | Scaffold |
 | [Java](java/README.md) | `dev.ombra:ombra` | Maven Central | 17+ | Playwright `Browser` | Scaffold |
 | [Go](go/README.md) | `github.com/ombralabs/ombra/sdks/go` | Go modules | 1.22+ | chromedp-ready session | Scaffold |
@@ -50,7 +50,7 @@ Each SDK follows its ecosystem rather than a forced common tree:
 
 | Language | Package manifest | Source | Tests |
 |---|---|---|---|
-| Python | `pyproject.toml` | `src/ombra/` | `tests/` |
+| Python | `pyproject.toml` | `src/ombrabrowser/` | `tests/` |
 | Node.js | `package.json` | `src/` | `tests/` |
 | .NET | `Ombra.csproj` | `src/Ombra/` | `tests/Ombra.Tests/` |
 | Java | `pom.xml` or `build.gradle.kts` | `src/main/java/` | `src/test/java/` |

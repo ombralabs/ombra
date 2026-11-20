@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ombrabrowser"
+dynamic = ["version"]
+description = "Python SDK for Ombra stealth Chromium — drop-in Playwright launcher over CDP."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.10"
+authors = [
+    { name = "Ombra Labs", email = "hello@ombrabrowser.dev" },
+]
+keywords = [
+    "ombra",
+    "stealth",
+    "browser",
+    "chromium",
+    "playwright",
+    "cdp",
+    "automation",
+    "fingerprint",
+    "antidetect",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: Browsers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "playwright>=1.60,<2.0",
+    "httpx>=0.26",
+    "cryptography>=41.0",
+]
+
+[project.optional-dependencies]
+playwright = []  # Compatibility with existing ombrabrowser[playwright] installs.
+geoip = ["geoip2>=4.0", "socksio>=1.0"]
+all = ["geoip2>=4.0", "socksio>=1.0"]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+ombrabrowser = "ombrabrowser.__main__:main"
+
+[project.urls]
+Homepage = "https://ombrabrowser.dev"
+Documentation = "https://github.com/ombralabs/ombra#readme"
+Repository = "https://github.com/ombralabs/ombra"
+Issues = "https://github.com/ombralabs/ombra/issues"
+Changelog = "https://github.com/ombralabs/ombra/blob/main/CHANGELOG.md"
+
+[tool.setuptools.dynamic]
+version = { attr = "ombrabrowser._version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ombrabrowser = ["py.typed"]
+
+[tool.ombra]
+contract = ">=0.1,<0.2"
+engine = ">=151.0.7922.108,<152"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+markers = [
+    "real_browser: tests that launch a real Ombra Chromium binary",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+warn_unused_ignores = true
+warn_redundant_casts = true

@@ -154,7 +154,7 @@ Launch is never retried automatically. A retry creates a second browser, a secon
 ## Evolution
 
 1. `0.1` — launch, profiles, seed, proxy relay, binary verification, CDP bridge for Playwright/Puppeteer.
-2. `0.2` — typed CAPTCHA events, richer profile metadata, Puppeteer parity, more native clients.
+2. `0.2` — richer profile metadata, Puppeteer parity, more native clients.
 3. `1.0` — frozen option schema, compatibility guarantees, deprecation policy.
 
 Engine changes do not require SDK releases unless a launch option or flag changes. That is the main reason to keep this layer thin.

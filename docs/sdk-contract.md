@@ -11,7 +11,7 @@ The SDK launches the engine as a child process. The Ombra app is an optional pro
 In scope:
 
 - Resolving, verifying, and optionally downloading the Ombra engine binary.
-- Spawning the engine with a profile directory, proxy, fingerprint seed, humanize, and CAPTCHA options.
+- Spawning the engine with a profile directory, proxy, fingerprint seed, and humanize options.
 - Waiting for CDP readiness and connecting the automation client.
 - Returning a native browser object with the same API the caller already uses.
 - Named profiles with persistent seeds and user data.
@@ -76,9 +76,9 @@ These are the common options. Names are `snake_case` in the contract and follow 
 | `user_data_dir` | path | temp | Explicit profile directory; mutually exclusive with `profile`. |
 | `args` | string[] | `[]` | Extra engine arguments. The SDK passes them through and adds none. |
 | `binary_path` | path | resolved | Explicit engine binary. |
+| `version` | string | env / resolved | Engine version pin; overrides `OMBRA_VERSION`. Include the `-N` release suffix for an exact build. |
 | `timeout_ms` | int | `30000` | Deadline for process start and CDP readiness. |
 | `humanize` | bool or object | engine default | `false`, `true`, or `{ "preset": "default" \| "careful" \| "fast" }`. |
-| `captcha` | bool or object | `false` | `true` or `{ "types", "time_budget_ms", "max_attempts" }`. |
 | `license_key` | string | env | Passed to the engine. The SDK does not validate it. |
 | `env` | map | `{}` | Extra environment variables for the engine process. |
 | `download` | bool | `true` | Allow the SDK to fetch a missing binary. |
@@ -169,18 +169,15 @@ If a profile exists and `fingerprint.seed` is absent, the persisted seed wins. I
 
 Timezone and locale alignment with the proxy exit is the caller's responsibility unless `fingerprint.timezone` or `fingerprint.locale` is `auto` and the engine supports the lookup. The checkup treats a mismatch as a finding, not as an SDK bug, unless the SDK claimed to align them.
 
-## 9. Humanize and CAPTCHA
+## 9. Humanize
 
-`humanize` and `captcha` are launch-time switches over engine features, not SDK implementations.
+`humanize` is a launch-time switch over the engine's humanized input.
 
 - `humanize: false` disables the engine's humanized input for this launch.
 - `humanize: true` uses the engine default preset.
 - `humanize: {preset}` selects `default`, `careful`, or `fast`.
-- `captcha: false` leaves the engine module off.
-- `captcha: true` enables the module with engine defaults.
-- `captcha: {types, time_budget_ms, max_attempts}` configures the module.
 
-The SDK does not solve CAPTCHAs, inspect challenges, or promise a success rate. Runtime CAPTCHA state is available through the engine's CDP domain `Ombra`; a typed event stream is planned for contract `0.2`.
+CAPTCHA configuration and custom CAPTCHA commands/events are outside the SDK API.
 
 ## 10. Return types
 
@@ -280,6 +277,6 @@ These block the `0.1.0` freeze:
 4. **Puppeteer parity.** Does `launchPuppeteer()` support every launch option, or a documented subset?
 5. **Profile metadata.** Is `.ombra/profile.json` the long-term format, and does the app read it?
 6. **Auto-update.** Should the SDK update the engine automatically, pin to a version, or only report availability?
-7. **Humanize and CAPTCHA mapping.** Which engine flags are stable enough to be part of the SDK contract?
+7. **Humanize mapping.** Which engine flags are stable enough to be part of the SDK contract?
 
 Until these are resolved, SDKs implement the documented behavior and return `UnsupportedEngine` or `InvalidOption` for the unclear edges instead of guessing.

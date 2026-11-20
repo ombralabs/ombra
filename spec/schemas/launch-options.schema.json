@@ -63,16 +63,6 @@
         }
       ]
     },
-    "captcha": {
-      "oneOf": [
-        {
-          "type": "boolean"
-        },
-        {
-          "$ref": "#/$defs/captcha"
-        }
-      ]
-    },
     "license_key": {
       "type": "string",
       "minLength": 1,
@@ -88,6 +78,11 @@
       "type": "boolean",
       "default": true,
       "description": "Allow a missing binary to be downloaded."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+(?:-(?:[1-9][0-9]*|0\\+dev\\.[0-9a-fA-F]+))?$",
+      "description": "Engine version pin, overriding OMBRA_VERSION. Include the release suffix (for example 151.0.7922.108-9) to select an exact build."
     }
   },
   "additionalProperties": false,
@@ -248,35 +243,6 @@
             "careful",
             "fast"
           ]
-        }
-      },
-      "additionalProperties": false
-    },
-    "captcha": {
-      "type": "object",
-      "properties": {
-        "types": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "time_budget_ms": {
-          "type": "integer",
-          "minimum": 1000,
-          "maximum": 600000
-        },
-        "max_attempts": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 10
         }
       },
       "additionalProperties": false
