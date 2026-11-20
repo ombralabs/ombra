@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 Python ve Node.js'te `launch()`, Ombra Chromium'u başlatır ve Playwright'ın `Browser` nesnesini döndürür. Node.js'te Puppeteer kullanmak için `launchPuppeteer()` işlevini çağırın.
 
-**[Kurulum](#kurulum)** · <a href="README.md">English</a>
+**[Kurulum](#kurulum)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Diller</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ SDK, motoru yerel olarak başlatır ve otomasyon istemcisini Chrome DevTools Pro
 
 | Bileşen | Durum |
 |---|---|
-| [SDK sözleşmesi](docs/sdk-contract.md) | `0.1.0` taslağı |
+| [SDK sözleşmesi](../../docs/sdk-contract.md) | `0.1.0` taslağı |
 | Python SDK'sı | `0.1.3` alfa · [PyPI'da `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | Node.js SDK'sı | `0.1.0` alfa · [npm'de `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Ortak şemalar](spec/schemas) | Başlatma seçenekleri ve motorun çalıştırılabilir dosyasına ait üst veriler |
-| [Diller arası uyumluluk testleri](conformance) | Her iki SDK için ortak test senaryoları |
-| [Stealth kontrolü](docs/stealth-checkup.md) | Test ölçütleri ve rapor şablonu |
+| [Ortak şemalar](../../spec/schemas) | Başlatma seçenekleri ve motorun çalıştırılabilir dosyasına ait üst veriler |
+| [Diller arası uyumluluk testleri](../../conformance) | Her iki SDK için ortak test senaryoları |
+| [Stealth kontrolü](../../docs/stealth-checkup.md) | Test ölçütleri ve rapor şablonu |
 
 ## Kurulum
 
@@ -161,7 +161,7 @@ Başlatma tamamlandıktan sonra istemci sayfa komutlarını doğrudan Chromium'a
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-Depoda altı SDK için daha dizin bulunur. Planlanan paketler ve istemciler [SDK manifestinde](sdks/manifest.json) listelenmiştir. [SDK kılavuzu](sdks/README.md) dizin yapısını açıklar.
+Depoda altı SDK için daha dizin bulunur. Planlanan paketler ve istemciler [SDK manifestinde](../../sdks/manifest.json) listelenmiştir. [SDK kılavuzu](../../sdks/README.md) dizin yapısını açıklar.
 
 | Hedef çalışma ortamı | Planlanan paket | İstemci veya dönüş türü |
 |---|---|---|
@@ -190,7 +190,7 @@ Tablodaki seçenek adları Python API'sinde ve SDK sözleşmesinde kullanılan a
 | `binary_path` | otomatik belirlenir | Motor için belirli bir çalıştırılabilir dosya seçer |
 | `download` | `true` | Motor dosyası eksikse indirir |
 
-[SDK sözleşmesi](docs/sdk-contract.md) tüm başlatma seçeneklerini listeler, hata türlerini ve profillerin nasıl çalıştığını açıklar.
+[SDK sözleşmesi](../../docs/sdk-contract.md) tüm başlatma seçeneklerini listeler, hata türlerini ve profillerin nasıl çalıştığını açıklar.
 
 ## İkili dosya yönetimi
 
@@ -234,7 +234,7 @@ SDK sırasıyla başlatma seçeneklerine, ortam değişkenlerine, profil üst ve
 | Profil yalıtımı | tarayıcı bağlamı | tarayıcı bağlamı | yok | kullanıcı verileri dizini |
 | Doğrudan geçiş | — | içe aktarmayı değiştirme | yeniden yazma | içe aktarmayı değiştirme |
 
-Algılama sonuçları siteye, çıkış IP adresine ve profile bağlıdır. [Kontrol kılavuzu](docs/stealth-checkup.md) bu sonuçların nasıl ölçüldüğünü açıklar.
+Algılama sonuçları siteye, çıkış IP adresine ve profile bağlıdır. [Kontrol kılavuzu](../../docs/stealth-checkup.md) bu sonuçların nasıl ölçüldüğünü açıklar.
 
 ## Stealth, motorun bir özelliğidir
 
@@ -272,7 +272,7 @@ Bu kontrolleri kullanmayı planladığınız motor derlemesi, otomasyon istemcis
 | L4 Davranış | Girdi doğruluğu, `humanize` izleri, Cloudflare temel işlev testi | Güvenilir olaylar gerçekçi bir sırada gerçekleşir ve doğrulama tamamlanır |
 | L5 Kararlılık | Başlangıç değeri, worker, iframe, farklı kaynaklar | Aynı başlangıç değeri her çalıştırmada aynı kimliği üretir |
 
-Test kılavuzu, test durumlarını, sorun gidermeyi ve sonuçların nasıl raporlanacağını açıklar. Kılavuzu [İngilizce](docs/stealth-checkup.md) veya [Rusça](docs/stealth-checkup.ru.md) okuyabilirsiniz.
+Test kılavuzu, test durumlarını, sorun gidermeyi ve sonuçların nasıl raporlanacağını açıklar. Kılavuzu [İngilizce](../../docs/stealth-checkup.md) veya [Rusça](../../docs/stealth-checkup.ru.md) okuyabilirsiniz.
 
 Testleri tekrarlayabilmek ve karşılaştırabilmek için her sonuçla birlikte motor derlemesini, istemci sürümünü, profil ayarlarını, proxy'nin çıkış IP adresini ve algılama aracının sürümünü kaydedin.
 
@@ -281,7 +281,8 @@ Testleri tekrarlayabilmek ve karşılaştırabilmek için her sonuçla birlikte 
 ```text
 .
 ├── README.md                  # İngilizce özgün sürüm
-├── README.ru.md               # Rusça çeviri
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # çevrimdışı profil yöneticisi
 ├── docs/
 │   ├── desktop/               # profil yöneticisinin belgeleri
@@ -303,7 +304,7 @@ Testleri tekrarlayabilmek ve karşılaştırabilmek için her sonuçla birlikte 
 └── .github/workflows/ci.yml
 ```
 
-Bu depoda SDK proje iskeletleri, başlatma sözleşmesi, uyumluluk testleri ve çevrimdışı profil yöneticisi bulunur. Chromium motorunun ve Desktop 1.2.1'in tam sürümünün ayrı depoları vardır. [Desktop kaynak kodu ve derleme kılavuzu](desktop/README.md) · [Profil yöneticisinin belgeleri](docs/desktop/README.md)
+Bu depoda SDK proje iskeletleri, başlatma sözleşmesi, uyumluluk testleri ve çevrimdışı profil yöneticisi bulunur. Chromium motorunun ve Desktop 1.2.1'in tam sürümünün ayrı depoları vardır. [Desktop kaynak kodu ve derleme kılavuzu](../../desktop/README.md) · [Profil yöneticisinin belgeleri](../../docs/desktop/README.md)
 
 ## Sözleşme
 
@@ -328,13 +329,13 @@ SDK ve motor birbirinden bağımsız sürümlendirilir. Sürümler uyumsuzsa SDK
 
 ## Katkıda bulunma
 
-[Katkı kılavuzu](CONTRIBUTING.md) inceleme sürecini açıklar. Derleme yönergeleri [SDK kılavuzunda](sdks/README.md) yer alır.
+[Katkı kılavuzu](../../CONTRIBUTING.md) inceleme sürecini açıklar. Derleme yönergeleri [SDK kılavuzunda](../../sdks/README.md) yer alır.
 
 - SDK davranışını değiştiriyorsanız ilgili uygulamayı güncelleyin ve bir test veya ortak uyumluluk senaryosu ekleyin.
-- Yeni bir dil için [SDK şablonunu](sdks/_template) kopyalayın, yeni SDK'yı [manifeste](sdks/manifest.json) kaydedin ve taslak bir pull request açın.
-- Yeni bir başlatma seçeneği eklemeden önce [SDK sözleşmesini](docs/sdk-contract.md) ve [şemaları](spec/schemas) güncelleyin.
+- Yeni bir dil için [SDK şablonunu](../../sdks/_template) kopyalayın, yeni SDK'yı [manifeste](../../sdks/manifest.json) kaydedin ve taslak bir pull request açın.
+- Yeni bir başlatma seçeneği eklemeden önce [SDK sözleşmesini](../../docs/sdk-contract.md) ve [şemaları](../../spec/schemas) güncelleyin.
 - Motor düzeyindeki stealth değişiklikleri motorun deposunda yapılır. SDK'nın stealth kontrolünden geçmesi gerekir.
-- Güvenlik sorunlarını [güvenlik politikasında](SECURITY.md) belirtilen özel kanaldan bildirin.
+- Güvenlik sorunlarını [güvenlik politikasında](../../SECURITY.md) belirtilen özel kanaldan bildirin.
 
 ## SSS
 
@@ -360,15 +361,15 @@ Evet. Proxy'yi `launch()` çağrısına iletin. Kimlik doğrulaması gereken bir
 
 ### Hangi Playwright ve Puppeteer sürümleri destekleniyor?
 
-Her SDK kendi paket manifestinde desteklenen istemci sürümlerini belirtir. İstemciler ayrı bağımlılıklardır. Desteklenen sürüm aralıkları için [sürümlendirme kılavuzuna](docs/versioning.md) bakın.
+Her SDK kendi paket manifestinde desteklenen istemci sürümlerini belirtir. İstemciler ayrı bağımlılıklardır. Desteklenen sürüm aralıkları için [sürümlendirme kılavuzuna](../../docs/versioning.md) bakın.
 
 ### Ombra her bot denetiminden geçer mi?
 
-Sonuçlar siteye, bölgeye, çıkış IP adresinin itibarına, algılama aracının sürümüne ve profil ayarlarına bağlıdır. [Stealth kontrol kılavuzu](docs/stealth-checkup.md) belirli bir yapılandırmanın nasıl değerlendirileceğini açıklar.
+Sonuçlar siteye, bölgeye, çıkış IP adresinin itibarına, algılama aracının sürümüne ve profil ayarlarına bağlıdır. [Stealth kontrol kılavuzu](../../docs/stealth-checkup.md) belirli bir yapılandırmanın nasıl değerlendirileceğini açıklar.
 
 ## Lisans
 
-Bu depodaki SDK kaynak kodu [Apache Lisansı 2.0](LICENSE) ile lisanslanmıştır. Lisans, Ombra motoru, Ombra adı veya logoya ilişkin hak vermez. Ticari markalar ve üçüncü taraflara yapılan atıflar için [NOTICE](NOTICE) dosyasına bakın.
+Bu depodaki SDK kaynak kodu [Apache Lisansı 2.0](../../LICENSE) ile lisanslanmıştır. Lisans, Ombra motoru, Ombra adı veya logoya ilişkin hak vermez. Ticari markalar ve üçüncü taraflara yapılan atıflar için [NOTICE](../../NOTICE) dosyasına bakın.
 
 ---
 

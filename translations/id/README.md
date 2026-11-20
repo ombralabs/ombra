@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 Di Python dan Node.js, `launch()` menjalankan Ombra Chromium dan mengembalikan objek `Browser` dari Playwright. Untuk Puppeteer di Node.js, gunakan `launchPuppeteer()`.
 
-**[Instalasi](#instalasi)** · <a href="README.md">English</a>
+**[Instalasi](#instalasi)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Bahasa</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ Contoh berikut menggunakan paket alfa Python dan Node.js yang sudah diterbitkan.
 
 | Komponen | Status |
 |---|---|
-| [Kontrak API SDK](docs/sdk-contract.md) | Draf `0.1.0` |
+| [Kontrak API SDK](../../docs/sdk-contract.md) | Draf `0.1.0` |
 | SDK Python | `0.1.3` alfa · [`ombrabrowser` (PyPI)](https://pypi.org/project/ombrabrowser/) |
 | SDK Node.js | `0.1.0` alfa · [`@ombralabs/sdk` (npm)](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Skema bersama](spec/schemas) | Opsi peluncuran dan metadata biner mesin |
-| [Kesesuaian lintas bahasa](conformance) | Kasus uji yang dipakai kedua SDK |
-| [Pemeriksaan stealth](docs/stealth-checkup.md) | Kriteria pengujian dan templat laporan |
+| [Skema bersama](../../spec/schemas) | Opsi peluncuran dan metadata biner mesin |
+| [Kesesuaian lintas bahasa](../../conformance) | Kasus uji yang dipakai kedua SDK |
+| [Pemeriksaan stealth](../../docs/stealth-checkup.md) | Kriteria pengujian dan templat laporan |
 
 ## Instalasi
 
@@ -161,7 +161,7 @@ Setelah itu, klien mengirim perintah halaman langsung ke Chromium.
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-Enam SDK lain masih berupa kerangka. [Manifes SDK](sdks/manifest.json) mencatat rencana nama paket, runtime, dan klien. [Panduan SDK](sdks/README.md) menjelaskan struktur direktorinya.
+Enam SDK lain masih berupa kerangka. [Manifes SDK](../../sdks/manifest.json) mencatat rencana nama paket, runtime, dan klien. [Panduan SDK](../../sdks/README.md) menjelaskan struktur direktorinya.
 
 | Target runtime | Rencana paket | Klien atau tipe hasil |
 |---|---|---|
@@ -190,7 +190,7 @@ Nama opsi di bawah mengikuti API Python dan kontrak SDK. Di Node.js, nama yang s
 | `binary_path` | ditentukan | Menggunakan biner mesin tertentu |
 | `download` | `true` | Mengunduh biner mesin yang tidak ada |
 
-[Kontrak SDK](docs/sdk-contract.md) memuat semua opsi peluncuran, jenis kesalahan, dan aturan untuk profil.
+[Kontrak SDK](../../docs/sdk-contract.md) memuat semua opsi peluncuran, jenis kesalahan, dan aturan untuk profil.
 
 ## Manajemen biner
 
@@ -234,7 +234,7 @@ Prioritas: opsi eksplisit, lalu variabel lingkungan, lalu metadata profil, lalu 
 | Isolasi profil | konteks browser | konteks browser | tidak | direktori data pengguna |
 | Migrasi tanpa penulisan ulang | — | perubahan impor | penulisan ulang | perubahan impor |
 
-Hasil deteksi bergantung pada situs, IP keluar, dan profil. [Prosedur pemeriksaan](docs/stealth-checkup.md) menjelaskan cara mengukurnya.
+Hasil deteksi bergantung pada situs, IP keluar, dan profil. [Prosedur pemeriksaan](../../docs/stealth-checkup.md) menjelaskan cara mengukurnya.
 
 ## Stealth adalah properti mesin
 
@@ -272,7 +272,7 @@ Jalankan pemeriksaan ini terhadap build mesin, klien otomasi, dan profil yang in
 | L4 Perilaku | Fidelitas input, jejak humanize, smoke test Cloudflare | Event tepercaya, urutan realistis, challenge terselesaikan |
 | L5 Stabilitas | Seed, worker, iframe, lintas asal | Seed yang sama menghasilkan persona yang sama di setiap peluncuran |
 
-Prosedur pengujian memuat status hasil, panduan penelusuran masalah, dan format laporan. Baca dalam [bahasa Inggris](docs/stealth-checkup.md) atau [bahasa Rusia](docs/stealth-checkup.ru.md).
+Prosedur pengujian memuat status hasil, panduan penelusuran masalah, dan format laporan. Baca dalam [bahasa Inggris](../../docs/stealth-checkup.md) atau [bahasa Rusia](../../docs/stealth-checkup.ru.md).
 
 Catat build mesin, versi klien, pengaturan profil, IP keluar proxy, dan versi detektor pada setiap hasil agar setiap eksekusi dapat direproduksi dan dibandingkan.
 
@@ -281,7 +281,8 @@ Catat build mesin, versi klien, pengaturan profil, IP keluar proxy, dan versi de
 ```text
 .
 ├── README.md                  # versi asli bahasa Inggris
-├── README.ru.md               # terjemahan bahasa Rusia
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # pengelola profil luring
 ├── docs/
 │   ├── desktop/               # dokumentasi pengelola profil
@@ -303,7 +304,7 @@ Catat build mesin, versi klien, pengaturan profil, IP keluar proxy, dan versi de
 └── .github/workflows/ci.yml
 ```
 
-Repositori ini memuat kerangka SDK, kontrak peluncuran, kasus uji bersama, dan pengelola profil luring. Mesin Chromium dan rilis lengkap Desktop 1.2.1 berada di repositori tersendiri. [Kode sumber dan panduan build Desktop](desktop/README.md) · [Dokumentasi pengelola profil](docs/desktop/README.md)
+Repositori ini memuat kerangka SDK, kontrak peluncuran, kasus uji bersama, dan pengelola profil luring. Mesin Chromium dan rilis lengkap Desktop 1.2.1 berada di repositori tersendiri. [Kode sumber dan panduan build Desktop](../../desktop/README.md) · [Dokumentasi pengelola profil](../../docs/desktop/README.md)
 
 ## Kontrak
 
@@ -328,13 +329,13 @@ Versi SDK dan mesin dikelola terpisah. Jika keduanya tidak kompatibel, SDK menye
 
 ## Kontribusi
 
-[Panduan kontribusi](CONTRIBUTING.md) menjelaskan proses peninjauan. Petunjuk build ada di [panduan SDK](sdks/README.md).
+[Panduan kontribusi](../../CONTRIBUTING.md) menjelaskan proses peninjauan. Petunjuk build ada di [panduan SDK](../../sdks/README.md).
 
 - Untuk mengubah perilaku SDK, perbarui implementasi terkait serta tambahkan pengujian atau kasus uji bersama.
-- Untuk SDK dalam bahasa baru, salin [templat SDK](sdks/_template), daftarkan di [manifes](sdks/manifest.json), lalu buka draf pull request.
-- Untuk opsi peluncuran baru, perbarui [kontrak](docs/sdk-contract.md) dan [skema](spec/schemas) terlebih dahulu.
+- Untuk SDK dalam bahasa baru, salin [templat SDK](../../sdks/_template), daftarkan di [manifes](../../sdks/manifest.json), lalu buka draf pull request.
+- Untuk opsi peluncuran baru, perbarui [kontrak](../../docs/sdk-contract.md) dan [skema](../../spec/schemas) terlebih dahulu.
 - Perubahan stealth pada mesin dilakukan di repositori mesin. SDK tetap harus lulus pemeriksaan.
-- Laporkan masalah keamanan secara privat sesuai [kebijakan keamanan](SECURITY.md).
+- Laporkan masalah keamanan secara privat sesuai [kebijakan keamanan](../../SECURITY.md).
 
 ## FAQ
 
@@ -360,15 +361,15 @@ Ya. Teruskan proxy tersebut ke `launch()`. Proxy dengan autentikasi melewati rel
 
 ### Versi Playwright dan Puppeteer mana yang didukung?
 
-Versi klien yang didukung tercantum dalam manifes setiap paket dan [panduan kompatibilitas](docs/versioning.md). Klien didistribusikan sebagai dependensi terpisah.
+Versi klien yang didukung tercantum dalam manifes setiap paket dan [panduan kompatibilitas](../../docs/versioning.md). Klien didistribusikan sebagai dependensi terpisah.
 
 ### Apakah ini akan lulus setiap pemeriksaan bot?
 
-Hasilnya bergantung pada situs, wilayah, reputasi IP keluar, versi detektor, dan pengaturan profil. Gunakan [pemeriksaan stealth](docs/stealth-checkup.md) untuk mengukur konfigurasi tertentu.
+Hasilnya bergantung pada situs, wilayah, reputasi IP keluar, versi detektor, dan pengaturan profil. Gunakan [pemeriksaan stealth](../../docs/stealth-checkup.md) untuk mengukur konfigurasi tertentu.
 
 ## Lisensi
 
-Kode sumber SDK di repositori ini dilisensikan di bawah [Apache License 2.0](LICENSE). Lisensi ini tidak memberikan hak atas mesin Ombra, nama Ombra, atau logo. Lihat [NOTICE](NOTICE) untuk atribusi merek dagang dan pihak ketiga.
+Kode sumber SDK di repositori ini dilisensikan di bawah [Apache License 2.0](../../LICENSE). Lisensi ini tidak memberikan hak atas mesin Ombra, nama Ombra, atau logo. Lihat [NOTICE](../../NOTICE) untuk atribusi merek dagang dan pihak ketiga.
 
 ---
 

@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 Python と Node.js の `launch()` は Ombra Chromium を起動し、Playwright の `Browser` を返します。Node.js で Puppeteer を使う場合は `launchPuppeteer()` を呼び出します。
 
-**[インストール](#インストール)** · <a href="README.md">English</a>
+**[インストール](#インストール)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>言語</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ SDK はローカルでエンジンを起動し、Chrome DevTools Protocol（CDP�
 
 | コンポーネント | 状態 |
 |---|---|
-| [SDK コントラクト](docs/sdk-contract.md) | ドラフト `0.1.0` |
+| [SDK コントラクト](../../docs/sdk-contract.md) | ドラフト `0.1.0` |
 | Python SDK | `0.1.3` アルファ版 · [PyPI の `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | Node.js SDK | `0.1.0` アルファ版 · [npm の `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [共通スキーマ](spec/schemas) | 起動オプションとエンジンバイナリのメタデータ |
-| [言語間の適合性テスト](conformance) | 両方の SDK で共用するテストケース |
-| [ステルスチェックアップ](docs/stealth-checkup.md) | 判定基準と報告用テンプレート |
+| [共通スキーマ](../../spec/schemas) | 起動オプションとエンジンバイナリのメタデータ |
+| [言語間の適合性テスト](../../conformance) | 両方の SDK で共用するテストケース |
+| [ステルスチェックアップ](../../docs/stealth-checkup.md) | 判定基準と報告用テンプレート |
 
 ## インストール
 
@@ -161,7 +161,7 @@ flowchart LR
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-このリポジトリには、ほかに 6 つの SDK 用のディレクトリがあります。予定されているパッケージとクライアントは [SDK マニフェスト](sdks/manifest.json)に、ディレクトリ構成は [SDK ガイド](sdks/README.md)に記載しています。
+このリポジトリには、ほかに 6 つの SDK 用のディレクトリがあります。予定されているパッケージとクライアントは [SDK マニフェスト](../../sdks/manifest.json)に、ディレクトリ構成は [SDK ガイド](../../sdks/README.md)に記載しています。
 
 | 対象ランタイム | 予定されているパッケージ | クライアントまたは戻り値の型 |
 |---|---|---|
@@ -190,7 +190,7 @@ flowchart LR
 | `binary_path` | 自動的に特定 | 特定のエンジンバイナリを使用 |
 | `download` | `true` | 見つからないエンジンバイナリをダウンロード |
 
-すべての起動オプション、エラーの種類、プロファイルの動作は [SDK コントラクト](docs/sdk-contract.md)に記載しています。
+すべての起動オプション、エラーの種類、プロファイルの動作は [SDK コントラクト](../../docs/sdk-contract.md)に記載しています。
 
 ## バイナリ管理
 
@@ -234,7 +234,7 @@ SDK は起動オプション、環境変数、プロファイルのメタデー�
 | プロファイルの分離 | ブラウザコンテキスト | ブラウザコンテキスト | なし | ユーザーデータディレクトリ |
 | ドロップイン移行 | — | インポートの変更 | 書き換え | インポートの変更 |
 
-検出結果はサイト、出口 IP、プロファイルによって変わります。測定手順は[ステルスチェックアップ](docs/stealth-checkup.md)にあります。
+検出結果はサイト、出口 IP、プロファイルによって変わります。測定手順は[ステルスチェックアップ](../../docs/stealth-checkup.md)にあります。
 
 ## ステルスはエンジンの特性
 
@@ -272,7 +272,7 @@ SDK は起動オプション、環境変数、プロファイルのメタデー�
 | L4 挙動 | 入力の忠実度、ヒューマナイズの痕跡、Cloudflare スモークテスト | イベントが信頼でき、順序が現実的で、チャレンジが解決されること |
 | L5 安定性 | シード、ワーカー、iframe、クロスオリジン | 同じシードから、起動のたびに同じペルソナが生成されること |
 
-手順書には結果の分類、問題の切り分け、報告方法をまとめています。[英語版](docs/stealth-checkup.md)と[ロシア語版](docs/stealth-checkup.ru.md)があります。
+手順書には結果の分類、問題の切り分け、報告方法をまとめています。[英語版](../../docs/stealth-checkup.md)と[ロシア語版](../../docs/stealth-checkup.ru.md)があります。
 
 実行を再現して比較できるよう、各結果とあわせてエンジンビルド、クライアントのバージョン、プロファイル設定、プロキシの出口、検出器のバージョンを記録してください。
 
@@ -281,7 +281,8 @@ SDK は起動オプション、環境変数、プロファイルのメタデー�
 ```text
 .
 ├── README.md                  # 英語の原文
-├── README.ru.md               # ロシア語訳
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # オフラインのプロファイルマネージャー
 ├── docs/
 │   ├── desktop/               # プロファイルマネージャーのドキュメント
@@ -303,7 +304,7 @@ SDK は起動オプション、環境変数、プロファイルのメタデー�
 └── .github/workflows/ci.yml
 ```
 
-このリポジトリでは SDK のひな形、起動コントラクト、適合性テストケース、オフラインのプロファイルマネージャーを管理しています。Chromium エンジンと Desktop 1.2.1 の完全版は、それぞれ別のリポジトリにあります。[Desktop のソースとビルド手順](desktop/README.md) · [プロファイルマネージャーのドキュメント](docs/desktop/README.md)
+このリポジトリでは SDK のひな形、起動コントラクト、適合性テストケース、オフラインのプロファイルマネージャーを管理しています。Chromium エンジンと Desktop 1.2.1 の完全版は、それぞれ別のリポジトリにあります。[Desktop のソースとビルド手順](../../desktop/README.md) · [プロファイルマネージャーのドキュメント](../../docs/desktop/README.md)
 
 ## コントラクト
 
@@ -328,13 +329,13 @@ SDK とエンジンのバージョンは個別に管理されています。互�
 
 ## コントリビューション
 
-レビューの流れは[コントリビューションガイド](CONTRIBUTING.md)に、ビルド手順は [SDK ガイド](sdks/README.md)に記載しています。
+レビューの流れは[コントリビューションガイド](../../CONTRIBUTING.md)に、ビルド手順は [SDK ガイド](../../sdks/README.md)に記載しています。
 
 - SDK の動作を変更する場合は、対象の実装を更新し、テストまたは共通の適合性テストケースを追加してください。
-- 新しい言語の SDK を追加するには、[SDK テンプレート](sdks/_template)をコピーし、[マニフェスト](sdks/manifest.json)に登録してドラフトのプルリクエストを作成してください。
-- 起動オプションを追加する場合は、先に [SDK コントラクト](docs/sdk-contract.md)と[スキーマ](spec/schemas)を更新してください。
+- 新しい言語の SDK を追加するには、[SDK テンプレート](../../sdks/_template)をコピーし、[マニフェスト](../../sdks/manifest.json)に登録してドラフトのプルリクエストを作成してください。
+- 起動オプションを追加する場合は、先に [SDK コントラクト](../../docs/sdk-contract.md)と[スキーマ](../../spec/schemas)を更新してください。
 - エンジンレベルのステルス機能の変更はエンジンのリポジトリで行います。変更後も SDK はチェックアップの基準を満たす必要があります。
-- セキュリティ上の問題は、[セキュリティポリシー](SECURITY.md)に従って非公開で報告してください。
+- セキュリティ上の問題は、[セキュリティポリシー](../../SECURITY.md)に従って非公開で報告してください。
 
 ## よくある質問
 
@@ -360,15 +361,15 @@ Ombra のフィンガープリント制御は Chromium 自体に組み込まれ�
 
 ### どのバージョンの Playwright と Puppeteer に対応していますか？
 
-各 SDK のパッケージマニフェストに対応バージョンを記載しています。クライアントは個別の依存パッケージです。対応範囲は[バージョニングガイド](docs/versioning.md)で確認できます。
+各 SDK のパッケージマニフェストに対応バージョンを記載しています。クライアントは個別の依存パッケージです。対応範囲は[バージョニングガイド](../../docs/versioning.md)で確認できます。
 
 ### Ombra はすべてのボット検出を通過できますか？
 
-結果はサイト、地域、出口 IP の評価、検出ツールのバージョン、プロファイル設定によって変わります。特定の構成での測定方法は[ステルスチェックアップ](docs/stealth-checkup.md)で確認できます。
+結果はサイト、地域、出口 IP の評価、検出ツールのバージョン、プロファイル設定によって変わります。特定の構成での測定方法は[ステルスチェックアップ](../../docs/stealth-checkup.md)で確認できます。
 
 ## ライセンス
 
-このリポジトリの SDK ソースは [Apache License 2.0](LICENSE) でライセンスされています。このライセンスは、Ombra エンジン、Ombra の名称、ロゴに関する権利を許諾するものではありません。商標および第三者への帰属表示については [NOTICE](NOTICE) を参照してください。
+このリポジトリの SDK ソースは [Apache License 2.0](../../LICENSE) でライセンスされています。このライセンスは、Ombra エンジン、Ombra の名称、ロゴに関する権利を許諾するものではありません。商標および第三者への帰属表示については [NOTICE](../../NOTICE) を参照してください。
 
 ---
 

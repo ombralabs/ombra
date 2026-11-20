@@ -66,7 +66,8 @@ Use the pull request template. Keep the diff focused; do not reformat unrelated 
 
 ## Documentation style
 
-- English is canonical; Russian translations live next to the English file (`README.ru.md`, `docs/stealth-checkup.ru.md`).
+- The root README is the English source. For translated READMEs and their images, follow the [README translation layout](AGENTS.md#readme-translations).
+- For other documents, keep the Russian translation beside the English source, as in `docs/stealth-checkup.ru.md`.
 - Write for an engineer who has not read the rest of the repository.
 - Prefer concrete commands, field names, and expected values over adjectives.
 - Do not promise undetectability, CAPTCHA success rates, or "no blocks".

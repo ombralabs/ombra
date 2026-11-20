@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 在 Python 和 Node.js 中，`launch()` 会启动 Ombra Chromium，并返回 Playwright 的 `Browser` 对象。在 Node.js 中使用 Puppeteer 时，请调用 `launchPuppeteer()`。
 
-**[安装](#安装)** · <a href="README.md">English</a>
+**[安装](#安装)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>语言</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ SDK 在本地启动引擎，通过 Chrome DevTools Protocol（CDP）连接自动
 
 | 组件 | 状态 |
 |---|---|
-| [SDK 契约](docs/sdk-contract.md) | 草案 `0.1.0` |
+| [SDK 契约](../../docs/sdk-contract.md) | 草案 `0.1.0` |
 | Python SDK | `0.1.3` Alpha 版 · [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | Node.js SDK | `0.1.0` Alpha 版 · [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [共享模式定义](spec/schemas) | 启动选项和引擎二进制文件的元数据 |
-| [跨语言一致性测试](conformance) | 两个 SDK 共用的测试用例 |
-| [隐蔽性检查](docs/stealth-checkup.md) | 测试标准和报告模板 |
+| [共享模式定义](../../spec/schemas) | 启动选项和引擎二进制文件的元数据 |
+| [跨语言一致性测试](../../conformance) | 两个 SDK 共用的测试用例 |
+| [隐蔽性检查](../../docs/stealth-checkup.md) | 测试标准和报告模板 |
 
 ## 安装
 
@@ -161,7 +161,7 @@ flowchart LR
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-本仓库还包含另外 6 个 SDK 的目录。计划发布的包及其对应的客户端列在 [SDK 清单](sdks/manifest.json)中，目录布局见 [SDK 指南](sdks/README.md)。
+本仓库还包含另外 6 个 SDK 的目录。计划发布的包及其对应的客户端列在 [SDK 清单](../../sdks/manifest.json)中，目录布局见 [SDK 指南](../../sdks/README.md)。
 
 | 目标运行时 | 计划发布的包 | 客户端或返回类型 |
 |---|---|---|
@@ -190,7 +190,7 @@ flowchart LR
 | `binary_path` | 已解析 | 使用指定的引擎二进制文件 |
 | `download` | `true` | 下载缺失的引擎二进制文件 |
 
-[SDK 契约](docs/sdk-contract.md)列出了所有启动选项，并说明了错误类型和配置文件的行为。
+[SDK 契约](../../docs/sdk-contract.md)列出了所有启动选项，并说明了错误类型和配置文件的行为。
 
 ## 二进制文件管理
 
@@ -234,7 +234,7 @@ SDK 依次检查启动选项、环境变量、配置文件元数据和默认值�
 | 配置文件隔离 | 浏览器上下文 | 浏览器上下文 | 无 | 用户数据目录 |
 | 无缝迁移 | — | 修改导入语句 | 重写代码 | 修改导入语句 |
 
-检测结果取决于网站、出口 IP 和配置文件。测量方法见[隐蔽性检查](docs/stealth-checkup.md)。
+检测结果取决于网站、出口 IP 和配置文件。测量方法见[隐蔽性检查](../../docs/stealth-checkup.md)。
 
 ## 隐蔽性是引擎的固有属性
 
@@ -272,7 +272,7 @@ SDK 依次检查启动选项、环境变量、配置文件元数据和默认值�
 | L4 行为 | 输入保真度、拟人化痕迹、Cloudflare 冒烟测试 | 事件可信、顺序真实、挑战可通过 |
 | L5 稳定性 | 种子、Worker、iframe、跨源 | 同一种子在多次启动中产出相同的人设 |
 
-测试指南介绍了结果状态、故障排查和报告方式，可查阅[英文版](docs/stealth-checkup.md)或[俄文版](docs/stealth-checkup.ru.md)。
+测试指南介绍了结果状态、故障排查和报告方式，可查阅[英文版](../../docs/stealth-checkup.md)或[俄文版](../../docs/stealth-checkup.ru.md)。
 
 为每份结果记录引擎构建版本、客户端版本、配置文件设置、代理出口和检测器版本，以便复现并比较各次运行。
 
@@ -280,8 +280,9 @@ SDK 依次检查启动选项、环境变量、配置文件元数据和默认值�
 
 ```text
 .
-├── README.md                  # 本文件（英文原文）
-├── README.ru.md               # 俄语译文
+├── README.md                  # 英文原文
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # 离线配置文件管理器
 ├── docs/
 │   ├── desktop/               # 配置文件管理器文档
@@ -303,7 +304,7 @@ SDK 依次检查启动选项、环境变量、配置文件元数据和默认值�
 └── .github/workflows/ci.yml
 ```
 
-本仓库包含 SDK 项目骨架、启动契约、一致性测试用例和离线配置文件管理器。Chromium 引擎和 Desktop 1.2.1 完整发行版分别在独立的仓库中维护。[Desktop 源码与构建指南](desktop/README.md) · [配置文件管理器文档](docs/desktop/README.md)
+本仓库包含 SDK 项目骨架、启动契约、一致性测试用例和离线配置文件管理器。Chromium 引擎和 Desktop 1.2.1 完整发行版分别在独立的仓库中维护。[Desktop 源码与构建指南](../../desktop/README.md) · [配置文件管理器文档](../../docs/desktop/README.md)
 
 ## 契约
 
@@ -328,13 +329,13 @@ SDK 与引擎独立管理版本。如果版本不兼容，SDK 会抛出具有明
 
 ## 参与贡献
 
-[贡献指南](CONTRIBUTING.md)说明了代码审查流程，构建步骤见 [SDK 指南](sdks/README.md)。
+[贡献指南](../../CONTRIBUTING.md)说明了代码审查流程，构建步骤见 [SDK 指南](../../sdks/README.md)。
 
 - 修改 SDK 行为时，请更新受影响的实现，并添加测试或共享的一致性测试用例。
-- 添加新语言的 SDK 时，请复制 [SDK 模板](sdks/_template)，在[清单](sdks/manifest.json)中注册，并提交草稿 PR。
-- 添加启动选项时，请先更新 [SDK 契约](docs/sdk-contract.md)和[模式定义](spec/schemas)。
+- 添加新语言的 SDK 时，请复制 [SDK 模板](../../sdks/_template)，在[清单](../../sdks/manifest.json)中注册，并提交草稿 PR。
+- 添加启动选项时，请先更新 [SDK 契约](../../docs/sdk-contract.md)和[模式定义](../../spec/schemas)。
 - 引擎级隐蔽性功能应在引擎仓库中修改。修改后，SDK 仍须通过检查。
-- 请按照[安全政策](SECURITY.md)私下报告安全问题。
+- 请按照[安全政策](../../SECURITY.md)私下报告安全问题。
 
 ## 常见问题
 
@@ -360,15 +361,15 @@ Ombra 的指纹控制逻辑直接编译进了 Chromium。SDK 不会修改页面�
 
 ### 支持哪些版本的 Playwright 和 Puppeteer？
 
-各 SDK 在包清单中声明支持的客户端版本。这些客户端是独立的依赖项。具体支持范围见[版本管理指南](docs/versioning.md)。
+各 SDK 在包清单中声明支持的客户端版本。这些客户端是独立的依赖项。具体支持范围见[版本管理指南](../../docs/versioning.md)。
 
 ### Ombra 能通过所有机器人检测吗？
 
-结果取决于网站、地区、出口 IP 的信誉、检测器版本和配置文件的设置。[隐蔽性检查](docs/stealth-checkup.md)说明了如何测量特定配置的结果。
+结果取决于网站、地区、出口 IP 的信誉、检测器版本和配置文件的设置。[隐蔽性检查](../../docs/stealth-checkup.md)说明了如何测量特定配置的结果。
 
 ## 许可证
 
-本仓库中的 SDK 源码基于 [Apache License 2.0](LICENSE) 授权。该许可证不授予对 Ombra 引擎、Ombra 名称或标志的任何权利。商标和第三方署名信息见 [NOTICE](NOTICE)。
+本仓库中的 SDK 源码基于 [Apache License 2.0](../../LICENSE) 授权。该许可证不授予对 Ombra 引擎、Ombra 名称或标志的任何权利。商标和第三方署名信息见 [NOTICE](../../NOTICE)。
 
 ---
 

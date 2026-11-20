@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 Sa Python at Node.js, pinapatakbo ng `launch()` ang Ombra Chromium at ibinabalik ang `Browser` ng Playwright. Para sa Puppeteer sa Node.js, gamitin ang `launchPuppeteer()`.
 
-**[Pag-install](#pag-install)** · <a href="README.md">English</a>
+**[Pag-install](#pag-install)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Mga wika</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ Ang mga halimbawa ay gumagamit ng mga nailathalang alpha package para sa Python 
 
 | Component | Estado |
 |---|---|
-| [Kontrata ng API ng SDK](docs/sdk-contract.md) | Burador `0.1.0` |
+| [Kontrata ng API ng SDK](../../docs/sdk-contract.md) | Burador `0.1.0` |
 | Python SDK | `0.1.3` alpha · [`ombrabrowser` (PyPI)](https://pypi.org/project/ombrabrowser/) |
 | Node.js SDK | `0.1.0` alpha · [`@ombralabs/sdk` (npm)](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Mga shared schema](spec/schemas) | Mga opsyon sa paglulunsad at detalye ng engine binary |
-| [Conformance sa iba't ibang wika](conformance) | Mga test case para sa parehong SDK |
-| [Pagsusuri ng stealth](docs/stealth-checkup.md) | Pamantayan sa pagsusuri at template ng ulat |
+| [Mga shared schema](../../spec/schemas) | Mga opsyon sa paglulunsad at detalye ng engine binary |
+| [Conformance sa iba't ibang wika](../../conformance) | Mga test case para sa parehong SDK |
+| [Pagsusuri ng stealth](../../docs/stealth-checkup.md) | Pamantayan sa pagsusuri at template ng ulat |
 
 ## Pag-install
 
@@ -161,7 +161,7 @@ Pagkatapos ng paglulunsad, direktang ipinapadala ng client sa Chromium ang mga u
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-May mga panimulang direktoryo para sa anim pang SDK. Nakalista sa [manifest ng SDK](sdks/manifest.json) ang mga planong package at client. Inilalarawan ng [gabay sa SDK](sdks/README.md) ang ayos ng mga direktoryo.
+May mga panimulang direktoryo para sa anim pang SDK. Nakalista sa [manifest ng SDK](../../sdks/manifest.json) ang mga planong package at client. Inilalarawan ng [gabay sa SDK](../../sdks/README.md) ang ayos ng mga direktoryo.
 
 | Target na runtime | Planong package | Client o uri ng ibinabalik na object |
 |---|---|---|
@@ -190,7 +190,7 @@ Ginagamit dito ang mga pangalan ng opsyon sa Python at sa kontrata ng SDK. Sa No
 | `binary_path` | niresolba | Gumamit ng partikular na binary ng engine |
 | `download` | `true` | I-download ang nawawalang binary ng engine |
 
-Nakalista sa [kontrata ng SDK](docs/sdk-contract.md) ang lahat ng opsyon sa paglulunsad, mga uri ng error, at mga tuntunin para sa profile.
+Nakalista sa [kontrata ng SDK](../../docs/sdk-contract.md) ang lahat ng opsyon sa paglulunsad, mga uri ng error, at mga tuntunin para sa profile.
 
 ## Pamamahala ng binary
 
@@ -234,7 +234,7 @@ Prayoridad: tahasang opsyon, pagkatapos ay environment variable, pagkatapos ay m
 | Isolation ng profile | context ng browser | context ng browser | wala | user-data directory |
 | Drop-in na migrasyon | — | pagpalit ng import | muling pagsulat | pagpalit ng import |
 
-Nakadepende ang resulta ng deteksyon sa site, exit IP, at profile. Inilalarawan ng [pamamaraan ng pagsusuri](docs/stealth-checkup.md) kung paano ito sinusukat.
+Nakadepende ang resulta ng deteksyon sa site, exit IP, at profile. Inilalarawan ng [pamamaraan ng pagsusuri](../../docs/stealth-checkup.md) kung paano ito sinusukat.
 
 ## Ang stealth ay katangian ng engine
 
@@ -272,7 +272,7 @@ Patakbuhin ang mga pagsusuring ito sa build ng engine, automation client, at pro
 | L4 Pag-uugali | Fidelity ng input, mga humanize trace, Cloudflare smoke | Mga trusted event, makatotohanang pagkakasunod-sunod, nalulutas ang challenge |
 | L5 Katatagan | Seed, worker, iframe, cross-origin | Parehong persona ang nalilikha ng parehong seed sa mga launch |
 
-Nasa pamamaraan ng pagsusuri ang mga posibleng resulta, mga hakbang sa pagsisiyasat, at format ng ulat. Basahin ito sa [Ingles](docs/stealth-checkup.md) o [Ruso](docs/stealth-checkup.ru.md).
+Nasa pamamaraan ng pagsusuri ang mga posibleng resulta, mga hakbang sa pagsisiyasat, at format ng ulat. Basahin ito sa [Ingles](../../docs/stealth-checkup.md) o [Ruso](../../docs/stealth-checkup.ru.md).
 
 Itala ang build ng engine, bersyon ng client, mga setting ng profile, proxy exit, at bersyon ng detector kasama ng bawat resulta para ma-reproduce at maikumpara ang mga run.
 
@@ -281,7 +281,8 @@ Itala ang build ng engine, bersyon ng client, mga setting ng profile, proxy exit
 ```text
 .
 ├── README.md                  # orihinal sa English
-├── README.ru.md               # salin sa Russian
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # offline na tagapamahala ng profile
 ├── docs/
 │   ├── desktop/               # dokumentasyon ng tagapamahala ng profile
@@ -303,7 +304,7 @@ Itala ang build ng engine, bersyon ng client, mga setting ng profile, proxy exit
 └── .github/workflows/ci.yml
 ```
 
-Nasa repositoryong ito ang mga panimulang direktoryo ng SDK, kontrata sa paglulunsad, mga test case, at offline na tagapamahala ng profile. May magkahiwalay na repositoryo ang Chromium engine at ang buong Desktop 1.2.1 release. [Source code at gabay sa pagbuo ng Desktop](desktop/README.md) · [Dokumentasyon ng tagapamahala ng profile](docs/desktop/README.md)
+Nasa repositoryong ito ang mga panimulang direktoryo ng SDK, kontrata sa paglulunsad, mga test case, at offline na tagapamahala ng profile. May magkahiwalay na repositoryo ang Chromium engine at ang buong Desktop 1.2.1 release. [Source code at gabay sa pagbuo ng Desktop](../../desktop/README.md) · [Dokumentasyon ng tagapamahala ng profile](../../docs/desktop/README.md)
 
 ## Ang kontrata
 
@@ -328,13 +329,13 @@ Magkahiwalay ang mga bersyon ng SDK at engine. Kung hindi magkatugma ang mga ito
 
 ## Pag-aambag
 
-Inilalarawan ng [gabay sa pag-aambag](CONTRIBUTING.md) ang proseso ng pagsusuri. Nasa [gabay sa SDK](sdks/README.md) ang mga hakbang sa pagbuo ng package.
+Inilalarawan ng [gabay sa pag-aambag](../../CONTRIBUTING.md) ang proseso ng pagsusuri. Nasa [gabay sa SDK](../../sdks/README.md) ang mga hakbang sa pagbuo ng package.
 
 - Kung magbabago ng pag-uugali ng SDK, baguhin ang kaukulang implementasyon at magdagdag ng test o isang test case na magagamit ng parehong SDK.
-- Para sa SDK sa bagong wika, kopyahin ang [template](sdks/_template), idagdag ito sa [manifest](sdks/manifest.json), at magbukas ng draft na pull request.
-- Para sa bagong opsyon sa paglulunsad, unahing baguhin ang [kontrata](docs/sdk-contract.md) at [mga schema](spec/schemas).
+- Para sa SDK sa bagong wika, kopyahin ang [template](../../sdks/_template), idagdag ito sa [manifest](../../sdks/manifest.json), at magbukas ng draft na pull request.
+- Para sa bagong opsyon sa paglulunsad, unahing baguhin ang [kontrata](../../docs/sdk-contract.md) at [mga schema](../../spec/schemas).
 - Sa repositoryo ng engine ginagawa ang pagbabago sa stealth ng engine. Kailangang pumasa pa rin ang SDK sa pagsusuri.
-- Iulat nang pribado ang mga isyu sa seguridad ayon sa [patakaran sa seguridad](SECURITY.md).
+- Iulat nang pribado ang mga isyu sa seguridad ayon sa [patakaran sa seguridad](../../SECURITY.md).
 
 ## FAQ
 
@@ -360,15 +361,15 @@ Oo. Ipasa ito sa `launch()`. Ang mga authenticated na proxy ay dumadaan sa loopb
 
 ### Aling mga bersyon ng Playwright at Puppeteer ang sinusuportahan?
 
-Nakalista sa manifest ng bawat package at sa [gabay sa mga bersyon](docs/versioning.md) ang mga suportadong client. Hiwalay na dependency ang bawat client.
+Nakalista sa manifest ng bawat package at sa [gabay sa mga bersyon](../../docs/versioning.md) ang mga suportadong client. Hiwalay na dependency ang bawat client.
 
 ### Malalampasan ba nito ang bawat bot check?
 
-Nakadepende ang mga resulta sa site, rehiyon, reputasyon ng exit IP, bersyon ng detector, at mga setting ng profile. Gamitin ang [pagsusuri ng stealth](docs/stealth-checkup.md) para sukatin ang isang partikular na configuration.
+Nakadepende ang mga resulta sa site, rehiyon, reputasyon ng exit IP, bersyon ng detector, at mga setting ng profile. Gamitin ang [pagsusuri ng stealth](../../docs/stealth-checkup.md) para sukatin ang isang partikular na configuration.
 
 ## Lisensya
 
-Ang mga source ng SDK sa repository na ito ay lisensyado sa ilalim ng [Apache License 2.0](LICENSE). Hindi nagbibigay ng mga karapatan sa Ombra engine, sa pangalang Ombra, o sa logo ang lisensya. Tingnan ang [NOTICE](NOTICE) para sa trademark at third-party attribution.
+Ang mga source ng SDK sa repository na ito ay lisensyado sa ilalim ng [Apache License 2.0](../../LICENSE). Hindi nagbibigay ng mga karapatan sa Ombra engine, sa pangalang Ombra, o sa logo ang lisensya. Tingnan ang [NOTICE](../../NOTICE) para sa trademark at third-party attribution.
 
 ---
 

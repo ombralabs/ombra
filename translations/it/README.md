@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 In Python e Node.js, `launch()` avvia Ombra Chromium e restituisce un oggetto `Browser` di Playwright. Per usare Puppeteer in Node.js, chiama `launchPuppeteer()`.
 
-**[Installazione](#installazione)** · <a href="README.md">English</a>
+**[Installazione](#installazione)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Lingue</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ Gli esempi usano i pacchetti per Python e Node.js pubblicati in versione alfa. I
 
 | Componente | Stato |
 |---|---|
-| [Contratto dell'SDK](docs/sdk-contract.md) | Bozza `0.1.0` |
+| [Contratto dell'SDK](../../docs/sdk-contract.md) | Bozza `0.1.0` |
 | SDK per Python | `0.1.3` alfa · [`ombrabrowser` su PyPI](https://pypi.org/project/ombrabrowser/) |
 | SDK per Node.js | `0.1.0` alfa · [`@ombralabs/sdk` su npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Schemi condivisi](spec/schemas) | Opzioni di avvio e metadati del binario del motore |
-| [Verifica di conformità tra linguaggi](conformance) | Casi di test comuni ai due SDK |
-| [Checkup stealth](docs/stealth-checkup.md) | Criteri di verifica e modello per il rapporto |
+| [Schemi condivisi](../../spec/schemas) | Opzioni di avvio e metadati del binario del motore |
+| [Verifica di conformità tra linguaggi](../../conformance) | Casi di test comuni ai due SDK |
+| [Checkup stealth](../../docs/stealth-checkup.md) | Criteri di verifica e modello per il rapporto |
 
 ## Installazione
 
@@ -161,7 +161,7 @@ Dopo l'avvio, il client invia i comandi per le pagine direttamente a Chromium.
 | Python 3.10+ | `ombrabrowser` | `launch()` → `Browser` di Playwright |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → `Browser` di Playwright<br>`launchPuppeteer()` → `Browser` di Puppeteer |
 
-Il repository contiene le directory di altri sei SDK. Il [manifest degli SDK](sdks/manifest.json) elenca i pacchetti e i client previsti. La [guida agli SDK](sdks/README.md) descrive la struttura delle directory.
+Il repository contiene le directory di altri sei SDK. Il [manifest degli SDK](../../sdks/manifest.json) elenca i pacchetti e i client previsti. La [guida agli SDK](../../sdks/README.md) descrive la struttura delle directory.
 
 | Ambiente di destinazione | Pacchetto previsto | Client o tipo restituito |
 |---|---|---|
@@ -190,7 +190,7 @@ Le opzioni in tabella usano i nomi dell'API Python e del contratto dell'SDK. Gli
 | `binary_path` | ricerca automatica | Seleziona uno specifico binario del motore |
 | `download` | `true` | Scarica il binario del motore se manca |
 
-Il [contratto dell'SDK](docs/sdk-contract.md) elenca tutte le opzioni di avvio e descrive i tipi di errore e il comportamento dei profili.
+Il [contratto dell'SDK](../../docs/sdk-contract.md) elenca tutte le opzioni di avvio e descrive i tipi di errore e il comportamento dei profili.
 
 ## Gestione del binario
 
@@ -234,7 +234,7 @@ L'SDK usa il primo valore disponibile nelle opzioni di avvio, nelle variabili d'
 | Isolamento dei profili | contesto del browser | contesto del browser | no | directory dei dati utente |
 | Migrazione senza riscritture | — | cambio di import | riscrittura | cambio di import |
 
-I risultati dei rilevatori dipendono dal sito, dall'IP di uscita e dal profilo. La [guida al checkup](docs/stealth-checkup.md) spiega come misurarli.
+I risultati dei rilevatori dipendono dal sito, dall'IP di uscita e dal profilo. La [guida al checkup](../../docs/stealth-checkup.md) spiega come misurarli.
 
 ## Lo stealth è una proprietà del motore
 
@@ -272,7 +272,7 @@ Esegui questi controlli con la build del motore, il client di automazione e il p
 | L4 Comportamento | Fedeltà dell'input, tracce di `humanize`, test di base con Cloudflare | Eventi attendibili in un ordine realistico e verifica superata |
 | L5 Stabilità | Seed, worker, iframe, origini diverse | Lo stesso seed produce la stessa identità a ogni avvio |
 
-La procedura spiega come interpretare gli esiti, diagnosticare i problemi e documentare i risultati. È disponibile in [inglese](docs/stealth-checkup.md) e in [russo](docs/stealth-checkup.ru.md).
+La procedura spiega come interpretare gli esiti, diagnosticare i problemi e documentare i risultati. È disponibile in [inglese](../../docs/stealth-checkup.md) e in [russo](../../docs/stealth-checkup.ru.md).
 
 Per poter riprodurre e confrontare i risultati, annota per ogni test la build del motore, la versione del client, le impostazioni del profilo, l'IP di uscita del proxy e la versione del rilevatore.
 
@@ -281,7 +281,8 @@ Per poter riprodurre e confrontare i risultati, annota per ogni test la build de
 ```text
 .
 ├── README.md                  # originale inglese
-├── README.ru.md               # traduzione russa
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # gestore di profili offline
 ├── docs/
 │   ├── desktop/               # documentazione del gestore di profili
@@ -303,7 +304,7 @@ Per poter riprodurre e confrontare i risultati, annota per ogni test la build de
 └── .github/workflows/ci.yml
 ```
 
-Questo repository contiene la struttura iniziale degli SDK, il contratto di avvio, i casi di conformità e il gestore di profili offline. Il motore Chromium e la versione completa di Desktop 1.2.1 hanno repository separati. [Sorgenti e istruzioni di compilazione di Desktop](desktop/README.md) · [Documentazione del gestore di profili](docs/desktop/README.md)
+Questo repository contiene la struttura iniziale degli SDK, il contratto di avvio, i casi di conformità e il gestore di profili offline. Il motore Chromium e la versione completa di Desktop 1.2.1 hanno repository separati. [Sorgenti e istruzioni di compilazione di Desktop](../../desktop/README.md) · [Documentazione del gestore di profili](../../docs/desktop/README.md)
 
 ## Il contratto
 
@@ -328,13 +329,13 @@ Le versioni dell'SDK e del motore sono indipendenti. In caso di incompatibilità
 
 ## Come contribuire
 
-La [guida per chi contribuisce](CONTRIBUTING.md) descrive il processo di revisione. Per le istruzioni di compilazione, consulta la [guida agli SDK](sdks/README.md).
+La [guida per chi contribuisce](../../CONTRIBUTING.md) descrive il processo di revisione. Per le istruzioni di compilazione, consulta la [guida agli SDK](../../sdks/README.md).
 
 - Se cambi il comportamento di un SDK, aggiorna l'implementazione interessata e aggiungi un test o un caso di conformità condiviso.
-- Per aggiungere un linguaggio, copia il [modello di SDK](sdks/_template), registra il nuovo SDK nel [manifest](sdks/manifest.json) e apri una pull request in bozza.
-- Per aggiungere un'opzione di avvio, aggiorna prima il [contratto dell'SDK](docs/sdk-contract.md) e gli [schemi](spec/schemas).
+- Per aggiungere un linguaggio, copia il [modello di SDK](../../sdks/_template), registra il nuovo SDK nel [manifest](../../sdks/manifest.json) e apri una pull request in bozza.
+- Per aggiungere un'opzione di avvio, aggiorna prima il [contratto dell'SDK](../../docs/sdk-contract.md) e gli [schemi](../../spec/schemas).
 - Le modifiche allo stealth del motore vanno nel repository del motore. L'SDK deve continuare a superare il checkup.
-- Segnala i problemi di sicurezza in privato seguendo la [politica di sicurezza](SECURITY.md).
+- Segnala i problemi di sicurezza in privato seguendo la [politica di sicurezza](../../SECURITY.md).
 
 ## FAQ
 
@@ -360,15 +361,15 @@ Sì. Passalo a `launch()`. Se il proxy richiede l'autenticazione, un relay local
 
 ### Quali versioni di Playwright e Puppeteer sono supportate?
 
-Ogni SDK dichiara nel manifest del proprio pacchetto le versioni dei client supportate. I client si installano come dipendenze separate. Consulta gli intervalli supportati nella [guida alle versioni](docs/versioning.md).
+Ogni SDK dichiara nel manifest del proprio pacchetto le versioni dei client supportate. I client si installano come dipendenze separate. Consulta gli intervalli supportati nella [guida alle versioni](../../docs/versioning.md).
 
 ### Ombra supera tutti i controlli anti-bot?
 
-I risultati dipendono dal sito, dall'area geografica, dalla reputazione dell'IP di uscita, dalla versione del rilevatore e dalle impostazioni del profilo. La [guida al checkup stealth](docs/stealth-checkup.md) spiega come valutare una configurazione specifica.
+I risultati dipendono dal sito, dall'area geografica, dalla reputazione dell'IP di uscita, dalla versione del rilevatore e dalle impostazioni del profilo. La [guida al checkup stealth](../../docs/stealth-checkup.md) spiega come valutare una configurazione specifica.
 
 ## Licenza
 
-Il codice sorgente degli SDK in questo repository è distribuito con [licenza Apache 2.0](LICENSE). La licenza non concede diritti sul motore Ombra, sul nome Ombra o sul logo. Per i marchi e le attribuzioni a terzi, consulta [NOTICE](NOTICE).
+Il codice sorgente degli SDK in questo repository è distribuito con [licenza Apache 2.0](../../LICENSE). La licenza non concede diritti sul motore Ombra, sul nome Ombra o sul logo. Per i marchi e le attribuzioni a terzi, consulta [NOTICE](../../NOTICE).
 
 ---
 

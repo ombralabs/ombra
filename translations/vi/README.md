@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 Trong Python và Node.js, `launch()` khởi chạy Ombra Chromium và trả về đối tượng `Browser` của Playwright. Để dùng Puppeteer trong Node.js, hãy gọi `launchPuppeteer()`.
 
-**[Cài đặt](#cài-đặt)** · <a href="README.md">English</a>
+**[Cài đặt](#cài-đặt)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Ngôn ngữ</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ Các ví dụ dùng hai gói alpha đã phát hành cho Python và Node.js. Kho 
 
 | Thành phần | Trạng thái |
 |---|---|
-| [Hợp đồng SDK](docs/sdk-contract.md) | Bản nháp `0.1.0` |
+| [Hợp đồng SDK](../../docs/sdk-contract.md) | Bản nháp `0.1.0` |
 | SDK Python | `0.1.3` alpha · [`ombrabrowser` trên PyPI](https://pypi.org/project/ombrabrowser/) |
 | SDK Node.js | `0.1.0` alpha · [`@ombralabs/sdk` trên npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Lược đồ dùng chung](spec/schemas) | Tùy chọn khởi chạy và siêu dữ liệu của tệp nhị phân |
-| [Kiểm tra tính nhất quán giữa các ngôn ngữ](conformance) | Các ca kiểm thử dùng chung cho hai SDK |
-| [Kiểm tra tàng hình](docs/stealth-checkup.md) | Tiêu chí kiểm thử và mẫu báo cáo |
+| [Lược đồ dùng chung](../../spec/schemas) | Tùy chọn khởi chạy và siêu dữ liệu của tệp nhị phân |
+| [Kiểm tra tính nhất quán giữa các ngôn ngữ](../../conformance) | Các ca kiểm thử dùng chung cho hai SDK |
+| [Kiểm tra tàng hình](../../docs/stealth-checkup.md) | Tiêu chí kiểm thử và mẫu báo cáo |
 
 ## Cài đặt
 
@@ -161,7 +161,7 @@ Sau khi khởi chạy, ứng dụng khách gửi lệnh điều khiển trang tr
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-Kho mã còn có thư mục cho sáu SDK khác. [Danh mục SDK](sdks/manifest.json) liệt kê các gói và ứng dụng khách dự kiến. [Hướng dẫn SDK](sdks/README.md) mô tả cách tổ chức thư mục.
+Kho mã còn có thư mục cho sáu SDK khác. [Danh mục SDK](../../sdks/manifest.json) liệt kê các gói và ứng dụng khách dự kiến. [Hướng dẫn SDK](../../sdks/README.md) mô tả cách tổ chức thư mục.
 
 | Môi trường chạy dự kiến | Gói dự kiến | Ứng dụng khách hoặc kiểu trả về |
 |---|---|---|
@@ -190,7 +190,7 @@ Tên tùy chọn trong bảng theo API Python và hợp đồng SDK. Node.js dù
 | `binary_path` | được xác định | Dùng một tệp nhị phân cụ thể của nhân trình duyệt |
 | `download` | `true` | Tải tệp nhị phân còn thiếu của nhân trình duyệt |
 
-[Hợp đồng SDK](docs/sdk-contract.md) liệt kê tất cả tùy chọn khởi chạy và giải thích các loại lỗi cũng như cách hoạt động của hồ sơ.
+[Hợp đồng SDK](../../docs/sdk-contract.md) liệt kê tất cả tùy chọn khởi chạy và giải thích các loại lỗi cũng như cách hoạt động của hồ sơ.
 
 ## Quản lý tệp nhị phân
 
@@ -234,7 +234,7 @@ SDK lần lượt kiểm tra tùy chọn khởi chạy, biến môi trường, s
 | Cô lập hồ sơ | ngữ cảnh trình duyệt | ngữ cảnh trình duyệt | không | thư mục dữ liệu người dùng |
 | Chuyển đổi không cần viết lại | – | đổi câu import | viết lại | đổi câu import |
 
-Kết quả phát hiện phụ thuộc vào trang web, IP đầu ra và hồ sơ. Cách đo được mô tả trong [hướng dẫn kiểm tra tàng hình](docs/stealth-checkup.md).
+Kết quả phát hiện phụ thuộc vào trang web, IP đầu ra và hồ sơ. Cách đo được mô tả trong [hướng dẫn kiểm tra tàng hình](../../docs/stealth-checkup.md).
 
 ## Tính tàng hình là thuộc tính của nhân trình duyệt
 
@@ -272,7 +272,7 @@ Hãy chạy các bài kiểm tra này trên bản dựng nhân trình duyệt, �
 | L4 Hành vi | Độ chân thực của đầu vào, dấu vết mô phỏng người thật, kiểm tra nhanh Cloudflare | Sự kiện tin cậy, thứ tự chân thực, thử thách được giải |
 | L5 Ổn định | Seed, worker, iframe, truy cập khác nguồn | Cùng một giá trị seed tạo ra cùng một danh tính trình duyệt qua các lần khởi chạy |
 
-Quy trình kiểm thử giải thích các trạng thái kết quả, cách xử lý sự cố và cách lập báo cáo. Bạn có thể đọc [bản tiếng Anh](docs/stealth-checkup.md) hoặc [bản tiếng Nga](docs/stealth-checkup.ru.md).
+Quy trình kiểm thử giải thích các trạng thái kết quả, cách xử lý sự cố và cách lập báo cáo. Bạn có thể đọc [bản tiếng Anh](../../docs/stealth-checkup.md) hoặc [bản tiếng Nga](../../docs/stealth-checkup.ru.md).
 
 Hãy ghi lại bản dựng nhân trình duyệt, phiên bản ứng dụng khách, thiết lập hồ sơ, IP đầu ra của proxy và phiên bản trình phát hiện cùng mỗi kết quả để có thể tái tạo và so sánh các lần chạy.
 
@@ -281,7 +281,8 @@ Hãy ghi lại bản dựng nhân trình duyệt, phiên bản ứng dụng khá
 ```text
 .
 ├── README.md                  # bản gốc tiếng Anh
-├── README.ru.md               # bản dịch tiếng Nga
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # trình quản lý hồ sơ ngoại tuyến
 ├── docs/
 │   ├── desktop/               # tài liệu về trình quản lý hồ sơ
@@ -303,7 +304,7 @@ Hãy ghi lại bản dựng nhân trình duyệt, phiên bản ứng dụng khá
 └── .github/workflows/ci.yml
 ```
 
-Kho mã này chứa mã khung của các SDK, hợp đồng khởi chạy, các ca kiểm thử tính nhất quán và trình quản lý hồ sơ ngoại tuyến. Nhân Chromium và bản phát hành Desktop 1.2.1 đầy đủ có kho mã riêng. [Mã nguồn và hướng dẫn tạo bản dựng Desktop](desktop/README.md) · [Tài liệu về trình quản lý hồ sơ](docs/desktop/README.md)
+Kho mã này chứa mã khung của các SDK, hợp đồng khởi chạy, các ca kiểm thử tính nhất quán và trình quản lý hồ sơ ngoại tuyến. Nhân Chromium và bản phát hành Desktop 1.2.1 đầy đủ có kho mã riêng. [Mã nguồn và hướng dẫn tạo bản dựng Desktop](../../desktop/README.md) · [Tài liệu về trình quản lý hồ sơ](../../docs/desktop/README.md)
 
 ## Hợp đồng
 
@@ -328,13 +329,13 @@ SDK và nhân trình duyệt có phiên bản độc lập. Nếu chúng không 
 
 ## Đóng góp
 
-Quy trình xét duyệt thay đổi được mô tả trong [hướng dẫn đóng góp](CONTRIBUTING.md). Các bước tạo bản dựng có trong [hướng dẫn SDK](sdks/README.md).
+Quy trình xét duyệt thay đổi được mô tả trong [hướng dẫn đóng góp](../../CONTRIBUTING.md). Các bước tạo bản dựng có trong [hướng dẫn SDK](../../sdks/README.md).
 
 - Khi thay đổi hành vi của SDK, hãy cập nhật phần triển khai liên quan và thêm một bài kiểm thử hoặc ca kiểm thử tính nhất quán dùng chung.
-- Để thêm SDK cho ngôn ngữ mới, hãy sao chép [mẫu SDK](sdks/_template), đăng ký trong [danh mục](sdks/manifest.json) rồi mở một pull request nháp.
-- Khi thêm tùy chọn khởi chạy, hãy cập nhật [hợp đồng SDK](docs/sdk-contract.md) và [các lược đồ](spec/schemas) trước.
+- Để thêm SDK cho ngôn ngữ mới, hãy sao chép [mẫu SDK](../../sdks/_template), đăng ký trong [danh mục](../../sdks/manifest.json) rồi mở một pull request nháp.
+- Khi thêm tùy chọn khởi chạy, hãy cập nhật [hợp đồng SDK](../../docs/sdk-contract.md) và [các lược đồ](../../spec/schemas) trước.
 - Hãy thực hiện thay đổi liên quan đến tính tàng hình của nhân trình duyệt trong kho mã của nhân. SDK vẫn phải đạt các tiêu chí kiểm tra.
-- Vui lòng báo cáo riêng các vấn đề bảo mật theo [chính sách bảo mật](SECURITY.md).
+- Vui lòng báo cáo riêng các vấn đề bảo mật theo [chính sách bảo mật](../../SECURITY.md).
 
 ## Câu hỏi thường gặp
 
@@ -360,15 +361,15 @@ Có. Hãy truyền proxy vào `launch()`. Với proxy yêu cầu xác thực, b�
 
 ### SDK hỗ trợ những phiên bản Playwright và Puppeteer nào?
 
-Mỗi SDK khai báo các phiên bản ứng dụng khách được hỗ trợ trong tệp kê khai gói. Các ứng dụng khách là những gói phụ thuộc riêng. Xem phạm vi hỗ trợ trong [hướng dẫn về phiên bản](docs/versioning.md).
+Mỗi SDK khai báo các phiên bản ứng dụng khách được hỗ trợ trong tệp kê khai gói. Các ứng dụng khách là những gói phụ thuộc riêng. Xem phạm vi hỗ trợ trong [hướng dẫn về phiên bản](../../docs/versioning.md).
 
 ### Ombra có vượt qua được mọi hệ thống phát hiện bot không?
 
-Kết quả phụ thuộc vào trang web, khu vực, uy tín của IP đầu ra, phiên bản công cụ phát hiện và thiết lập hồ sơ. [Hướng dẫn kiểm tra tàng hình](docs/stealth-checkup.md) mô tả cách đo kết quả với một cấu hình cụ thể.
+Kết quả phụ thuộc vào trang web, khu vực, uy tín của IP đầu ra, phiên bản công cụ phát hiện và thiết lập hồ sơ. [Hướng dẫn kiểm tra tàng hình](../../docs/stealth-checkup.md) mô tả cách đo kết quả với một cấu hình cụ thể.
 
 ## Giấy phép
 
-Mã nguồn SDK trong kho mã nguồn này được cấp phép theo [Apache License 2.0](LICENSE). Giấy phép không trao quyền đối với nhân trình duyệt Ombra, tên Ombra hoặc logo. Xem [NOTICE](NOTICE) để biết thông tin về nhãn hiệu và ghi công bên thứ ba.
+Mã nguồn SDK trong kho mã nguồn này được cấp phép theo [Apache License 2.0](../../LICENSE). Giấy phép không trao quyền đối với nhân trình duyệt Ombra, tên Ombra hoặc logo. Xem [NOTICE](../../NOTICE) để biết thông tin về nhãn hiệu và ghi công bên thứ ba.
 
 ---
 

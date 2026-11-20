@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 In Python en Node.js start `launch()` Ombra Chromium en krijg je een `Browser`-object van Playwright terug. Gebruik `launchPuppeteer()` voor Puppeteer in Node.js.
 
-**[Installatie](#installatie)** · <a href="README.md">English</a>
+**[Installatie](#installatie)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>Talen</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](../km/README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ De voorbeelden gebruiken de gepubliceerde alfapakketten voor Python en Node.js. 
 
 | Onderdeel | Status |
 |---|---|
-| [SDK-contract](docs/sdk-contract.md) | Concept `0.1.0` |
+| [SDK-contract](../../docs/sdk-contract.md) | Concept `0.1.0` |
 | Python-SDK | `0.1.3` alfa · [`ombrabrowser` op PyPI](https://pypi.org/project/ombrabrowser/) |
 | Node.js-SDK | `0.1.0` alfa · [`@ombralabs/sdk` op npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Gedeelde schema’s](spec/schemas) | Startopties en metadata van het uitvoerbare enginebestand |
-| [Conformiteitstests voor meerdere talen](conformance) | Gedeelde testgevallen voor beide SDK’s |
-| [Stealth-checkup](docs/stealth-checkup.md) | Testcriteria en rapportsjabloon |
+| [Gedeelde schema’s](../../spec/schemas) | Startopties en metadata van het uitvoerbare enginebestand |
+| [Conformiteitstests voor meerdere talen](../../conformance) | Gedeelde testgevallen voor beide SDK’s |
+| [Stealth-checkup](../../docs/stealth-checkup.md) | Testcriteria en rapportsjabloon |
 
 ## Installatie
 
@@ -161,7 +161,7 @@ Na het starten stuurt de client de opdrachten voor pagina’s rechtstreeks naar 
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-Deze repository heeft al mappen voor zes andere SDK’s. In het [SDK-manifest](sdks/manifest.json) staan de geplande pakketten en clients. De [SDK-handleiding](sdks/README.md) beschrijft de mapstructuur.
+Deze repository heeft al mappen voor zes andere SDK’s. In het [SDK-manifest](../../sdks/manifest.json) staan de geplande pakketten en clients. De [SDK-handleiding](../../sdks/README.md) beschrijft de mapstructuur.
 
 | Beoogde runtime | Gepland pakket | Client of retourtype |
 |---|---|---|
@@ -190,7 +190,7 @@ De optienamen volgen de Python-API en het SDK-contract. In Node.js schrijf je ze
 | `binary_path` | automatisch bepaald | Een specifieke engine-binary gebruiken |
 | `download` | `true` | Een ontbrekende engine-binary downloaden |
 
-Het [SDK-contract](docs/sdk-contract.md) beschrijft alle startopties, de fouttypen en het gedrag van profielen.
+Het [SDK-contract](../../docs/sdk-contract.md) beschrijft alle startopties, de fouttypen en het gedrag van profielen.
 
 ## Beheer van de engine-binary
 
@@ -234,7 +234,7 @@ De SDK gebruikt de eerste beschikbare waarde uit achtereenvolgens de startopties
 | Profielisolatie | browsercontext | browsercontext | nee | gebruikersgegevensmap |
 | Migratie zonder herschrijven | — | importwijziging | herschrijven | importwijziging |
 
-De resultaten van een detector hangen af van de site, het uitgaande IP-adres en het profiel. De [checkup](docs/stealth-checkup.md) beschrijft hoe je die resultaten meet.
+De resultaten van een detector hangen af van de site, het uitgaande IP-adres en het profiel. De [checkup](../../docs/stealth-checkup.md) beschrijft hoe je die resultaten meet.
 
 ## Stealth is een eigenschap van de engine
 
@@ -272,7 +272,7 @@ Voer deze controles uit met de engine-build, de automatiseringsclient en het pro
 | L4 Gedrag | Invoergetrouwheid, humanize-sporen, Cloudflare-smoketest | Vertrouwde events, realistische volgorde, challenge wordt opgelost |
 | L5 Stabiliteit | Seed, workers, iframes, cross-origin | Dezelfde seed levert bij elke start dezelfde persona op |
 
-De testprocedure beschrijft de mogelijke statussen, het opsporen van fouten en het opstellen van een rapport. Lees de [Engelse](docs/stealth-checkup.md) of [Russische versie](docs/stealth-checkup.ru.md).
+De testprocedure beschrijft de mogelijke statussen, het opsporen van fouten en het opstellen van een rapport. Lees de [Engelse](../../docs/stealth-checkup.md) of [Russische versie](../../docs/stealth-checkup.ru.md).
 
 Leg bij elk resultaat de engine-build, de clientversie, de profielinstellingen, het uitgaande IP-adres van de proxy en de detectorversie vast. Zo kun je metingen herhalen en vergelijken.
 
@@ -281,7 +281,8 @@ Leg bij elk resultaat de engine-build, de clientversie, de profielinstellingen, 
 ```text
 .
 ├── README.md                  # Engelse originele versie
-├── README.ru.md               # Russische vertaling
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # offline profielbeheer
 ├── docs/
 │   ├── desktop/               # documentatie van de profielbeheerder
@@ -303,7 +304,7 @@ Leg bij elk resultaat de engine-build, de clientversie, de profielinstellingen, 
 └── .github/workflows/ci.yml
 ```
 
-Deze repository bevat de basisstructuur voor de SDK’s, het startcontract, de conformiteitstests en de offline profielbeheerder. De Chromium-engine en de volledige versie van Desktop 1.2.1 hebben elk een eigen repository. [Broncode en bouwinstructies voor Desktop](desktop/README.md) · [Documentatie van de profielbeheerder](docs/desktop/README.md)
+Deze repository bevat de basisstructuur voor de SDK’s, het startcontract, de conformiteitstests en de offline profielbeheerder. De Chromium-engine en de volledige versie van Desktop 1.2.1 hebben elk een eigen repository. [Broncode en bouwinstructies voor Desktop](../../desktop/README.md) · [Documentatie van de profielbeheerder](../../docs/desktop/README.md)
 
 ## Het contract
 
@@ -328,13 +329,13 @@ De SDK en de engine hebben elk hun eigen versienummers. Zijn de versies niet com
 
 ## Bijdragen
 
-De [bijdragehandleiding](CONTRIBUTING.md) beschrijft hoe de beoordeling van wijzigingen verloopt. Bouwinstructies staan in de [SDK-handleiding](sdks/README.md).
+De [bijdragehandleiding](../../CONTRIBUTING.md) beschrijft hoe de beoordeling van wijzigingen verloopt. Bouwinstructies staan in de [SDK-handleiding](../../sdks/README.md).
 
 - Als je het gedrag van een SDK wijzigt, pas dan de betreffende implementatie aan en voeg een test of een gedeelde conformiteitstest toe.
-- Kopieer voor een nieuwe taal het [SDK-sjabloon](sdks/_template), voeg de SDK toe aan het [manifest](sdks/manifest.json) en open een concept-pullrequest.
-- Werk bij een nieuwe startoptie eerst het [SDK-contract](docs/sdk-contract.md) en de [schema’s](spec/schemas) bij.
+- Kopieer voor een nieuwe taal het [SDK-sjabloon](../../sdks/_template), voeg de SDK toe aan het [manifest](../../sdks/manifest.json) en open een concept-pullrequest.
+- Werk bij een nieuwe startoptie eerst het [SDK-contract](../../docs/sdk-contract.md) en de [schema’s](../../spec/schemas) bij.
 - Wijzigingen aan de stealthfuncties van de engine horen in de repository van de engine. De SDK moet de checkup blijven doorstaan.
-- Meld beveiligingsproblemen privé volgens het [beveiligingsbeleid](SECURITY.md).
+- Meld beveiligingsproblemen privé volgens het [beveiligingsbeleid](../../SECURITY.md).
 
 ## Veelgestelde vragen
 
@@ -360,15 +361,15 @@ Ja. Geef de proxy mee aan `launch()`. Als de proxy authenticatie vereist, houdt 
 
 ### Welke versies van Playwright en Puppeteer worden ondersteund?
 
-Elke SDK vermeldt de ondersteunde clientversies in het pakketmanifest. De clients zijn afzonderlijke afhankelijkheden. In de [handleiding voor versiebeheer](docs/versioning.md) staan de ondersteunde versiebereiken.
+Elke SDK vermeldt de ondersteunde clientversies in het pakketmanifest. De clients zijn afzonderlijke afhankelijkheden. In de [handleiding voor versiebeheer](../../docs/versioning.md) staan de ondersteunde versiebereiken.
 
 ### Doorstaat Ombra elke botcontrole?
 
-Het resultaat hangt af van de site, de regio, de reputatie van het uitgaande IP-adres, de detectorversie en de profielinstellingen. De [stealth-checkup](docs/stealth-checkup.md) beschrijft hoe je een specifieke configuratie test.
+Het resultaat hangt af van de site, de regio, de reputatie van het uitgaande IP-adres, de detectorversie en de profielinstellingen. De [stealth-checkup](../../docs/stealth-checkup.md) beschrijft hoe je een specifieke configuratie test.
 
 ## Licentie
 
-De SDK-bronnen in deze repository vallen onder de [Apache License 2.0](LICENSE). De licentie verleent geen rechten op de Ombra-engine, de naam Ombra of het logo. Zie [NOTICE](NOTICE) voor informatie over handelsmerken en vermeldingen van derden.
+De SDK-bronnen in deze repository vallen onder de [Apache License 2.0](../../LICENSE). De licentie verleent geen rechten op de Ombra-engine, de naam Ombra of het logo. Zie [NOTICE](../../NOTICE) voor informatie over handelsmerken en vermeldingen van derden.
 
 ---
 

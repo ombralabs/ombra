@@ -1,18 +1,18 @@
-# <img src="assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
+# <img src="../../assets/logo.svg" width="24" height="24" alt=""> Ombra SDKs
 
 ក្នុង Python និង Node.js មុខងារ `launch()` ចាប់ផ្ដើម Ombra Chromium ហើយប្រគល់វត្ថុ `Browser` របស់ Playwright។ ប្រសិនបើប្រើ Puppeteer ក្នុង Node.js សូមហៅ `launchPuppeteer()`។
 
-**[ការដំឡើង](#ការដំឡើង)** · <a href="README.md">English</a>
+**[ការដំឡើង](#ការដំឡើង)** · <a href="../../README.md">English</a>
 
 <details>
 <summary>ភាសា</summary>
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · [Español](README.es.md) ·
-[Français](README.fr.md) · [Italiano](README.it.md) · [Nederlands](README.nl.md) · [Polski](README.pl.md) ·
-[Português](README.pt.md) · [Română](README.ro.md) · [Türkçe](README.tr.md) · [Українська](README.uk.md) ·
-[Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [简体中文](README.zh-Hans.md) · [繁體中文](README.zh-Hant.md) ·
-[日本語](README.ja.md) · [한국어](README.ko.md) · [ไทย](README.th.md) · [हिंदी](README.hi.md) ·
-[Filipino](README.fil.md) · [ខ្មែរ](README.km.md)
+[English](../../README.md) · [Русский](../ru/README.md) · [Deutsch](../de/README.md) · [Español](../es/README.md) ·
+[Français](../fr/README.md) · [Italiano](../it/README.md) · [Nederlands](../nl/README.md) · [Polski](../pl/README.md) ·
+[Português](../pt/README.md) · [Română](../ro/README.md) · [Türkçe](../tr/README.md) · [Українська](../uk/README.md) ·
+[Tiếng Việt](../vi/README.md) · [Bahasa Indonesia](../id/README.md) · [简体中文](../zh-Hans/README.md) · [繁體中文](../zh-Hant/README.md) ·
+[日本語](../ja/README.md) · [한국어](../ko/README.md) · [ไทย](../th/README.md) · [हिंदी](../hi/README.md) ·
+[Filipino](../fil/README.md) · [ខ្មែរ](README.md)
 
 </details>
 
@@ -28,12 +28,12 @@ SDK ចាប់ផ្ដើមម៉ាស៊ីនកម្មវិធីរ�
 
 | សមាសភាគ | ស្ថានភាព |
 |---|---|
-| [កិច្ចសន្យា API របស់ SDK](docs/sdk-contract.md) | សេចក្ដីព្រាង `0.1.0` |
+| [កិច្ចសន្យា API របស់ SDK](../../docs/sdk-contract.md) | សេចក្ដីព្រាង `0.1.0` |
 | SDK សម្រាប់ Python | `0.1.3` alpha · [`ombrabrowser` (PyPI)](https://pypi.org/project/ombrabrowser/) |
 | SDK សម្រាប់ Node.js | `0.1.0` alpha · [`@ombralabs/sdk` (npm)](https://www.npmjs.com/package/@ombralabs/sdk) |
-| [Schemas រួម](spec/schemas) | ជម្រើសចាប់ផ្ដើម និងព័ត៌មានអំពីឯកសារ engine |
-| [ការអនុលោមឆ្លងភាសា](conformance) | ករណីសាកល្បងដែល SDK ទាំងពីរប្រើរួមគ្នា |
-| [ការត្រួតពិនិត្យ stealth](docs/stealth-checkup.md) | លក្ខខណ្ឌសាកល្បង និងគំរូរបាយការណ៍ |
+| [Schemas រួម](../../spec/schemas) | ជម្រើសចាប់ផ្ដើម និងព័ត៌មានអំពីឯកសារ engine |
+| [ការអនុលោមឆ្លងភាសា](../../conformance) | ករណីសាកល្បងដែល SDK ទាំងពីរប្រើរួមគ្នា |
+| [ការត្រួតពិនិត្យ stealth](../../docs/stealth-checkup.md) | លក្ខខណ្ឌសាកល្បង និងគំរូរបាយការណ៍ |
 
 ## ការដំឡើង
 
@@ -161,7 +161,7 @@ flowchart LR
 | Python 3.10+ | `ombrabrowser` | `launch()` → Playwright `Browser` |
 | Node.js 20+ | `@ombralabs/sdk` | `launch()` → Playwright `Browser`<br>`launchPuppeteer()` → Puppeteer `Browser` |
 
-SDK ប្រាំមួយផ្សេងទៀតមានតែគ្រោងដើមនៅក្នុងឃ្លាំងកូដនេះ។ [បញ្ជី SDK](sdks/manifest.json) បង្ហាញឈ្មោះកញ្ចប់ និង client ដែលបានគ្រោងទុក។ [មគ្គុទ្ទេសក៍ SDK](sdks/README.md) ពន្យល់ពីរចនាសម្ព័ន្ធថត។
+SDK ប្រាំមួយផ្សេងទៀតមានតែគ្រោងដើមនៅក្នុងឃ្លាំងកូដនេះ។ [បញ្ជី SDK](../../sdks/manifest.json) បង្ហាញឈ្មោះកញ្ចប់ និង client ដែលបានគ្រោងទុក។ [មគ្គុទ្ទេសក៍ SDK](../../sdks/README.md) ពន្យល់ពីរចនាសម្ព័ន្ធថត។
 
 | Runtime គោលដៅ | កញ្ចប់ដែលបានគ្រោងទុក | Client ឬប្រភេទវត្ថុដែលទទួលបាន |
 |---|---|---|
@@ -190,7 +190,7 @@ SDK ប្រាំមួយផ្សេងទៀតមានតែគ្រោ�
 | `binary_path` | បានស្វែងរក | ប្រើ binary engine ជាក់លាក់ |
 | `download` | `true` | ទាញយក binary engine ដែលខ្វះ |
 
-[កិច្ចសន្យា SDK](docs/sdk-contract.md) រាយជម្រើសចាប់ផ្ដើមទាំងអស់ ប្រភេទកំហុស និងច្បាប់សម្រាប់ប្រើ profile។
+[កិច្ចសន្យា SDK](../../docs/sdk-contract.md) រាយជម្រើសចាប់ផ្ដើមទាំងអស់ ប្រភេទកំហុស និងច្បាប់សម្រាប់ប្រើ profile។
 
 ## ការគ្រប់គ្រង binary
 
@@ -234,7 +234,7 @@ clear_cache()     # លុប engine ដែលបានទាញយក ហើយ
 | ការបំបែក profile | context កម្មវិធីរុករក | context កម្មវិធីរុករក | គ្មាន | ថត user-data |
 | ការផ្លាស់ប្តូរដោយមិនសរសេរកូដឡើងវិញ | — | ប្តូរ import | សរសេរឡើងវិញ | ប្តូរ import |
 
-លទ្ធផលត្រួតពិនិត្យអាស្រ័យលើគេហទំព័រ IP ច្រកចេញ និង profile។ [វិធីត្រួតពិនិត្យ](docs/stealth-checkup.md) ពន្យល់ពីរបៀបវាស់លទ្ធផល។
+លទ្ធផលត្រួតពិនិត្យអាស្រ័យលើគេហទំព័រ IP ច្រកចេញ និង profile។ [វិធីត្រួតពិនិត្យ](../../docs/stealth-checkup.md) ពន្យល់ពីរបៀបវាស់លទ្ធផល។
 
 ## Stealth ជាលក្ខណៈរបស់ engine
 
@@ -272,7 +272,7 @@ Engine អនុវត្តការកំណត់ fingerprint។ SDK បញ�
 | L4 Behavior | ភាពត្រឹមត្រូវនៃការបញ្ចូល, ដាន humanize, Cloudflare smoke | ព្រឹត្តិការណ៍ដែលអាចទុកចិត្ត, លំដាប់បែបពិត, challenge ត្រូវបានដោះស្រាយ |
 | L5 Stability | Seed, workers, iframes, cross-origin | Seed ដូចគ្នាបង្កើត persona ដូចគ្នានៅគ្រប់ការចាប់ផ្តើម |
 
-វិធីត្រួតពិនិត្យពន្យល់ពីស្ថានភាពលទ្ធផល ការស្វែងរកមូលហេតុ និងទម្រង់របាយការណ៍។ អានជា[ភាសាអង់គ្លេស](docs/stealth-checkup.md) ឬ[ភាសារុស្ស៊ី](docs/stealth-checkup.ru.md)។
+វិធីត្រួតពិនិត្យពន្យល់ពីស្ថានភាពលទ្ធផល ការស្វែងរកមូលហេតុ និងទម្រង់របាយការណ៍។ អានជា[ភាសាអង់គ្លេស](../../docs/stealth-checkup.md) ឬ[ភាសារុស្ស៊ី](../../docs/stealth-checkup.ru.md)។
 
 កត់ត្រា engine build, កំណែ client, ការកំណត់ profile, proxy exit និងកំណែ detector ជាមួយលទ្ធផលនីមួយៗ ដើម្បីឱ្យការដំណើរការអាចធ្វើឡើងវិញ និងប្រៀបធៀបគ្នាបាន។
 
@@ -281,7 +281,8 @@ Engine អនុវត្តការកំណត់ fingerprint។ SDK បញ�
 ```text
 .
 ├── README.md                  # ឯកសារដើមជាភាសាអង់គ្លេស
-├── README.ru.md               # កំណែបកប្រែជាភាសារុស្ស៊ី
+├── translations/
+│   └── <locale>/README.md
 ├── desktop/                   # កម្មវិធីគ្រប់គ្រង profile ក្រៅបណ្ដាញ
 ├── docs/
 │   ├── desktop/               # ឯកសារកម្មវិធីគ្រប់គ្រង profile
@@ -303,7 +304,7 @@ Engine អនុវត្តការកំណត់ fingerprint។ SDK បញ�
 └── .github/workflows/ci.yml
 ```
 
-ឃ្លាំងកូដនេះមានគ្រោងដើម SDK កិច្ចសន្យាចាប់ផ្ដើម ករណីសាកល្បងរួម និងកម្មវិធីគ្រប់គ្រង profile ក្រៅបណ្ដាញ។ Engine Chromium និងកំណែពេញលេញរបស់ Desktop 1.2.1 មានឃ្លាំងកូដរៀងៗខ្លួន។ [កូដ និងការបង្កើត Desktop](desktop/README.md) · [ឯកសារកម្មវិធីគ្រប់គ្រង profile](docs/desktop/README.md)
+ឃ្លាំងកូដនេះមានគ្រោងដើម SDK កិច្ចសន្យាចាប់ផ្ដើម ករណីសាកល្បងរួម និងកម្មវិធីគ្រប់គ្រង profile ក្រៅបណ្ដាញ។ Engine Chromium និងកំណែពេញលេញរបស់ Desktop 1.2.1 មានឃ្លាំងកូដរៀងៗខ្លួន។ [កូដ និងការបង្កើត Desktop](../../desktop/README.md) · [ឯកសារកម្មវិធីគ្រប់គ្រង profile](../../docs/desktop/README.md)
 
 ## កិច្ចសន្យា
 
@@ -328,13 +329,13 @@ SDK និង engine មានលេខកំណែដាច់ដោយឡែ�
 
 ## ការចូលរួម
 
-[មគ្គុទ្ទេសក៍ចូលរួម](CONTRIBUTING.md) ពន្យល់ពីដំណើរការពិនិត្យការកែប្រែ។ សេចក្ដីណែនាំសម្រាប់ build មានក្នុង[មគ្គុទ្ទេសក៍ SDK](sdks/README.md)។
+[មគ្គុទ្ទេសក៍ចូលរួម](../../CONTRIBUTING.md) ពន្យល់ពីដំណើរការពិនិត្យការកែប្រែ។ សេចក្ដីណែនាំសម្រាប់ build មានក្នុង[មគ្គុទ្ទេសក៍ SDK](../../sdks/README.md)។
 
 - នៅពេលកែឥរិយាបថរបស់ SDK សូមកែកូដដែលពាក់ព័ន្ធ ហើយបន្ថែមតេស្ត ឬករណីសាកល្បងរួម។
-- សម្រាប់ SDK ក្នុងភាសាថ្មី សូមចម្លង[គំរូ SDK](sdks/_template) បន្ថែមវាទៅក្នុង[បញ្ជី](sdks/manifest.json) ហើយបើក pull request ជាសេចក្ដីព្រាង។
-- សម្រាប់ជម្រើសចាប់ផ្ដើមថ្មី សូមកែ[កិច្ចសន្យា](docs/sdk-contract.md) និង[ស្គីម៉ា](spec/schemas) ជាមុន។
+- សម្រាប់ SDK ក្នុងភាសាថ្មី សូមចម្លង[គំរូ SDK](../../sdks/_template) បន្ថែមវាទៅក្នុង[បញ្ជី](../../sdks/manifest.json) ហើយបើក pull request ជាសេចក្ដីព្រាង។
+- សម្រាប់ជម្រើសចាប់ផ្ដើមថ្មី សូមកែ[កិច្ចសន្យា](../../docs/sdk-contract.md) និង[ស្គីម៉ា](../../spec/schemas) ជាមុន។
 - កែប្រែ stealth របស់ engine ក្នុងឃ្លាំងកូដ engine។ SDK នៅតែត្រូវឆ្លងកាត់ការត្រួតពិនិត្យ។
-- សូមរាយការណ៍បញ្ហាសុវត្ថិភាពជាឯកជនតាម[គោលការណ៍សុវត្ថិភាព](SECURITY.md)។
+- សូមរាយការណ៍បញ្ហាសុវត្ថិភាពជាឯកជនតាម[គោលការណ៍សុវត្ថិភាព](../../SECURITY.md)។
 
 ## សំណួរញឹកញាប់ (FAQ)
 
@@ -360,15 +361,15 @@ Engine មានម៉ូឌុល CAPTCHA ដែលអ្នកអាចជ្�
 
 ### តើគាំទ្រ Playwright និង Puppeteer កំណែណា?
 
-Manifest របស់កញ្ចប់នីមួយៗបញ្ជាក់កំណែ client ដែលគាំទ្រ។ Client ត្រូវបានចែកចាយជាកញ្ចប់ដាច់ដោយឡែក។ សូមមើលជួរកំណែក្នុង[មគ្គុទ្ទេសក៍កំណែ](docs/versioning.md)។
+Manifest របស់កញ្ចប់នីមួយៗបញ្ជាក់កំណែ client ដែលគាំទ្រ។ Client ត្រូវបានចែកចាយជាកញ្ចប់ដាច់ដោយឡែក។ សូមមើលជួរកំណែក្នុង[មគ្គុទ្ទេសក៍កំណែ](../../docs/versioning.md)។
 
 ### តើវានឹងឆ្លងកាត់ការត្រួតពិនិត្យ bot ទាំងអស់ទេ?
 
-លទ្ធផលអាស្រ័យលើគេហទំព័រ តំបន់ កេរ្តិ៍ឈ្មោះ exit IP កំណែ detector និងការកំណត់ profile។ សូមប្រើ [stealth checkup](docs/stealth-checkup.md) ដើម្បីវាស់ស្ទង់ការកំណត់ជាក់លាក់មួយ។
+លទ្ធផលអាស្រ័យលើគេហទំព័រ តំបន់ កេរ្តិ៍ឈ្មោះ exit IP កំណែ detector និងការកំណត់ profile។ សូមប្រើ [stealth checkup](../../docs/stealth-checkup.md) ដើម្បីវាស់ស្ទង់ការកំណត់ជាក់លាក់មួយ។
 
 ## អាជ្ញាបណ្ណ
 
-កូដ SDK ក្នុង repository នេះត្រូវបានផ្តល់អាជ្ញាបណ្ណក្រោម [Apache License 2.0](LICENSE)។ អាជ្ញាបណ្ណនេះមិនផ្តល់សិទ្ធិលើ engine Ombra ឈ្មោះ Ombra ឬឡូហ្គោទេ។ សូមមើល [NOTICE](NOTICE) សម្រាប់ពាណិជ្ជសញ្ញា និងការយោងទៅភាគីទីបី។
+កូដ SDK ក្នុង repository នេះត្រូវបានផ្តល់អាជ្ញាបណ្ណក្រោម [Apache License 2.0](../../LICENSE)។ អាជ្ញាបណ្ណនេះមិនផ្តល់សិទ្ធិលើ engine Ombra ឈ្មោះ Ombra ឬឡូហ្គោទេ។ សូមមើល [NOTICE](../../NOTICE) សម្រាប់ពាណិជ្ជសញ្ញា និងការយោងទៅភាគីទីបី។
 
 ---
 
