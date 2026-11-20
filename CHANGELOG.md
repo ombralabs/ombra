@@ -21,6 +21,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 
 ### Changed
 
+- Python and Node.js download browser releases from GitHub Releases by default, preserving Ed25519, SHA-256, and archive size verification. Explicit legacy mirrors remain supported; GitHub failures do not fall back to GCore.
 - README translations moved to `translations/<locale>/README.md`. Find each language in the [root README](README.md).
 - The SDK is a launcher and CDP bridge, not a control-plane client. It spawns the engine, connects Playwright/Puppeteer/chromedp/Ferrum/chromiumoxide, and returns the native browser object.
 - The root README and SDK READMEs use `launch()` as the only entry point; the earlier profile-management quick start was removed.
