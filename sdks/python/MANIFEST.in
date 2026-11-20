@@ -1,0 +1,7 @@
+include LICENSE
+include NOTICE
+include README.md
+include pyproject.toml
+recursive-include src/ombrabrowser *.py py.typed
+recursive-include tests *.py
+recursive-include tests/fixtures *.json

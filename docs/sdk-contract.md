@@ -76,6 +76,7 @@ These are the common options. Names are `snake_case` in the contract and follow 
 | `user_data_dir` | path | temp | Explicit profile directory; mutually exclusive with `profile`. |
 | `args` | string[] | `[]` | Extra engine arguments. The SDK passes them through and adds none. |
 | `binary_path` | path | resolved | Explicit engine binary. |
+| `version` | string | env / resolved | Engine version pin; overrides `OMBRA_VERSION`. Include the `-N` release suffix for an exact build. |
 | `timeout_ms` | int | `30000` | Deadline for process start and CDP readiness. |
 | `humanize` | bool or object | engine default | `false`, `true`, or `{ "preset": "default" \| "careful" \| "fast" }`. |
 | `captcha` | bool or object | `false` | `true` or `{ "types", "time_budget_ms", "max_attempts" }`. |

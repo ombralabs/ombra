@@ -1,0 +1,20 @@
+Ombra SDK
+Copyright 2026 Ombra Labs
+
+This product includes software developed at Ombra Labs
+(https://github.com/ombralabs).
+
+The "Ombra" name, the Ombra logo, and related marks are trademarks of
+Ombra Labs. The Apache License 2.0 does not grant permission to use the
+trade names, trademarks, service marks, or product names of Ombra Labs,
+except as required for reasonable and customary use in describing the
+origin of the Work and reproducing the content of this NOTICE file.
+
+The Ombra browser engine and the Ombra desktop application are
+proprietary software. They are not licensed under the Apache License 2.0
+and are distributed under separate terms.
+
+Third-party dependencies added to the SDKs remain under their respective
+licenses. Their notices are recorded in the package manifest of the SDK
+that introduces them and in the generated third-party notice for that
+package.
