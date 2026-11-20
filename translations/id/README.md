@@ -186,7 +186,6 @@ Nama opsi di bawah mengikuti API Python dan kontrak SDK. Di Node.js, nama yang s
 | `args` | `[]` | Flag mesin tambahan, diteruskan tanpa perubahan |
 | `timeout_ms` | `30000` | Batas waktu peluncuran dan koneksi CDP, dalam milidetik |
 | `humanize` | bawaan mesin | `false`, `true`, atau preset |
-| `captcha` | `false` | Mengaktifkan modul mesin dengan batas opsional |
 | `binary_path` | ditentukan | Menggunakan biner mesin tertentu |
 | `download` | `true` | Mengunduh biner mesin yang tidak ada |
 
@@ -350,10 +349,6 @@ SDK menjalankan mesin secara langsung. Aplikasi desktop bersifat opsional dan bi
 ### Apa perbedaannya dengan playwright-stealth?
 
 Perubahan fingerprint Ombra dikompilasi ke dalam Chromium. SDK tidak menambahkan skrip stealth di tingkat halaman.
-
-### Apakah SDK dapat menyelesaikan CAPTCHA?
-
-Mesin menyediakan modul CAPTCHA opsional. Dukungan bergantung pada jenis tugas, build, dan model yang tersedia. SDK meneruskan pengaturan saat peluncuran dan menyediakan akses ke modul melalui CDP.
 
 ### Dapatkah saya menggunakan proxy saya sendiri?
 

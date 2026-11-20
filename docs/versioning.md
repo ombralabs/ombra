@@ -40,6 +40,16 @@ engine = ">=151.0.7922.108,<152"
 
 An SDK that meets an engine build outside its range must fail with `UnsupportedEngine`, naming both versions. It must not attempt a best-effort launch.
 
+## Unreleased CAPTCHA API removal
+
+The next Python and Node.js SDK releases remove the `captcha` launch option,
+automatic CAPTCHA flags, and dedicated CAPTCHA CDP helpers, event recorders,
+types, and module entrypoints. This is a breaking change and requires the next
+contract/SDK minor release under the rules above; existing package versions must
+not be republished with the changed API. Remove `captcha` from launch calls and
+remove imports from `ombrabrowser.captcha` or `@ombralabs/sdk/captcha`.
+Generic CDP sessions, humanize controls, and native agent commands remain available.
+
 ## Engine compatibility
 
 The SDK resolves an engine binary and reports it through `binary_info()`:

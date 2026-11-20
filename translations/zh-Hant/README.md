@@ -186,7 +186,6 @@ flowchart LR
 | `args` | `[]` | 額外的引擎旗標，會原樣傳遞 |
 | `timeout_ms` | `30000` | 啟動及建立 CDP 連線的逾時時間，以毫秒為單位 |
 | `humanize` | 引擎預設值 | `false`、`true` 或預設集 |
-| `captcha` | `false` | 啟用引擎模組，並可設定選用的限制 |
 | `binary_path` | 已解析 | 使用指定的引擎二進位檔 |
 | `download` | `true` | 下載缺少的引擎二進位檔 |
 
@@ -350,10 +349,6 @@ SDK 會直接啟動引擎。桌面應用程式可依需求安裝，方便手動�
 ### Ombra 與 playwright-stealth 有何不同？
 
 Ombra 的指紋控制邏輯直接編譯進 Chromium。SDK 不會修改頁面指令碼。
-
-### Ombra 能處理 CAPTCHA 嗎？
-
-引擎提供選用的 CAPTCHA 模組。支援範圍取決於任務類型、引擎組建與可用模型。SDK 會傳遞本次啟動的設定，並透過 CDP 提供模組的控制介面。
 
 ### 可以使用自己的代理伺服器嗎？
 

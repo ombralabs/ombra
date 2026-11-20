@@ -186,7 +186,6 @@ Les noms des options suivent l’API Python et le contrat des SDK. En Node.js, i
 | `args` | `[]` | Options supplémentaires transmises telles quelles au moteur |
 | `timeout_ms` | `30000` | Délai de lancement et de connexion CDP, en millisecondes |
 | `humanize` | valeur par défaut du moteur | `false`, `true` ou un préréglage |
-| `captcha` | `false` | Activer le module du moteur avec des limites optionnelles |
 | `binary_path` | déterminé | Utiliser un binaire de moteur spécifique |
 | `download` | `true` | Télécharger un binaire de moteur manquant |
 
@@ -350,10 +349,6 @@ Le SDK lance le moteur directement. L’application de bureau, facultative, perm
 ### En quoi Ombra diffère-t-il de playwright-stealth ?
 
 Les modifications d’empreinte d’Ombra sont intégrées à Chromium lors de la compilation. Le SDK laisse intacts les scripts des pages.
-
-### Ombra résout-il les CAPTCHA ?
-
-Le moteur dispose d’un module CAPTCHA facultatif. La prise en charge dépend du type de tâche, de la version du moteur et des modèles disponibles. Le SDK transmet les paramètres de chaque lancement et donne accès aux commandes CDP du module.
 
 ### Puis-je utiliser mon propre proxy ?
 

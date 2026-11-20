@@ -186,7 +186,6 @@ Nazwy opcji w tabeli pochodzą z API Pythona i kontraktu SDK. W Node.js obowiąz
 | `args` | `[]` | Dodatkowe flagi silnika przekazywane bez zmian |
 | `timeout_ms` | `30000` | Limit czasu na uruchomienie i nawiązanie połączenia CDP w milisekundach |
 | `humanize` | domyślne w silniku | `false`, `true` lub preset |
-| `captcha` | `false` | Włączanie modułu silnika z opcjonalnymi limitami |
 | `binary_path` | ustalany | Użycie konkretnego pliku binarnego silnika |
 | `download` | `true` | Pobieranie brakującego pliku binarnego silnika |
 
@@ -350,10 +349,6 @@ SDK uruchamia silnik bezpośrednio. Opcjonalna aplikacja desktopowa pozwala ręc
 ### Czym Ombra różni się od playwright-stealth?
 
 Zmiany wpływające na odcisk przeglądarki są wbudowane w Chromium podczas kompilacji. SDK nie modyfikuje skryptów stron.
-
-### Czy Ombra rozwiązuje zadania CAPTCHA?
-
-Silnik ma opcjonalny moduł CAPTCHA. Obsługa zależy od typu zadania, kompilacji silnika i dostępnych modeli. SDK przekazuje ustawienia dla danego uruchomienia i udostępnia polecenia CDP służące do sterowania modułem.
 
 ### Czy mogę użyć własnego serwera proxy?
 

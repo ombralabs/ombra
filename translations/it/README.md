@@ -186,7 +186,6 @@ Le opzioni in tabella usano i nomi dell'API Python e del contratto dell'SDK. Gli
 | `args` | `[]` | Argomenti aggiuntivi passati al motore senza modifiche |
 | `timeout_ms` | `30000` | Tempo massimo in millisecondi per l'avvio e la connessione CDP |
 | `humanize` | predefinito del motore | `false`, `true` o una configurazione preimpostata |
-| `captcha` | `false` | Attiva il modulo del motore con limiti facoltativi |
 | `binary_path` | ricerca automatica | Seleziona uno specifico binario del motore |
 | `download` | `true` | Scarica il binario del motore se manca |
 
@@ -350,10 +349,6 @@ L'SDK avvia direttamente il motore. L'app desktop è facoltativa e permette di g
 ### In cosa si differenzia Ombra da playwright-stealth?
 
 Le modifiche all'impronta digitale di Ombra sono compilate in Chromium. L'SDK lascia intatti gli script delle pagine.
-
-### Ombra risolve i CAPTCHA?
-
-Il motore dispone di un modulo CAPTCHA facoltativo. Il supporto dipende dal tipo di attività, dalla build del motore e dai modelli disponibili. L'SDK passa le impostazioni di ogni avvio e dà accesso ai controlli CDP del modulo.
 
 ### Posso usare un mio proxy?
 

@@ -186,7 +186,6 @@ Tên tùy chọn trong bảng theo API Python và hợp đồng SDK. Node.js dù
 | `args` | `[]` | Các cờ bổ sung cho nhân trình duyệt, được truyền nguyên vẹn |
 | `timeout_ms` | `30000` | Thời gian tối đa để khởi chạy và kết nối CDP, tính bằng mili giây |
 | `humanize` | mặc định của nhân trình duyệt | `false`, `true` hoặc một cấu hình sẵn |
-| `captcha` | `false` | Bật mô-đun của nhân trình duyệt với các giới hạn tùy chọn |
 | `binary_path` | được xác định | Dùng một tệp nhị phân cụ thể của nhân trình duyệt |
 | `download` | `true` | Tải tệp nhị phân còn thiếu của nhân trình duyệt |
 
@@ -350,10 +349,6 @@ SDK khởi chạy nhân trình duyệt trực tiếp. Bạn có thể cài ứng
 ### Ombra khác playwright-stealth như thế nào?
 
 Các thay đổi về dấu vân tay của Ombra được biên dịch vào Chromium. SDK không sửa các tập lệnh của trang.
-
-### Ombra có giải được CAPTCHA không?
-
-Nhân trình duyệt có mô-đun CAPTCHA tùy chọn. Phạm vi hỗ trợ phụ thuộc vào loại tác vụ, bản dựng của nhân và các mô hình có sẵn. SDK chuyển các tùy chọn của từng lần khởi chạy và cung cấp các lệnh điều khiển mô-đun qua CDP.
 
 ### Tôi có thể dùng proxy riêng không?
 
