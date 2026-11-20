@@ -122,6 +122,32 @@ print(last_launch_info(persistent_ctx))
 persistent_ctx.close()
 ```
 
+### Mobile page layout on desktop
+
+Serve a local `index.html` containing `<meta name="viewport" content="width=device-width, initial-scale=1">`
+at `http://127.0.0.1:8000/`. You can run `python3 -m http.server 8000 --bind 127.0.0.1` in its directory.
+
+```python
+from ombrabrowser import launch
+
+browser = launch(mobile_viewport={"width": 390, "height": 844})
+try:
+    page = browser.new_page()
+    page.goto("http://127.0.0.1:8000/")
+    print(page.evaluate("document.documentElement.clientWidth"))  # 390
+finally:
+    browser.close()
+```
+
+`mobile_viewport` selects Chromium's mobile layout on the host operating system for this launch.
+Supply both dimensions as whole CSS pixels from 1 through 10,000. Pages without a viewport
+declaration follow Chromium's mobile layout rules.
+
+The same option works with `launch_context`, `launch_persistent_context`, and their async counterparts.
+An explicit Playwright context `viewport` takes precedence. The persistent helper uses the native viewport.
+Any OS selected in `fingerprint.os` or inherited from the profile must match the host.
+This option requires an engine build with `--mobile-layout-viewport` support.
+
 Browser-level CDP controls for humanized input and native agent tasks:
 
 ```python

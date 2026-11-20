@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .config import get_profiles_dir, logger
+from .config import get_platform_tag, get_profiles_dir, logger
 from .errors import InvalidOptionError, ProfileBusyError
 
 PROFILE_META_DIR = ".ombra"
@@ -93,6 +93,21 @@ def read_profile_metadata(profile_dir: Path) -> dict[str, Any] | None:
         return data if isinstance(data, dict) else None
     except (OSError, json.JSONDecodeError):
         return None
+
+
+def check_mobile_viewport_os(
+    os_hint: str | None, *, user_data_dir: Path | None = None, profile: str | None = None,
+) -> None:
+    if os_hint is None:
+        profile_dir = resolve_named_profile_dir(profile) if profile is not None else user_data_dir
+        if profile_dir is not None:
+            os_hint = _opt_str((read_profile_metadata(profile_dir) or {}).get("os"))
+    if os_hint is not None:
+        host_os = get_platform_tag().partition("-")[0]
+        if os_hint != host_os:
+            raise InvalidOptionError(
+                f"mobile_viewport requires the host OS ({host_os}). This profile uses fingerprint.os={os_hint!r}."
+            )
 
 
 def write_profile_metadata(profile_dir: Path, data: dict[str, Any]) -> None:
@@ -265,6 +280,7 @@ def acquire_profile_lease(
     user_data_dir: str | os.PathLike[str] | None = None,
     explicit_seed: int | None = None,
     os_hint: str | None = None,
+    require_host_os: bool = False,
     timezone: str | None = None,
     locale: str | None = None,
     humanize_preset: str | None = None,
@@ -364,6 +380,7 @@ def acquire_profile_lease(
             ephemeral=ephemeral,
             explicit_seed=explicit_seed,
             os_hint=os_hint,
+            require_host_os=require_host_os,
             timezone=timezone,
             locale=locale,
             humanize_preset=humanize_preset,
@@ -406,6 +423,7 @@ def _sync_profile_metadata(
     ephemeral: bool,
     explicit_seed: int | None,
     os_hint: str | None,
+    require_host_os: bool,
     timezone: str | None,
     locale: str | None,
     humanize_preset: str | None,
@@ -441,6 +459,8 @@ def _sync_profile_metadata(
         seed = generate_seed()
 
     effective_os = os_hint if os_hint is not None else _opt_str(existing.get("os"))
+    if require_host_os:
+        check_mobile_viewport_os(effective_os)
     effective_tz = timezone if timezone is not None else _opt_str(existing.get("timezone"))
     effective_locale = locale if locale is not None else _opt_str(existing.get("locale"))
     effective_preset = (

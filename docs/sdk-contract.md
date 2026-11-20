@@ -70,6 +70,7 @@ These are the common options. Names are `snake_case` in the contract and follow 
 | Option | Type | Default | Meaning |
 |---|---|---|---|
 | `headless` | bool | `true` | Run without a window. The engine uses its current headless mode. |
+| `mobile_viewport` | `{width, height}` or null | null | Python/Node.js: native mobile page layout on the host OS; whole CSS pixels from 1 through 10,000. Saved profile OS must match the host; explicit Playwright context viewport takes precedence. |
 | `proxy` | string or object | none | Proxy URL or `{type, host, port, username, password}`. |
 | `fingerprint` | object | none | Seed and persona hints, see §6. |
 | `profile` | string | none | Named persistent profile under the cache directory. |

@@ -81,6 +81,9 @@ export interface HumanizeOptions {
 
 export interface LaunchOptions {
   headless?: boolean;
+  /** Native mobile layout width and height in CSS pixels on the host operating system. */
+  mobileViewport?: ScreenSize | null;
+  mobile_viewport?: ScreenSize | null;
   proxy?: ProxyInput;
   fingerprint?: FingerprintOptions;
   profile?: string;

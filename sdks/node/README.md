@@ -87,6 +87,33 @@ const browser = await launch({
 
 `launchContext()` and `launchPersistentContext()` return a native Playwright `BrowserContext` (with `viewport: null` by default to avoid an SDK-requested viewport override; native-client context defaults can still send CDP configuration).
 
+### Mobile page layout on desktop
+
+Serve a local `index.html` containing `<meta name="viewport" content="width=device-width, initial-scale=1">`
+at `http://127.0.0.1:8000/`. You can run `python3 -m http.server 8000 --bind 127.0.0.1` in its directory.
+
+```ts
+import { launch } from "@ombralabs/sdk";
+
+const browser = await launch({ mobileViewport: { width: 390, height: 844 } });
+try {
+  const page = await browser.newPage();
+  await page.goto("http://127.0.0.1:8000/");
+  console.log(await page.evaluate(() => document.documentElement.clientWidth)); // 390
+} finally {
+  await browser.close();
+}
+```
+
+`mobileViewport` selects Chromium's mobile layout on the host operating system for this launch.
+Supply both dimensions as whole CSS pixels from 1 through 10,000. Pages without a viewport
+declaration follow Chromium's mobile layout rules.
+
+The same option works with `launchContext` and `launchPersistentContext`. An explicit Playwright
+context `viewport` takes precedence, including one passed in `contextOptions`. The persistent helper
+uses the native viewport. Any OS selected in `fingerprint.os` or inherited from the profile must
+match the host. This option requires an engine build with `--mobile-layout-viewport` support.
+
 ## Quick start (Puppeteer)
 
 Use `launchPuppeteer()` from `@ombralabs/sdk` or `launch()` from `@ombralabs/sdk/puppeteer`:
