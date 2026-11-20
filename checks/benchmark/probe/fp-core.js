@@ -2125,7 +2125,7 @@
           if (detachedResult.webdriver !== null && detachedResult.webdriver !== main.webdriver) {
             mismatches.push('detached.webdriver');
           }
-          if (detachedResult.userAgent !== null && detachedResult.userAgent !== main.userAgent) {
+          if (detachedResult.userAgent && detachedResult.userAgent !== main.userAgent) {
             mismatches.push('detached.userAgent');
           }
         }

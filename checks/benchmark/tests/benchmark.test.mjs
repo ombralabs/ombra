@@ -458,3 +458,78 @@ test('fp-core.js executes Android mobile consistency cleanly and detects Runtime
   assert.ok(snap.probes['auto.cdp'].v.includes('__ombra'));
 });
 
+test('fp-core.js context.agreement accepts Blink empty userAgent on detached iframe and flags spoofed mismatch', async () => {
+  const src = readFileSync(join(BENCH_DIR, 'probe', 'fp-core.js'), 'utf8');
+  function runWithDetachedUa(detachedUa) {
+    let attached = true;
+    const mainNav = {
+      userAgent: 'Mozilla/5.0 Chrome/158.0.0.0',
+      platform: 'MacIntel',
+      language: 'en-US',
+      languages: ['en-US'],
+      hardwareConcurrency: 8,
+      deviceMemory: 8,
+      webdriver: false
+    };
+    const frameWin = {
+      get navigator() {
+        return attached
+          ? mainNav
+          : { ...mainNav, userAgent: detachedUa };
+      },
+      get screen() {
+        return attached ? { width: 1440, height: 900 } : { width: 0, height: 0 };
+      },
+      Intl
+    };
+    const body = {
+      appendChild() { attached = true; },
+      remove() {}
+    };
+    const win = {
+      location: { protocol: 'http:' },
+      navigator: mainNav,
+      screen: { width: 1440, height: 900 },
+      Intl
+    };
+    const doc = {
+      body,
+      createElement(tag) {
+        if (tag === 'iframe') {
+          return {
+            style: {},
+            src: '',
+            parentNode: body,
+            contentWindow: frameWin,
+            remove() { attached = false; this.parentNode = null; }
+          };
+        }
+        return { getContext: () => null };
+      }
+    };
+    const ctx = {
+      window: win,
+      document: doc,
+      navigator: mainNav,
+      screen: win.screen,
+      performance: { now: () => 0 },
+      Intl,
+      Object,
+      Array,
+      Promise,
+      setTimeout,
+      clearTimeout
+    };
+    vm.runInNewContext(src, ctx);
+    return ctx.window.FPAudit.run({ hardOnly: true, doubleRun: false });
+  }
+
+  const blinkEmpty = await runWithDetachedUa('');
+  assert.deepEqual(Array.from(blinkEmpty.probes['context.agreement'].v.mismatches), []);
+  assert.equal(blinkEmpty.probes['context.agreement'].v.detachedScreenZero, true);
+
+  const spoofLeak = await runWithDetachedUa('Mozilla/5.0 RealUnspoofedUA');
+  assert.deepEqual(Array.from(spoofLeak.probes['context.agreement'].v.mismatches), ['detached.userAgent']);
+});
+
+

@@ -128,11 +128,16 @@ async function normalizeEngine(candidate) {
   if (!info.isDirectory()) return null;
 
   const relativeCandidates = [
+    'Ombra.app/Contents/MacOS/Ombra',
+    'Contents/MacOS/Ombra',
     'Chromium.app/Contents/MacOS/Chromium',
     'Contents/MacOS/Chromium',
+    'Ombra',
+    'ombra',
     'Chromium',
     'chrome',
     'chromium',
+    'Ombra.exe',
     'chrome.exe',
     'chromium.exe',
     'Chromium.exe'
