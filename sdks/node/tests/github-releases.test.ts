@@ -16,6 +16,7 @@ async function withGitHubFixture(run: (fixture: {
   release: (version?: string, prerelease?: boolean) => any;
   manifest: (version: string) => any;
   routes: Map<string, unknown>;
+  statuses: Map<string, number>;
   requests: string[];
   cacheDir: string;
 }) => Promise<void>): Promise<void> {
@@ -51,16 +52,18 @@ async function withGitHubFixture(run: (fixture: {
     });
     const manifest = (v: string) => ({ version: v, platforms: { [plat.cdnName]: { file: name(v), sha256: signer.sha256Hex(archive), size: archive.length } } });
     const routes = new Map<string, unknown>([
-      [`${API}?per_page=100&page=1`, [release()]],
+      [`${API}/latest`, release()],
+      [`${API}?per_page=10&page=1`, [release()]],
       [`${API}/tags/v${version}`, release()],
       [`${DOWNLOAD}/v${version}/release.json`, signer.signEnvelope(manifest(version))],
       [`${DOWNLOAD}/v${version}/${name(version)}`, archive],
     ]);
+    const statuses = new Map<string, number>();
     const requests: string[] = [];
     const server = http.createServer((req, res) => {
       const url = decodeURIComponent(req.url!.slice(1));
       const body = routes.get(url);
-      if (body === undefined) { res.writeHead(404); res.end(); return; }
+      if (body === undefined || statuses.has(url)) { res.writeHead(statuses.get(url) ?? 404); res.end(); return; }
       res.end(Buffer.isBuffer(body) ? body : typeof body === "string" ? body : JSON.stringify(body));
     });
     await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -75,7 +78,7 @@ async function withGitHubFixture(run: (fixture: {
       return fetch(local + encodeURIComponent(url), init);
     };
     try {
-      await run({ version, release, manifest, routes, requests, cacheDir });
+      await run({ version, release, manifest, routes, statuses, requests, cacheDir });
     } finally {
       globalThis.fetch = fetch;
       _sleepHook.sleep = sleep;
@@ -88,8 +91,9 @@ async function withGitHubFixture(run: (fixture: {
 describe("GitHub browser releases", () => {
   it("finds stable browser tags across pages and installs signed GitHub assets", async () => {
     await withGitHubFixture(async ({ version, release, routes, requests }) => {
-      routes.set(`${API}?per_page=100&page=1`, Array.from({ length: 100 }, () => ({ tag_name: "v1.2.1", draft: false, prerelease: false })));
-      routes.set(`${API}?per_page=100&page=2`, [
+      routes.set(`${API}/latest`, { tag_name: "v1.2.1", draft: false, prerelease: false });
+      routes.set(`${API}?per_page=10&page=1`, Array.from({ length: 10 }, () => ({ tag_name: "v1.2.1", draft: false, prerelease: false })));
+      routes.set(`${API}?per_page=10&page=2`, [
         release("151.0.7922.108-0+dev.abc"),
         { ...release("151.0.7922.108-12"), draft: true },
         release("151.0.7922.108-11", true),
@@ -98,7 +102,7 @@ describe("GitHub browser releases", () => {
       const installed = await ensureBinary();
       assert.equal(fs.existsSync(installed), true);
       assert.equal((await binaryInfo()).version, version);
-      assert.equal(requests.includes(`${API}?per_page=100&page=2`), true);
+      assert.equal(requests.includes(`${API}?per_page=10&page=2`), true);
       assert.equal(requests.some((url) => url === `${DOWNLOAD}/v${version}/release.json`), true);
       process.env.OMBRA_DOWNLOAD_URL = "off";
       const calls = requests.length;
@@ -122,10 +126,10 @@ describe("GitHub browser releases", () => {
   it("resolves Chromium-family pins from matching channel releases", async () => {
     await withGitHubFixture(async ({ version, release, routes, requests }) => {
       const params = { baseUrl: API, plat: getPlatformInfo(), requestedVersion: "151.0.7922.108", channel: "stable" };
-      routes.set(`${API}?per_page=100&page=1`, [release("151.0.8000.1-1"), release(version, true), release()]);
+      routes.set(`${API}?per_page=10&page=1`, [release("151.0.8000.1-1"), release(version, true), release()]);
       assert.equal((await resolveReleaseEntry(params)).version, version);
-      assert.equal(requests[0], `${API}?per_page=100&page=1`);
-      routes.set(`${API}?per_page=100&page=1`, [release(version, true)]);
+      assert.equal(requests[0], `${API}?per_page=10&page=1`);
+      routes.set(`${API}?per_page=10&page=1`, [release(version, true)]);
       await assert.rejects(() => resolveReleaseEntry(params), BinaryNotFoundError);
       assert.equal((await resolveReleaseEntry({ ...params, channel: "beta" })).version, version);
     });
@@ -133,12 +137,12 @@ describe("GitHub browser releases", () => {
 
   it("keeps stable and beta provenance separate when a shared version is reused", async () => {
     await withGitHubFixture(async ({ version, release, routes, requests }) => {
-      routes.set(`${API}?per_page=100&page=1`, [release(version, true)]);
+      routes.set(`${API}?per_page=10&page=1`, [release(version, true)]);
       const installed = await ensureBinary({ releaseChannel: "beta" });
       assert.equal((await binaryInfo()).installed, false);
       assert.equal((await binaryInfo({ releaseChannel: "beta" })).path, installed);
       await assert.rejects(() => resolveBinary({ download: false }), BinaryNotFoundError);
-      routes.set(`${API}?per_page=100&page=1`, [release()]);
+      assert.equal(requests.includes(`${API}/latest`), false);
       assert.equal(await ensureBinary(), installed);
       assert.equal(requests.filter((url) => url.endsWith(getPlatformInfo().archiveExt)).length, 1);
       process.env.OMBRA_DOWNLOAD_URL = "off";
@@ -183,9 +187,91 @@ describe("GitHub browser releases", () => {
 
   it("reports an empty GitHub release feed without a CDN fallback", async () => {
     await withGitHubFixture(async ({ routes, requests }) => {
-      routes.set(`${API}?per_page=100&page=1`, []);
+      routes.delete(`${API}/latest`);
+      routes.set(`${API}?per_page=10&page=1`, []);
       await assert.rejects(() => ensureBinary(), BinaryNotFoundError);
-      assert.deepEqual(requests, [`${API}?per_page=100&page=1`]);
+      assert.deepEqual(requests, [`${API}/latest`, `${API}?per_page=10&page=1`]);
+    });
+  });
+
+  it("honors GitHub's latest stable selection ahead of newer versions in the release list", async () => {
+    await withGitHubFixture(async ({ version, release, routes, requests }) => {
+      routes.set(`${API}?per_page=10&page=1`, [release("151.0.7922.108-12"), release()]);
+      const entry = await resolveReleaseEntry({ baseUrl: API, plat: getPlatformInfo(), requestedVersion: null, channel: "stable" });
+      assert.equal(entry.version, version);
+      assert.deepEqual(requests, [`${API}/latest`, `${DOWNLOAD}/v${version}/release.json`]);
+    });
+  });
+
+  it("falls back to browser stable lists only for missing or non-browser latest selections", async () => {
+    await withGitHubFixture(async ({ version, release, routes, requests, statuses }) => {
+      const latestUrl = `${API}/latest`;
+      const params = { baseUrl: API, plat: getPlatformInfo(), requestedVersion: null, channel: "stable" };
+      for (const latest of [
+        { ...release(), tag_name: "v1.2.1" },
+        release("151.0.7922.108-0+dev.abc"),
+        release(version, true),
+        { ...release(), draft: true },
+      ]) {
+        routes.set(latestUrl, latest);
+        requests.length = 0;
+        assert.equal((await resolveReleaseEntry(params)).version, version);
+        assert.deepEqual(requests, [latestUrl, `${API}?per_page=10&page=1`, `${DOWNLOAD}/v${version}/release.json`]);
+      }
+      statuses.set(latestUrl, 404);
+      requests.length = 0;
+      assert.equal((await resolveReleaseEntry(params)).version, version);
+      assert.deepEqual(requests, [latestUrl, `${API}?per_page=10&page=1`, `${DOWNLOAD}/v${version}/release.json`]);
+    });
+  });
+
+  it("propagates rate, server, network, and invalid JSON failures from latest", async () => {
+    await withGitHubFixture(async ({ routes, requests, statuses }) => {
+      const latestUrl = `${API}/latest`;
+      const params = { baseUrl: API, plat: getPlatformInfo(), requestedVersion: null, channel: "stable" };
+      for (const status of [403, 429, 500]) {
+        statuses.set(latestUrl, status);
+        requests.length = 0;
+        await assert.rejects(() => resolveReleaseEntry(params), (err: unknown) => err instanceof DownloadFailedError && err.details.status === status);
+        assert.deepEqual(requests, [latestUrl]);
+      }
+      statuses.delete(latestUrl);
+      routes.set(latestUrl, "not JSON");
+      requests.length = 0;
+      await assert.rejects(() => resolveReleaseEntry(params), DownloadFailedError);
+      assert.deepEqual(requests, [latestUrl]);
+      const fetch = globalThis.fetch;
+      globalThis.fetch = async (input, init) => {
+        if (String(input) !== latestUrl) return fetch(input, init);
+        requests.push(latestUrl);
+        throw new TypeError("fixture connection failed");
+      };
+      requests.length = 0;
+      await assert.rejects(() => resolveReleaseEntry(params), DownloadFailedError);
+      assert.deepEqual(requests, [latestUrl]);
+    });
+  });
+
+  it("reads bounded pages of asset-rich release records and retains the manifest limit", async () => {
+    await withGitHubFixture(async ({ version, release, routes, requests }) => {
+      const apiRecord = { ...release(version, true), assets: [
+        ...release(version, true).assets,
+        ...Array.from({ length: 18 }, (_, i) => ({
+          name: `browser-platform-${i}.zip`, size: 400_000_000,
+          browser_download_url: `${DOWNLOAD}/v${version}/browser-platform-${i}.zip`,
+          uploader: { login: "release-builder", avatar_url: "https://avatars.githubusercontent.com/u/1", html_url: "https://github.com/release-builder" },
+          created_at: "2026-11-20T00:00:00Z", updated_at: "2026-11-20T00:00:00Z",
+        })),
+      ], body: "Browser release notes. ".repeat(500) };
+      assert.ok(Buffer.byteLength(JSON.stringify(Array(100).fill(apiRecord))) > 1024 * 1024);
+      const records = Array(10).fill(apiRecord);
+      assert.ok(Buffer.byteLength(JSON.stringify(records)) < 1024 * 1024);
+      routes.set(`${API}?per_page=10&page=1`, records);
+      const params = { baseUrl: API, plat: getPlatformInfo(), requestedVersion: null, channel: "beta" };
+      assert.equal((await resolveReleaseEntry(params)).version, version);
+      assert.deepEqual(requests, [`${API}?per_page=10&page=1`, `${DOWNLOAD}/v${version}/release.json`]);
+      routes.set(`${DOWNLOAD}/v${version}/release.json`, Buffer.alloc(1024 * 1024 + 1, " "));
+      await assert.rejects(() => resolveReleaseEntry(params), (err: unknown) => err instanceof DownloadFailedError && /1 MiB/.test(err.message));
     });
   });
 

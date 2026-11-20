@@ -49,6 +49,7 @@ import {
 const VERSION_PARTS_RE = /^(\d+\.\d+\.\d+\.\d+)(?:-([1-9]\d*|0\+dev\.[0-9a-fA-F]+))?$/;
 const GITHUB_TAG_RE = /^v(\d+\.\d+\.\d+\.\d+(?:-[1-9]\d*)?)$/;
 const GITHUB_DOWNLOAD_URL = "https://github.com/ombralabs/ombra/releases/download";
+const GITHUB_RELEASES_PAGE_SIZE = 10;
 const SHA256_RE = /^[a-f0-9]{64}$/;
 const UPDATE_CHECK_INTERVAL_MS = 3_600_000;
 const DOWNLOAD_RETRIES = 2; // Contract §11: download may retry twice with backoff
@@ -772,7 +773,7 @@ async function fetchResponse(urlStr: string, signal: AbortSignal): Promise<Respo
     }
     if (!response.ok) {
       await response.body?.cancel();
-      throw new DownloadFailedError(`HTTP ${response.status} while downloading ${urlStr}`);
+      throw new DownloadFailedError(`HTTP ${response.status} while downloading ${urlStr}`, { details: { status: response.status } });
     }
     if (!response.body) throw new DownloadFailedError(`Empty response while downloading ${urlStr}`);
     return response;
@@ -833,14 +834,24 @@ async function fetchReleaseEntry(params: {
     if (requestedVersion?.includes("-")) {
       release = await fetchGitHubJson(`${baseUrl}/tags/v${requestedVersion}`);
     } else {
-      for (let page = 1; ; page++) {
-        const releases = await fetchGitHubJson(`${baseUrl}?per_page=100&page=${page}`);
+      if (requestedVersion === null && channel === "stable") {
+        let latest: any;
+        try {
+          latest = await fetchGitHubJson(`${baseUrl}/latest`);
+        } catch (err) {
+          if (!(err instanceof DownloadFailedError) || err.details.status !== 404) throw err;
+        }
+        if (latest?.draft === false && latest.prerelease === false &&
+            typeof latest.tag_name === "string" && GITHUB_TAG_RE.test(latest.tag_name)) release = latest;
+      }
+      for (let page = 1; !release; page++) {
+        const releases = await fetchGitHubJson(`${baseUrl}?per_page=${GITHUB_RELEASES_PAGE_SIZE}&page=${page}`);
         if (!Array.isArray(releases)) throw new DownloadFailedError("GitHub releases response must be an array.");
         release = releases.find((item) => item && item.draft === false &&
           item.prerelease === (channel === "beta") && typeof item.tag_name === "string" &&
           GITHUB_TAG_RE.test(item.tag_name) && versionMatches(item.tag_name.slice(1), requestedVersion));
         if (release) break;
-        if (releases.length < 100) throw new BinaryNotFoundError(`GitHub Releases has no published ${channel} browser release.`);
+        if (releases.length < GITHUB_RELEASES_PAGE_SIZE) throw new BinaryNotFoundError(`GitHub Releases has no published ${channel} browser release.`);
       }
     }
     const version = githubReleaseVersion(release, requestedVersion, channel);
