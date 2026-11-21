@@ -8,7 +8,7 @@ Use this directory when adding a language to the monorepo. Copy it, rename it, t
 - [ ] Create the source root and test root using the language's conventions.
 - [ ] Add the language to [`sdks/manifest.json`](../manifest.json) with `id`, `language`, `directory`, `package`, `registry`, `runtime`, `source_root`, `tests_root`, `cdp_clients`, and `status`.
 - [ ] Add a row to the matrix in [`sdks/README.md`](../README.md).
-- [ ] Add a row to the root [`README.md`](../../README.md#sdk-matrix).
+- [ ] Add a row to the root [`README.md`](../../README.md#current-status-and-releases).
 - [ ] Implement `launch(options)` per the [contract](../../docs/sdk-contract.md).
 - [ ] Implement binary resolution, SHA-256 verification, and `binary_info()`.
 - [ ] Implement named profiles, the seed, and the profile lock.

@@ -54,8 +54,8 @@ Python और Node.js में Playwright तथा Puppeteer के लिए 
 
 - **सोर्स-लेवल Chromium पैच** — canvas, WebGL, WebGPU, ऑडियो, फ़ॉन्ट, GPU, स्क्रीन, CSS मीडिया क्वेरी, हार्डवेयर रिपोर्टिंग, STUN लीक के बिना WebRTC, TLS ClientHello, टाइमज़ोन, लोकेल, और ऑटोमेशन संकेतों को हटाना (`navigator.webdriver`, `Runtime.enable`, हेडलेस मार्कर)।
 - **ब्राउज़र प्रोसेस के भीतर नेटिव मानवीकृत इनपुट (`humanize=True`)** — पॉइंटर ट्रैजेक्टरी (`cursory-rs`), होल्ड अवधि के साथ लक्षित क्लिक, टाइपो स्व-सुधार के साथ टाइपिंग लय, और स्क्रॉल फ़िज़िक्स सीधे Chromium के अंदर चलते हैं। SDK बिना किसी प्रॉक्सी रैपर के एक सामान्य नेटिव `Browser` ऑब्जेक्ट लौटाता है।
-- **बिना कुंजी या खाते के स्वायत्त संचालन** — वर्तमान इंजन बिल्ड (`158.0.8127.37-3` और नए) तथा Ombra Desktop बिना साइन-अप, लाइसेंस कुंजी, हार्डवेयर ID या लाइसेंसिंग सर्वर के लोकल रूप से चलते हैं।
-- **स्वचालित इंस्टॉलेशन और क्रिप्टोग्राफ़िक बाइनरी सत्यापन** — `pip install ombrabrowser` या `npm install @ombralabs/sdk` चलाएँ; पहली बार लॉन्च होने पर, SDK आपके प्लेटफ़ॉर्म के लिए बिल्ड डाउनलोड करता है और उसके Ed25519 हस्ताक्षर तथा SHA-256 चेकसम को सत्यापित करता है।
+- **बिना कुंजी या खाते के स्वायत्त संचालन** — वर्तमान इंजन बिल्ड तथा Ombra Desktop बिना साइन-अप, लाइसेंस कुंजी, हार्डवेयर ID या लाइसेंसिंग सर्वर के लोकल रूप से चलते हैं।
+- **स्वचालित इंस्टॉलेशन और क्रिप्टोग्राफ़िक बाइनरी सत्यापन** — `pip install ombrabrowser` या `npm install @ombralabs/sdk` चलाएँ; पहली बार लॉन्च होने पर, SDK [GitHub Releases](https://github.com/ombralabs/ombra/releases) से एक संगत बिल्ड डाउनलोड करता है और उसके Ed25519 हस्ताक्षर तथा SHA-256 चेकसम को सत्यापित करता है।
 - **स्थायी प्रोफ़ाइल और सुरक्षित प्रॉक्सी रिले** — नामित प्रोफ़ाइल क्रॉस-प्रोसेस लॉकिंग के साथ रन के बीच कुकीज़, `localStorage`, IndexedDB और `seed` को सुरक्षित रखती हैं; प्रमाणीकरण वाले प्रॉक्सी (HTTP, HTTPS, SOCKS5) एक लोकल लूपबैक रिले के माध्यम से चलते हैं ताकि क्रेडेंशियल्स कभी भी प्रोसेस आर्ग्यूमेंट्स में न दिखें।
 - **ऑफ़लाइन Ombra Desktop प्रोफ़ाइल मैनेजर** — इसी रिपॉज़िटरी में स्थित एक नेटिव डेस्कटॉप एप्लिकेशन ([`desktop/`](../../desktop/README.md)), macOS, Linux और Windows के लिए प्रीबिल्ट इंस्टॉलर के साथ।
 
@@ -136,7 +136,7 @@ python -m pip install "ombrabrowser[geoip]"
 # Playwright के साथ (1.60.0+, स्टॉक Chromium डाउनलोड करने की आवश्यकता नहीं)
 npm install @ombralabs/sdk "playwright-core@^1.60.0"
 
-# या Puppeteer के साथ
+# या Puppeteer के साथ (Puppeteer 25+ के लिए Node.js 22.12+ आवश्यक है)
 npm install @ombralabs/sdk puppeteer-core
 
 # वैकल्पिक: timezone: "auto" और locale: "auto" के लिए ऑफ़लाइन GeoIP डेटाबेस रीडर
@@ -145,11 +145,11 @@ npm install mmdb-lib
 
 ---
 
-लॉन्च होने पर, SDK इंजन को एक सख्त क्रम में खोजता है: `binary_path` (Node.js में `binaryPath`), `OMBRA_BINARY_PATH`, Ombra Desktop इंजन डायरेक्टरी, और SDK कैश (`~/.ombra/engines`)। यदि कोई संगत इंजन नहीं मिलता है, तो SDK हस्ताक्षरित रिलीज़ चैनल से एक बिल्ड डाउनलोड करता है, उसके Ed25519 हस्ताक्षर और SHA-256 चेकसम को सत्यापित करता है, और उसे लोकल रूप से कैश कर लेता है। `playwright install chromium` चलाने की आवश्यकता नहीं है।
+लॉन्च होने पर, SDK इंजन को एक सख्त क्रम में खोजता है: `binary_path` (Node.js में `binaryPath`), `OMBRA_BINARY_PATH`, Ombra Desktop इंजन डायरेक्टरी, और SDK कैश (`~/.ombra/engines`)। यदि कोई संगत इंजन नहीं मिलता है, तो SDK [GitHub Releases](https://github.com/ombralabs/ombra/releases) से एक बिल्ड डाउनलोड करता है, उसके Ed25519 हस्ताक्षर और SHA-256 चेकसम को सत्यापित करता है, और उसे लोकल रूप से कैश कर लेता है। `playwright install chromium` चलाने की आवश्यकता नहीं है।
 
 स्वचालित डाउनलोड को अक्षम करने के लिए `download=False` (Node.js में `download: false`) पास करें। इंजन को पहले से डाउनलोड और सत्यापित करने के लिए (उदाहरण के लिए कंटेनर बिल्ड के दौरान), `ensure_binary()` (`ensureBinary()`) कॉल करें या CLI का `install` कमांड उपयोग करें।
 
-> **स्वायत्त लॉन्च:** वर्तमान इंजन बिल्ड (`158.0.8127.37-3` और नए) मुफ़्त हैं और इनके लिए किसी खाते या लाइसेंस कुंजी की आवश्यकता नहीं होती। `OMBRA_LICENSE_KEY` और `login` कमांड केवल पुराने लाइसेंस वाले बिल्ड के साथ संगतता के लिए उपलब्ध हैं।
+> **स्वायत्त लॉन्च:** वर्तमान इंजन बिल्ड मुफ़्त हैं और इनके लिए किसी खाते या लाइसेंस कुंजी की आवश्यकता नहीं होती। `OMBRA_LICENSE_KEY` और `login` कमांड केवल पुराने लाइसेंस वाले बिल्ड के साथ संगतता के लिए उपलब्ध हैं।
 
 **Playwright से माइग्रेशन** में केवल दो पंक्तियाँ लगती हैं — पेज के सभी ऑपरेशन, लोकेटर और वेट्स अपरिवर्तित रहते हैं:
 
@@ -185,22 +185,11 @@ npm install mmdb-lib
 | **SDK अनुबंध** | ड्राफ़्ट `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | अल्फ़ा `0.2.0` | [PyPI पर `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | अल्फ़ा `0.2.0` | [npm पर `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium इंजन** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
-| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **स्टैंडअलोन ब्राउज़र** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
+| **Ombra Chromium इंजन** | SDK सीमा `>=151.0.7922.108,<159` | SDK द्वारा [GitHub Releases](https://github.com/ombralabs/ombra/releases) से स्वतः डाउनलोड किया जाता है (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Desktop** | ऑफ़लाइन प्रोफ़ाइल मैनेजर | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **स्टैंडअलोन ब्राउज़र** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **स्कीमा और कन्फ़ॉर्मेंस** | JSON Schema + साझा टेस्ट केस | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **स्टेल्थ चेकअप पद्धति** | 6 परतें (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
-
-वर्तमान रिलीज़ में शामिल सुविधाएँ:
-
-- **सोर्स-लेवल पैच** — सीड-सुसंगत फ़िंगरप्रिंट व्युत्पत्ति, WebGL / WebGPU और एक्सटेंशन संरेखण, प्रत्येक OS के लिए यथार्थवादी फ़ॉन्ट तालिकाएँ, नेटिव TLS ClientHello प्रोफ़ाइल (`chrome-<major>`), `Runtime.enable` व `UtilityScript` स्टैक लीक का दमन, और WebRTC होस्ट IP लीक सुरक्षा।
-- **ब्राउज़र-स्तरीय `Ombra` CDP डोमेन** — ब्राउज़र को रीस्टार्ट किए बिना Python और Node.js में मानवीकृत इनपुट (`getHumanizeState`, `setHumanize`) पर लाइव नियंत्रण।
-- **ब्राउज़र प्रोसेस में नेटिव इनपुट सिमुलेशन** — `cursory-rs` पॉइंटर प्लानर, व्हील और ट्रैकपैड स्क्रॉल प्रोफ़ाइल, टाइपो स्व-सुधार के साथ टाइपिंग लय, और आइसोलेटेड क्लिपबोर्ड के माध्यम से लंबे टेक्स्ट का सुरक्षित पेस्ट।
-- **कुंजी-रहित स्वायत्त बिल्ड** — वर्तमान इंजन बिल्ड (`158.0.8127.37-3`) और Ombra Desktop `1.2.2` बिना खातों, कुंजियों या टेलीमेट्री के पूरी तरह लोकल रूप से चलते हैं।
-- **इंजन संस्करण पिनिंग (`version`)** — `launch(version="158.0.8127.37-3")`, `OMBRA_VERSION`, या CLI `install --version` के माध्यम से किसी सटीक बिल्ड को पिन करें।
-- **एकीकृत प्रॉक्सी रिले** — Chromium की कमांड लाइन, लॉग्स या प्रोफ़ाइल मेटाडेटा में क्रेडेंशियल्स उजागर किए बिना HTTP, HTTPS और SOCKS5 प्रमाणीकृत प्रॉक्सी।
-- **स्थायी नामित प्रोफ़ाइल** — क्रॉस-प्रोसेस लॉकिंग (`ProfileBusyError`) के साथ `~/.ombra/profiles/<slug>` के अंतर्गत `seed`, कुकीज़, `localStorage` और IndexedDB संग्रहीत करें।
-- **क्रिप्टोग्राफ़िक सप्लाई-चेन जाँच** — निष्कर्षण (एक्सट्रैक्शन) से पहले रिलीज़ एनवलप का Ed25519 हस्ताक्षर सत्यापन और आर्काइव की SHA-256 जाँच।
 
 पूर्ण रिलीज़ इतिहास के लिए [CHANGELOG.md](../../CHANGELOG.md) देखें।
 
@@ -222,7 +211,7 @@ npm install mmdb-lib
 - **प्रीबिल्ट इंस्टॉलर** — macOS Apple Silicon (`.dmg`, Apple Developer ID से हस्ताक्षरित और नोटराइज़्ड), Linux (`.deb` और `.rpm`), तथा Windows x64 (`setup.exe`)।
 - **पृथक कैटलॉग** — किसी अलग टेस्ट कैटलॉग या बैकअप कॉपी के साथ काम करने के लिए `OMBRA_DESKTOP_DATA_DIR` सेट करें।
 
-[`desktop-v1.2.2` डाउनलोड करें →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [Desktop README](../../desktop/README.md) · [प्रोफ़ाइल और लोकल कुंजी मार्गदर्शिका](../../docs/desktop/README.md)
+[नवीनतम रिलीज़ डाउनलोड करें →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [प्रोफ़ाइल और लोकल कुंजी मार्गदर्शिका](../../docs/desktop/README.md)
 
 ## फ़िंगरप्रिंट सत्यापन और स्टेल्थ चेकअप
 
@@ -236,7 +225,7 @@ npm install mmdb-lib
 | `window.chrome` | हेडलेस में अनुपस्थित | पूर्ण ऑब्जेक्ट | सामान्य Chrome से मेल खाता है |
 | `navigator.plugins` | हेडलेस में `0` | सुसंगत प्लगइन सेट | इंजन-स्तरीय |
 | User-Agent और Client Hints | `HeadlessChrome`, ब्रांड विसंगति | `Google Chrome` + संरेखित `Sec-CH-UA*` | पैच `010-user-agent-and-webdriver` |
-| CDP आर्टिफ़ैक्ट्स (`Runtime.enable`, `UtilityScript`) | डिटेक्टर्स द्वारा चिह्नित | इंजन द्वारा दबाया गया; SDK कभी `Runtime.enable` कॉल नहीं करता | पैच `110-runtime-enable` + इनवेरिएंट `SI-02` |
+| CDP आर्टिफ़ैक्ट्स (`Runtime.enable`, `UtilityScript`) | डिटेक्टर्स द्वारा चिह्नित | इंजन द्वारा दबाया गया; SDK कभी `Runtime.enable` कॉल नहीं करता | पैच `110-runtime-enable` + इनवेरिएंट `SI-01` |
 | WebRTC IP लीक | लोकल/होस्ट IP उजागर करता है | वास्तविक STUN भेजे बिना एग्ज़िट IP रिपोर्ट करता है | पैच `100-webrtc-leak` (`--webrtc-ip`) |
 | TLS और HTTP/2 | सेटअप पर निर्भर | Chromium नेटवर्क स्टैक + `chrome-<major>` ClientHello प्रोफ़ाइल | पैच `210-tls-network-persona` |
 | WebGL और WebGPU | सॉफ़्टवेयर रेंडरर / GPU विसंगति | एकीकृत WebGL/WebGPU सीमाएँ और एक्सटेंशन तालिकाएँ | पैच `070`, `071`, `075`, `955` |
@@ -460,7 +449,7 @@ ensure_binary(version="158.0.8127.37-3")
 # SDK द्वारा प्रबंधित इंजन बाइनरी हटाएँ (~/.ombra/profiles के अंतर्गत प्रोफ़ाइल सुरक्षित रहती हैं)
 clear_cache()
 
-# Chromium शुरू किए बिना तैयार लॉन्च कमांड देखें
+# Chromium शुरू किए बिना तैयार लॉन्च कमांड का ड्राई-रन प्रीव्यू देखें
 cmd = build_launch_options(profile="pricing-eu", humanize=True)
 
 # रनटाइम मेटाडेटा (CDP पोर्ट, ws_url, seed, pid) पढ़ें और प्रोसेस स्वास्थ्य की जाँच करें
@@ -478,7 +467,7 @@ ombrabrowser install --version 158.0.8127.37-3  # किसी विशिष�
 ombrabrowser info                                # एनवायरनमेंट, बाइनरी और निर्भरता डायग्नोस्टिक्स (उपनाम: doctor)
 ombrabrowser info --quick --json                 # बाइनरी चलाए बिना त्वरित मशीन-पठनीय रिपोर्ट
 ombrabrowser info --proxy socks5://user:pass@host:1080  # प्रॉक्सी के माध्यम से एग्ज़िट IP, टाइमज़ोन और लोकेल रिज़ॉल्यूशन का परीक्षण करें
-ombrabrowser update                              # रिलीज़ चैनल जाँचें और कैश्ड इंजन अपडेट करें
+ombrabrowser update                              # GitHub Releases जाँचें और कैश्ड इंजन अपडेट करें
 ombrabrowser clear-cache                         # कैश्ड इंजन बाइनरी साफ़ करें (प्रोफ़ाइल सुरक्षित रहती हैं)
 ombrabrowser login                               # ~/.ombra/license.key में लाइसेंस कुंजी सहेजें (केवल पुराने बिल्ड)
 ombrabrowser logout                              # सहेजी गई लाइसेंस कुंजी हटाएँ
@@ -666,7 +655,7 @@ Canvas/ऑडियो नॉइज़ प्रति `eTLD+1` कुंजी�
 
 ### अतिरिक्त इंजन फ़्लैग (`args`)
 
-इंजन द्वारा समर्थित वे फ़्लैग जिन्हें SDK स्वतः सेट नहीं करता (`args=[...]` के माध्यम से पास करें):
+अतिरिक्त इंजन फ़्लैग (`args=[...]` के माध्यम से सेट या ओवरराइड करें):
 
 | फ़्लैग | उद्देश्य |
 |---|---|
@@ -680,9 +669,9 @@ Canvas/ऑडियो नॉइज़ प्रति `eTLD+1` कुंजी�
 | `--fingerprint-color-depth=<bits>` | स्क्रीन कलर डेप्थ |
 | `--disable-gpu-fingerprint` | होस्ट का वास्तविक GPU पास-थ्रू करें (WebGL/WebGPU स्ट्रिंग्स, सीमाएँ और एक्सटेंशन) |
 | `--disable-gpu-string-spoof` | अन्य प्रोफ़ाइल सेटिंग्स को बनाए रखते हुए वास्तविक GPU स्ट्रिंग्स पास-थ्रू करें |
-| `--disable-fingerprint-noise` | पहचान पैरामीटर सक्रिय रखते हुए canvas/WebGL/ऑडियो नॉइज़ अक्षम करें |
+| `--disable-fingerprint-noise` | पहचान पैरामीटर सक्रिय रखते हुए canvas/WebGL/ऑडियो नॉइज़ अक्षम करें (`fingerprint={"noise": False}` द्वारा भी सेट किया जाता है) |
 | `--fingerprint-pixel-noise` | 2D canvas और `readPixels` के लिए वैकल्पिक आइडमपोटेंट पिक्सेल नॉइज़ सक्षम करें |
-| `--profile-label=<text>` | ब्राउज़र एड्रेस बार में दिखने वाला प्रोफ़ाइल लेबल (केवल UI; वेब पेजों को अदृश्य) |
+| `--profile-label=<text>` | ब्राउज़र एड्रेस बार में दिखने वाला प्रोफ़ाइल लेबल (केवल UI; `profile` से स्वतः सेट होता है, `args` के माध्यम से तभी पास करें जब `profile` अनसेट हो) |
 
 ### Linux पर फ़ॉन्ट सेटअप
 
@@ -733,7 +722,7 @@ RUN fc-cache -f
 | `version` | env / ऑटो | इंजन संस्करण पिन (उदाहरण के लिए `158.0.8127.37-3`), `OMBRA_VERSION` को ओवरराइड करता है |
 | `timeout_ms` | `30000` | इंजन स्टार्टअप और CDP कनेक्शन के लिए समय-सीमा (1000–600000 ms) |
 | `humanize` | इंजन डिफ़ॉल्ट | `False`, `True`, या `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | env / फ़ाइल | पुराने लाइसेंस वाले बिल्ड के लिए कुंजी (`158.0.8127.37-3+` पर आवश्यक नहीं; कभी लॉग नहीं की जाती) |
+| `license_key` | env / फ़ाइल | पुराने लाइसेंस वाले बिल्ड के लिए कुंजी (वर्तमान बिल्ड पर आवश्यक नहीं; कभी लॉग नहीं की जाती) |
 | `env` | `{}` | इंजन प्रोसेस के लिए अतिरिक्त एनवायरनमेंट वेरिएबल्स |
 | `download` | `True` | अनुपस्थित इंजन बाइनरी के स्वचालित डाउनलोड की अनुमति दें |
 
@@ -745,9 +734,9 @@ RUN fc-cache -f
 |---|---|---|
 | `OMBRA_BINARY_PATH` | अनसेट | इंजन बाइनरी का स्पष्ट पाथ |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | कैश्ड इंजन और नामित प्रोफ़ाइल की डायरेक्टरी |
-| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | इंजन डाउनलोड के लिए बेस URL / मिरर (`none`/`off` डाउनलोड अक्षम करता है) |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | इंजन डाउनलोड स्रोत; कस्टम URL लीगेसी मिरर मोड सक्षम करता है (`none`/`off` डाउनलोड अक्षम करता है) |
 | `OMBRA_VERSION` | नवीनतम संगत | पिन किया गया इंजन संस्करण (उदाहरण के लिए `158.0.8127.37-3`) |
-| `OMBRA_RELEASE_CHANNEL` | `stable` | इंजन रिलीज़ चैनल: `stable` या `beta` |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | इंजन रिलीज़ चैनल: `stable` (GitHub releases) या `beta` (GitHub prereleases) |
 | `OMBRA_AUTO_UPDATE` | `true` | लॉन्च पर नए इंजन बिल्ड की जाँच करें |
 | `OMBRA_SKIP_CHECKSUM` | `false` | केवल लोकल डेवलपमेंट के लिए: SHA-256 सत्यापन अक्षम करता है (चेतावनी लॉग करता है) |
 | `OMBRA_LICENSE_KEY` | अनसेट | पुराने लाइसेंस वाले बिल्ड के लिए कुंजी (कभी लॉग नहीं की जाती) |
@@ -768,10 +757,10 @@ RUN fc-cache -f
 
 | घटक | समर्थन | टिप्पणियाँ |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | स्वायत्त बिल्ड `158.0.8127.37-3`; Ombra Desktop Developer ID से हस्ताक्षरित और नोटराइज़्ड है |
+| **macOS ARM64 (Apple Silicon)** | ✅ | GitHub Releases के माध्यम से स्वायत्त इंजन बिल्ड; Ombra Desktop Developer ID से हस्ताक्षरित और नोटराइज़्ड है |
 | **macOS x64 (Intel)** | — | Chromium 158 का वर्तमान रिलीज़ उपलब्ध नहीं है |
-| **Linux x64** | ✅ | स्वायत्त बिल्ड `158.0.8127.37-3`; `.tar.xz` निकालने के लिए `xz-utils` (`xz`) आवश्यक है |
-| **Windows x64** | ✅ | स्वायत्त बिल्ड `158.0.8127.37-3` और Ombra Desktop इंस्टॉलर |
+| **Linux x64** | ✅ | GitHub Releases के माध्यम से स्वायत्त इंजन बिल्ड; Node.js SDK को `.tar.xz` निकालने के लिए `xz-utils` (`xz`) आवश्यक है |
+| **Windows x64** | ✅ | GitHub Releases के माध्यम से स्वायत्त इंजन बिल्ड और Ombra Desktop इंस्टॉलर |
 | **Python** | `3.10+` | `ombrabrowser` के साथ Playwright `>=1.60,<2.0` स्वतः इंस्टॉल होता है |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` या Puppeteer `>=22` (Puppeteer 25+ के लिए Node.js `>=22.12` आवश्यक है) |
 
@@ -780,10 +769,16 @@ RUN fc-cache -f
 Ombra किसी भी ऐसे ऑटोमेशन टूल या AI एजेंट फ़्रेमवर्क के साथ काम करता है जो कस्टम Chromium बाइनरी स्वीकार करता है या CDP पर कनेक्ट होता है (`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain`, और अन्य):
 
 ```python
-# विकल्प 1: अपने स्वयं के रनर के लिए सत्यापित बाइनरी पाथ और इंजन आर्ग्यूमेंट्स प्राप्त करें
+# विकल्प 1: अपने स्वयं के रनर के लिए सत्यापित बाइनरी पाथ और चलाने योग्य इंजन आर्ग्यूमेंट्स प्राप्त करें
+# नोट: build_launch_options() एक ड्राई-रन हेल्पर है — स्पष्ट user_data_dir और seed पास करें
+# (नामित प्रोफ़ाइल और प्रमाणीकृत प्रॉक्सी के लिए विकल्प 2 आवश्यक है)।
 from ombrabrowser import build_launch_options
 
-cmd = build_launch_options(profile="agent-1", humanize=True)
+cmd = build_launch_options(
+    user_data_dir="./agent-1",
+    fingerprint={"seed": 20261116},
+    humanize=True,
+)
 binary_path = cmd["binary_path"]
 engine_args = cmd["args"]
 
@@ -837,17 +832,7 @@ Xvfb :99 -screen 0 1920x1080x24 &
 export DISPLAY=:99
 ```
 
-फिर रेज़िडेंशियल SOCKS5/HTTP प्रॉक्सी, स्थायी प्रोफ़ाइल, सुमेलित टाइमज़ोन/लोकेल, `headless=False` और `humanize=True` के साथ लॉन्च करें:
-
-```python
-context = launch_persistent_context(
-    profile="site-eu",
-    proxy="socks5://user:pass@residential-proxy:1080",
-    fingerprint={"timezone": "auto", "locale": "auto"},
-    headless=False,
-    humanize=True,
-)
-```
+फिर रेज़िडेंशियल SOCKS5/HTTP प्रॉक्सी, स्थायी प्रोफ़ाइल, सुमेलित टाइमज़ोन/लोकेल, `headless=False` और `humanize=True` के साथ लॉन्च करें (इस README के शीर्ष पर दिया गया `launch_persistent_context()` उदाहरण देखें)।
 
 यदि Linux पर ब्लॉक जारी रहते हैं, तो [Linux पर फ़ॉन्ट सेटअप](#linux-पर-फ़ॉन्ट-सेटअप) जाँचें।
 
@@ -885,9 +870,13 @@ browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
-# या एनवायरनमेंट वेरिएबल्स / CLI के माध्यम से कॉन्फ़िगर करें
-export OMBRA_VERSION=158.0.8127.37-3
+# beta चैनल का परीक्षण करें (OMBRA_VERSION को अनसेट करें — सटीक -N पिन चैनल को अनदेखा कर देता है)
+unset OMBRA_VERSION
 export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser update
+
+# या किसी सटीक इंजन बिल्ड को पिन / रोल बैक करें
+export OMBRA_VERSION=158.0.8127.37-3
 ombrabrowser install --version 158.0.8127.37-3
 
 # या लोकल रूप से बिल्ड की गई बाइनरी की ओर संकेत करें
@@ -954,7 +943,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-इस रिपॉज़िटरी में SDK अनुबंध, स्कीमा, कन्फ़ॉर्मेंस टेस्ट केस, डॉक्यूमेंटेशन और Ombra Desktop का सोर्स कोड रखा गया है। Chromium इंजन के पैच एक अलग रिपॉज़िटरी में बनाए रखे जाते हैं, और कंपाइल किए गए बिल्ड डाउनलोड चैनल तथा [GitHub Releases](https://github.com/ombralabs/ombra/releases) के माध्यम से प्रकाशित किए जाते हैं।
+इस रिपॉज़िटरी में SDK अनुबंध, स्कीमा, कन्फ़ॉर्मेंस टेस्ट केस, डॉक्यूमेंटेशन और Ombra Desktop का सोर्स कोड रखा गया है। Chromium इंजन के पैच एक अलग रिपॉज़िटरी में बनाए रखे जाते हैं, और कंपाइल किए गए बिल्ड [GitHub Releases](https://github.com/ombralabs/ombra/releases) के माध्यम से प्रकाशित किए जाते हैं।
 
 ## अक्सर पूछे जाने वाले प्रश्न (FAQ)
 
@@ -964,7 +953,7 @@ for _ in range(15):
 
 ### क्या Ombra मुफ़्त है, और क्या मुझे लाइसेंस कुंजी की आवश्यकता है?
 
-इस रिपॉज़िटरी में SDK का सोर्स कोड Apache License 2.0 के अंतर्गत ओपन सोर्स है। वर्तमान इंजन बिल्ड (`158.0.8127.37-3` और नए) तथा लोकल Ombra Desktop प्रोफ़ाइल मैनेजर (`desktop-v1.2.2`) मुफ़्त और स्वायत्त रूप से चलते हैं — बिना किसी खाते, लाइसेंस कुंजी, हार्डवेयर ID या प्रोफ़ाइल संख्या सीमा के। `license_key` और `OMBRA_LICENSE_KEY` की आवश्यकता केवल पुराने लाइसेंस वाले बिल्ड के लिए होती है।
+इस रिपॉज़िटरी में SDK का सोर्स कोड Apache License 2.0 के अंतर्गत ओपन सोर्स है। वर्तमान इंजन बिल्ड तथा लोकल Ombra Desktop प्रोफ़ाइल मैनेजर मुफ़्त और स्वायत्त रूप से चलते हैं — बिना किसी खाते, लाइसेंस कुंजी, हार्डवेयर ID या प्रोफ़ाइल संख्या सीमा के। `license_key` और `OMBRA_LICENSE_KEY` की आवश्यकता केवल पुराने लाइसेंस वाले बिल्ड के लिए होती है।
 
 ### क्या SDK का उपयोग करने के लिए Ombra Desktop इंस्टॉल करना ज़रूरी है?
 

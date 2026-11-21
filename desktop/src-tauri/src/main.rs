@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use ombra_desktop_store::{
+    browser::{BrowserError, BrowserManager, BrowserProgress, BrowserRelease, InstalledBrowser},
     lock::LockError,
     paths::Paths,
     store::{
@@ -9,7 +10,11 @@ use ombra_desktop_store::{
     },
 };
 use serde::Serialize;
-use std::{path::PathBuf, sync::Mutex, time::UNIX_EPOCH};
+use std::{
+    path::PathBuf,
+    sync::{Arc, Mutex},
+    time::UNIX_EPOCH,
+};
 use tauri::{AppHandle, Manager};
 
 struct Catalog {
@@ -153,11 +158,54 @@ fn now() -> i64 {
     UNIX_EPOCH.elapsed().unwrap_or_default().as_secs() as i64
 }
 
+#[tauri::command]
+async fn get_browser_status(
+    browser: tauri::State<'_, Arc<BrowserManager>>,
+) -> Result<Option<InstalledBrowser>, BrowserError> {
+    let browser = browser.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || browser.status())
+        .await
+        .map_err(|error| BrowserError::Storage(error.to_string()))?
+}
+
+#[tauri::command]
+async fn check_browser_update(
+    browser: tauri::State<'_, Arc<BrowserManager>>,
+) -> Result<BrowserRelease, BrowserError> {
+    let browser = browser.inner().clone();
+    browser.check_update().await
+}
+
+#[tauri::command]
+async fn install_browser(
+    browser: tauri::State<'_, Arc<BrowserManager>>,
+    on_progress: tauri::ipc::Channel<BrowserProgress>,
+) -> Result<InstalledBrowser, BrowserError> {
+    let browser = browser.inner().clone();
+    let events = browser.clone();
+    browser
+        .install(move |progress| {
+            if on_progress.send(progress).is_err() {
+                let _ = events.cancel();
+            }
+        })
+        .await
+}
+
+#[tauri::command]
+fn cancel_browser_install(
+    browser: tauri::State<'_, Arc<BrowserManager>>,
+) -> Result<(), BrowserError> {
+    browser.cancel()
+}
+
 fn main() {
     let path = std::env::var_os("OMBRA_DESKTOP_DATA_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(Paths::default_root);
+    let browser = Arc::new(BrowserManager::new(path.join("engines")));
     tauri::Builder::default()
+        .manage(browser)
         .manage(Catalog {
             path,
             store: Mutex::new(None),
@@ -167,6 +215,10 @@ fn main() {
             create_profile,
             edit_profile,
             set_profile_deleted,
+            get_browser_status,
+            check_browser_update,
+            install_browser,
+            cancel_browser_install,
         ])
         .run(tauri::generate_context!())
         .expect("Could not start Ombra Desktop");

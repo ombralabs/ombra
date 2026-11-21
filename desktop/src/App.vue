@@ -7,6 +7,7 @@ import UiButton from './components/UiButton.vue'
 import UiDialog from './components/UiDialog.vue'
 import UiField from './components/UiField.vue'
 import UiSegmented from './components/UiSegmented.vue'
+import BrowserDownload from './components/BrowserDownload.vue'
 
 interface Profile {
   id: string
@@ -225,6 +226,7 @@ onMounted(loadProfiles)
         <p>{{ t(search.trim() ? 'catalog.noMatches' : view === 'active' ? 'catalog.noProfiles' : 'catalog.emptyTrash') }}</p>
       </div>
     </template>
+    <BrowserDownload />
   </main>
 
   <UiDialog

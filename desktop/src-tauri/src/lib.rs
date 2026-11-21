@@ -1,4 +1,5 @@
 //! The local SQLite profile catalog used by Ombra Desktop.
+pub mod browser;
 pub mod lock;
 pub mod network;
 pub mod paths;

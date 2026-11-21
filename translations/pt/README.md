@@ -54,8 +54,8 @@ Mesma API, mesmos seletores e tipos — basta trocar o import e a chamada <code>
 
 - **Patches de Chromium no nível do código-fonte** — canvas, WebGL, WebGPU, áudio, fontes, GPU, tela, media queries CSS, relato de hardware, WebRTC sem vazamentos STUN, TLS ClientHello, fuso horário, locale e remoção de sinais de automação (`navigator.webdriver`, `Runtime.enable`, marcadores headless).
 - **Entrada humanizada nativa no processo do navegador (`humanize=True`)** — trajetórias de ponteiro (`cursory-rs`), cliques mirados com duração de pressionamento, cadência de digitação com autocorreção de erros e física de rolagem executados dentro do Chromium. O SDK retorna um `Browser` nativo comum, sem wrappers de proxy.
-- **Operação autônoma sem chaves nem contas** — os builds atuais do motor (`158.0.8127.37-3` e mais recentes) e o Ombra Desktop funcionam localmente sem cadastro, chaves de licença, IDs de hardware ou servidor de licenciamento.
-- **Instalação automática e verificação criptográfica de binários** — `pip install ombrabrowser` ou `npm install @ombralabs/sdk`; na primeira inicialização, o SDK baixa o build para a sua plataforma e verifica sua assinatura Ed25519 e o checksum SHA-256.
+- **Operação autônoma sem chaves nem contas** — os builds atuais do motor e o Ombra Desktop funcionam localmente sem cadastro, chaves de licença, IDs de hardware ou servidor de licenciamento.
+- **Instalação automática e verificação criptográfica de binários** — `pip install ombrabrowser` ou `npm install @ombralabs/sdk`; na primeira inicialização, o SDK baixa um build compatível do [GitHub Releases](https://github.com/ombralabs/ombra/releases) e verifica sua assinatura Ed25519 e o checksum SHA-256.
 - **Perfis persistentes e relay de proxy seguro** — perfis nomeados mantêm cookies, `localStorage`, IndexedDB e `seed` entre execuções com bloqueio entre processos; proxies autenticados (HTTP, HTTPS, SOCKS5) passam por um relay de loopback local para que as credenciais nunca apareçam nos argumentos do processo.
 - **Gerenciador de perfis offline Ombra Desktop** — um aplicativo desktop nativo neste repositório ([`desktop/`](../../desktop/README.md)) com instaladores pré-compilados para macOS, Linux e Windows.
 
@@ -136,7 +136,7 @@ python -m pip install "ombrabrowser[geoip]"
 # Com Playwright (1.60.0+, sem necessidade de baixar o Chromium padrão)
 npm install @ombralabs/sdk "playwright-core@^1.60.0"
 
-# Ou com Puppeteer
+# Ou com Puppeteer (Puppeteer 25+ requer Node.js 22.12+)
 npm install @ombralabs/sdk puppeteer-core
 
 # Opcional: leitor offline de banco GeoIP para timezone: "auto" e locale: "auto"
@@ -145,11 +145,11 @@ npm install mmdb-lib
 
 ---
 
-Na inicialização, o SDK resolve o motor em ordem estrita: `binary_path` (`binaryPath` no Node.js), `OMBRA_BINARY_PATH`, o diretório de motores do Ombra Desktop e o cache do SDK (`~/.ombra/engines`). Se nenhum motor compatível for encontrado, o SDK baixa um build do canal de lançamentos assinado, verifica sua assinatura Ed25519 e o checksum SHA-256 e o armazena em cache localmente. Não é necessário executar `playwright install chromium`.
+Na inicialização, o SDK resolve o motor em ordem estrita: `binary_path` (`binaryPath` no Node.js), `OMBRA_BINARY_PATH`, o diretório de motores do Ombra Desktop e o cache do SDK (`~/.ombra/engines`). Se nenhum motor compatível for encontrado, o SDK baixa um build do [GitHub Releases](https://github.com/ombralabs/ombra/releases), verifica sua assinatura Ed25519 e o checksum SHA-256 e o armazena em cache localmente. Não é necessário executar `playwright install chromium`.
 
 Para desativar downloads automáticos, passe `download=False` (`download: false` no Node.js). Para baixar e verificar o motor antecipadamente (por exemplo, durante o build de um contêiner), chame `ensure_binary()` (`ensureBinary()`) ou use o comando `install` da CLI.
 
-> **Inicialização autônoma:** os builds atuais do motor (`158.0.8127.37-3` e mais recentes) são gratuitos e não exigem conta nem chave de licença. `OMBRA_LICENSE_KEY` e o comando `login` permanecem disponíveis apenas por compatibilidade com builds licenciados mais antigos.
+> **Inicialização autônoma:** os builds atuais do motor são gratuitos e não exigem conta nem chave de licença. `OMBRA_LICENSE_KEY` e o comando `login` permanecem disponíveis apenas por compatibilidade com builds licenciados mais antigos.
 
 **Migrar do Playwright** leva duas linhas — todas as operações de página, locators e esperas permanecem inalterados:
 
@@ -185,22 +185,11 @@ Cada componente do ecossistema segue o contrato de inicialização compartilhado
 | **Contrato do SDK** | Rascunho `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` no PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` no npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Motor Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
-| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Navegador standalone** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
+| **Motor Ombra Chromium** | Faixa do SDK `>=151.0.7922.108,<159` | Baixado automaticamente pelo SDK do [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Desktop** | Gerenciador de perfis offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Navegador standalone** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schemas e conformidade** | JSON Schema + casos compartilhados | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Método de checkup de stealth** | 6 camadas (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
-
-Incluído nos lançamentos atuais:
-
-- **Patches no nível do código-fonte** — derivação de fingerprint coerente por `seed`, alinhamento de WebGL / WebGPU e extensões, tabelas realistas de fontes por SO, perfil nativo de TLS ClientHello (`chrome-<major>`), supressão de vazamentos de pilha de `Runtime.enable` e `UtilityScript`, e proteção contra vazamento de IP local via WebRTC.
-- **Domínio CDP `Ombra` no nível do navegador** — controle em tempo real da entrada humanizada (`getHumanizeState`, `setHumanize`) em Python e Node.js sem reiniciar o navegador.
-- **Simulação nativa de entrada no processo do navegador** — planejador de ponteiro `cursory-rs`, perfis de rolagem para roda de mouse e trackpad, cadência de digitação com autocorreção de erros e colagem segura de textos longos por meio de uma área de transferência isolada.
-- **Builds autônomos sem chave** — os builds atuais do motor (`158.0.8127.37-3`) e o Ombra Desktop `1.2.2` operam completamente de forma local, sem contas, chaves ou telemetria.
-- **Fixação de versão do motor (`version`)** — fixe um build exato via `launch(version="158.0.8127.37-3")`, `OMBRA_VERSION` ou o comando `install --version` da CLI.
-- **Relay de proxy unificado** — proxies autenticados HTTP, HTTPS e SOCKS5 sem expor credenciais na linha de comando do Chromium, em logs ou nos metadados do perfil.
-- **Perfis nomeados persistentes** — armazene `seed`, cookies, `localStorage` e IndexedDB em `~/.ombra/profiles/<slug>` com bloqueio entre processos (`ProfileBusyError`).
-- **Verificações criptográficas da cadeia de suprimentos** — verificação da assinatura Ed25519 dos envelopes de lançamento e verificação SHA-256 dos arquivos compactados antes da extração.
 
 Consulte [CHANGELOG.md](../../CHANGELOG.md) para o histórico completo de lançamentos.
 
@@ -222,7 +211,7 @@ Consulte [CHANGELOG.md](../../CHANGELOG.md) para o histórico completo de lança
 - **Instaladores pré-compilados** — macOS Apple Silicon (`.dmg`, assinado com Apple Developer ID e notarizado), Linux (`.deb` e `.rpm`) e Windows x64 (`setup.exe`).
 - **Catálogos isolados** — defina `OMBRA_DESKTOP_DATA_DIR` para trabalhar com um catálogo de testes separado ou uma cópia de backup.
 
-[Baixar `desktop-v1.2.2` →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [README do Desktop](../../desktop/README.md) · [Guia de perfis e chaves locais](../../docs/desktop/README.md)
+[Baixar a versão mais recente →](https://github.com/ombralabs/ombra/releases) · [README do Desktop](../../desktop/README.md) · [Guia de perfis e chaves locais](../../docs/desktop/README.md)
 
 ## Verificação de fingerprint e checkup de stealth
 
@@ -236,7 +225,7 @@ Em vez de fazer promessas genéricas de "100% indetectável", o Ombra adota um p
 | `window.chrome` | ausente no headless | objeto completo | Corresponde ao Chrome regular |
 | `navigator.plugins` | `0` no headless | conjunto coerente de plugins | Nível do motor |
 | User-Agent e Client Hints | `HeadlessChrome`, divergência de marca | `Google Chrome` + `Sec-CH-UA*` alinhados | Patch `010-user-agent-and-webdriver` |
-| Artefatos CDP (`Runtime.enable`, `UtilityScript`) | sinalizados por detectores | suprimidos pelo motor; o SDK nunca chama `Runtime.enable` | Patch `110-runtime-enable` + invariante `SI-02` |
+| Artefatos CDP (`Runtime.enable`, `UtilityScript`) | sinalizados por detectores | suprimidos pelo motor; o SDK nunca chama `Runtime.enable` | Patch `110-runtime-enable` + invariante `SI-01` |
 | Vazamento de IP via WebRTC | expõe o IP local/do host | informa o IP de saída sem enviar STUN real | Patch `100-webrtc-leak` (`--webrtc-ip`) |
 | TLS e HTTP/2 | depende da configuração | pilha de rede do Chromium + perfil ClientHello `chrome-<major>` | Patch `210-tls-network-persona` |
 | WebGL e WebGPU | renderizador por software / divergência de GPU | limites e tabelas de extensões WebGL/WebGPU unificados | Patches `070`, `071`, `075`, `955` |
@@ -460,7 +449,7 @@ ensure_binary(version="158.0.8127.37-3")
 # Remover binários do motor gerenciados pelo SDK (perfis em ~/.ombra/profiles permanecem intactos)
 clear_cache()
 
-# Inspecionar o comando de inicialização resolvido sem iniciar o Chromium
+# Prévia dry-run do comando de inicialização resolvido sem iniciar o Chromium
 cmd = build_launch_options(profile="pricing-eu", humanize=True)
 
 # Ler metadados de execução (porta CDP, ws_url, seed, pid) e verificar a saúde do processo
@@ -478,7 +467,7 @@ ombrabrowser install --version 158.0.8127.37-3  # instalar um build específico 
 ombrabrowser info                                # diagnóstico de ambiente, binário e dependências (alias: doctor)
 ombrabrowser info --quick --json                 # relatório rápido legível por máquina sem iniciar o binário
 ombrabrowser info --proxy socks5://user:pass@host:1080  # testar resolução de IP de saída, fuso horário e locale via proxy
-ombrabrowser update                              # verificar o canal de lançamentos e atualizar o motor em cache
+ombrabrowser update                              # verificar o GitHub Releases e atualizar o motor em cache
 ombrabrowser clear-cache                         # limpar binários do motor em cache (perfis preservados)
 ombrabrowser login                               # salvar chave de licença em ~/.ombra/license.key (apenas builds legados)
 ombrabrowser logout                              # remover chave de licença salva
@@ -666,7 +655,7 @@ Os nomes de campo abaixo seguem o Python (`snake_case`); o Node.js aceita tanto 
 
 ### Flags adicionais do motor (`args`)
 
-Flags suportadas pelo motor que o SDK não define automaticamente (passe via `args=[...]`):
+Flags adicionais do motor (defina ou sobrescreva via `args=[...]`):
 
 | Flag | Finalidade |
 |---|---|
@@ -680,9 +669,9 @@ Flags suportadas pelo motor que o SDK não define automaticamente (passe via `ar
 | `--fingerprint-color-depth=<bits>` | Profundidade de cor da tela |
 | `--disable-gpu-fingerprint` | Repassa a GPU real do host (strings, limites e extensões WebGL/WebGPU) |
 | `--disable-gpu-string-spoof` | Repassa as strings reais da GPU mantendo as demais configurações do perfil |
-| `--disable-fingerprint-noise` | Desativa ruído de canvas/WebGL/áudio mantendo ativos os parâmetros de identidade |
+| `--disable-fingerprint-noise` | Desativa ruído de canvas/WebGL/áudio mantendo ativos os parâmetros de identidade (também definido por `fingerprint={"noise": False}`) |
 | `--fingerprint-pixel-noise` | Ativa opcionalmente o ruído idempotente de pixels para canvas 2D e `readPixels` |
-| `--profile-label=<text>` | Rótulo do perfil exibido na barra de endereços do navegador (apenas UI; invisível para páginas web) |
+| `--profile-label=<text>` | Rótulo do perfil exibido na barra de endereços do navegador (apenas UI; definido automaticamente a partir de `profile`, passe via `args` apenas quando `profile` não estiver definido) |
 
 ### Configuração de fontes no Linux
 
@@ -733,7 +722,7 @@ Os nomes das opções seguem a API Python e o [contrato do SDK](../../docs/sdk-c
 | `version` | env / auto | Fixação da versão do motor (por exemplo, `158.0.8127.37-3`), sobrescreve `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Prazo para inicialização do motor e conexão CDP (1000–600000 ms) |
 | `humanize` | padrão do motor | `False`, `True` ou `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | env / arquivo | Chave para builds licenciados legados (desnecessária na `158.0.8127.37-3+`; nunca registrada em log) |
+| `license_key` | env / arquivo | Chave para builds licenciados legados (desnecessária nos builds atuais; nunca registrada em log) |
 | `env` | `{}` | Variáveis de ambiente extras para o processo do motor |
 | `download` | `True` | Permite o download automático de um binário do motor ausente |
 
@@ -745,9 +734,9 @@ Ordem de precedência: **opção explícita de inicialização → variável de 
 |---|---|---|
 | `OMBRA_BINARY_PATH` | não definida | Caminho explícito para um binário do motor |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Diretório para motores em cache e perfis nomeados |
-| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | URL base / espelho para downloads do motor (`none`/`off` desativa downloads) |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Origem de download do motor; uma URL personalizada ativa o modo de espelho legado (`none`/`off` desativa downloads) |
 | `OMBRA_VERSION` | mais recente compatível | Versão fixada do motor (por exemplo, `158.0.8127.37-3`) |
-| `OMBRA_RELEASE_CHANNEL` | `stable` | Canal de lançamentos do motor: `stable` ou `beta` |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | Canal de lançamentos do motor: `stable` (releases do GitHub) ou `beta` (prereleases do GitHub) |
 | `OMBRA_AUTO_UPDATE` | `true` | Verifica builds mais novos do motor na inicialização |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Apenas desenvolvimento local: desativa a verificação SHA-256 (registra um aviso) |
 | `OMBRA_LICENSE_KEY` | não definida | Chave para builds licenciados legados (nunca registrada em log) |
@@ -768,10 +757,10 @@ A taxonomia completa de erros e as regras de nova tentativa estão documentadas 
 
 | Componente | Suporte | Observações |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | Build autônomo `158.0.8127.37-3`; o Ombra Desktop é assinado com Developer ID e notarizado |
+| **macOS ARM64 (Apple Silicon)** | ✅ | Builds autônomos do motor via GitHub Releases; o Ombra Desktop é assinado com Developer ID e notarizado |
 | **macOS x64 (Intel)** | — | Sem versão atual do Chromium 158 |
-| **Linux x64** | ✅ | Build autônomo `158.0.8127.37-3`; requer `xz-utils` (`xz`) para extrair `.tar.xz` |
-| **Windows x64** | ✅ | Build autônomo `158.0.8127.37-3` e instalador do Ombra Desktop |
+| **Linux x64** | ✅ | Builds autônomos do motor via GitHub Releases; o SDK Node.js requer `xz-utils` (`xz`) para extrair `.tar.xz` |
+| **Windows x64** | ✅ | Builds autônomos do motor via GitHub Releases e instalador do Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` é instalado automaticamente com `ombrabrowser` |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` ou Puppeteer `>=22` (Puppeteer 25+ requer Node.js `>=22.12`) |
 
@@ -780,10 +769,16 @@ A taxonomia completa de erros e as regras de nova tentativa estão documentadas 
 O Ombra funciona com qualquer ferramenta de automação ou framework de agentes de IA que aceite um binário personalizado do Chromium ou se conecte via CDP (`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain` e outros):
 
 ```python
-# Opção 1: resolver o caminho do binário verificado e os argumentos do motor para o seu próprio executor
+# Opção 1: resolver o caminho do binário verificado e os argumentos executáveis do motor para o seu próprio executor
+# Observação: build_launch_options() é um auxiliar dry-run — passe user_data_dir e seed explicitamente
+# (perfis nomeados e proxies autenticados exigem a Opção 2).
 from ombrabrowser import build_launch_options
 
-cmd = build_launch_options(profile="agent-1", humanize=True)
+cmd = build_launch_options(
+    user_data_dir="./agent-1",
+    fingerprint={"seed": 20261116},
+    humanize=True,
+)
 binary_path = cmd["binary_path"]
 engine_args = cmd["args"]
 
@@ -837,17 +832,7 @@ Xvfb :99 -screen 0 1920x1080x24 &
 export DISPLAY=:99
 ```
 
-Em seguida, inicie com um proxy residencial SOCKS5/HTTP, um perfil persistente, fuso horário/locale compatíveis, `headless=False` e `humanize=True`:
-
-```python
-context = launch_persistent_context(
-    profile="site-eu",
-    proxy="socks5://user:pass@residential-proxy:1080",
-    fingerprint={"timezone": "auto", "locale": "auto"},
-    headless=False,
-    humanize=True,
-)
-```
+Em seguida, inicie com um proxy residencial SOCKS5/HTTP, um perfil persistente, fuso horário/locale compatíveis, `headless=False` e `humanize=True` (veja o exemplo de `launch_persistent_context()` no início deste README).
 
 Se os bloqueios continuarem no Linux, verifique [Configuração de fontes no Linux](#configuração-de-fontes-no-linux).
 
@@ -885,9 +870,13 @@ browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
-# Ou configurar via variáveis de ambiente / CLI
-export OMBRA_VERSION=158.0.8127.37-3
+# Testar o canal beta (remova OMBRA_VERSION — uma fixação exata -N ignora o canal)
+unset OMBRA_VERSION
 export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser update
+
+# Ou fixar / reverter para um build exato do motor
+export OMBRA_VERSION=158.0.8127.37-3
 ombrabrowser install --version 158.0.8127.37-3
 
 # Ou apontar para um binário compilado localmente
@@ -954,7 +943,7 @@ Relate problemas de segurança de forma privada seguindo [SECURITY.md](../../SEC
 └── .github/workflows/ci.yml
 ```
 
-Este repositório hospeda o contrato do SDK, os schemas, os casos de conformidade, a documentação e o código-fonte do Ombra Desktop. Os patches do motor Chromium são mantidos em um repositório separado, com builds compilados publicados pelo canal de downloads e no [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Este repositório hospeda o contrato do SDK, os schemas, os casos de conformidade, a documentação e o código-fonte do Ombra Desktop. Os patches do motor Chromium são mantidos em um repositório separado, com builds compilados publicados no [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## FAQ
 
@@ -964,7 +953,7 @@ Não. O SDK conecta o cliente oficial do Playwright (ou Puppeteer) ao Ombra Chro
 
 ### O Ombra é gratuito e preciso de uma chave de licença?
 
-O código-fonte do SDK neste repositório é open source sob a Licença Apache 2.0. Os builds atuais do motor (`158.0.8127.37-3` e mais recentes) e o gerenciador de perfis local Ombra Desktop (`desktop-v1.2.2`) funcionam gratuitamente e de forma autônoma — sem conta, chave de licença, ID de hardware nem limite de quantidade de perfis. `license_key` e `OMBRA_LICENSE_KEY` são necessários apenas para builds licenciados legados.
+O código-fonte do SDK neste repositório é open source sob a Licença Apache 2.0. Os builds atuais do motor e o gerenciador de perfis local Ombra Desktop funcionam gratuitamente e de forma autônoma — sem conta, chave de licença, ID de hardware nem limite de quantidade de perfis. `license_key` e `OMBRA_LICENSE_KEY` são necessários apenas para builds licenciados legados.
 
 ### Preciso instalar o Ombra Desktop para usar o SDK?
 

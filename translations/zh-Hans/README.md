@@ -54,8 +54,8 @@
 
 - **源码级 Chromium 补丁** —— 涵盖 Canvas、WebGL、WebGPU、音频、字体、GPU、屏幕、CSS 媒体查询、硬件信息上报、无 STUN 泄漏的 WebRTC、TLS ClientHello、时区、语言区域，以及自动化特征移除（`navigator.webdriver`、`Runtime.enable`、无头模式标记）。
 - **浏览器进程内的原生拟人化输入（`humanize=True`）** —— 指针轨迹（`cursory-rs`）、带按住时长的瞄准点击、带误输入自动纠正的打字节奏以及滚动物理特性均在 Chromium 内部运行。SDK 返回标准的原生 `Browser` 对象，不加任何代理包装器。
-- **无需密钥或账号的自主运行** —— 当前引擎构建版本（`158.0.8127.37-3` 及更新版本）与 Ombra Desktop 均可在本地独立运行，无需注册账号、许可证密钥、硬件 ID 或授权服务器。
-- **自动安装与加密二进制校验** —— 执行 `pip install ombrabrowser` 或 `npm install @ombralabs/sdk`；首次启动时，SDK 会自动下载适配当前平台的构建版本，并校验其 Ed25519 签名与 SHA-256 校验和。
+- **无需密钥或账号的自主运行** —— 当前引擎构建版本与 Ombra Desktop 均可在本地独立运行，无需注册账号、许可证密钥、硬件 ID 或授权服务器。
+- **自动安装与加密二进制校验** —— 执行 `pip install ombrabrowser` 或 `npm install @ombralabs/sdk`；首次启动时，SDK 会从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载兼容构建版本，并校验其 Ed25519 签名与 SHA-256 校验和。
 - **持久化配置文件与安全代理中继** —— 命名配置文件可在多次运行间保留 Cookie、`localStorage`、IndexedDB 及 `seed`，并提供跨进程锁保护；带认证的代理（HTTP、HTTPS、SOCKS5）通过本地环回中继转发，确保凭据绝不出现在进程启动参数中。
 - **离线桌面管理器 Ombra Desktop** —— 位于本仓库中的原生桌面应用程序（[`desktop/`](../../desktop/README.md)），提供 macOS、Linux 与 Windows 的预构建安装包。
 
@@ -136,7 +136,7 @@ python -m pip install "ombrabrowser[geoip]"
 # 搭配 Playwright 使用（1.60.0+，无需下载官方原版 Chromium）
 npm install @ombralabs/sdk "playwright-core@^1.60.0"
 
-# 或搭配 Puppeteer 使用
+# 或搭配 Puppeteer 使用（Puppeteer 25+ 需要 Node.js 22.12+）
 npm install @ombralabs/sdk puppeteer-core
 
 # 可选：用于 timezone: "auto" 与 locale: "auto" 的离线 GeoIP 数据库读取库
@@ -145,11 +145,11 @@ npm install mmdb-lib
 
 ---
 
-启动时，SDK 会按严格顺序解析引擎路径：`binary_path`（Node.js 中为 `binaryPath`）、`OMBRA_BINARY_PATH`、Ombra Desktop 引擎目录以及 SDK 缓存目录（`~/.ombra/engines`）。如果未找到兼容引擎，SDK 会从经过签名的发行通道自动下载构建版本，校验其 Ed25519 签名与 SHA-256 校验和，并缓存在本地。无需运行 `playwright install chromium`。
+启动时，SDK 会按严格顺序解析引擎路径：`binary_path`（Node.js 中为 `binaryPath`）、`OMBRA_BINARY_PATH`、Ombra Desktop 引擎目录以及 SDK 缓存目录（`~/.ombra/engines`）。如果未找到兼容引擎，SDK 会从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载构建版本，校验其 Ed25519 签名与 SHA-256 校验和，并缓存在本地。无需运行 `playwright install chromium`。
 
 如需禁用自动下载，请传入 `download=False`（Node.js 中为 `download: false`）。如需提前下载并校验引擎（例如在构建容器镜像阶段），可调用 `ensure_binary()`（`ensureBinary()`）或使用 CLI 的 `install` 命令。
 
-> **自主启动：** 当前引擎构建版本（`158.0.8127.37-3` 及更新版本）完全免费，无需账号或许可证密钥。`OMBRA_LICENSE_KEY` 与 `login` 命令仅保留用于兼容旧版需要授权的构建。
+> **自主启动：** 当前引擎构建版本完全免费，无需账号或许可证密钥。`OMBRA_LICENSE_KEY` 与 `login` 命令仅保留用于兼容旧版需要授权的构建。
 
 **从 Playwright 迁移**只需改动两行——所有页面操作、定位器（locator）和等待逻辑均保持不变：
 
@@ -185,22 +185,11 @@ npm install mmdb-lib
 | **SDK 契约** | 草案 `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.2.0` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium 引擎** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
-| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **独立浏览器版本** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
+| **Ombra Chromium 引擎** | SDK 兼容范围 `>=151.0.7922.108,<159` | 由 SDK 从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载（macOS ARM64 / Linux x64 / Windows x64） |
+| **Ombra Desktop** | 离线配置文件管理器 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **独立浏览器版本** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schema 与一致性测试** | JSON Schema + 共享测试用例 | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **隐匿性检查方法** | 6 层体系（`L0`–`L5`） | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
-
-当前发行版本包含以下核心能力：
-
-- **源码级补丁** —— 基于 `seed` 的一致性指纹派生、WebGL / WebGPU 与扩展对齐、按操作系统划分的真实字体表、原生 TLS ClientHello 配置（`chrome-<major>`）、`Runtime.enable` 与 `UtilityScript` 调用栈泄漏抑制，以及 WebRTC 宿主机 IP 泄漏防护。
-- **浏览器级 `Ombra` CDP 域** —— 支持在 Python 与 Node.js 中实时控制拟人化输入（`getHumanizeState`、`setHumanize`），无需重启浏览器。
-- **浏览器进程内原生输入模拟** —— 内置 `cursory-rs` 指针轨迹规划器、滚轮与触控板滚动曲线、带误输入自动纠正的打字节奏，以及通过隔离剪贴板安全粘贴长文本的能力。
-- **无密钥自主构建** —— 当前引擎构建（`158.0.8127.37-3`）与 Ombra Desktop `1.2.2` 完全在本地运行，无需账号、密钥或遥测上报。
-- **引擎版本锁定（`version`）** —— 可通过 `launch(version="158.0.8127.37-3")`、`OMBRA_VERSION` 或 CLI `install --version` 锁定精确的构建版本。
-- **统一代理中继** —— 支持 HTTP、HTTPS 和 SOCKS5 认证代理，且不会在 Chromium 命令行、日志或配置文件元数据中暴露凭据。
-- **持久化命名配置文件** —— 将 `seed`、Cookie、`localStorage` 和 IndexedDB 存储在 `~/.ombra/profiles/<slug>` 目录下，并配合跨进程锁（`ProfileBusyError`）。
-- **加密供应链校验** —— 解压前先对发行信封进行 Ed25519 签名验证，并对归档文件执行 SHA-256 校验。
 
 完整的版本变更记录请参阅 [CHANGELOG.md](../../CHANGELOG.md)。
 
@@ -222,7 +211,7 @@ npm install mmdb-lib
 - **预构建安装包** —— 提供 macOS Apple Silicon（`.dmg`，经 Apple Developer ID 签名与公证）、Linux（`.deb` 与 `.rpm`）以及 Windows x64（`setup.exe`）安装包。
 - **隔离的目录环境** —— 设置 `OMBRA_DESKTOP_DATA_DIR` 即可切换到独立的测试目录或备份副本。
 
-[下载 `desktop-v1.2.2` →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [Desktop README](../../desktop/README.md) · [配置文件与本地密钥指南](../../docs/desktop/README.md)
+[下载最新版本 →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [配置文件与本地密钥指南](../../docs/desktop/README.md)
 
 ## 指纹验证与隐匿性检查
 
@@ -236,7 +225,7 @@ Ombra 不做空泛的“100% 不可检测”承诺，而是坚持在有完整记
 | `window.chrome` | 无头模式下缺失 | 完整对象 | 与常规 Chrome 一致 |
 | `navigator.plugins` | 无头模式下为 `0` | 一致的插件集合 | 引擎级实现 |
 | User-Agent 与 Client Hints | `HeadlessChrome`、品牌不匹配 | `Google Chrome` + 对齐的 `Sec-CH-UA*` | 补丁 `010-user-agent-and-webdriver` |
-| CDP 痕迹（`Runtime.enable`、`UtilityScript`） | 会被检测器标记 | 由引擎抑制；SDK 永不调用 `Runtime.enable` | 补丁 `110-runtime-enable` + 不变量 `SI-02` |
+| CDP 痕迹（`Runtime.enable`、`UtilityScript`） | 会被检测器标记 | 由引擎抑制；SDK 永不调用 `Runtime.enable` | 补丁 `110-runtime-enable` + 不变量 `SI-01` |
 | WebRTC IP 泄漏 | 暴露本地/宿主机 IP | 上报出口 IP，且不发送真实 STUN 请求 | 补丁 `100-webrtc-leak`（`--webrtc-ip`） |
 | TLS 与 HTTP/2 | 取决于运行环境 | Chromium 网络栈 + `chrome-<major>` ClientHello 配置 | 补丁 `210-tls-network-persona` |
 | WebGL 与 WebGPU | 软件渲染器 / GPU 不匹配 | 统一的 WebGL/WebGPU 能力上限与扩展表 | 补丁 `070`、`071`、`075`、`955` |
@@ -460,7 +449,7 @@ ensure_binary(version="158.0.8127.37-3")
 # 清理 SDK 管理的引擎缓存（不会影响 ~/.ombra/profiles 下的配置文件）
 clear_cache()
 
-# 仅查看解析后的启动命令，不拉起 Chromium 进程
+# 预演预览解析后的启动命令，不拉起 Chromium 进程
 cmd = build_launch_options(profile="pricing-eu", humanize=True)
 
 # 读取运行时元数据（CDP 端口、ws_url、seed、pid）并检查进程健康状态
@@ -478,7 +467,7 @@ ombrabrowser install --version 158.0.8127.37-3  # 安装指定的引擎构建版
 ombrabrowser info                                # 环境、二进制文件与依赖诊断（别名：doctor）
 ombrabrowser info --quick --json                 # 快速输出机器可读报告，不启动引擎进程
 ombrabrowser info --proxy socks5://user:pass@host:1080  # 测试通过代理获取出口 IP、时区与语言区域
-ombrabrowser update                              # 检查发行通道并更新已缓存的引擎
+ombrabrowser update                              # 检查 GitHub Releases 并更新已缓存的引擎
 ombrabrowser clear-cache                         # 清理已缓存的引擎二进制文件（保留配置文件）
 ombrabrowser login                               # 将许可证密钥保存到 ~/.ombra/license.key（仅限旧版构建）
 ombrabrowser logout                              # 移除已保存的许可证密钥
@@ -666,7 +655,7 @@ Canvas/音频噪声按 `eTLD+1` 隔离加盐（同一站点内稳定一致，跨
 
 ### 额外引擎参数（`args`）
 
-以下为引擎支持、但 SDK 不会自动设置的标志（可通过 `args=[...]` 传入）：
+额外引擎参数（可通过 `args=[...]` 设置或覆盖）：
 
 | 参数 | 用途 |
 |---|---|
@@ -680,9 +669,9 @@ Canvas/音频噪声按 `eTLD+1` 隔离加盐（同一站点内稳定一致，跨
 | `--fingerprint-color-depth=<bits>` | 设置屏幕色深 |
 | `--disable-gpu-fingerprint` | 透传宿主机真实 GPU（WebGL/WebGPU 字符串、能力上限与扩展） |
 | `--disable-gpu-string-spoof` | 透传真实 GPU 字符串，同时保留其他配置项 |
-| `--disable-fingerprint-noise` | 关闭 Canvas/WebGL/音频噪声，同时保持身份参数生效 |
+| `--disable-fingerprint-noise` | 关闭 Canvas/WebGL/音频噪声，同时保持身份参数生效（也会由 `fingerprint={"noise": False}` 自动设置） |
 | `--fingerprint-pixel-noise` | 显式启用面向 2D Canvas 与 `readPixels` 的幂等像素噪声 |
-| `--profile-label=<text>` | 在浏览器地址栏显示的配置文件标签（仅限 UI，网页不可见） |
+| `--profile-label=<text>` | 在浏览器地址栏显示的配置文件标签（仅限 UI；会自动根据 `profile` 设置，仅在未设置 `profile` 时通过 `args` 传入） |
 
 ### Linux 字体配置
 
@@ -733,7 +722,7 @@ RUN fc-cache -f
 | `version` | 环境变量 / 自动 | 锁定引擎版本（例如 `158.0.8127.37-3`），优先级高于 `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | 引擎启动与 CDP 连接超时时间（1000–600000 ms） |
 | `humanize` | 引擎默认 | `False`、`True` 或 `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | 环境变量 / 文件 | 旧版授权构建所需的密钥（`158.0.8127.37-3+` 无需使用；永不写入日志） |
+| `license_key` | 环境变量 / 文件 | 旧版授权构建所需的密钥（当前构建无需使用；永不写入日志） |
 | `env` | `{}` | 传递给引擎进程的额外环境变量 |
 | `download` | `True` | 允许在缺失引擎二进制文件时自动下载 |
 
@@ -745,9 +734,9 @@ RUN fc-cache -f
 |---|---|---|
 | `OMBRA_BINARY_PATH` | 未设置 | 显式指定引擎二进制文件路径 |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | 缓存引擎与命名配置文件的根目录 |
-| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | 引擎下载的基础 URL / 镜像地址（设为 `none`/`off` 可禁用下载） |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | 引擎下载源；传入自定义 URL 时启用旧版镜像模式（设为 `none`/`off` 可禁用下载） |
 | `OMBRA_VERSION` | 最新兼容版本 | 锁定的引擎版本（例如 `158.0.8127.37-3`） |
-| `OMBRA_RELEASE_CHANNEL` | `stable` | 引擎发布通道：`stable` 或 `beta` |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | 引擎发布通道：`stable`（GitHub 正式发布）或 `beta`（GitHub 预发布） |
 | `OMBRA_AUTO_UPDATE` | `true` | 启动时检查是否存在更新的引擎构建 |
 | `OMBRA_SKIP_CHECKSUM` | `false` | 仅限本地开发：禁用 SHA-256 校验（会输出警告日志） |
 | `OMBRA_LICENSE_KEY` | 未设置 | 旧版授权构建所需的密钥（永不写入日志） |
@@ -768,10 +757,10 @@ RUN fc-cache -f
 
 | 组件 | 支持状态 | 说明 |
 |---|---|---|
-| **macOS ARM64（Apple Silicon）** | ✅ | 自主构建 `158.0.8127.37-3`；Ombra Desktop 已获 Apple Developer ID 签名与公证 |
+| **macOS ARM64（Apple Silicon）** | ✅ | 通过 GitHub Releases 提供自主引擎构建；Ombra Desktop 已获 Apple Developer ID 签名与公证 |
 | **macOS x64（Intel）** | — | 暂无 Chromium 158 当前版本 |
-| **Linux x64** | ✅ | 自主构建 `158.0.8127.37-3`；解压 `.tar.xz` 需安装 `xz-utils`（`xz`） |
-| **Windows x64** | ✅ | 提供自主构建 `158.0.8127.37-3` 与 Ombra Desktop 安装包 |
+| **Linux x64** | ✅ | 通过 GitHub Releases 提供自主引擎构建；Node.js SDK 解压 `.tar.xz` 需安装 `xz-utils`（`xz`） |
+| **Windows x64** | ✅ | 通过 GitHub Releases 提供自主引擎构建与 Ombra Desktop 安装包 |
 | **Python** | `3.10+` | 安装 `ombrabrowser` 时会自动安装 Playwright `>=1.60,<2.0` |
 | **Node.js** | `20+` | 支持 Playwright `>=1.60,<2.0` 或 Puppeteer `>=22`（Puppeteer 25+ 需要 Node.js `>=22.12`） |
 
@@ -780,10 +769,16 @@ RUN fc-cache -f
 Ombra 可与任何支持自定义 Chromium 路径或 CDP 连接的自动化工具及 AI 智能体框架配合使用（如 `browser-use`、`Crawl4AI`、`Crawlee`、`Scrapling`、`Stagehand`、`LangChain` 等）：
 
 ```python
-# 方式 1：解析经校验的二进制路径与引擎参数，交给自定义运行器启动
+# 方式 1：解析经校验的二进制路径与可直接运行的引擎参数，交给自定义运行器启动
+# 注意：build_launch_options() 是预演辅助函数——请显式传入 user_data_dir 和 seed
+# （命名配置文件与带认证代理需要使用方式 2）。
 from ombrabrowser import build_launch_options
 
-cmd = build_launch_options(profile="agent-1", humanize=True)
+cmd = build_launch_options(
+    user_data_dir="./agent-1",
+    fingerprint={"seed": 20261116},
+    humanize=True,
+)
 binary_path = cmd["binary_path"]
 engine_args = cmd["args"]
 
@@ -837,17 +832,7 @@ Xvfb :99 -screen 0 1920x1080x24 &
 export DISPLAY=:99
 ```
 
-随后结合住宅 SOCKS5/HTTP 代理、持久化配置文件、自动匹配的时区/语言区域、`headless=False` 与 `humanize=True` 启动：
-
-```python
-context = launch_persistent_context(
-    profile="site-eu",
-    proxy="socks5://user:pass@residential-proxy:1080",
-    fingerprint={"timezone": "auto", "locale": "auto"},
-    headless=False,
-    humanize=True,
-)
-```
+随后结合住宅 SOCKS5/HTTP 代理、持久化配置文件、自动匹配的时区/语言区域、`headless=False` 与 `humanize=True` 启动（参见本 README 顶部的 `launch_persistent_context()` 示例）。
 
 若 Linux 上依然被拦截，请检查 [Linux 字体配置](#linux-字体配置)。
 
@@ -885,9 +870,13 @@ browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
-# 或通过环境变量 / CLI 进行配置
-export OMBRA_VERSION=158.0.8127.37-3
+# 测试 beta 通道（需先取消设置 OMBRA_VERSION——精确的 -N 版本锁定会忽略通道设置）
+unset OMBRA_VERSION
 export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser update
+
+# 或锁定 / 回滚到精确的引擎构建版本
+export OMBRA_VERSION=158.0.8127.37-3
 ombrabrowser install --version 158.0.8127.37-3
 
 # 或直接指向本地编译的二进制文件
@@ -955,7 +944,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-本仓库托管 SDK 契约、Schema 定义、一致性测试用例、文档以及 Ombra Desktop 源代码。Chromium 引擎补丁在独立仓库中维护，编译好的构建版本通过下载通道与 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 发布。
+本仓库托管 SDK 契约、Schema 定义、一致性测试用例、文档以及 Ombra Desktop 源代码。Chromium 引擎补丁在独立仓库中维护，编译好的构建版本通过 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 发布。
 
 ## 常见问题（FAQ）
 
@@ -965,7 +954,7 @@ for _ in range(15):
 
 ### Ombra 是免费的吗？需要许可证密钥吗？
 
-本仓库中的 SDK 源代码采用 Apache License 2.0 协议开源。当前引擎构建版本（`158.0.8127.37-3` 及更新版本）与本地 Ombra Desktop 配置文件管理器（`desktop-v1.2.2`）均可免费且自主运行——无需账号、许可证密钥、硬件 ID，也没有配置文件数量限制。`license_key` 和 `OMBRA_LICENSE_KEY` 仅用于兼容旧版授权构建。
+本仓库中的 SDK 源代码采用 Apache License 2.0 协议开源。当前引擎构建版本与本地 Ombra Desktop 配置文件管理器均可免费且自主运行——无需账号、许可证密钥、硬件 ID，也没有配置文件数量限制。`license_key` 和 `OMBRA_LICENSE_KEY` 仅用于兼容旧版授权构建。
 
 ### 使用 SDK 必须安装 Ombra Desktop 吗？
 
