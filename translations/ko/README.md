@@ -54,8 +54,8 @@ Python과 Node.js에서 Playwright 및 Puppeteer의 실행부를 바로 대체�
 
 - **소스 수준 Chromium 패치** — 캔버스(canvas), WebGL, WebGPU, 오디오, 폰트, GPU, 화면, CSS 미디어 쿼리, 하드웨어 정보, STUN 유출 없는 WebRTC, TLS ClientHello, 시간대, 로케일 제어 및 자동화 흔적 제거(`navigator.webdriver`, `Runtime.enable`, 헤드리스 마커).
 - **브라우저 프로세스 내 네이티브 입력 시뮬레이션 (`humanize=True`)** — 포인터 궤적(`cursory-rs`), 홀드 지속 시간이 반영된 조준 클릭, 오타 및 자체 수정이 포함된 타이핑 리듬, 스크롤 물리가 Chromium 내부에서 실행됩니다. SDK는 프록시 래퍼 없이 순수한 네이티브 `Browser` 객체를 반환합니다.
-- **키나 계정 없이 독립 실행** — 최신 엔진 빌드(`158.0.8127.37-3` 이상)와 Ombra Desktop은 회원 가입, 라이선스 키, 하드웨어 ID, 라이선스 서버 없이 로컬에서 바로 동작합니다.
-- **자동 설치 및 암호학적 바이너리 검증** — `pip install ombrabrowser` 또는 `npm install @ombralabs/sdk`만 실행하면 첫 실행 시 SDK가 플랫폼에 맞는 빌드를 다운로드하고 Ed25519 서명과 SHA-256 체크섬을 검증합니다.
+- **키나 계정 없이 독립 실행** — 최신 엔진 빌드와 Ombra Desktop은 회원 가입, 라이선스 키, 하드웨어 ID, 라이선스 서버 없이 로컬에서 바로 동작합니다.
+- **자동 설치 및 암호학적 바이너리 검증** — `pip install ombrabrowser` 또는 `npm install @ombralabs/sdk`만 실행하면 첫 실행 시 SDK가 [GitHub Releases](https://github.com/ombralabs/ombra/releases)에서 호환 빌드를 다운로드하고 Ed25519 서명과 SHA-256 체크섬을 검증합니다.
 - **영구 프로필 및 안전한 프록시 릴레이** — 이름 지정 프로필은 실행 간 쿠키, `localStorage`, IndexedDB, `seed`를 유지하며 프로세스 간 잠금을 지원합니다. 인증이 필요한 프록시(HTTP, HTTPS, SOCKS5)는 로컬 루프백 릴레이를 통해 처리되므로 자격 증명이 프로세스 인자에 노출되지 않습니다.
 - **오프라인 Ombra Desktop 프로필 관리자** — 이 저장소에 포함된 네이티브 데스크톱 애플리케이션([`desktop/`](../../desktop/README.md))으로 macOS, Linux, Windows용 사전 빌드 설치 프로그램을 제공합니다.
 
@@ -136,7 +136,7 @@ python -m pip install "ombrabrowser[geoip]"
 # Playwright와 함께 사용 (1.60.0+, 기본 Chromium 다운로드 불필요)
 npm install @ombralabs/sdk "playwright-core@^1.60.0"
 
-# 또는 Puppeteer와 함께 사용
+# 또는 Puppeteer와 함께 사용 (Puppeteer 25+는 Node.js 22.12+ 필요)
 npm install @ombralabs/sdk puppeteer-core
 
 # 선택 사항: timezone: "auto" 및 locale: "auto"를 위한 오프라인 GeoIP 데이터베이스 리더
@@ -145,11 +145,11 @@ npm install mmdb-lib
 
 ---
 
-실행 시 SDK는 엄격한 우선순위에 따라 엔진을 탐색합니다: `binary_path`(Node.js에서는 `binaryPath`), `OMBRA_BINARY_PATH`, Ombra Desktop 엔진 디렉터리, SDK 캐시(`~/.ombra/engines`). 호환되는 엔진이 없으면 SDK가 서명된 릴리스 채널에서 빌드를 다운로드하고 Ed25519 서명과 SHA-256 체크섬을 검증한 뒤 로컬에 캐시합니다. `playwright install chromium`을 실행할 필요가 없습니다.
+실행 시 SDK는 엄격한 우선순위에 따라 엔진을 탐색합니다: `binary_path`(Node.js에서는 `binaryPath`), `OMBRA_BINARY_PATH`, Ombra Desktop 엔진 디렉터리, SDK 캐시(`~/.ombra/engines`). 호환되는 엔진이 없으면 SDK가 [GitHub Releases](https://github.com/ombralabs/ombra/releases)에서 빌드를 다운로드하고 Ed25519 서명과 SHA-256 체크섬을 검증한 뒤 로컬에 캐시합니다. `playwright install chromium`을 실행할 필요가 없습니다.
 
 자동 다운로드를 비활성화하려면 `download=False`(Node.js에서는 `download: false`)를 전달하세요. 컨테이너 빌드 단계 등에서 엔진을 미리 다운로드하고 검증하려면 `ensure_binary()`(`ensureBinary()`)를 호출하거나 CLI `install` 명령을 사용하세요.
 
-> **독립 실행:** 최신 엔진 빌드(`158.0.8127.37-3` 이상)는 무료이며 계정이나 라이선스 키가 필요하지 않습니다. `OMBRA_LICENSE_KEY`와 `login` 명령은 기존 라이선스 기반 구버전 빌드와의 호환성을 위해서만 유지됩니다.
+> **독립 실행:** 최신 엔진 빌드는 무료이며 계정이나 라이선스 키가 필요하지 않습니다. `OMBRA_LICENSE_KEY`와 `login` 명령은 기존 라이선스 기반 구버전 빌드와의 호환성을 위해서만 유지됩니다.
 
 **Playwright에서 마이그레이션**하는 데는 단 두 줄만 바꾸면 됩니다 — 모든 페이지 작업, 로케이터, 대기 로직은 그대로 동작합니다:
 
@@ -185,22 +185,11 @@ npm install mmdb-lib
 | **SDK 계약** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [PyPI의 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm의 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium 엔진** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
-| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **단독 실행 브라우저** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
+| **Ombra Chromium 엔진** | SDK 지원 범위 `>=151.0.7922.108,<159` | SDK가 [GitHub Releases](https://github.com/ombralabs/ombra/releases)에서 자동 다운로드 (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Desktop** | 오프라인 프로필 관리자 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **단독 실행 브라우저** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **스키마 및 적합성 테스트** | JSON Schema + 공통 케이스 | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **스텔스 점검 방법론** | 6개 계층 (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
-
-현재 릴리스에 포함된 기능:
-
-- **소스 수준 패치** — `seed` 기반의 일관된 핑거프린트 파생, WebGL / WebGPU 및 확장 기능 정합성 유지, OS별 현실적인 폰트 테이블, 네이티브 TLS ClientHello 프로필(`chrome-<major>`), `Runtime.enable` 및 `UtilityScript` 스택 유출 억제, WebRTC 호스트 IP 유출 방지.
-- **브라우저 수준 `Ombra` CDP 도메인** — 브라우저를 재시작하지 않고 Python 및 Node.js에서 자연스러운 입력 설정(`getHumanizeState`, `setHumanize`)을 실시간 제어.
-- **브라우저 프로세스 내 네이티브 입력 시뮬레이션** — `cursory-rs` 포인터 플래너, 휠 및 트랙패드 스크롤 프로필, 오타 자체 수정이 포함된 타이핑 리듬, 격리된 클립보드를 통한 안전한 장문 텍스트 붙여넣기.
-- **키 없는 독립 실행 빌드** — 최신 엔진 빌드(`158.0.8127.37-3`)와 Ombra Desktop `1.2.2`는 계정, 키, 텔레메트리 없이 완전히 로컬에서 실행.
-- **엔진 버전 고정 (`version`)** — `launch(version="158.0.8127.37-3")`, `OMBRA_VERSION`, 또는 CLI `install --version`으로 정확한 빌드 버전 고정.
-- **통합 프록시 릴레이** — Chromium 명령줄, 로그, 프로필 메타데이터에 자격 증명을 노출하지 않고 HTTP, HTTPS, SOCKS5 인증 프록시 지원.
-- **영구 이름 지정 프로필** — `~/.ombra/profiles/<slug>` 아래에 `seed`, 쿠키, `localStorage`, IndexedDB를 저장하며 프로세스 간 잠금(`ProfileBusyError`) 제공.
-- **암호학적 공급망 검증** — 압축 해제 전 릴리스 엔벨로프의 Ed25519 서명 검증 및 아카이브 SHA-256 무결성 검증.
 
 전체 릴리스 이력은 [CHANGELOG.md](../../CHANGELOG.md)에서 확인하세요.
 
@@ -222,7 +211,7 @@ npm install mmdb-lib
 - **사전 빌드 설치 프로그램** — macOS Apple Silicon(`.dmg`, Apple Developer ID 서명 및 공증 완료), Linux(`.deb` 및 `.rpm`), Windows x64(`setup.exe`) 지원.
 - **격리된 카탈로그** — `OMBRA_DESKTOP_DATA_DIR`을 설정하여 별도의 테스트 카탈로그나 백업 복사본으로 작업할 수 있습니다.
 
-[`desktop-v1.2.2` 다운로드 →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [Desktop README](../../desktop/README.md) · [프로필 및 로컬 키 가이드](../../docs/desktop/README.md)
+[최신 릴리스 다운로드 →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [프로필 및 로컬 키 가이드](../../docs/desktop/README.md)
 
 ## 핑거프린트 검증 및 스텔스 점검
 
@@ -236,7 +225,7 @@ Ombra는 근거 없는 "100% 탐지 불가"를 약속하는 대신, 기록된 �
 | `window.chrome` | 헤드리스에서 누락 | 전체 객체 제공 | 일반 Chrome과 일치 |
 | `navigator.plugins` | 헤드리스에서 `0` | 일관된 플러그인 세트 | 엔진 수준 |
 | User-Agent 및 Client Hints | `HeadlessChrome`, 브랜드 불일치 | `Google Chrome` + 정합된 `Sec-CH-UA*` | 패치 `010-user-agent-and-webdriver` |
-| CDP 흔적 (`Runtime.enable`, `UtilityScript`) | 탐지기에 플래그됨 | 엔진에서 억제, SDK는 `Runtime.enable` 미호출 | 패치 `110-runtime-enable` + 불변 규칙 `SI-02` |
+| CDP 흔적 (`Runtime.enable`, `UtilityScript`) | 탐지기에 플래그됨 | 엔진에서 억제, SDK는 `Runtime.enable` 미호출 | 패치 `110-runtime-enable` + 불변 규칙 `SI-01` |
 | WebRTC IP 유출 | 로컬/호스트 IP 노출 | 실제 STUN 전송 없이 출구 IP 보고 | 패치 `100-webrtc-leak` (`--webrtc-ip`) |
 | TLS 및 HTTP/2 | 환경에 따라 상이 | Chromium 네트워크 스택 + `chrome-<major>` ClientHello 프로필 | 패치 `210-tls-network-persona` |
 | WebGL 및 WebGPU | 소프트웨어 렌더러 / GPU 불일치 | 통합 WebGL/WebGPU 한계값 및 확장 테이블 | 패치 `070`, `071`, `075`, `955` |
@@ -460,7 +449,7 @@ ensure_binary(version="158.0.8127.37-3")
 # SDK가 관리하는 엔진 바이너리 삭제 (~/.ombra/profiles 아래의 프로필은 유지됨)
 clear_cache()
 
-# Chromium을 실행하지 않고 최종 실행 명령 확인
+# Chromium을 실행하지 않고 최종 실행 명령을 드라이런으로 미리 확인
 cmd = build_launch_options(profile="pricing-eu", humanize=True)
 
 # 런타임 메타데이터(CDP 포트, ws_url, seed, pid) 조회 및 프로세스 상태 확인
@@ -478,7 +467,7 @@ ombrabrowser install --version 158.0.8127.37-3  # 특정 엔진 빌드 설치
 ombrabrowser info                                # 환경, 바이너리 및 의존성 진단 (별칭: doctor)
 ombrabrowser info --quick --json                 # 바이너리를 실행하지 않고 빠른 기계 판독 가능 보고서 출력
 ombrabrowser info --proxy socks5://user:pass@host:1080  # 프록시를 통한 출구 IP, 시간대 및 로케일 확인 테스트
-ombrabrowser update                              # 릴리스 채널 확인 및 캐시된 엔진 업데이트
+ombrabrowser update                              # GitHub Releases 확인 및 캐시된 엔진 업데이트
 ombrabrowser clear-cache                         # 캐시된 엔진 바이너리 삭제 (프로필은 보존)
 ombrabrowser login                               # ~/.ombra/license.key에 라이선스 키 저장 (레거시 빌드 전용)
 ombrabrowser logout                              # 저장된 라이선스 키 삭제
@@ -666,7 +655,7 @@ console.log(await cdp.getHumanizeState());
 
 ### 추가 엔진 플래그 (`args`)
 
-엔진이 지원하지만 SDK가 자동으로 설정하지 않는 플래그입니다(`args=[...]`로 전달):
+추가 엔진 플래그(`args=[...]`로 설정하거나 재정의):
 
 | 플래그 | 용도 |
 |---|---|
@@ -680,9 +669,9 @@ console.log(await cdp.getHumanizeState());
 | `--fingerprint-color-depth=<bits>` | 화면 색 심도 |
 | `--disable-gpu-fingerprint` | 호스트의 실제 GPU 통과 (WebGL/WebGPU 문자열, 한계값, 확장 기능) |
 | `--disable-gpu-string-spoof` | 다른 프로필 설정은 유지하면서 실제 GPU 문자열만 그대로 전달 |
-| `--disable-fingerprint-noise` | 신원 매개변수는 유지하면서 캔버스/WebGL/오디오 노이즈 비활성화 |
+| `--disable-fingerprint-noise` | 신원 매개변수는 유지하면서 캔버스/WebGL/오디오 노이즈 비활성화 (`fingerprint={"noise": False}`로도 설정됨) |
 | `--fingerprint-pixel-noise` | 2D 캔버스 및 `readPixels`에 대한 선택적 멱등 픽셀 노이즈 활성화 |
-| `--profile-label=<text>` | 브라우저 주소 표시줄에 표시할 프로필 레이블 (UI 전용, 웹 페이지에는 노출되지 않음) |
+| `--profile-label=<text>` | 브라우저 주소 표시줄에 표시할 프로필 레이블 (UI 전용; `profile`에서 자동 설정되며 `profile`을 지정하지 않은 경우에만 `args`로 전달) |
 
 ### Linux 폰트 설정
 
@@ -733,7 +722,7 @@ RUN fc-cache -f
 | `version` | 환경 변수 / 자동 | 엔진 버전 고정(예: `158.0.8127.37-3`), `OMBRA_VERSION`보다 우선 |
 | `timeout_ms` | `30000` | 엔진 시작 및 CDP 연결 제한 시간 (1000–600000 ms) |
 | `humanize` | 엔진 기본값 | `False`, `True`, 또는 `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | 환경 변수 / 파일 | 레거시 라이선스 빌드용 키 (`158.0.8127.37-3+`에서는 불필요, 로그에 기록되지 않음) |
+| `license_key` | 환경 변수 / 파일 | 레거시 라이선스 빌드용 키 (현재 빌드에서는 불필요, 로그에 기록되지 않음) |
 | `env` | `{}` | 엔진 프로세스에 전달할 추가 환경 변수 |
 | `download` | `True` | 누락된 엔진 바이너리의 자동 다운로드 허용 여부 |
 
@@ -745,9 +734,9 @@ RUN fc-cache -f
 |---|---|---|
 | `OMBRA_BINARY_PATH` | 미설정 | 엔진 바이너리의 명시적 경로 |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | 캐시된 엔진 및 이름 지정 프로필 저장 디렉터리 |
-| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | 엔진 다운로드 기본 URL / 미러 (`none`/`off` 설정 시 다운로드 비활성화) |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | 엔진 다운로드 소스; 커스텀 URL 지정 시 레거시 미러 모드 활성화 (`none`/`off` 설정 시 다운로드 비활성화) |
 | `OMBRA_VERSION` | 최신 호환 버전 | 고정할 엔진 버전(예: `158.0.8127.37-3`) |
-| `OMBRA_RELEASE_CHANNEL` | `stable` | 엔진 릴리스 채널: `stable` 또는 `beta` |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | 엔진 릴리스 채널: `stable` (GitHub 정식 릴리스) 또는 `beta` (GitHub 프리릴리스) |
 | `OMBRA_AUTO_UPDATE` | `true` | 실행 시 최신 엔진 빌드 확인 여부 |
 | `OMBRA_SKIP_CHECKSUM` | `false` | 로컬 개발 전용: SHA-256 검증 비활성화 (경고 로그 출력) |
 | `OMBRA_LICENSE_KEY` | 미설정 | 레거시 라이선스 빌드용 키 (로그에 기록되지 않음) |
@@ -768,10 +757,10 @@ RUN fc-cache -f
 
 | 구성 요소 | 지원 여부 | 비고 |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | 독립 실행 빌드 `158.0.8127.37-3`; Ombra Desktop은 Developer ID 서명 및 공증 완료 |
+| **macOS ARM64 (Apple Silicon)** | ✅ | GitHub Releases를 통한 독립 실행 엔진 빌드; Ombra Desktop은 Developer ID 서명 및 공증 완료 |
 | **macOS x64 (Intel)** | — | 현재 Chromium 158 릴리스 없음 |
-| **Linux x64** | ✅ | 독립 실행 빌드 `158.0.8127.37-3`; `.tar.xz` 압축 해제를 위해 `xz-utils`(`xz`) 필요 |
-| **Windows x64** | ✅ | 독립 실행 빌드 `158.0.8127.37-3` 및 Ombra Desktop 설치 프로그램 제공 |
+| **Linux x64** | ✅ | GitHub Releases를 통한 독립 실행 엔진 빌드; Node.js SDK에서 `.tar.xz` 압축 해제를 위해 `xz-utils`(`xz`) 필요 |
+| **Windows x64** | ✅ | GitHub Releases를 통한 독립 실행 엔진 빌드 및 Ombra Desktop 설치 프로그램 제공 |
 | **Python** | `3.10+` | `ombrabrowser` 설치 시 Playwright `>=1.60,<2.0` 자동 설치 |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` 또는 Puppeteer `>=22` (Puppeteer 25+는 Node.js `>=22.12` 필요) |
 
@@ -780,10 +769,16 @@ RUN fc-cache -f
 Ombra는 커스텀 Chromium 바이너리를 받거나 CDP로 연결하는 모든 자동화 도구 및 AI 에이전트 프레임워크(`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain` 등)와 함께 사용할 수 있습니다:
 
 ```python
-# 방법 1: 자체 러너에서 사용할 검증된 바이너리 경로와 엔진 인자 조회
+# 방법 1: 자체 러너에서 사용할 검증된 바이너리 경로와 실행 가능한 엔진 인자 조회
+# 참고: build_launch_options()는 드라이런 헬퍼이므로 user_data_dir과 seed를 명시적으로 전달하세요
+# (이름 지정 프로필 및 인증 프록시는 방법 2가 필요합니다).
 from ombrabrowser import build_launch_options
 
-cmd = build_launch_options(profile="agent-1", humanize=True)
+cmd = build_launch_options(
+    user_data_dir="./agent-1",
+    fingerprint={"seed": 20261116},
+    humanize=True,
+)
 binary_path = cmd["binary_path"]
 engine_args = cmd["args"]
 
@@ -837,17 +832,7 @@ Xvfb :99 -screen 0 1920x1080x24 &
 export DISPLAY=:99
 ```
 
-그런 다음 주거용 SOCKS5/HTTP 프록시, 영구 프로필, 일치하는 시간대/로케일, `headless=False`, `humanize=True` 조합으로 실행하세요:
-
-```python
-context = launch_persistent_context(
-    profile="site-eu",
-    proxy="socks5://user:pass@residential-proxy:1080",
-    fingerprint={"timezone": "auto", "locale": "auto"},
-    headless=False,
-    humanize=True,
-)
-```
+그런 다음 주거용 SOCKS5/HTTP 프록시, 영구 프로필, 일치하는 시간대/로케일, `headless=False`, `humanize=True` 조합으로 실행하세요(이 README 상단의 `launch_persistent_context()` 예제 참고).
 
 Linux에서 차단이 계속된다면 [Linux 폰트 설정](#linux-폰트-설정)을 확인하세요.
 
@@ -885,9 +870,13 @@ browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
-# 또는 환경 변수 / CLI로 설정
-export OMBRA_VERSION=158.0.8127.37-3
+# beta 채널 테스트 (OMBRA_VERSION 해제 — 정확한 -N 버전 고정은 채널 설정을 무시함)
+unset OMBRA_VERSION
 export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser update
+
+# 또는 특정 엔진 빌드로 고정 / 롤백
+export OMBRA_VERSION=158.0.8127.37-3
 ombrabrowser install --version 158.0.8127.37-3
 
 # 또는 로컬에서 빌드한 바이너리 경로 지정
@@ -955,7 +944,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-이 저장소에는 SDK 계약, 스키마, 적합성 테스트 케이스, 문서 및 Ombra Desktop 소스 코드가 포함되어 있습니다. Chromium 엔진 패치는 별도 저장소에서 유지 관리되며, 컴파일된 빌드는 다운로드 채널과 [GitHub Releases](https://github.com/ombralabs/ombra/releases)를 통해 배포됩니다.
+이 저장소에는 SDK 계약, 스키마, 적합성 테스트 케이스, 문서 및 Ombra Desktop 소스 코드가 포함되어 있습니다. Chromium 엔진 패치는 별도 저장소에서 유지 관리되며, 컴파일된 빌드는 [GitHub Releases](https://github.com/ombralabs/ombra/releases)를 통해 배포됩니다.
 
 ## 자주 묻는 질문 (FAQ)
 
@@ -965,7 +954,7 @@ for _ in range(15):
 
 ### Ombra는 무료인가요? 라이선스 키가 필요한가요?
 
-이 저장소의 SDK 소스 코드는 Apache License 2.0 오픈 소스입니다. 최신 엔진 빌드(`158.0.8127.37-3` 이상)와 로컬 Ombra Desktop 프로필 관리자(`desktop-v1.2.2`)는 계정, 라이선스 키, 하드웨어 ID, 프로필 수 제한 없이 무료로 독립 실행됩니다. `license_key`와 `OMBRA_LICENSE_KEY`는 기존 라이선스 기반 구버전 빌드에서만 필요합니다.
+이 저장소의 SDK 소스 코드는 Apache License 2.0 오픈 소스입니다. 최신 엔진 빌드와 로컬 Ombra Desktop 프로필 관리자는 계정, 라이선스 키, 하드웨어 ID, 프로필 수 제한 없이 무료로 독립 실행됩니다. `license_key`와 `OMBRA_LICENSE_KEY`는 기존 라이선스 기반 구버전 빌드에서만 필요합니다.
 
 ### SDK를 사용하려면 Ombra Desktop을 설치해야 하나요?
 

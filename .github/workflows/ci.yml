@@ -35,6 +35,9 @@ jobs:
       - name: Compile the checker
         run: python -m py_compile tools/check_repo.py
 
+      - name: Run checker unit tests
+        run: python -m unittest discover -s tools -p "test_*.py" -v
+
   checks:
     name: Fingerprint benchmark and probe self-tests
     if: ${{ github.repository_visibility == 'public' }}
