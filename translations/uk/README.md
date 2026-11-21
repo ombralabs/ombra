@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | Компонент | Стан / версія | Розташування |
 |---|---|---|
-| **Контракт SDK** | Чернетка `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Альфа `0.1.3` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Альфа `0.1.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Контракт SDK** | Чернетка `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Альфа `0.2.0` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Альфа `0.2.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Рушій Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **Окремий браузер** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ flowchart LR
 
 ### Межі SDK та інваріанти непомітності
 
-[Контракт SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) задає суворі інваріанти для кожного офіційного SDK:
+[Контракт SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) задає суворі інваріанти для кожного офіційного SDK:
 
 - **Жодних скриптів маскування на сторінках.** SDK ніколи не викликає `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` і не патчить властивості DOM.
 - **Без `Runtime.enable`.** Перевірка готовності використовує лише локальний HTTP-ендпоінт CDP або `Browser.getVersion`; SDK ніколи не вмикає `Runtime`, `Debugger` або `Log`.
@@ -937,7 +937,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop (Tauri: каталог на Rust + інтерфейс на Vue)
 ├── docs/
 │   ├── architecture.md          # архітектура, межі довіри, життєвий цикл
-│   ├── sdk-contract.md          # контракт запуску v0.1, параметри, помилки, інваріанти
+│   ├── sdk-contract.md          # контракт запуску v0.2, параметри, помилки, інваріанти
 │   ├── stealth-checkup.md       # методика перевірки (англійською)
 │   ├── stealth-checkup.ru.md    # методика перевірки (російською)
 │   ├── versioning.md            # версіонування SDK, рушія та клієнтів

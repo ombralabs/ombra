@@ -23,7 +23,7 @@ Cases are JSON so a runner can consume them without a YAML dependency. A case is
 {
   "id": "launch-basic",
   "title": "launch() returns a native browser",
-  "contract": "0.1.0",
+  "contract": "0.2.0",
   "runner": "launch",
   "status": "design",
   "preconditions": ["engine binary available"],

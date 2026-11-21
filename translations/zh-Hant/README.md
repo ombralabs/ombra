@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | 元件 | 狀態／版本 | 位置 |
 |---|---|---|
-| **SDK 契約** | 草案 `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alpha `0.1.3` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **SDK 契約** | 草案 `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alpha `0.2.0` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium 引擎** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **獨立版瀏覽器** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ flowchart LR
 
 ### SDK 邊界與隱匿性不變量
 
-[v0.1 SDK 契約（`docs/sdk-contract.md`）](../../docs/sdk-contract.md) 對每個官方 SDK 強制實施嚴格的不變量：
+[v0.2 SDK 契約（`docs/sdk-contract.md`）](../../docs/sdk-contract.md) 對每個官方 SDK 強制實施嚴格的不變量：
 
 - **絕不向頁面注入隱匿腳本。** SDK 永不呼叫 `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument`，也不會修補 DOM 屬性。
 - **絕不啟用 `Runtime.enable`。** 就緒狀態檢查僅使用本機 CDP HTTP 端點或 `Browser.getVersion`；SDK 永不啟用 `Runtime`、`Debugger` 或 `Log`。
@@ -937,7 +937,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop（Tauri：Rust 目錄 + Vue 介面）
 ├── docs/
 │   ├── architecture.md          # 架構、信任邊界、生命週期
-│   ├── sdk-contract.md          # v0.1 啟動契約、選項、錯誤、不變量
+│   ├── sdk-contract.md          # v0.2 啟動契約、選項、錯誤、不變量
 │   ├── stealth-checkup.md       # 隱匿性檢查方法（英文）
 │   ├── stealth-checkup.ru.md    # 隱匿性檢查方法（俄文）
 │   ├── versioning.md            # SDK、引擎與用戶端版本控管

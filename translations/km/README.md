@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | សមាសធាតុ | ស្ថានភាព / កំណែ | ទីតាំង |
 |---|---|---|
-| **កិច្ចសន្យា SDK** | សេចក្តីព្រាង `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alpha `0.1.3` | [`ombrabrowser` នៅលើ PyPI](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alpha `0.1.0` | [`@ombralabs/sdk` នៅលើ npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **កិច្ចសន្យា SDK** | សេចក្តីព្រាង `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alpha `0.2.0` | [`ombrabrowser` នៅលើ PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alpha `0.2.0` | [`@ombralabs/sdk` នៅលើ npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **ម៉ាស៊ីន Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **កម្មវិធីរុករកឯករាជ្យ** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ flowchart LR
 
 ### ដែនកំណត់ SDK និងលក្ខខណ្ឌថេរនៃភាពលាក់កំបាំង
 
-[កិច្ចសន្យា SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) អនុវត្តលក្ខខណ្ឌថេរតឹងរ៉ឹងលើ SDK ផ្លូវការទាំងអស់៖
+[កិច្ចសន្យា SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) អនុវត្តលក្ខខណ្ឌថេរតឹងរ៉ឹងលើ SDK ផ្លូវការទាំងអស់៖
 
 - **គ្មានស្គ្រីបលាក់កំបាំងលើទំព័រ។** SDK មិនដែលហៅ `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` និងមិនដែលកែប្រែលក្ខណសម្បត្តិ DOM ឡើយ។
 - **គ្មាន `Runtime.enable`។** ការពិនិត្យភាពរួចរាល់ប្រើតែចំណុចបញ្ចប់ CDP HTTP ក្នុងម៉ាស៊ីន ឬ `Browser.getVersion` ប៉ុណ្ណោះ; SDK មិនដែលបើកដំណើរការ `Runtime`, `Debugger` ឬ `Log` ឡើយ។
@@ -937,7 +937,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop (Tauri៖ កាតាឡុក Rust + ចំណុចប្រទាក់ Vue)
 ├── docs/
 │   ├── architecture.md          # ស្ថាបត្យកម្ម ដែនកំណត់ទំនុកចិត្ត វដ្តជីវិត
-│   ├── sdk-contract.md          # កិច្ចសន្យាបើកដំណើរការ v0.1, ជម្រើស, កំហុស, លក្ខខណ្ឌថេរ
+│   ├── sdk-contract.md          # កិច្ចសន្យាបើកដំណើរការ v0.2, ជម្រើស, កំហុស, លក្ខខណ្ឌថេរ
 │   ├── stealth-checkup.md       # វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង (ភាសាអង់គ្លេស)
 │   ├── stealth-checkup.ru.md    # វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង (ភាសារុស្ស៊ី)
 │   ├── versioning.md            # ការកំណត់កំណែ SDK, ម៉ាស៊ីន និងកម្មវិធីអតិថិជន

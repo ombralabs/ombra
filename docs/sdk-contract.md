@@ -1,4 +1,4 @@
-# SDK API contract v0.1
+# SDK API contract v0.2
 
 > **Status: draft.** This document defines what every official Ombra SDK exposes and guarantees. It is normative for SDK behavior; the engine build is normative for fingerprint behavior. If the two disagree, the engine wins for stealth and this document is corrected.
 
@@ -261,7 +261,7 @@ Precedence: explicit option > environment variable > profile metadata > default.
 
 ## 14. Versioning
 
-- The API contract is `0.1.0`.
+- The API contract is `0.2.0`.
 - While the contract is `0.x`, additive changes bump the patch and breaking changes bump the minor.
 - Every SDK declares the contract range it implements and the engine range it supports.
 - `binary_info().version` is the engine version actually used. It is the first thing to include in a bug report.
@@ -270,7 +270,7 @@ Precedence: explicit option > environment variable > profile metadata > default.
 
 ## 15. Open questions
 
-These block the `0.1.0` freeze:
+These block a stable contract freeze:
 
 1. **Binary distribution.** Does the SDK download the engine, always use the app-installed engine, or support both? The contract currently supports both with download as a fallback.
 2. **License passing.** Is `OMBRA_LICENSE_KEY` read by the engine directly, passed as a flag, or read from a file? The SDK needs one stable answer.

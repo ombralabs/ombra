@@ -182,9 +182,9 @@ Każdy komponent ekosystemu przestrzega wspólnego kontraktu uruchamiania i jest
 
 | Komponent | Status / wersja | Lokalizacja |
 |---|---|---|
-| **Kontrakt SDK** | Szkic `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alfa `0.1.3` | [`ombrabrowser` w PyPI](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alfa `0.1.0` | [`@ombralabs/sdk` w npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Kontrakt SDK** | Szkic `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alfa `0.2.0` | [`ombrabrowser` w PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alfa `0.2.0` | [`@ombralabs/sdk` w npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Silnik Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **Samodzielna przeglądarka** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ Po uruchomieniu SDK opuszcza ścieżkę danych: wszystkie polecenia obsługi str
 
 ### Granice SDK i niezmienniki stealth
 
-[Kontrakt SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) narzuca ścisłe niezmienniki każdemu oficjalnemu SDK:
+[Kontrakt SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) narzuca ścisłe niezmienniki każdemu oficjalnemu SDK:
 
 - **Brak skryptów stealth na stronach.** SDK nigdy nie wywołuje `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` i nigdy nie modyfikuje właściwości DOM.
 - **Brak `Runtime.enable`.** Sprawdzanie gotowości korzysta wyłącznie z lokalnego punktu końcowego HTTP CDP lub `Browser.getVersion`; SDK nigdy nie włącza domen `Runtime`, `Debugger` ani `Log`.
@@ -936,7 +936,7 @@ Zgłaszaj podatności bezpieczeństwa poufnie zgodnie z [SECURITY.md](../../SECU
 ├── desktop/                     # Ombra Desktop (Tauri: katalog w Rust + interfejs Vue)
 ├── docs/
 │   ├── architecture.md          # architektura, granice zaufania, cykl życia
-│   ├── sdk-contract.md          # kontrakt uruchamiania v0.1, opcje, błędy, niezmienniki
+│   ├── sdk-contract.md          # kontrakt uruchamiania v0.2, opcje, błędy, niezmienniki
 │   ├── stealth-checkup.md       # metodyka przeglądu stealth (po angielsku)
 │   ├── stealth-checkup.ru.md    # metodyka przeglądu stealth (po rosyjsku)
 │   ├── versioning.md            # wersjonowanie SDK, silnika i klienta

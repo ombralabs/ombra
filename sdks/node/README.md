@@ -1,6 +1,6 @@
 # Ombra SDK for Node.js
 
-> **Alpha (`0.1.0`).** Implements [contract v0.1](../../docs/sdk-contract.md) for Playwright and Puppeteer over CDP, with dual ESM + CommonJS builds, and native `Ombra` CDP domain support.
+> **Alpha (`0.2.0`).** Implements [contract v0.2](../../docs/sdk-contract.md) for Playwright and Puppeteer over CDP, with dual ESM + CommonJS builds, and native `Ombra` CDP domain support.
 
 [← All SDKs](../README.md) · [Contract](../../docs/sdk-contract.md) · [Stealth invariants](../../docs/sdk-contract.md#12-stealth-invariants)
 
@@ -9,12 +9,16 @@
 | Item | Value |
 |---|---|
 | Package | `@ombralabs/sdk` |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Distribution | [npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | Runtime | Node.js >=20.0.0; native file-lock addon and ESM resolver |
 | Language | TypeScript, dual ESM (`dist/esm`) and CommonJS (`dist/cjs`) + `.d.ts` |
 | Returns | Native Playwright `Browser` / `BrowserContext`; native Puppeteer `Browser` from `launchPuppeteer()` or `@ombralabs/sdk/puppeteer` |
 | Status | Alpha |
+
+## Upgrading from 0.1
+
+Version 0.2 removes the `captcha` launch option and dedicated CAPTCHA modules. Remove the option and `@ombralabs/sdk/captcha` imports before upgrading. Generic CDP sessions, humanize controls, and native agent commands remain available.
 
 ## Installation
 
@@ -229,7 +233,7 @@ npm run test:native-types -- none playwright-core@1.60.0 playwright@1.60.0 puppe
 To try a local build, install the tarball retained by `test:package` in your application.
 
 ```bash
-npm install /absolute/path/to/verified-packages/ombralabs-sdk-0.1.0.tgz "playwright-core@^1.60.0"
+npm install /absolute/path/to/verified-packages/ombralabs-sdk-0.2.0.tgz "playwright-core@^1.60.0"
 ```
 
 Build/test scripts use the SDK-local TypeScript CLI and types, with no sibling-project or global compiler fallback. Run package/native-consumer checks through `npm run` so Windows uses npm's JavaScript CLI. These checks need registry access or a populated npm cache; they never download stock browsers. `test:package` installs a tarball with runtime install scripts, checks every export in ESM/CJS, the installed executable CLI, and actual native profile lock contention/release. `test:native-types` uses separate consumers with neither client, only Playwright, or only Puppeteer, including full packages with nested core dependencies.

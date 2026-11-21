@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | Компонент | Статус / версия | Где найти |
 |---|---|---|
-| **Контракт SDK** | Черновик `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Альфа `0.1.3` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Альфа `0.1.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Контракт SDK** | Черновик `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Альфа `0.2.0` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Альфа `0.2.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Движок Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **Автономный браузер** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ flowchart LR
 
 ### Границы и stealth-инварианты SDK
 
-Контракт [v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) закрепляет обязательные ограничения для каждого официального SDK:
+Контракт [v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) закрепляет обязательные ограничения для каждого официального SDK:
 
 - **Никаких stealth-скриптов на странице.** SDK никогда не вызывает `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` и не переписывает свойства DOM.
 - **Никакого `Runtime.enable`.** Для проверки готовности используется только локальный HTTP-эндпоинт CDP или `Browser.getVersion`; SDK не включает домены `Runtime`, `Debugger` и `Log`.
@@ -936,7 +936,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop (Tauri: Rust-каталог + Vue UI)
 ├── docs/
 │   ├── architecture.md          # архитектура, границы доверия, жизненный цикл
-│   ├── sdk-contract.md          # контракт запуска v0.1, опции, ошибки, инварианты
+│   ├── sdk-contract.md          # контракт запуска v0.2, опции, ошибки, инварианты
 │   ├── stealth-checkup.md       # методика проверки (English)
 │   ├── stealth-checkup.ru.md    # методика проверки (Русский)
 │   ├── versioning.md            # версионность SDK, движка и клиентов

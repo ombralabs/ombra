@@ -182,9 +182,9 @@ Ang bawat bahagi sa ecosystem ay sumusunod sa pinagsasaluhang kontrata ng pag-la
 
 | Bahagi | Status / bersyon | Lokasyon |
 |---|---|---|
-| **Kontrata ng SDK** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alpha `0.1.3` | [`ombrabrowser` sa PyPI](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alpha `0.1.0` | [`@ombralabs/sdk` sa npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Kontrata ng SDK** | Draft `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alpha `0.2.0` | [`ombrabrowser` sa PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alpha `0.2.0` | [`@ombralabs/sdk` sa npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium engine** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **Standalone browser** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ Pagkatapos ng pag-launch, umaalis na ang SDK sa landas ng data: direktang naglal
 
 ### Mga hangganan ng SDK at stealth invariants
 
-Nagpapatupad ang [v0.1 SDK contract (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) ng mahihigpit na invariant sa bawat opisyal na SDK:
+Nagpapatupad ang [v0.2 SDK contract (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) ng mahihigpit na invariant sa bawat opisyal na SDK:
 
 - **Walang mga stealth script sa mga pahina.** Hindi kailanman tumatawag ang SDK ng `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` at hindi nagpa-patch ng mga property ng DOM.
 - **Walang `Runtime.enable`.** Ang mga pagsusuri sa kahandaan ay gumagamit lamang ng lokal na CDP HTTP endpoint o `Browser.getVersion`; hindi kailanman ine-enable ng SDK ang `Runtime`, `Debugger`, o `Log`.
@@ -936,7 +936,7 @@ Iulat nang pribado ang mga isyu sa seguridad alinsunod sa [SECURITY.md](../../SE
 ├── desktop/                     # Ombra Desktop (Tauri: Rust catalog + Vue UI)
 ├── docs/
 │   ├── architecture.md          # arkitektura, mga trust boundary, lifecycle
-│   ├── sdk-contract.md          # v0.1 na kontrata ng pag-launch, mga opsyon, error, invariant
+│   ├── sdk-contract.md          # v0.2 na kontrata ng pag-launch, mga opsyon, error, invariant
 │   ├── stealth-checkup.md       # paraan ng checkup (Ingles)
 │   ├── stealth-checkup.ru.md    # paraan ng checkup (Russian)
 │   ├── versioning.md            # pagbebersyon ng SDK, engine, at client

@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | コンポーネント | ステータス / バージョン | 場所 |
 |---|---|---|
-| **SDK コントラクト** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alpha `0.1.3` | [PyPI 上の `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm 上の `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **SDK コントラクト** | Draft `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alpha `0.2.0` | [PyPI 上の `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm 上の `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium エンジン** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **スタンドアロンブラウザ** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ flowchart LR
 
 ### SDK の責務境界とステルス不変条件
 
-[v0.1 SDK コントラクト (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) では、すべての公式 SDK に厳格な不変条件を課しています。
+[v0.2 SDK コントラクト (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) では、すべての公式 SDK に厳格な不変条件を課しています。
 
 - **ページへのステルススクリプト注入を行わない。** SDK は `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` を一切呼び出さず、DOM プロパティへのパッチも行いません。
 - **`Runtime.enable` を使用しない。** 準備完了チェックにはローカルの CDP HTTP エンドポイントまたは `Browser.getVersion` のみを使用し、`Runtime`、`Debugger`、`Log` を有効化しません。
@@ -936,7 +936,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop (Tauri: Rust カタログ + Vue UI)
 ├── docs/
 │   ├── architecture.md          # アーキテクチャ、信頼境界、ライフサイクル
-│   ├── sdk-contract.md          # v0.1 起動コントラクト、オプション、エラー、不変条件
+│   ├── sdk-contract.md          # v0.2 起動コントラクト、オプション、エラー、不変条件
 │   ├── stealth-checkup.md       # チェックアップ手法 (English)
 │   ├── stealth-checkup.ru.md    # チェックアップ手法 (Русский)
 │   ├── versioning.md            # SDK、エンジン、クライアントのバージョニング

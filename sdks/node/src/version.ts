@@ -2,10 +2,10 @@
  * Version and compatibility constants for the Ombra Node.js SDK.
  */
 
-export const SDK_VERSION = "0.1.0";
+export const SDK_VERSION = "0.2.0";
 
-export const CONTRACT_VERSION = "0.1.0";
-export const SUPPORTED_CONTRACT_RANGE = ">=0.1,<0.2";
+export const CONTRACT_VERSION = "0.2.0";
+export const SUPPORTED_CONTRACT_RANGE = ">=0.2,<0.3";
 
 export const DEFAULT_ENGINE_VERSION = "158.0.8127.37";
 export const SUPPORTED_ENGINE_RANGE = ">=151.0.7922.108,<159";

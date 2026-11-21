@@ -1,7 +1,7 @@
 {
   "id": "stealth-invariants",
   "title": "SDK and launcher must not add fingerprint changes",
-  "contract": "0.1.0",
+  "contract": "0.2.0",
   "runner": "client-audit",
   "status": "design",
   "preconditions": [

@@ -1,7 +1,7 @@
 {
   "id": "launch-profile-lock",
   "title": "One profile directory, one live browser",
-  "contract": "0.1.0",
+  "contract": "0.2.0",
   "runner": "lifecycle",
   "status": "design",
   "preconditions": [

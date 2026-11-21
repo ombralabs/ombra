@@ -18,7 +18,7 @@ def test_cli_info_json(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
     out = json.loads(capsys.readouterr().out)
     assert out["binary"]["installed"] is True
     assert out["binary"]["path"] == str(exe)
-    assert out["sdk"]["contract"] == "0.1.0"
+    assert out["sdk"]["contract"] == "0.2.0"
 
 
 def test_cli_login_logout_and_clear_cache(tmp_path: Path, capsys: pytest.CaptureFixture[str]):

@@ -182,9 +182,9 @@ Ogni componente dell'ecosistema segue il contratto di avvio condiviso ed è vers
 
 | Componente | Stato / versione | Posizione |
 |---|---|---|
-| **Contratto SDK** | Bozza `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` su PyPI](https://pypi.org/project/ombrabrowser/) |
-| **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` su npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Contratto SDK** | Bozza `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` su PyPI](https://pypi.org/project/ombrabrowser/) |
+| **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` su npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Motore Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
 | **Browser standalone** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
@@ -304,7 +304,7 @@ Dopo l'avvio, l'SDK esce dal percorso dei dati: tutti i comandi sulla pagina via
 
 ### Confini dell'SDK e invarianti stealth
 
-Il [contratto SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) impone invarianti rigorosi a ogni SDK ufficiale:
+Il [contratto SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) impone invarianti rigorosi a ogni SDK ufficiale:
 
 - **Nessuno script stealth nelle pagine.** L'SDK non chiama mai `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` e non modifica mai le proprietà del DOM.
 - **Nessun `Runtime.enable`.** I controlli di disponibilità usano solo l'endpoint HTTP CDP locale o `Browser.getVersion`; l'SDK non abilita mai `Runtime`, `Debugger` o `Log`.
@@ -936,7 +936,7 @@ Segnala i problemi di sicurezza in privato seguendo [SECURITY.md](../../SECURITY
 ├── desktop/                     # Ombra Desktop (Tauri: catalogo Rust + UI Vue)
 ├── docs/
 │   ├── architecture.md          # architettura, confini di fiducia, ciclo di vita
-│   ├── sdk-contract.md          # contratto di avvio v0.1, opzioni, errori, invarianti
+│   ├── sdk-contract.md          # contratto di avvio v0.2, opzioni, errori, invarianti
 │   ├── stealth-checkup.md       # metodo di checkup (inglese)
 │   ├── stealth-checkup.ru.md    # metodo di checkup (russo)
 │   ├── versioning.md            # versionamento di SDK, motore e client
