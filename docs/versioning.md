@@ -4,8 +4,8 @@ Ombra has four independently versioned things. Mixing them up is the most common
 
 | Artifact | Current | Versioned by | Source of truth |
 |---|---|---|---|
-| SDK API contract | `0.1.0` | This repository | [sdk-contract.md](sdk-contract.md) |
-| SDK package | `0.1.0` (planned) | Each language package | `sdks/manifest.json` and package manifests |
+| SDK API contract | `0.2.0` | This repository | [sdk-contract.md](sdk-contract.md) |
+| SDK package | Python `0.2.0`, Node.js `0.2.0` (alpha) | Each language package | `sdks/manifest.json` and package manifests |
 | Ombra engine | external | Engine builds | Engine releases; reported by `binary_info()` |
 | Automation client | external | Upstream | Playwright, Puppeteer, chromedp, Ferrum, chromiumoxide |
 
@@ -28,24 +28,24 @@ After `1.0`:
 Every SDK declares a supported range, for example:
 
 ```toml
-# sdks/python/pyproject.toml (planned)
+# sdks/python/pyproject.toml
 [project]
-name = "ombra"
-version = "0.1.0"
+name = "ombrabrowser"
+dynamic = ["version"]  # ombrabrowser._version.__version__ = "0.2.0"
 
 [tool.ombra]
-contract = ">=0.1,<0.2"
+contract = ">=0.2,<0.3"
 engine = ">=151.0.7922.108,<159"
 ```
 
 An SDK that meets an engine build outside its range must fail with `UnsupportedEngine`, naming both versions. It must not attempt a best-effort launch.
 
-## Unreleased CAPTCHA API removal
+## SDK 0.2 CAPTCHA API removal
 
-The next Python and Node.js SDK releases remove the `captcha` launch option,
+Python and Node.js SDK `0.2.0` remove the `captcha` launch option,
 automatic CAPTCHA flags, and dedicated CAPTCHA CDP helpers, event recorders,
-types, and module entrypoints. This is a breaking change and requires the next
-contract/SDK minor release under the rules above; existing package versions must
+types, and module entrypoints. This breaking change advances the contract to
+`0.2.0` and the supported range to `>=0.2,<0.3`; existing package versions must
 not be republished with the changed API. Remove `captcha` from launch calls and
 remove imports from `ombrabrowser.captcha` or `@ombralabs/sdk/captcha`.
 Generic CDP sessions, humanize controls, and native agent commands remain available.
@@ -54,8 +54,8 @@ Generic CDP sessions, humanize controls, and native agent commands remain availa
 
 The Python and Node.js SDK sources default to Chromium family `158.0.8127.37`
 and accept `>=151.0.7922.108,<159`. Existing 151 release pins and verified caches
-remain supported; Chromium 159 requires a compatibility update. These source
-changes take effect in the next SDK package releases.
+remain supported; Chromium 159 requires a compatibility update. SDK `0.2.0`
+supports engine release `158.0.8127.37-3` and retains legacy engine layouts.
 
 The SDK resolves an engine binary and reports it through `binary_info()`:
 

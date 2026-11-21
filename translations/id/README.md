@@ -182,9 +182,9 @@ Setiap komponen dalam ekosistem mengikuti kontrak peluncuran bersama dan diberi 
 
 | Komponen | Status / versi | Lokasi |
 |---|---|---|
-| **Kontrak SDK** | Draf `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` di PyPI](https://pypi.org/project/ombrabrowser/) |
-| **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` di npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Kontrak SDK** | Draf `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` di PyPI](https://pypi.org/project/ombrabrowser/) |
+| **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` di npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Mesin Ombra Chromium** | Rentang SDK `>=151.0.7922.108,<159` | Diunduh otomatis oleh SDK dari [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Manajer profil offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Browser mandiri** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ Setelah peluncuran selesai, SDK keluar dari jalur data: semua perintah halaman m
 
 ### Batasan SDK dan invarian stealth
 
-[Kontrak SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) memberlakukan invarian ketat pada setiap SDK resmi:
+[Kontrak SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) memberlakukan invarian ketat pada setiap SDK resmi:
 
 - **Tanpa skrip stealth di halaman.** SDK tidak pernah memanggil `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` dan tidak pernah memodifikasi properti DOM.
 - **Tanpa `Runtime.enable`.** Pemeriksaan kesiapan hanya menggunakan endpoint HTTP CDP lokal atau `Browser.getVersion`; SDK tidak pernah mengaktifkan `Runtime`, `Debugger`, atau `Log`.
@@ -926,7 +926,7 @@ Laporkan masalah keamanan secara privat sesuai dengan [SECURITY.md](../../SECURI
 ├── desktop/                     # Ombra Desktop (Tauri: katalog Rust + UI Vue)
 ├── docs/
 │   ├── architecture.md          # arsitektur, batas kepercayaan, siklus hidup
-│   ├── sdk-contract.md          # kontrak peluncuran v0.1, opsi, error, invarian
+│   ├── sdk-contract.md          # kontrak peluncuran v0.2, opsi, error, invarian
 │   ├── stealth-checkup.md       # metode pemeriksaan stealth (Bahasa Inggris)
 │   ├── stealth-checkup.ru.md    # metode pemeriksaan stealth (Bahasa Rusia)
 │   ├── versioning.md            # pembuatan versi SDK, mesin, dan klien

@@ -182,9 +182,9 @@ Ekosistemdeki her bileşen ortak başlatma sözleşmesini izler ve bağımsız o
 
 | Bileşen | Durum / sürüm | Konum |
 |---|---|---|
-| **SDK sözleşmesi** | Taslak `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alfa `0.1.3` | [PyPI üzerinde `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alfa `0.1.0` | [npm üzerinde `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **SDK sözleşmesi** | Taslak `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alfa `0.2.0` | [PyPI üzerinde `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alfa `0.2.0` | [npm üzerinde `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium motoru** | SDK aralığı `>=151.0.7922.108,<159` | SDK tarafından [GitHub Releases](https://github.com/ombralabs/ombra/releases) üzerinden otomatik indirilir (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Çevrimdışı profil yöneticisi | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Bağımsız tarayıcı** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ Başlatma tamamlandıktan sonra SDK veri yolundan çekilir: tüm sayfa komutlar�
 
 ### SDK sınırları ve gizlilik değişmezleri
 
-[v0.1 SDK sözleşmesi (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) her resmi SDK için katı değişmezler zorunlu kılar:
+[v0.2 SDK sözleşmesi (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) her resmi SDK için katı değişmezler zorunlu kılar:
 
 - **Sayfalarda gizlilik betiği yok.** SDK asla `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` çağırmaz ve DOM özelliklerine yama uygulamaz.
 - **`Runtime.enable` yok.** Hazırlık denetimleri yalnızca yerel CDP HTTP uç noktasını veya `Browser.getVersion` çağrısını kullanır; SDK asla `Runtime`, `Debugger` veya `Log` alanlarını etkinleştirmez.
@@ -926,7 +926,7 @@ Güvenlik sorunlarını [SECURITY.md](../../SECURITY.md) dosyasına uygun olarak
 ├── desktop/                     # Ombra Desktop (Tauri: Rust kataloğu + Vue arayüzü)
 ├── docs/
 │   ├── architecture.md          # mimari, güven sınırları, yaşam döngüsü
-│   ├── sdk-contract.md          # v0.1 başlatma sözleşmesi, seçenekler, hatalar, değişmezler
+│   ├── sdk-contract.md          # v0.2 başlatma sözleşmesi, seçenekler, hatalar, değişmezler
 │   ├── stealth-checkup.md       # gizlilik kontrolü yöntemi (İngilizce)
 │   ├── stealth-checkup.ru.md    # gizlilik kontrolü yöntemi (Rusça)
 │   ├── versioning.md            # SDK, motor ve istemci sürümleme kuralları

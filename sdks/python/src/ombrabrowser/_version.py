@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
 
-CONTRACT_VERSION = "0.1.0"
-SUPPORTED_CONTRACT_RANGE = ">=0.1,<0.2"
+CONTRACT_VERSION = "0.2.0"
+SUPPORTED_CONTRACT_RANGE = ">=0.2,<0.3"
 
 DEFAULT_ENGINE_VERSION = "158.0.8127.37"
 SUPPORTED_ENGINE_RANGE = ">=151.0.7922.108,<159"

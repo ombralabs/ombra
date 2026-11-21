@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | 组件 | 状态 / 版本 | 位置 |
 |---|---|---|
-| **SDK 契约** | 草案 `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alpha `0.1.3` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **SDK 契约** | 草案 `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alpha `0.2.0` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium 引擎** | SDK 兼容范围 `>=151.0.7922.108,<159` | 由 SDK 从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载（macOS ARM64 / Linux x64 / Windows x64） |
 | **Ombra Desktop** | 离线配置文件管理器 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **独立浏览器版本** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ flowchart LR
 
 ### SDK 边界与隐匿性不变量
 
-[v0.1 SDK 契约（`docs/sdk-contract.md`）](../../docs/sdk-contract.md) 对所有官方 SDK 强制施加以下严格不变量：
+[v0.2 SDK 契约（`docs/sdk-contract.md`）](../../docs/sdk-contract.md) 对所有官方 SDK 强制施加以下严格不变量：
 
 - **不向页面注入隐匿脚本。** SDK 永不调用 `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument`，也不修改 DOM 属性。
 - **不调用 `Runtime.enable`。** 就绪检查仅使用本地 CDP HTTP 端点或 `Browser.getVersion`；SDK 永不启用 `Runtime`、`Debugger` 或 `Log` 域。
@@ -926,7 +926,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop（Tauri：Rust 目录层 + Vue 界面）
 ├── docs/
 │   ├── architecture.md          # 架构设计、信任边界与生命周期
-│   ├── sdk-contract.md          # v0.1 启动契约、选项、错误与不变量
+│   ├── sdk-contract.md          # v0.2 启动契约、选项、错误与不变量
 │   ├── stealth-checkup.md       # 隐匿性检查方法（英文）
 │   ├── stealth-checkup.ru.md    # 隐匿性检查方法（俄文）
 │   ├── versioning.md            # SDK、引擎与客户端版本控制策略

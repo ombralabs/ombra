@@ -182,9 +182,9 @@ Chaque composant de l'écosystème suit le contrat de lancement commun et dispos
 
 | Composant | Statut / version | Emplacement |
 |---|---|---|
-| **Contrat SDK** | Brouillon `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` sur PyPI](https://pypi.org/project/ombrabrowser/) |
-| **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` sur npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Contrat SDK** | Brouillon `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` sur PyPI](https://pypi.org/project/ombrabrowser/) |
+| **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` sur npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Moteur Ombra Chromium** | Plage SDK `>=151.0.7922.108,<159` | Téléchargé automatiquement par le SDK depuis [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Gestionnaire de profils hors ligne | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Navigateur autonome** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ Une fois lancé, le SDK quitte le chemin de données : toutes les commandes de p
 
 ### Limites du SDK et invariants de furtivité
 
-Le [contrat SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) impose des invariants stricts à chaque SDK officiel :
+Le [contrat SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) impose des invariants stricts à chaque SDK officiel :
 
 - **Aucun script furtif dans les pages.** Le SDK n'appelle jamais `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` et ne modifie jamais les propriétés DOM.
 - **Aucun `Runtime.enable`.** Les contrôles de disponibilité utilisent uniquement le point de terminaison HTTP CDP local ou `Browser.getVersion` ; le SDK n'active jamais `Runtime`, `Debugger` ni `Log`.
@@ -926,7 +926,7 @@ Signalez les vulnérabilités en privé conformément à [SECURITY.md](../../SEC
 ├── desktop/                     # Ombra Desktop (Tauri : catalogue Rust + interface Vue)
 ├── docs/
 │   ├── architecture.md          # architecture, frontières de confiance, cycle de vie
-│   ├── sdk-contract.md          # contrat de lancement v0.1, options, erreurs, invariants
+│   ├── sdk-contract.md          # contrat de lancement v0.2, options, erreurs, invariants
 │   ├── stealth-checkup.md       # méthode d'audit (anglais)
 │   ├── stealth-checkup.ru.md    # méthode d'audit (russe)
 │   ├── versioning.md            # gestion des versions du SDK, du moteur et des clients

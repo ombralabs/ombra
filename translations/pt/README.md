@@ -182,9 +182,9 @@ Cada componente do ecossistema segue o contrato de inicialização compartilhado
 
 | Componente | Status / versão | Localização |
 |---|---|---|
-| **Contrato do SDK** | Rascunho `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` no PyPI](https://pypi.org/project/ombrabrowser/) |
-| **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` no npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Contrato do SDK** | Rascunho `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` no PyPI](https://pypi.org/project/ombrabrowser/) |
+| **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` no npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Motor Ombra Chromium** | Faixa do SDK `>=151.0.7922.108,<159` | Baixado automaticamente pelo SDK do [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Gerenciador de perfis offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Navegador standalone** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ Após a inicialização, o SDK sai do caminho de dados: todos os comandos de pá
 
 ### Limites do SDK e invariantes de stealth
 
-O [contrato do SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) impõe invariantes rigorosos a todos os SDKs oficiais:
+O [contrato do SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) impõe invariantes rigorosos a todos os SDKs oficiais:
 
 - **Sem scripts de stealth nas páginas.** O SDK nunca chama `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` e nunca altera propriedades do DOM.
 - **Sem `Runtime.enable`.** As verificações de prontidão usam apenas o endpoint HTTP local do CDP ou `Browser.getVersion`; o SDK nunca habilita `Runtime`, `Debugger` ou `Log`.
@@ -925,7 +925,7 @@ Relate problemas de segurança de forma privada seguindo [SECURITY.md](../../SEC
 ├── desktop/                     # Ombra Desktop (Tauri: catálogo Rust + UI Vue)
 ├── docs/
 │   ├── architecture.md          # arquitetura, limites de confiança, ciclo de vida
-│   ├── sdk-contract.md          # contrato de inicialização v0.1, opções, erros, invariantes
+│   ├── sdk-contract.md          # contrato de inicialização v0.2, opções, erros, invariantes
 │   ├── stealth-checkup.md       # método de checkup (English)
 │   ├── stealth-checkup.ru.md    # método de checkup (Русский)
 │   ├── versioning.md            # versionamento de SDK, motor e clientes

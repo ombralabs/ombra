@@ -1,6 +1,6 @@
 # Ombra SDK for Python (`ombrabrowser`)
 
-> **Alpha (`0.1.3`).** Implements [SDK contract v0.1](https://github.com/ombralabs/ombra/blob/main/docs/sdk-contract.md) and attaches Playwright over CDP (`connect_over_cdp(..., no_defaults=True, is_local=True)`) to Ombra stealth Chromium.
+> **Alpha (`0.2.0`).** Implements [SDK contract v0.2](https://github.com/ombralabs/ombra/blob/main/docs/sdk-contract.md) and attaches Playwright over CDP (`connect_over_cdp(..., no_defaults=True, is_local=True)`) to Ombra stealth Chromium.
 
 [All SDKs](https://github.com/ombralabs/ombra/blob/main/sdks/README.md) · [Contract](https://github.com/ombralabs/ombra/blob/main/docs/sdk-contract.md) · [Stealth invariants](https://github.com/ombralabs/ombra/blob/main/docs/sdk-contract.md#12-stealth-invariants)
 
@@ -8,13 +8,17 @@
 
 | Item | Value |
 |---|---|
-| Package | `ombrabrowser` (`0.1.3`) |
+| Package | `ombrabrowser` (`0.2.0`) |
 | Registry | PyPI |
 | Python | 3.10+ |
 | Engine range | `>=151.0.7922.108,<159` (default Chromium family `158.0.8127.37`) |
 | Returns | `playwright.sync_api.Browser` / `playwright.async_api.Browser` |
 | Playwright | `>=1.60,<2.0` (installed automatically) |
 | Status | Alpha |
+
+## Upgrading from 0.1
+
+Version 0.2 removes the `captcha` launch option and dedicated CAPTCHA modules. Remove the option and `ombrabrowser.captcha` imports before upgrading. Generic CDP sessions, humanize controls, and native agent commands remain available.
 
 ## Installation
 

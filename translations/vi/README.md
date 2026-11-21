@@ -182,9 +182,9 @@ Mỗi thành phần trong hệ sinh thái đều tuân theo hợp đồng khởi
 
 | Thành phần | Trạng thái / phiên bản | Vị trí |
 |---|---|---|
-| **Hợp đồng SDK** | Bản nháp `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` trên PyPI](https://pypi.org/project/ombrabrowser/) |
-| **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` trên npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **Hợp đồng SDK** | Bản nháp `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` trên PyPI](https://pypi.org/project/ombrabrowser/) |
+| **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` trên npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Engine Ombra Chromium** | Phạm vi SDK `>=151.0.7922.108,<159` | SDK tự động tải xuống từ [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Trình quản lý hồ sơ ngoại tuyến | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Trình duyệt độc lập** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ Sau khi khởi chạy xong, SDK hoàn toàn rút khỏi luồng dữ liệu: m�
 
 ### Ranh giới của SDK và các bất biến stealth
 
-[Hợp đồng SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) áp đặt các bất biến nghiêm ngặt lên mọi SDK chính thức:
+[Hợp đồng SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) áp đặt các bất biến nghiêm ngặt lên mọi SDK chính thức:
 
 - **Không chèn kịch bản stealth vào trang.** SDK không bao giờ gọi `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` và không bao giờ chỉnh sửa thuộc tính DOM.
 - **Không gọi `Runtime.enable`.** Bước kiểm tra trạng thái sẵn sàng chỉ sử dụng điểm cuối HTTP CDP cục bộ hoặc `Browser.getVersion`; SDK không bao giờ kích hoạt `Runtime`, `Debugger` hay `Log`.
@@ -926,7 +926,7 @@ Vui lòng báo cáo riêng tư các vấn đề bảo mật theo hướng dẫn 
 ├── desktop/                     # Ombra Desktop (Tauri: danh mục Rust + giao diện Vue)
 ├── docs/
 │   ├── architecture.md          # kiến trúc, ranh giới tin cậy, vòng đời
-│   ├── sdk-contract.md          # hợp đồng khởi chạy v0.1, tùy chọn, lỗi, bất biến
+│   ├── sdk-contract.md          # hợp đồng khởi chạy v0.2, tùy chọn, lỗi, bất biến
 │   ├── stealth-checkup.md       # phương pháp kiểm tra stealth (tiếng Anh)
 │   ├── stealth-checkup.ru.md    # phương pháp kiểm tra stealth (tiếng Nga)
 │   ├── versioning.md            # đánh phiên bản cho SDK, engine và client

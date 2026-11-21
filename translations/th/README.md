@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | คอมโพเนนต์ | สถานะ / เวอร์ชัน | ตำแหน่ง |
 |---|---|---|
-| **สัญญา SDK** | ฉบับร่าง `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alpha `0.1.3` | [`ombrabrowser` บน PyPI](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alpha `0.1.0` | [`@ombralabs/sdk` บน npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **สัญญา SDK** | ฉบับร่าง `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alpha `0.2.0` | [`ombrabrowser` บน PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alpha `0.2.0` | [`@ombralabs/sdk` บน npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **เอนจิน Ombra Chromium** | ช่วงที่ SDK รองรับ `>=151.0.7922.108,<159` | ดาวน์โหลดอัตโนมัติโดย SDK จาก [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | ตัวจัดการโปรไฟล์ออฟไลน์ | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **เบราว์เซอร์แบบสแตนด์อโลน** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ flowchart LR
 
 ### ขอบเขตของ SDK และข้อกำหนดด้านความแนบเนียน
 
-[สัญญา SDK v0.1 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) บังคับใช้ข้อกำหนดที่เข้มงวดกับ SDK อย่างเป็นทางการทุกตัว:
+[สัญญา SDK v0.2 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) บังคับใช้ข้อกำหนดที่เข้มงวดกับ SDK อย่างเป็นทางการทุกตัว:
 
 - **ไม่ฉีดสคริปต์พรางตัวลงบนหน้าเว็บ** SDK ไม่เคยเรียก `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` และไม่เคยแพตช์พร็อพเพอร์ตี DOM
 - **ไม่เรียก `Runtime.enable`** การตรวจสอบความพร้อมใช้เฉพาะเอนด์พอยต์ HTTP ของ CDP ในเครื่องหรือ `Browser.getVersion` เท่านั้น SDK ไม่เคยเปิดใช้งาน `Runtime`, `Debugger` หรือ `Log`
@@ -926,7 +926,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop (Tauri: แคตตาล็อก Rust + UI ด้วย Vue)
 ├── docs/
 │   ├── architecture.md          # สถาปัตยกรรม ขอบเขตความเชื่อถือ และวงจรการทำงาน
-│   ├── sdk-contract.md          # สัญญาการเปิดใช้งาน v0.1 ตัวเลือก ข้อผิดพลาด และข้อกำหนด
+│   ├── sdk-contract.md          # สัญญาการเปิดใช้งาน v0.2 ตัวเลือก ข้อผิดพลาด และข้อกำหนด
 │   ├── stealth-checkup.md       # วิธีการตรวจเช็กความแนบเนียน (ภาษาอังกฤษ)
 │   ├── stealth-checkup.ru.md    # วิธีการตรวจเช็กความแนบเนียน (ภาษารัสเซีย)
 │   ├── versioning.md            # การกำหนดเวอร์ชันของ SDK เอนจิน และไคลเอนต์

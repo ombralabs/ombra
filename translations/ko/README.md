@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | 구성 요소 | 상태 / 버전 | 위치 |
 |---|---|---|
-| **SDK 계약** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | Alpha `0.1.3` | [PyPI의 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm의 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **SDK 계약** | Draft `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | Alpha `0.2.0` | [PyPI의 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm의 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium 엔진** | SDK 지원 범위 `>=151.0.7922.108,<159` | SDK가 [GitHub Releases](https://github.com/ombralabs/ombra/releases)에서 자동 다운로드 (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | 오프라인 프로필 관리자 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **단독 실행 브라우저** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ flowchart LR
 
 ### SDK 경계 및 스텔스 불변 규칙
 
-[v0.1 SDK 계약 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md)은 모든 공식 SDK에 다음의 엄격한 불변 규칙을 강제합니다:
+[v0.2 SDK 계약 (`docs/sdk-contract.md`)](../../docs/sdk-contract.md)은 모든 공식 SDK에 다음의 엄격한 불변 규칙을 강제합니다:
 
 - **페이지에 스텔스 스크립트 주입 금지.** SDK는 `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument`를 호출하지 않으며 DOM 속성을 패치하지 않습니다.
 - **`Runtime.enable` 호출 금지.** 준비 상태 확인에는 로컬 CDP HTTP 엔드포인트 또는 `Browser.getVersion`만 사용하며, SDK는 `Runtime`, `Debugger`, `Log`를 활성화하지 않습니다.
@@ -926,7 +926,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop (Tauri: Rust 카탈로그 + Vue UI)
 ├── docs/
 │   ├── architecture.md          # 아키텍처, 신뢰 경계, 수명 주기
-│   ├── sdk-contract.md          # v0.1 실행 계약, 옵션, 오류, 불변 규칙
+│   ├── sdk-contract.md          # v0.2 실행 계약, 옵션, 오류, 불변 규칙
 │   ├── stealth-checkup.md       # 스텔스 점검 방법론 (영문)
 │   ├── stealth-checkup.ru.md    # 스텔스 점검 방법론 (러시아어)
 │   ├── versioning.md            # SDK, 엔진 및 클라이언트 버전 관리

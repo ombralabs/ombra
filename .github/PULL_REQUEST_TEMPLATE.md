@@ -19,7 +19,7 @@
 
 ## Contract and compatibility
 
-- Contract version targeted: `0.1.0`
+- Contract version targeted: `0.2.0`
 - [ ] The launch contract is unchanged
 - [ ] The contract is updated in this PR, and the engine supports the flag or capability
 - [ ] The change is backward compatible

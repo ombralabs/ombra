@@ -1,6 +1,6 @@
 {
   "name": "@ombralabs/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Node.js / TypeScript SDK for Ombra stealth Chromium \u2014 drop-in Playwright and Puppeteer launcher over CDP.",
   "license": "Apache-2.0",
   "type": "module",
@@ -76,7 +76,7 @@
     "access": "public"
   },
   "ombra": {
-    "contract": ">=0.1,<0.2",
+    "contract": ">=0.2,<0.3",
     "engine": ">=151.0.7922.108,<159"
   },
   "peerDependencies": {

@@ -182,9 +182,9 @@ Elk onderdeel in het ecosysteem volgt het gedeelde startcontract en wordt onafha
 
 | Onderdeel | Status / versie | Locatie |
 |---|---|---|
-| **SDK-contract** | Concept `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python-SDK** | Alfa `0.1.3` | [`ombrabrowser` op PyPI](https://pypi.org/project/ombrabrowser/) |
-| **Node.js- / TypeScript-SDK** | Alfa `0.1.0` | [`@ombralabs/sdk` op npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **SDK-contract** | Concept `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python-SDK** | Alfa `0.2.0` | [`ombrabrowser` op PyPI](https://pypi.org/project/ombrabrowser/) |
+| **Node.js- / TypeScript-SDK** | Alfa `0.2.0` | [`@ombralabs/sdk` op npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium-engine** | SDK-bereik `>=151.0.7922.108,<159` | Automatisch gedownload door de SDK van [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline profielbeheerder | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Losstaande browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ Na het starten verlaat de SDK het gegevenspad: alle pagina-opdrachten gaan recht
 
 ### Grenzen van de SDK en stealth-invarianten
 
-Het [v0.1 SDK-contract (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) legt strikte invarianten op aan elke officiële SDK:
+Het [v0.2 SDK-contract (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) legt strikte invarianten op aan elke officiële SDK:
 
 - **Geen stealth-scripts op pagina's.** De SDK roept nooit `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` aan en patcht geen DOM-eigenschappen.
 - **Geen `Runtime.enable`.** Gereedheidscontroles gebruiken alleen het lokale CDP HTTP-endpoint of `Browser.getVersion`; de SDK schakelt nooit `Runtime`, `Debugger` of `Log` in.
@@ -926,7 +926,7 @@ Meld beveiligingsproblemen vertrouwelijk volgens [SECURITY.md](../../SECURITY.md
 ├── desktop/                     # Ombra Desktop (Tauri: Rust-catalogus + Vue-UI)
 ├── docs/
 │   ├── architecture.md          # architectuur, vertrouwensgrenzen, levenscyclus
-│   ├── sdk-contract.md          # v0.1 startcontract, opties, fouten, invarianten
+│   ├── sdk-contract.md          # v0.2 startcontract, opties, fouten, invarianten
 │   ├── stealth-checkup.md       # checkupmethode (Engels)
 │   ├── stealth-checkup.ru.md    # checkupmethode (Russisch)
 │   ├── versioning.md            # versionering van SDK, engine en client

@@ -182,9 +182,9 @@ npm install mmdb-lib
 
 | घटक | स्थिति / संस्करण | स्थान |
 |---|---|---|
-| **SDK अनुबंध** | ड्राफ़्ट `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
-| **Python SDK** | अल्फ़ा `0.1.3` | [PyPI पर `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
-| **Node.js / TypeScript SDK** | अल्फ़ा `0.1.0` | [npm पर `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **SDK अनुबंध** | ड्राफ़्ट `0.2.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
+| **Python SDK** | अल्फ़ा `0.2.0` | [PyPI पर `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
+| **Node.js / TypeScript SDK** | अल्फ़ा `0.2.0` | [npm पर `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium इंजन** | SDK सीमा `>=151.0.7922.108,<159` | SDK द्वारा [GitHub Releases](https://github.com/ombralabs/ombra/releases) से स्वतः डाउनलोड किया जाता है (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | ऑफ़लाइन प्रोफ़ाइल मैनेजर | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **स्टैंडअलोन ब्राउज़र** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
@@ -293,7 +293,7 @@ flowchart LR
 
 ### SDK की सीमाएँ और स्टेल्थ इनवेरिएंट्स
 
-[v0.1 SDK अनुबंध (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) प्रत्येक आधिकारिक SDK पर सख्त इनवेरिएंट्स लागू करता है:
+[v0.2 SDK अनुबंध (`docs/sdk-contract.md`)](../../docs/sdk-contract.md) प्रत्येक आधिकारिक SDK पर सख्त इनवेरिएंट्स लागू करता है:
 
 - **पेजों पर कोई स्टेल्थ स्क्रिप्ट नहीं।** SDK कभी भी `Page.addScriptToEvaluateOnNewDocument` / `evaluateOnNewDocument` कॉल नहीं करता और कभी DOM गुणों को पैच नहीं करता।
 - **कोई `Runtime.enable` नहीं।** तत्परता जाँच (रेडीनेस चेक) केवल लोकल CDP HTTP एंडपॉइंट या `Browser.getVersion` का उपयोग करती है; SDK कभी भी `Runtime`, `Debugger` या `Log` सक्षम नहीं करता।
@@ -925,7 +925,7 @@ for _ in range(15):
 ├── desktop/                     # Ombra Desktop (Tauri: Rust कैटलॉग + Vue UI)
 ├── docs/
 │   ├── architecture.md          # आर्किटेक्चर, ट्रस्ट बाउंड्रीज़, जीवनचक्र
-│   ├── sdk-contract.md          # v0.1 लॉन्च अनुबंध, विकल्प, त्रुटियाँ, इनवेरिएंट्स
+│   ├── sdk-contract.md          # v0.2 लॉन्च अनुबंध, विकल्प, त्रुटियाँ, इनवेरिएंट्स
 │   ├── stealth-checkup.md       # चेकअप पद्धति (अंग्रेज़ी)
 │   ├── stealth-checkup.ru.md    # चेकअप पद्धति (रूसी)
 │   ├── versioning.md            # SDK, इंजन और क्लाइंट संस्करण नियम
