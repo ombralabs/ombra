@@ -20,10 +20,24 @@ The freshly published Node.js and Python SDK0.2.0 resolve the same native Ombra 
 
 An independent backend review found no material code defect. The signature authenticates the release/archive metadata. Installed binary receipts detect local corruption and do not protect against a process authorized to rewrite both the executable and its receipt.
 
+## Published Desktop packages
+
+[Ombra Desktop 1.2.3](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.3) was published from source `c4db43e476ceb4b88129fedd5e85b5cd26d74b01`, the peeled target of annotated tag `desktop-v1.2.3`. All three platform builds use that frozen source and matching frontend assets. Subsequent documentation changes do not change the tag or installer bytes.
+
+The release contains exactly four installers (macOS ARM64 DMG, Linux x64 DEB/RPM and Windows x64 NSIS), `release.json` and `SHA256SUMS`. GitHub reports the expected size and SHA256 for all six assets; downloaded metadata matches the local files byte for byte. The browser remains Latest at `v158.0.8127.37-3`, with its ten release assets unchanged.
+
+- macOS: Developer ID signature, Apple acceptance of the app (`c50bd10d-779c-4714-a97c-23b98d0435a4`) and DMG (`d34ced7b-d424-4cbb-be6a-e88b61f06e88`), stapling and Gatekeeper checks pass. The app mounted from the final DMG matches the accepted app's five regular files. An isolated native catalog launch exits normally with code 0 and leaves those files unchanged.
+- Linux: DEB/RPM metadata reports version 1.2.3 and the expected architecture. The installed DEB opens the native catalog and browser section under Xvfb; RPM payload verification matches the Linux binary. A failed explicit update check leaves engine files absent.
+- Windows: real NSIS installation of 1.2.2, upgrade to 1.2.3 and removal of 1.2.3 return code 0. The six catalog files remain byte-identical across upgrade and uninstall. The actual 1.2.3 GUI displays the old profile and browser section, supports creating/editing a profile, retains both profiles after reopening, and exits normally with code 0 twice. Uninstall removes the owned executable, registration and two shortcuts while preserving the catalog. The installer includes Microsoft's offline WebView2 runtime, keeps CRC checks enabled and has no Authenticode signature.
+
+Windows explicit update checking returns the expected network error under the inherited restricted VM network; this does not establish public GitHub reachability. The original 1.2.2 GUI observer returned a null exit code and its failed observation is retained; later 1.2.3 exits were captured with an actual process handle. The VM shut down normally, no owned application process survived, and both read-only parent disks retained their original metadata. Existing engine qualification was reused without a new engine or fingerprint benchmark claim.
+
 ## Limits and resource handling
 
 Live anonymous release download cannot be accepted while the distribution repository is private. The downloader keeps public GitHub endpoints and never adds a token or CDN fallback. The owner opens the repository separately.
 
 The local Mac Cargo dependency rebuild stopped at the20GiB free-space floor; only new files from that stopped run were removed. Native Cargo checks moved to the authorized pipe_pc builder rather than lowering the floor or cleaning unrelated caches. The original Mac swap baseline13685.19MiB and approved ceiling20853.19MiB were retained.
 
-No macOS or Windows Desktop installer build, Desktop binary publication, PR merge, deployment or repository visibility change is claimed by this change. Browser startup/privacy suites were not rerun because this feature does not launch or modify the browser.
+The later macOS release build completed with the same swap ceiling and disk floor. Windows native acceptance also retained the 20GiB disk floor and used a separate disposable child disk.
+
+macOS Intel packages and a live anonymous end-to-end download remain outside this qualification. Browser startup/privacy suites were not rerun because this feature does not launch or modify the browser. Release publication did not change repository visibility or deploy a website.
