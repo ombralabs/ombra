@@ -5,6 +5,10 @@
     "allow-list-profiles",
     "allow-create-profile",
     "allow-edit-profile",
-    "allow-set-profile-deleted"
+    "allow-set-profile-deleted",
+    "allow-get-browser-status",
+    "allow-check-browser-update",
+    "allow-install-browser",
+    "allow-cancel-browser-install"
   ]
 }

@@ -1,6 +1,6 @@
 # Desktop profiles
 
-Ombra Desktop manages profiles offline. It opens the existing local catalog, where you can create profiles, search and edit their names and notes, and move profiles to Trash or restore them. The underlying Rust catalog also supports groups, tags, labels and bookmarks. [Desktop README](../../desktop/README.md).
+Ombra Desktop manages profiles offline. It opens the existing local catalog, where you can create profiles, search and edit their names and notes, and move profiles to Trash or restore them. The browser section downloads and installs verified stable browser releases from public GitHub Releases when requested. The underlying Rust catalog also supports groups, tags, labels and bookmarks. [Desktop README](../../desktop/README.md).
 
 | Guide | What it covers |
 | --- | --- |

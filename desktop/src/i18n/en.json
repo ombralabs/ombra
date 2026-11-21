@@ -62,5 +62,37 @@
       "willBeRemoved": "The 2FA key will be removed on save."
     },
     "keep": "Keep"
+  },
+  "browser": {
+    "title": "Ombra Browser",
+    "loading": "Reading installed browser…",
+    "missing": "Browser is not installed",
+    "installed": "Installed: {version}",
+    "available": "Available: {version} · {size} MiB",
+    "check": "Check for updates",
+    "download": "Download browser",
+    "update": "Update browser",
+    "cancel": "Cancel download",
+    "progress": "Browser download progress",
+    "location": "Installation location",
+    "current": "Browser is up to date",
+    "ready": "Browser is ready",
+    "cancelled": "Download cancelled",
+    "phases": {
+      "checking": "Checking for a browser release…",
+      "downloading": "Downloading browser…",
+      "verifying": "Verifying download…",
+      "extracting": "Installing browser…",
+      "complete": "Browser is ready"
+    },
+    "errors": {
+      "busy": "Another browser installation is running. Wait for it to finish and try again.",
+      "unavailable": "Could not reach the browser release on GitHub. Check your connection and public access to ombralabs/ombra. Try again.",
+      "invalid": "The browser download could not be verified. The installed browser has been kept. Try downloading again.",
+      "unsupported": "No browser release is available for this operating system and processor.",
+      "incompatible": "This browser requires a newer Ombra Desktop. Update Desktop and try again.",
+      "cancelled": "Download cancelled. You can try again.",
+      "storage": "Could not read or install the browser. Check free disk space and access to the application data folder, then try again."
+    }
   }
 }
