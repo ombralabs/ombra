@@ -34,7 +34,12 @@ from .errors import (
     PlaywrightNotInstalledError,
     redact_secrets,
 )
-from .options import build_engine_args, resolve_auto_geo_hints, validate_launch_options
+from .options import (
+    MobileViewport,
+    build_engine_args,
+    resolve_auto_geo_hints,
+    validate_launch_options,
+)
 from .profile import ProfileLease, acquire_profile_lease
 from .proxy import LoopbackProxyRelay, prepare_proxy
 
@@ -566,6 +571,7 @@ def _prepare_runtime(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     profile: str | None = None,
     user_data_dir: str | os.PathLike[str] | None = None,
     args: list[str] | tuple[str, ...] | None = None,
@@ -582,6 +588,7 @@ def _prepare_runtime(
         headless=headless,
         proxy=proxy,
         fingerprint=fingerprint,
+        mobile_viewport=mobile_viewport,
         profile=profile,
         user_data_dir=user_data_dir,
         args=args,
@@ -609,6 +616,7 @@ def _prepare_runtime(
         user_data_dir=opts.user_data_dir,
         explicit_seed=fp.get("seed"),
         os_hint=fp.get("os"),
+        require_host_os=opts.mobile_viewport is not None,
         timezone=fp.get("timezone"),
         locale=fp.get("locale"),
         humanize_preset=explicit_preset,
@@ -692,6 +700,7 @@ def build_launch_options(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     profile: str | None = None,
     user_data_dir: str | os.PathLike[str] | None = None,
     args: list[str] | tuple[str, ...] | None = None,
@@ -709,6 +718,7 @@ def build_launch_options(
         headless=headless,
         proxy=proxy,
         fingerprint=fingerprint,
+        mobile_viewport=mobile_viewport,
         profile=profile,
         user_data_dir=user_data_dir,
         args=args,
@@ -825,6 +835,7 @@ def launch(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     profile: str | None = None,
     user_data_dir: str | os.PathLike[str] | None = None,
     args: list[str] | tuple[str, ...] | None = None,
@@ -843,6 +854,7 @@ def launch(
         headless=headless,
         proxy=proxy,
         fingerprint=fingerprint,
+        mobile_viewport=mobile_viewport,
         profile=profile,
         user_data_dir=user_data_dir,
         args=args,
@@ -919,6 +931,7 @@ async def launch_async(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     profile: str | None = None,
     user_data_dir: str | os.PathLike[str] | None = None,
     args: list[str] | tuple[str, ...] | None = None,
@@ -940,6 +953,7 @@ async def launch_async(
             headless=headless,
             proxy=proxy,
             fingerprint=fingerprint,
+            mobile_viewport=mobile_viewport,
             profile=profile,
             user_data_dir=user_data_dir,
             args=args,
@@ -1081,7 +1095,7 @@ def _prepare_context_options(
     if viewport is _VIEWPORT_UNSET or viewport is None:
         if "no_viewport" not in pw_ctx_kwargs:
             pw_ctx_kwargs["no_viewport"] = True
-    elif "no_viewport" not in pw_ctx_kwargs:
+    elif not pw_ctx_kwargs.get("no_viewport"):
         pw_ctx_kwargs["viewport"] = viewport
     return (fp or None), pw_ctx_kwargs
 
@@ -1091,6 +1105,7 @@ def launch_context(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     profile: str | None = None,
     user_data_dir: str | os.PathLike[str] | None = None,
     args: list[str] | tuple[str, ...] | None = None,
@@ -1120,6 +1135,7 @@ def launch_context(
         headless=headless,
         proxy=proxy,
         fingerprint=fp,
+        mobile_viewport=mobile_viewport,
         profile=profile,
         user_data_dir=user_data_dir,
         args=args,
@@ -1160,6 +1176,7 @@ async def launch_context_async(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     profile: str | None = None,
     user_data_dir: str | os.PathLike[str] | None = None,
     args: list[str] | tuple[str, ...] | None = None,
@@ -1185,6 +1202,7 @@ async def launch_context_async(
         headless=headless,
         proxy=proxy,
         fingerprint=fp,
+        mobile_viewport=mobile_viewport,
         profile=profile,
         user_data_dir=user_data_dir,
         args=args,
@@ -1227,6 +1245,7 @@ def launch_persistent_context(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     args: list[str] | tuple[str, ...] | None = None,
     binary_path: str | os.PathLike[str] | None = None,
     version: str | None = None,
@@ -1262,6 +1281,7 @@ def launch_persistent_context(
         headless=headless,
         proxy=proxy,
         fingerprint=fp,
+        mobile_viewport=mobile_viewport,
         profile=profile,
         user_data_dir=user_data_dir,
         args=args,
@@ -1294,6 +1314,7 @@ async def launch_persistent_context_async(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     args: list[str] | tuple[str, ...] | None = None,
     binary_path: str | os.PathLike[str] | None = None,
     version: str | None = None,
@@ -1328,6 +1349,7 @@ async def launch_persistent_context_async(
         headless=headless,
         proxy=proxy,
         fingerprint=fp,
+        mobile_viewport=mobile_viewport,
         profile=profile,
         user_data_dir=user_data_dir,
         args=args,

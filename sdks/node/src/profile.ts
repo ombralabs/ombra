@@ -8,7 +8,7 @@ import { createHash, randomBytes } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { expandTilde, getProfilesDir, logger } from "./config.js";
+import { expandTilde, getPlatformInfo, getProfilesDir, logger } from "./config.js";
 import { InvalidOptionError, ProfileBusyError } from "./errors.js";
 import { acquireFileLock, FileLockBusyError } from "./file-lock.js";
 import type { HumanizePreset, PersonaOS } from "./types.js";
@@ -71,6 +71,21 @@ export function readProfileMetadata(profileDir: string): ProfileMetadata | null 
     // Missing or unreadable metadata
   }
   return null;
+}
+
+export function checkMobileViewportOS(osHint?: PersonaOS, userDataDir?: string, profile?: string): void {
+  if (osHint === undefined) {
+    const profileDir = profile !== undefined ? resolveNamedProfileDir(profile) : userDataDir;
+    if (profileDir) osHint = readProfileMetadata(profileDir)?.os;
+  }
+  if (osHint) {
+    const hostOS = getPlatformInfo().sdkName.split("-")[0];
+    if (osHint !== hostOS) {
+      throw new InvalidOptionError(
+        `mobileViewport requires the host OS (${hostOS}). This profile uses fingerprint.os='${osHint}'.`,
+      );
+    }
+  }
 }
 
 export function writeProfileMetadata(profileDir: string, data: ProfileMetadata): void {
@@ -242,6 +257,7 @@ export interface AcquireProfileOptions {
   userDataDir?: string;
   explicitSeed?: number;
   osHint?: PersonaOS;
+  requireHostOS?: boolean;
   timezone?: string;
   locale?: string;
   humanizePreset?: HumanizePreset;
@@ -329,6 +345,7 @@ export function acquireProfileLease(opts: AcquireProfileOptions = {}): ProfileLe
       }
 
       effOs = opts.osHint ?? existing?.os;
+      if (opts.requireHostOS) checkMobileViewportOS(effOs);
       effTz = opts.timezone ?? existing?.timezone;
       effLocale = opts.locale ?? existing?.locale;
       effPreset = opts.humanizePreset ?? existing?.humanize_preset;

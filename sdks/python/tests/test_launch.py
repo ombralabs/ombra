@@ -290,6 +290,46 @@ def test_launch_context_and_persistent_context(tmp_path: Path):
         pctx.close()
 
 
+@pytest.mark.parametrize("async_api", [False, True], ids=["sync", "async"])
+def test_launch_context_forwards_viewport_with_no_viewport_false(async_api):
+    options = {"viewport": {"width": 412, "height": 820}, "no_viewport": False}
+    if async_api:
+        browser = AsyncMock()
+
+        async def launch_and_close():
+            context = await launch_context_async(**options)
+            await context.close()
+
+        with patch("ombrabrowser.launcher.launch_async", return_value=browser):
+            asyncio.run(launch_and_close())
+    else:
+        browser = MagicMock()
+        with patch("ombrabrowser.launcher.launch", return_value=browser):
+            launch_context(**options).close()
+
+    browser.new_context.assert_called_once_with(**options)
+
+
+@pytest.mark.parametrize("async_api", [False, True], ids=["sync", "async"])
+def test_launch_context_forwards_viewport_with_no_viewport_none(async_api):
+    options = {"viewport": {"width": 412, "height": 820}, "no_viewport": None}
+    if async_api:
+        browser = AsyncMock()
+
+        async def launch_and_close():
+            context = await launch_context_async(**options)
+            await context.close()
+
+        with patch("ombrabrowser.launcher.launch_async", return_value=browser):
+            asyncio.run(launch_and_close())
+    else:
+        browser = MagicMock()
+        with patch("ombrabrowser.launcher.launch", return_value=browser):
+            launch_context(**options).close()
+
+    browser.new_context.assert_called_once_with(**options)
+
+
 def test_async_launch_variants_and_cancellation_cleanup(tmp_path: Path):
     exe = _write_fake_engine_server(tmp_path / "engine_async", behavior="ready")
 

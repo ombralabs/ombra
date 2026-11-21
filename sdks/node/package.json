@@ -77,7 +77,7 @@
   },
   "ombra": {
     "contract": ">=0.1,<0.2",
-    "engine": ">=151.0.7922.108,<152"
+    "engine": ">=151.0.7922.108,<159"
   },
   "peerDependencies": {
     "mmdb-lib": ">=2.0.0",

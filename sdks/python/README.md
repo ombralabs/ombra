@@ -11,7 +11,7 @@
 | Package | `ombrabrowser` (`0.1.3`) |
 | Registry | PyPI |
 | Python | 3.10+ |
-| Engine range | `>=151.0.7922.108,<152` |
+| Engine range | `>=151.0.7922.108,<159` (default Chromium family `158.0.8127.37`) |
 | Returns | `playwright.sync_api.Browser` / `playwright.async_api.Browser` |
 | Playwright | `>=1.60,<2.0` (installed automatically) |
 | Status | Alpha |
@@ -67,7 +67,7 @@ Pin an exact engine release with `version` in any `launch*()` helper:
 ```python
 from ombrabrowser import launch, binary_info, ensure_binary
 
-engine_version = "151.0.7922.108-9"
+engine_version = "158.0.8127.37-3"
 ensure_binary(version=engine_version)  # Optional: download and verify before launching
 browser = launch(version=engine_version)
 try:
@@ -79,14 +79,14 @@ print(binary_info(version=engine_version))
 ```
 
 `version` overrides `OMBRA_VERSION` and disables automatic upgrades for that launch.
-Include the release suffix (`-9`) for an exact build; a Chromium-only pin accepts
+Include the release suffix (`-2`) for an exact build; a Chromium-only pin accepts
 local releases or a GitHub channel release with that Chromium version. A conflicting `binary_path` or
 `OMBRA_BINARY_PATH` raises `UnsupportedEngineError`. If the requested build is
 missing and `download=False`, launch raises `BinaryNotFoundError`.
 
 ```bash
-ombrabrowser install --version 151.0.7922.108-9
-OMBRA_VERSION=151.0.7922.108-9 python your_script.py
+ombrabrowser install --version 158.0.8127.37-3
+OMBRA_VERSION=158.0.8127.37-3 python your_script.py
 ```
 
 With a persistent named profile, authenticated proxy relay, fingerprint, and native engine humanization:
@@ -121,6 +121,32 @@ persistent_ctx = launch_persistent_context("my-profile")
 print(last_launch_info(persistent_ctx))
 persistent_ctx.close()
 ```
+
+### Mobile page layout on desktop
+
+Serve a local `index.html` containing `<meta name="viewport" content="width=device-width, initial-scale=1">`
+at `http://127.0.0.1:8000/`. You can run `python3 -m http.server 8000 --bind 127.0.0.1` in its directory.
+
+```python
+from ombrabrowser import launch
+
+browser = launch(mobile_viewport={"width": 390, "height": 844})
+try:
+    page = browser.new_page()
+    page.goto("http://127.0.0.1:8000/")
+    print(page.evaluate("document.documentElement.clientWidth"))  # 390
+finally:
+    browser.close()
+```
+
+`mobile_viewport` selects Chromium's mobile layout on the host operating system for this launch.
+Supply both dimensions as whole CSS pixels from 1 through 10,000. Pages without a viewport
+declaration follow Chromium's mobile layout rules.
+
+The same option works with `launch_context`, `launch_persistent_context`, and their async counterparts.
+An explicit Playwright context `viewport` takes precedence. The persistent helper uses the native viewport.
+Any OS selected in `fingerprint.os` or inherited from the profile must match the host.
+This option requires an engine build with `--mobile-layout-viewport` support.
 
 Browser-level CDP controls for humanized input and native agent tasks:
 
@@ -222,3 +248,7 @@ OMBRA_REAL_BROWSER_TEST=1 pytest -v tests -m real_browser
 - Sync and async launchers share binary resolution, profile locking, option validation, and the loopback SOCKS5 proxy relay.
 - `launch_context()` / `launch_persistent_context()` close the underlying browser and engine process when the context closes.
 - Obeys all stealth invariants (`SI-01`..`SI-12`): connects via `connect_over_cdp(..., no_defaults=True, is_local=True)`, defaults `new_page()`/`new_context()` to `no_viewport=True`, and never injects init scripts, `Runtime.enable`, `--enable-automation`, proxy credentials on CLI, or `Emulation` overrides.
+
+### Native engine paths
+
+Engine `158.0.8127.37-3` and newer use `Ombra.app/Contents/MacOS/Ombra` on macOS, `ombra` on Linux and `ombra.exe` on Windows. The SDK also resolves historical `Chromium.app/Contents/MacOS/Chromium`, macOS DMG installs with `Ombra.app/Contents/MacOS/Chromium`, and `chrome` / `chrome.exe` layouts. Existing version caches and checksum receipts stay in place; an installation containing conflicting executables or build metadata is rejected. Archive names and signature verification are unchanged.

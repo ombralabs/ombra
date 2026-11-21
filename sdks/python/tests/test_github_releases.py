@@ -89,6 +89,22 @@ def github(tmp_path, monkeypatch):
         yield routes, seen, publish, sign
 
 
+@pytest.mark.parametrize("channel", ["stable", "beta"])
+@pytest.mark.parametrize("pin", [None, "158.0.8127.37", "158.0.8127.37-2"])
+def test_chromium_158_github_download_and_offline_reuse(github, monkeypatch, channel, pin):
+    routes, seen, publish, _ = github
+    release, _ = publish("158.0.8127.37-2", prerelease=channel == "beta")
+    routes[f"{API}/latest"] = release
+    routes[f"{API}?per_page=100&page=1"] = [release]
+    path = ensure_binary(version=pin, release_channel=channel)
+    assert binary_info(version=pin, release_channel=channel)["version"] == "158.0.8127.37-2"
+    routes.clear()
+    seen.clear()
+    monkeypatch.setenv("OMBRA_DOWNLOAD_URL", "off")
+    assert resolve_binary(version=pin, release_channel=channel, download=False).path == Path(path)
+    assert seen == []
+
+
 def test_default_latest_download_verifies_github_assets_and_works_offline(github, monkeypatch):
     routes, seen, publish, _ = github
     release, _ = publish()
