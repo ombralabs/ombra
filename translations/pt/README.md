@@ -187,7 +187,7 @@ Cada componente do ecossistema segue o contrato de inicialização compartilhado
 | **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` no npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Motor Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-2` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Navegador standalone** | `v158.0.8127.37-1` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-1) |
+| **Navegador standalone** | `v158.0.8127.37-2` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-2) |
 | **Schemas e conformidade** | JSON Schema + casos compartilhados | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Método de checkup de stealth** | 6 camadas (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
