@@ -54,7 +54,7 @@ To samo API, te same selektory i typy — wystarczy podmienić import oraz wywo�
 
 - **Łatki Chromium na poziomie kodu źródłowego** — canvas, WebGL, WebGPU, audio, czcionki, GPU, ekran, zapytania medialne CSS, raportowanie parametrów sprzętowych, WebRTC bez wycieków STUN, TLS ClientHello, strefa czasowa, ustawienia regionalne (locale) oraz usuwanie sygnałów automatyzacji (`navigator.webdriver`, `Runtime.enable`, znaczniki trybu headless).
 - **Natywna humanizacja interakcji w procesie przeglądarki (`humanize=True`)** — trajektorie kursora (`cursory-rs`), celowane kliknięcia z czasem przytrzymania, rytm pisania z samokorektą literówek oraz fizyka przewijania działają bezpośrednio wewnątrz Chromium. SDK zwraca zwykły, natywny obiekt `Browser` bez żadnych klas pośredniczących (proxy wrapperów).
-- **Autonomiczne działanie bez kluczy i kont** — bieżące kompilacje silnika (`158.0.8127.37-2` i nowsze) oraz Ombra Desktop działają lokalnie bez rejestracji, kluczy licencyjnych, identyfikatorów sprzętowych ani serwera licencji.
+- **Autonomiczne działanie bez kluczy i kont** — bieżące kompilacje silnika (`158.0.8127.37-3` i nowsze) oraz Ombra Desktop działają lokalnie bez rejestracji, kluczy licencyjnych, identyfikatorów sprzętowych ani serwera licencji.
 - **Automatyczna instalacja i kryptograficzna weryfikacja binariów** — `pip install ombrabrowser` lub `npm install @ombralabs/sdk`; przy pierwszym uruchomieniu SDK pobiera kompilację dla Twojej platformy i weryfikuje jej podpis Ed25519 oraz sumę kontrolną SHA-256.
 - **Trwałe profile i bezpieczny przekaźnik proxy** — nazwane profile zachowują ciasteczka, `localStorage`, IndexedDB i `seed` między uruchomieniami z blokowaniem międzyprocesowym; uwierzytelniane serwery proxy (HTTP, HTTPS, SOCKS5) działają przez lokalny przekaźnik loopback, dzięki czemu dane logowania nigdy nie pojawiają się w argumentach procesu.
 - **Lokalny menedżer profili offline Ombra Desktop** — natywna aplikacja desktopowa w tym repozytorium ([`desktop/`](../../desktop/README.md)) z gotowymi instalatorami dla systemów macOS, Linux i Windows.
@@ -149,7 +149,7 @@ Podczas uruchamiania SDK wyszukuje silnik w ściśle określonej kolejności: `b
 
 Aby wyłączyć automatyczne pobieranie, przekaż `download=False` (`download: false` w Node.js). Aby pobrać i zweryfikować silnik z wyprzedzeniem (na przykład podczas budowania obrazu kontenera), wywołaj `ensure_binary()` (`ensureBinary()`) lub użyj polecenia CLI `install`.
 
-> **Autonomiczne uruchamianie:** bieżące kompilacje silnika (`158.0.8127.37-2` i nowsze) są darmowe i nie wymagają konta ani klucza licencyjnego. Zmienna `OMBRA_LICENSE_KEY` oraz polecenie `login` pozostają dostępne wyłącznie dla zachowania kompatybilności ze starszymi kompilacjami licencjonowanymi.
+> **Autonomiczne uruchamianie:** bieżące kompilacje silnika (`158.0.8127.37-3` i nowsze) są darmowe i nie wymagają konta ani klucza licencyjnego. Zmienna `OMBRA_LICENSE_KEY` oraz polecenie `login` pozostają dostępne wyłącznie dla zachowania kompatybilności ze starszymi kompilacjami licencjonowanymi.
 
 **Migracja z Playwrighta** wymaga zmiany dwóch wierszy — wszystkie operacje na stronach, lokatory i oczekiwania pozostają bez zmian:
 
@@ -185,9 +185,9 @@ Każdy komponent ekosystemu przestrzega wspólnego kontraktu uruchamiania i jest
 | **Kontrakt SDK** | Szkic `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alfa `0.1.3` | [`ombrabrowser` w PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alfa `0.1.0` | [`@ombralabs/sdk` w npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Silnik Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-2` · macOS ARM64 / Linux x64 / Windows x64 |
+| **Silnik Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Samodzielna przeglądarka** | `v158.0.8127.37-2` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-2) |
+| **Samodzielna przeglądarka** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
 | **Schematy i testy zgodności** | JSON Schema + wspólne przypadki | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Metodyka przeglądu stealth** | 6 warstw (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -196,8 +196,8 @@ Zawartość bieżących wydań:
 - **Łatki na poziomie kodu źródłowego** — spójne wyznaczanie fingerprintu na podstawie `seed`, dopasowanie WebGL / WebGPU i rozszerzeń, realistyczne tabele czcionek dla poszczególnych systemów operacyjnych, natywny profil TLS ClientHello (`chrome-<major>`), tłumienie `Runtime.enable` oraz wycieków stosu `UtilityScript`, a także ochrona przed wyciekiem lokalnego adresu IP przez WebRTC.
 - **Domena CDP `Ombra` na poziomie przeglądarki** — sterowanie humanizacją interakcji w czasie rzeczywistym (`getHumanizeState`, `setHumanize`) w Pythonie i Node.js bez ponownego uruchamiania przeglądarki.
 - **Natywna symulacja interakcji w procesie przeglądarki** — planer ruchu kursora `cursory-rs`, profile przewijania kółkiem myszy i gładzikiem, rytm pisania z samokorektą literówek oraz bezpieczne wklejanie długich tekstów przez izolowany schowek.
-- **Autonomiczne kompilacje bez kluczy** — bieżące kompilacje silnika (`158.0.8127.37-2`) oraz Ombra Desktop `1.2.2` działają całkowicie lokalnie bez kont, kluczy i telemetrii.
-- **Przypinanie wersji silnika (`version`)** — wskaż konkretną kompilację przez `launch(version="158.0.8127.37-2")`, `OMBRA_VERSION` lub polecenie CLI `install --version`.
+- **Autonomiczne kompilacje bez kluczy** — bieżące kompilacje silnika (`158.0.8127.37-3`) oraz Ombra Desktop `1.2.2` działają całkowicie lokalnie bez kont, kluczy i telemetrii.
+- **Przypinanie wersji silnika (`version`)** — wskaż konkretną kompilację przez `launch(version="158.0.8127.37-3")`, `OMBRA_VERSION` lub polecenie CLI `install --version`.
 - **Zunifikowany przekaźnik proxy** — obsługa uwierzytelnianych serwerów proxy HTTP, HTTPS i SOCKS5 bez ujawniania danych uwierzytelniających w wierszu poleceń Chromium, logach ani metadanych profilu.
 - **Trwałe nazwane profile** — przechowywanie `seed`, ciasteczek, `localStorage` i IndexedDB w katalogu `~/.ombra/profiles/<slug>` z blokowaniem międzyprocesowym (`ProfileBusyError`).
 - **Kryptograficzna weryfikacja łańcucha dostaw** — weryfikacja podpisu Ed25519 kopert wydań oraz weryfikacja sum kontrolnych SHA-256 archiwów przed ich rozpakowaniem.
@@ -361,7 +361,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # Przypięcie konkretnej kompilacji silnika i przekazanie dodatkowych flag Chromium
 browser = launch(
-    version="158.0.8127.37-2",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -451,11 +451,11 @@ from ombrabrowser import (
 
 # Sprawdź informacje o wybranym pliku binarnym silnika
 print(binary_info())
-# {'version': '158.0.8127.37-2', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # Pobierz i zweryfikuj silnik bez uruchamiania przeglądarki
-ensure_binary(version="158.0.8127.37-2")
+ensure_binary(version="158.0.8127.37-3")
 
 # Usuń pliki binarne silnika zarządzane przez SDK (profile w ~/.ombra/profiles pozostają nienaruszone)
 clear_cache()
@@ -474,7 +474,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # pobierz i zweryfikuj silnik (Ed25519 + SHA-256)
-ombrabrowser install --version 158.0.8127.37-2  # zainstaluj konkretną kompilację silnika
+ombrabrowser install --version 158.0.8127.37-3  # zainstaluj konkretną kompilację silnika
 ombrabrowser info                                # diagnostyka środowiska, pliku binarnego i zależności (alias: doctor)
 ombrabrowser info --quick --json                 # szybki raport maszynowy bez uruchamiania pliku binarnego
 ombrabrowser info --proxy socks5://user:pass@host:1080  # przetestuj wyjściowe IP oraz rozpoznawanie strefy czasowej i locale przez proxy
@@ -563,7 +563,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "158.0.8127.37-2" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -730,10 +730,10 @@ Nazwy opcji odpowiadają API Pythona oraz [kontraktowi SDK](../../docs/sdk-contr
 | `user_data_dir` | tymczasowy | Jawna ścieżka katalogu profilu (wyklucza się wzajemnie z `profile`) |
 | `args` | `[]` | Dodatkowe argumenty Chromium (przekazywane bez zmian) |
 | `binary_path` | wyznaczana automatycznie | Jawna ścieżka do pliku wykonywalnego silnika |
-| `version` | zmienna środowiskowa / auto | Przypięcie wersji silnika (na przykład `158.0.8127.37-2`), nadpisuje `OMBRA_VERSION` |
+| `version` | zmienna środowiskowa / auto | Przypięcie wersji silnika (na przykład `158.0.8127.37-3`), nadpisuje `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Limit czasu uruchomienia silnika i połączenia CDP (1000–600000 ms) |
 | `humanize` | domyślne ustawienie silnika | `False`, `True` lub `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | zmienna środowiskowa / plik | Klucz dla starszych kompilacji licencjonowanych (niepotrzebny w `158.0.8127.37-2+`; nigdy nie jest logowany) |
+| `license_key` | zmienna środowiskowa / plik | Klucz dla starszych kompilacji licencjonowanych (niepotrzebny w `158.0.8127.37-3+`; nigdy nie jest logowany) |
 | `env` | `{}` | Dodatkowe zmienne środowiskowe dla procesu silnika |
 | `download` | `True` | Zezwolenie na automatyczne pobranie brakującego pliku binarnego silnika |
 
@@ -746,7 +746,7 @@ Kolejność pierwszeństwa: **jawna opcja uruchomienia → zmienna środowiskowa
 | `OMBRA_BINARY_PATH` | nieustawiona | Jawna ścieżka do pliku binarnego silnika |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Katalog pamięci podręcznej silników i nazwanych profili |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Bazowy adres URL / mirror do pobierania silnika (`none`/`off` wyłącza pobieranie) |
-| `OMBRA_VERSION` | najnowsza kompatybilna | Przypięta wersja silnika (na przykład `158.0.8127.37-2`) |
+| `OMBRA_VERSION` | najnowsza kompatybilna | Przypięta wersja silnika (na przykład `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | Kanał wydań silnika: `stable` lub `beta` |
 | `OMBRA_AUTO_UPDATE` | `true` | Sprawdzanie nowszych kompilacji silnika przy uruchomieniu |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Wyłącznie do lokalnego rozwoju: wyłącza weryfikację SHA-256 (zapisuje ostrzeżenie w logu) |
@@ -768,10 +768,10 @@ Pełna taksonomia błędów i zasady ponawiania prób są udokumentowane w [kont
 
 | Komponent | Obsługa | Uwagi |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | Autonomiczna kompilacja `158.0.8127.37-2`; Ombra Desktop jest podpisany certyfikatem Developer ID i notaryzowany |
+| **macOS ARM64 (Apple Silicon)** | ✅ | Autonomiczna kompilacja `158.0.8127.37-3`; Ombra Desktop jest podpisany certyfikatem Developer ID i notaryzowany |
 | **macOS x64 (Intel)** | — | Brak aktualnego wydania Chromium 158 |
-| **Linux x64** | ✅ | Autonomiczna kompilacja `158.0.8127.37-2`; wymaga `xz-utils` (`xz`) do rozpakowania `.tar.xz` |
-| **Windows x64** | ✅ | Autonomiczna kompilacja `158.0.8127.37-2` oraz instalator Ombra Desktop |
+| **Linux x64** | ✅ | Autonomiczna kompilacja `158.0.8127.37-3`; wymaga `xz-utils` (`xz`) do rozpakowania `.tar.xz` |
+| **Windows x64** | ✅ | Autonomiczna kompilacja `158.0.8127.37-3` oraz instalator Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` jest instalowany automatycznie wraz z `ombrabrowser` |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` lub Puppeteer `>=22` (Puppeteer 25+ wymaga Node.js `>=22.12`) |
 
@@ -881,14 +881,14 @@ Przetestuj kanał `beta` albo przypnij / cofnij silnik do konkretnej kompilacji:
 
 ```python
 # Przypięcie konkretnej kompilacji dla pojedynczego uruchomienia
-browser = launch(version="158.0.8127.37-2")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
 # Lub konfiguracja przez zmienne środowiskowe / CLI
-export OMBRA_VERSION=158.0.8127.37-2
+export OMBRA_VERSION=158.0.8127.37-3
 export OMBRA_RELEASE_CHANNEL=beta
-ombrabrowser install --version 158.0.8127.37-2
+ombrabrowser install --version 158.0.8127.37-3
 
 # Lub wskazanie lokalnie zbudowanego pliku binarnego
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Oficjalne wydania Ombra dla macOS Apple Silicon są podpisane certyfikatem Apple Developer ID oraz notaryzowane. Jeśli uruchamiasz lokalną niepodpisaną kompilację deweloperską i macOS obejmuje ją kwarantanną, usuń jednorazowo atrybut kwarantanny:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Oczekiwanie na stronie w synchronicznym Pythonie
@@ -964,7 +964,7 @@ Nie. SDK podłącza oficjalnego klienta Playwright (lub Puppeteer) do Ombra Chro
 
 ### Czy Ombra jest darmowa i czy potrzebuję klucza licencyjnego?
 
-Kod źródłowy SDK w tym repozytorium jest otwarty na licencji Apache License 2.0. Bieżące kompilacje silnika (`158.0.8127.37-2` i nowsze) oraz lokalny menedżer profili Ombra Desktop (`desktop-v1.2.2`) działają bezpłatnie i autonomicznie — bez konta, klucza licencyjnego, identyfikatora sprzętowego ani limitu liczby profili. Parametry `license_key` oraz `OMBRA_LICENSE_KEY` są potrzebne wyłącznie dla starszych kompilacji licencjonowanych.
+Kod źródłowy SDK w tym repozytorium jest otwarty na licencji Apache License 2.0. Bieżące kompilacje silnika (`158.0.8127.37-3` i nowsze) oraz lokalny menedżer profili Ombra Desktop (`desktop-v1.2.2`) działają bezpłatnie i autonomicznie — bez konta, klucza licencyjnego, identyfikatora sprzętowego ani limitu liczby profili. Parametry `license_key` oraz `OMBRA_LICENSE_KEY` są potrzebne wyłącznie dla starszych kompilacji licencjonowanych.
 
 ### Czy muszę zainstalować Ombra Desktop, aby korzystać z SDK?
 

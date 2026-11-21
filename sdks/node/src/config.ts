@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { InvalidOptionError, UnsupportedPlatformError } from "./errors.js";
+import { ChecksumMismatchError, InvalidOptionError, UnsupportedPlatformError } from "./errors.js";
 
 export const DEFAULT_DOWNLOAD_URL = "https://api.github.com/repos/ombralabs/ombra/releases";
 export const DEFAULT_TIMEOUT_MS = 30_000;
@@ -315,15 +315,22 @@ export function isLoopbackHost(host: string | null | undefined): boolean {
 }
 
 export function binaryCandidatesInDir(baseDir: string, system: PlatformInfo["system"]): string[] {
+  let candidates: string[];
   if (system === "Darwin") {
-    return [
-      path.join(baseDir, "Chromium.app", "Contents", "MacOS", "Chromium"),
+    candidates = [
       path.join(baseDir, "Ombra.app", "Contents", "MacOS", "Ombra"),
+      path.join(baseDir, "Chromium.app", "Contents", "MacOS", "Chromium"),
+      path.join(baseDir, "Ombra.app", "Contents", "MacOS", "Chromium"),
       path.join(baseDir, "Google Chrome for Testing.app", "Contents", "MacOS", "Google Chrome for Testing"),
     ];
+  } else {
+    const names = system === "Windows" ? ["ombra.exe", "chrome.exe"] : ["ombra", "chrome", "chromium"];
+    candidates = [...names.map(name => path.join(baseDir, name)), ...names.map(name => path.join(baseDir, "Chromium", name))];
   }
-  if (system === "Windows") {
-    return [path.join(baseDir, "chrome.exe"), path.join(baseDir, "ombra.exe")];
+  // Historical aliases may point at one binary; two distinct executables are ambiguous.
+  const existing = candidates.filter(file => fs.existsSync(file) && fs.statSync(file).isFile());
+  if (new Set(existing.map(file => fs.realpathSync(file))).size > 1) {
+    throw new ChecksumMismatchError(`Ambiguous engine executables under ${baseDir}. Reinstall the engine.`);
   }
-  return [path.join(baseDir, "chrome"), path.join(baseDir, "chromium"), path.join(baseDir, "ombra")];
+  return candidates;
 }

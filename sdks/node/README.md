@@ -43,11 +43,11 @@ Resolve or pre-download the signed and checksum-verified Ombra engine using your
 npx --no-install ombra-sdk install
 npx --no-install ombra-sdk info
 # Pin a release available for your platform:
-npx --no-install ombra-sdk install --version 158.0.8127.37-2
-npx --no-install ombra-sdk install --version=158.0.8127.37-2
+npx --no-install ombra-sdk install --version 158.0.8127.37-3
+npx --no-install ombra-sdk install --version=158.0.8127.37-3
 ```
 
-Browser versions come from [GitHub Releases](https://github.com/ombralabs/ombra/releases). The SDK uses `https://api.github.com/repos/ombralabs/ombra/releases/latest` for unpinned stable builds. If GitHub's latest selection is missing or is not a published stable browser build, it selects the first stable browser release from the paginated releases list. Drafts, development builds, and non-browser tags are excluded. `releaseChannel: "beta"` selects prereleases from the list. A revision pin such as `158.0.8127.37-2` queries `/releases/tags/vVERSION`; a Chromium-family pin such as `158.0.8127.37` selects a matching release on the requested channel. Every selected release must publish signed `release.json` and `ombra-engine-VERSION-PLATFORM.EXT` assets under `https://github.com/ombralabs/ombra/releases/download/vVERSION/`. The manifest's Ed25519 signature, version, platform filename, SHA-256, and size are verified. Automatic installation requires published GitHub assets for your platform; example pins above do not guarantee availability.
+Browser versions come from [GitHub Releases](https://github.com/ombralabs/ombra/releases). The SDK uses `https://api.github.com/repos/ombralabs/ombra/releases/latest` for unpinned stable builds. If GitHub's latest selection is missing or is not a published stable browser build, it selects the first stable browser release from the paginated releases list. Drafts, development builds, and non-browser tags are excluded. `releaseChannel: "beta"` selects prereleases from the list. A revision pin such as `158.0.8127.37-3` queries `/releases/tags/vVERSION`; a Chromium-family pin such as `158.0.8127.37` selects a matching release on the requested channel. Every selected release must publish signed `release.json` and `ombra-engine-VERSION-PLATFORM.EXT` assets under `https://github.com/ombralabs/ombra/releases/download/vVERSION/`. The manifest's Ed25519 signature, version, platform filename, SHA-256, and size are verified. Automatic installation requires published GitHub assets for your platform; example pins above do not guarantee availability.
 
 The SDK supports Chromium >=151.0.7922.108 and <159, with `158.0.8127.37` as the default Chromium family. Existing 151 release pins remain supported. GitHub stable and beta selections are recorded separately for offline reuse; old CDN channel caches need one online GitHub lookup before unpinned reuse. A previously installed, receipt-valid exact version remains usable offline with `version` and `download: false`. Set `OMBRA_DOWNLOAD_URL=off` to disable downloads; an explicit mirror URL retains the legacy `/engine/channels/CHANNEL.json` and `/engine/releases/VERSION/` layout. There is no automatic CDN fallback. Valid installed versions are reused rather than overwritten. Managed/app-cached binaries require their checksum receipt; explicit development binaries via `binaryPath` or `OMBRA_BINARY_PATH` are supported separately. `OMBRA_SKIP_CHECKSUM=1` is a warning-producing development bypass.
 
@@ -56,7 +56,7 @@ The SDK supports Chromium >=151.0.7922.108 and <159, with `158.0.8127.37` as the
 ```ts
 import { launch } from "@ombralabs/sdk";
 
-const browser = await launch({ version: "158.0.8127.37-2" });
+const browser = await launch({ version: "158.0.8127.37-3" });
 const page = await browser.newPage();
 await page.goto("https://example.com");
 console.log(await page.title());
@@ -121,7 +121,7 @@ Use `launchPuppeteer()` from `@ombralabs/sdk` or `launch()` from `@ombralabs/sdk
 ```ts
 import { launch } from "@ombralabs/sdk/puppeteer";
 
-const browser = await launch({ headless: false, version: "158.0.8127.37-2" });
+const browser = await launch({ headless: false, version: "158.0.8127.37-3" });
 const page = await browser.newPage();
 await page.goto("https://example.com");
 await browser.close();
@@ -156,8 +156,8 @@ import {
   checkEngineHealth,
 } from "@ombralabs/sdk";
 
-console.log(await binaryInfo({ version: "158.0.8127.37-2" }));
-await ensureBinary({ version: "158.0.8127.37-2" });
+console.log(await binaryInfo({ version: "158.0.8127.37-3" }));
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache(); // removes SDK-managed binaries; preserves ~/.ombra/profiles & license.key
 ```
 
@@ -237,3 +237,7 @@ Build/test scripts use the SDK-local TypeScript CLI and types, with no sibling-p
 CI targets exact Node 20.0.0 and Node 26 on Linux, macOS, and Windows. Linux/macOS run the full unit and simulated conformance suite. Windows runs build/type checks, CDP/optional-loader tests, clean-package CLI/native-lock checks and native-client declaration checks; the fake-engine launch fixtures are POSIX scripts, so Windows browser lifecycle and process-tree cleanup are not covered. Cleanup for an already-dead Windows process leader remains best-effort.
 
 Conformance tests observe SDK-owned options, command construction and CDP calls with simulated clients/engines. They do not establish fingerprint undetectability or a complete absence of native-client traffic: Playwright/Puppeteer can send their own Runtime/Log/utility-world and new-context defaults. Playwright attaches with `noDefaults: true`. The SDK requests `viewport: null` for contexts to avoid its own viewport override. Real GitHub/engine integration is a separate check, not an automatic unit-test claim.
+
+### Native engine paths
+
+Engine `158.0.8127.37-3` and newer use `Ombra.app/Contents/MacOS/Ombra` on macOS, `ombra` on Linux and `ombra.exe` on Windows. The SDK also resolves historical `Chromium.app/Contents/MacOS/Chromium`, macOS DMG installs with `Ombra.app/Contents/MacOS/Chromium`, and `chrome` / `chrome.exe` layouts. Existing version caches and checksum receipts stay in place; an installation containing conflicting executables or build metadata is rejected. Archive names and signature verification are unchanged.

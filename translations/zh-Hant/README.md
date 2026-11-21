@@ -54,7 +54,7 @@ Python 與 Node.js 中 Playwright 和 Puppeteer 的無痛啟動替代方案。<b
 
 - **原始碼層級 Chromium 修補** — 涵蓋 Canvas、WebGL、WebGPU、音訊、字型、GPU、螢幕、CSS 媒體查詢、硬體回報、無 STUN 外洩的 WebRTC、TLS ClientHello、時區、語系，以及自動化特徵移除（`navigator.webdriver`、`Runtime.enable`、無頭模式標記）。
 - **瀏覽器處理程序內的原生擬人化輸入（`humanize=True`）** — 指標移動軌跡（`cursory-rs`）、帶按住時間的瞄準點擊、含錯字自動修正的打字節奏，以及捲動物理效果皆直接於 Chromium 內部運作。SDK 回傳純粹的原生 `Browser` 物件，不含任何代理封裝層。
-- **無需金鑰或帳號即可自主運行** — 目前的引擎建置版本（`158.0.8127.37-2` 及更新版本）與 Ombra Desktop 皆可於本機獨立運行，無需註冊、授權金鑰、硬體識別碼或授權伺服器。
+- **無需金鑰或帳號即可自主運行** — 目前的引擎建置版本（`158.0.8127.37-3` 及更新版本）與 Ombra Desktop 皆可於本機獨立運行，無需註冊、授權金鑰、硬體識別碼或授權伺服器。
 - **自動安裝與加密執行檔驗證** — 只需執行 `pip install ombrabrowser` 或 `npm install @ombralabs/sdk`；首次啟動時，SDK 會自動下載對應平台的建置版本，並驗證其 Ed25519 簽章與 SHA-256 校驗碼。
 - **持久化設定檔與安全代理中繼** — 具名設定檔可在多次執行間保留 Cookie、`localStorage`、IndexedDB 與 `seed`，並提供跨處理程序鎖定；需要驗證的代理伺服器（HTTP、HTTPS、SOCKS5）透過本機迴路中繼運作，憑證絕不會出現在處理程序參數中。
 - **離線版 Ombra Desktop 設定檔管理器** — 本儲存庫內建的原生桌面應用程式（[`desktop/`](../../desktop/README.md)），提供適用於 macOS、Linux 與 Windows 的預先建置安裝程式。
@@ -149,7 +149,7 @@ npm install mmdb-lib
 
 若要停用自動下載，請傳入 `download=False`（Node.js 中為 `download: false`）。若想事先下載並驗證引擎（例如在建置容器映像檔時），可呼叫 `ensure_binary()`（`ensureBinary()`）或使用 CLI 的 `install` 指令。
 
-> **自主啟動：** 目前的引擎建置版本（`158.0.8127.37-2` 及更新版本）皆為免費使用，無需帳號或授權金鑰。`OMBRA_LICENSE_KEY` 與 `login` 指令僅保留以相容舊版授權建置。
+> **自主啟動：** 目前的引擎建置版本（`158.0.8127.37-3` 及更新版本）皆為免費使用，無需帳號或授權金鑰。`OMBRA_LICENSE_KEY` 與 `login` 指令僅保留以相容舊版授權建置。
 
 **從 Playwright 遷移**只需修改兩行程式碼——所有頁面操作、定位器與等待邏輯皆維持不變：
 
@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **SDK 契約** | 草案 `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium 引擎** | Chromium `158.0.8127.37` | `158.0.8127.37-2` · macOS ARM64 / Linux x64 / Windows x64 |
+| **Ombra Chromium 引擎** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **獨立版瀏覽器** | `v158.0.8127.37-2` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-2) |
+| **獨立版瀏覽器** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
 | **結構描述與一致性測試** | JSON Schema + 共用測試案例 | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **隱匿性檢查方法** | 6 個層級（`L0`–`L5`） | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -196,8 +196,8 @@ npm install mmdb-lib
 - **原始碼層級修補** — 基於種子的連貫指紋衍生、WebGL／WebGPU 與擴充功能對齊、符合各作業系統的擬真字型表、原生 TLS ClientHello 設定檔（`chrome-<major>`）、抑制 `Runtime.enable` 與 `UtilityScript` 堆疊外洩，以及 WebRTC 本機 IP 外洩防護。
 - **瀏覽器層級 `Ombra` CDP 網域** — 可在 Python 與 Node.js 執行期間即時控制擬人化輸入（`getHumanizeState`、`setHumanize`），無需重新啟動瀏覽器。
 - **瀏覽器處理程序內的原生輸入模擬** — `cursory-rs` 指標路徑規劃器、滾輪與觸控板捲動曲線、具備錯字自我修正的打字節奏，以及透過隔離剪貼簿進行的安全長文字貼上。
-- **免金鑰自主建置** — 目前的引擎建置（`158.0.8127.37-2`）與 Ombra Desktop `1.2.2` 完全於本機離線運作，無帳號、無金鑰、無遙測回傳。
-- **引擎版本鎖定（`version`）** — 透過 `launch(version="158.0.8127.37-2")`、`OMBRA_VERSION` 或 CLI 的 `install --version` 鎖定特定建置版本。
+- **免金鑰自主建置** — 目前的引擎建置（`158.0.8127.37-3`）與 Ombra Desktop `1.2.2` 完全於本機離線運作，無帳號、無金鑰、無遙測回傳。
+- **引擎版本鎖定（`version`）** — 透過 `launch(version="158.0.8127.37-3")`、`OMBRA_VERSION` 或 CLI 的 `install --version` 鎖定特定建置版本。
 - **統一代理中繼** — 支援 HTTP、HTTPS 與 SOCKS5 驗證代理，且不在 Chromium 命令列、日誌或設定檔中繼資料中暴露憑證。
 - **持久化具名設定檔** — 將 `seed`、Cookie、`localStorage` 與 IndexedDB 儲存於 `~/.ombra/profiles/<slug>`，並具備跨處理程序鎖定機制（`ProfileBusyError`）。
 - **加密供應鏈檢查** — 解壓縮前驗證發布封包的 Ed25519 簽章與壓縮檔的 SHA-256 校驗碼。
@@ -361,7 +361,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # 鎖定特定引擎建置版本並傳入額外 Chromium 旗標
 browser = launch(
-    version="158.0.8127.37-2",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -451,11 +451,11 @@ from ombrabrowser import (
 
 # 檢視已解析的引擎執行檔資訊
 print(binary_info())
-# {'version': '158.0.8127.37-2', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # 在不啟動瀏覽器的情況下事先下載並驗證引擎
-ensure_binary(version="158.0.8127.37-2")
+ensure_binary(version="158.0.8127.37-3")
 
 # 移除由 SDK 管理的引擎執行檔（~/.ombra/profiles 下的設定檔不受影響）
 clear_cache()
@@ -474,7 +474,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # 下載並驗證引擎（Ed25519 + SHA-256）
-ombrabrowser install --version 158.0.8127.37-2  # 安裝特定引擎建置版本
+ombrabrowser install --version 158.0.8127.37-3  # 安裝特定引擎建置版本
 ombrabrowser info                                # 環境、執行檔與相依性診斷（別名：doctor）
 ombrabrowser info --quick --json                 # 不啟動執行檔的快速機器可讀報告
 ombrabrowser info --proxy socks5://user:pass@host:1080  # 測試透過代理的出口 IP、時區與語系解析
@@ -563,7 +563,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "158.0.8127.37-2" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -730,10 +730,10 @@ RUN fc-cache -f
 | `user_data_dir` | 暫存目錄 | 明確指定的設定檔目錄路徑（與 `profile` 互斥） |
 | `args` | `[]` | 額外的 Chromium 啟動參數（原封不動傳遞） |
 | `binary_path` | 自動解析 | 明確指定的引擎執行檔路徑 |
-| `version` | 環境變數／自動 | 鎖定引擎版本（例如 `158.0.8127.37-2`），優先於 `OMBRA_VERSION` |
+| `version` | 環境變數／自動 | 鎖定引擎版本（例如 `158.0.8127.37-3`），優先於 `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | 引擎啟動與 CDP 連線的逾時上限（1000–600000 毫秒） |
 | `humanize` | 引擎預設 | `False`、`True` 或 `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | 環境變數／檔案 | 舊版授權建置專用金鑰（`158.0.8127.37-2+` 不需要；絕不記錄於日誌） |
+| `license_key` | 環境變數／檔案 | 舊版授權建置專用金鑰（`158.0.8127.37-3+` 不需要；絕不記錄於日誌） |
 | `env` | `{}` | 傳遞給引擎處理程序的額外環境變數 |
 | `download` | `True` | 找不到引擎執行檔時是否允許自動下載 |
 
@@ -746,7 +746,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | 未設定 | 明確指定引擎執行檔路徑 |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | 引擎快取與具名設定檔的存放目錄 |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | 引擎下載的基底網址／鏡像站（設為 `none`/`off` 可停用下載） |
-| `OMBRA_VERSION` | 最新相容版本 | 鎖定的引擎版本（例如 `158.0.8127.37-2`） |
+| `OMBRA_VERSION` | 最新相容版本 | 鎖定的引擎版本（例如 `158.0.8127.37-3`） |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | 引擎發布通道：`stable` 或 `beta` |
 | `OMBRA_AUTO_UPDATE` | `true` | 啟動時檢查是否有較新的引擎建置版本 |
 | `OMBRA_SKIP_CHECKSUM` | `false` | 僅限本機開發使用：停用 SHA-256 驗證（會記錄警告） |
@@ -768,10 +768,10 @@ RUN fc-cache -f
 
 | 元件 | 支援狀態 | 備註 |
 |---|---|---|
-| **macOS ARM64（Apple Silicon）** | ✅ | 自主建置 `158.0.8127.37-2`；Ombra Desktop 經 Developer ID 簽章並公證 |
+| **macOS ARM64（Apple Silicon）** | ✅ | 自主建置 `158.0.8127.37-3`；Ombra Desktop 經 Developer ID 簽章並公證 |
 | **macOS x64（Intel）** | — | 暫無 Chromium 158 目前版本 |
-| **Linux x64** | ✅ | 自主建置 `158.0.8127.37-2`；解壓縮 `.tar.xz` 需安裝 `xz-utils`（`xz`） |
-| **Windows x64** | ✅ | 自主建置 `158.0.8127.37-2` 與 Ombra Desktop 安裝程式 |
+| **Linux x64** | ✅ | 自主建置 `158.0.8127.37-3`；解壓縮 `.tar.xz` 需安裝 `xz-utils`（`xz`） |
+| **Windows x64** | ✅ | 自主建置 `158.0.8127.37-3` 與 Ombra Desktop 安裝程式 |
 | **Python** | `3.10+` | 安裝 `ombrabrowser` 時會自動安裝 Playwright `>=1.60,<2.0` |
 | **Node.js** | `20+` | 支援 Playwright `>=1.60,<2.0` 或 Puppeteer `>=22`（Puppeteer 25+ 需要 Node.js `>=22.12`） |
 
@@ -881,14 +881,14 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # 為特定啟動呼叫鎖定確切建置版本
-browser = launch(version="158.0.8127.37-2")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
 # 或透過環境變數／CLI 進行設定
-export OMBRA_VERSION=158.0.8127.37-2
+export OMBRA_VERSION=158.0.8127.37-3
 export OMBRA_RELEASE_CHANNEL=beta
-ombrabrowser install --version 158.0.8127.37-2
+ombrabrowser install --version 158.0.8127.37-3
 
 # 或指向本機自行建置的執行檔
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 官方發布的 Apple Silicon macOS 版 Ombra 均具備 Apple Developer ID 憑證簽章並通過公證。若您執行的是本機未簽章的開發建置版並遭 macOS 隔離，只需清除一次隔離屬性即可：
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### 在同步 Python 中等待頁面
@@ -965,7 +965,7 @@ for _ in range(15):
 
 ### Ombra 免費嗎？我需要授權金鑰嗎？
 
-本儲存庫中的 SDK 原始碼以 Apache License 2.0 授權開源。目前的引擎建置版本（`158.0.8127.37-2` 及更新版本）與本機 Ombra Desktop 設定檔管理器（`desktop-v1.2.2`）皆可免費且自主運作——無需帳號、授權金鑰、硬體識別碼，也沒有設定檔數量上限。`license_key` 與 `OMBRA_LICENSE_KEY` 僅於舊版授權建置中才需要使用。
+本儲存庫中的 SDK 原始碼以 Apache License 2.0 授權開源。目前的引擎建置版本（`158.0.8127.37-3` 及更新版本）與本機 Ombra Desktop 設定檔管理器（`desktop-v1.2.2`）皆可免費且自主運作——無需帳號、授權金鑰、硬體識別碼，也沒有設定檔數量上限。`license_key` 與 `OMBRA_LICENSE_KEY` 僅於舊版授權建置中才需要使用。
 
 ### 使用 SDK 需要先安裝 Ombra Desktop 嗎？
 

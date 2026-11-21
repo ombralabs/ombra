@@ -38,9 +38,9 @@
   "additionalProperties": false,
   "examples": [
     {
-      "version": "151.0.7922.108",
+      "version": "158.0.8127.37-3",
       "platform": "macos-arm64",
-      "path": "/Users/me/.ombra/engines/151.0.7922.108/Chromium.app/Contents/MacOS/Chromium",
+      "path": "/Users/me/.ombra/engines/158.0.8127.37-3/Ombra.app/Contents/MacOS/Ombra",
       "installed": true,
       "source": "cache",
       "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"

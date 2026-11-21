@@ -67,7 +67,7 @@ Pin an exact engine release with `version` in any `launch*()` helper:
 ```python
 from ombrabrowser import launch, binary_info, ensure_binary
 
-engine_version = "158.0.8127.37-2"
+engine_version = "158.0.8127.37-3"
 ensure_binary(version=engine_version)  # Optional: download and verify before launching
 browser = launch(version=engine_version)
 try:
@@ -85,8 +85,8 @@ local releases or a GitHub channel release with that Chromium version. A conflic
 missing and `download=False`, launch raises `BinaryNotFoundError`.
 
 ```bash
-ombrabrowser install --version 158.0.8127.37-2
-OMBRA_VERSION=158.0.8127.37-2 python your_script.py
+ombrabrowser install --version 158.0.8127.37-3
+OMBRA_VERSION=158.0.8127.37-3 python your_script.py
 ```
 
 With a persistent named profile, authenticated proxy relay, fingerprint, and native engine humanization:
@@ -248,3 +248,7 @@ OMBRA_REAL_BROWSER_TEST=1 pytest -v tests -m real_browser
 - Sync and async launchers share binary resolution, profile locking, option validation, and the loopback SOCKS5 proxy relay.
 - `launch_context()` / `launch_persistent_context()` close the underlying browser and engine process when the context closes.
 - Obeys all stealth invariants (`SI-01`..`SI-12`): connects via `connect_over_cdp(..., no_defaults=True, is_local=True)`, defaults `new_page()`/`new_context()` to `no_viewport=True`, and never injects init scripts, `Runtime.enable`, `--enable-automation`, proxy credentials on CLI, or `Emulation` overrides.
+
+### Native engine paths
+
+Engine `158.0.8127.37-3` and newer use `Ombra.app/Contents/MacOS/Ombra` on macOS, `ombra` on Linux and `ombra.exe` on Windows. The SDK also resolves historical `Chromium.app/Contents/MacOS/Chromium`, macOS DMG installs with `Ombra.app/Contents/MacOS/Chromium`, and `chrome` / `chrome.exe` layouts. Existing version caches and checksum receipts stay in place; an installation containing conflicting executables or build metadata is rejected. Archive names and signature verification are unchanged.

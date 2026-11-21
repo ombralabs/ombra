@@ -54,7 +54,7 @@ Python および Node.js における Playwright・Puppeteer のドロップイ�
 
 - **ソースレベルの Chromium パッチ** — canvas、WebGL、WebGPU、オーディオ、フォント、GPU、画面、CSS メディアクエリ、ハードウェア報告値、STUN リークなしの WebRTC、TLS ClientHello、タイムゾーン、ロケール、および自動化シグナルの除去（`navigator.webdriver`、`Runtime.enable`、ヘッドレスマーカー）に対応しています。
 - **ブラウザプロセス内のネイティブな人間らしい入力 (`humanize=True`)** — ポインター軌道（`cursory-rs`）、照準と押下時間を伴うクリック、タイプミスの自己修正を含むタイピングリズム、スクロール物理挙動を Chromium 内部で実行します。SDK はプロキシラッパーを挟まない標準のネイティブ `Browser` を返します。
-- **キーやアカウント不要の自律動作** — 現行エンジンビルド（`158.0.8127.37-2` 以降）および Ombra Desktop は、ユーザー登録、ライセンスキー、ハードウェア ID、ライセンスサーバーなしでローカル動作します。
+- **キーやアカウント不要の自律動作** — 現行エンジンビルド（`158.0.8127.37-3` 以降）および Ombra Desktop は、ユーザー登録、ライセンスキー、ハードウェア ID、ライセンスサーバーなしでローカル動作します。
 - **自動インストールと暗号学的バイナリ検証** — `pip install ombrabrowser` または `npm install @ombralabs/sdk` で導入でき、初回起動時に SDK が対象プラットフォーム向けビルドをダウンロードし、Ed25519 署名と SHA-256 チェックサムを検証します。
 - **永続プロファイルと安全なプロキシリレー** — 名前付きプロファイルは Cookie、`localStorage`、IndexedDB、`seed` をプロセス間ロック付きで実行をまたいで保持します。認証付きプロキシ（HTTP、HTTPS、SOCKS5）はローカルループバックリレー経由で動作するため、認証情報がプロセス引数に露出することはありません。
 - **オフライン動作の Ombra Desktop プロファイルマネージャー** — 本リポジトリに収録されたネイティブデスクトップアプリ（[`desktop/`](../../desktop/README.md)）で、macOS、Linux、Windows 向けのビルド済みインストーラーを提供しています。
@@ -149,7 +149,7 @@ npm install mmdb-lib
 
 自動ダウンロードを無効にするには `download=False`（Node.js では `download: false`）を指定します。コンテナビルド時などに事前にエンジンをダウンロード・検証しておくには、`ensure_binary()`（`ensureBinary()`）を呼び出すか CLI の `install` コマンドを使用します。
 
-> **自律起動:** 現行エンジンビルド（`158.0.8127.37-2` 以降）は無料であり、アカウントやライセンスキーは不要です。`OMBRA_LICENSE_KEY` および `login` コマンドは、旧ライセンスビルドとの互換性のためにのみ残されています。
+> **自律起動:** 現行エンジンビルド（`158.0.8127.37-3` 以降）は無料であり、アカウントやライセンスキーは不要です。`OMBRA_LICENSE_KEY` および `login` コマンドは、旧ライセンスビルドとの互換性のためにのみ残されています。
 
 **Playwright からの移行**はわずか 2 行の変更で完了し、すべてのページ操作、ロケーター、待機処理はそのまま動作します。
 
@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **SDK コントラクト** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [PyPI 上の `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm 上の `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium エンジン** | Chromium `158.0.8127.37` | `158.0.8127.37-2` · macOS ARM64 / Linux x64 / Windows x64 |
+| **Ombra Chromium エンジン** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **スタンドアロンブラウザ** | `v158.0.8127.37-2` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-2) |
+| **スタンドアロンブラウザ** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
 | **スキーマとコンフォーマンス** | JSON Schema + 共通ケース | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **ステルスチェックアップ手法** | 6 層 (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -196,8 +196,8 @@ npm install mmdb-lib
 - **ソースレベルパッチ** — `seed` に基づく一貫したフィンガープリント導出、WebGL / WebGPU と拡張機能の整合性調整、OS ごとの現実的なフォントテーブル、ネイティブ TLS ClientHello プロファイル（`chrome-<major>`）、`Runtime.enable` および `UtilityScript` スタックリークの抑制、WebRTC ホスト IP リーク保護。
 - **ブラウザレベルの `Ombra` CDP ドメイン** — ブラウザを再起動することなく、Python および Node.js から人間らしい入力をリアルタイム制御（`getHumanizeState`、`setHumanize`）。
 - **ブラウザプロセス内のネイティブ入力シミュレーション** — `cursory-rs` ポインタープランナー、ホイール／トラックパッドのスクロールプロファイル、タイプミスの自己修正付きタイピングリズム、分離クリップボード経由の安全な長文ペースト。
-- **キーレス自律ビルド** — 現行エンジンビルド（`158.0.8127.37-2`）および Ombra Desktop `1.2.2` は、アカウント・キー・テレメトリなしで完全にローカル実行可能。
-- **エンジンバージョン固定 (`version`)** — `launch(version="158.0.8127.37-2")`、`OMBRA_VERSION`、または CLI の `install --version` で特定のビルドを固定可能。
+- **キーレス自律ビルド** — 現行エンジンビルド（`158.0.8127.37-3`）および Ombra Desktop `1.2.2` は、アカウント・キー・テレメトリなしで完全にローカル実行可能。
+- **エンジンバージョン固定 (`version`)** — `launch(version="158.0.8127.37-3")`、`OMBRA_VERSION`、または CLI の `install --version` で特定のビルドを固定可能。
 - **統合プロキシリレー** — HTTP、HTTPS、SOCKS5 の認証付きプロキシに対応し、Chromium のコマンドライン、ログ、プロファイルメタデータに認証情報を露出しない構成。
 - **永続的な名前付きプロファイル** — `seed`、Cookie、`localStorage`、IndexedDB を `~/.ombra/profiles/<slug>` に保存し、プロセス間ロック（`ProfileBusyError`）で保護。
 - **暗号学的サプライチェーン検証** — リリースエンベロープの Ed25519 署名検証と、展開前のアーカイブに対する SHA-256 検証。
@@ -361,7 +361,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # 特定のエンジンビルドを固定し、追加の Chromium フラグを渡す
 browser = launch(
-    version="158.0.8127.37-2",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -451,11 +451,11 @@ from ombrabrowser import (
 
 # 解決されたエンジンバイナリを確認
 print(binary_info())
-# {'version': '158.0.8127.37-2', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # ブラウザを起動せずにエンジンをダウンロード・検証
-ensure_binary(version="158.0.8127.37-2")
+ensure_binary(version="158.0.8127.37-3")
 
 # SDK 管理下のエンジンバイナリを削除（~/.ombra/profiles 配下のプロファイルは保持）
 clear_cache()
@@ -474,7 +474,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # エンジンをダウンロードして検証 (Ed25519 + SHA-256)
-ombrabrowser install --version 158.0.8127.37-2  # 特定のエンジンビルドをインストール
+ombrabrowser install --version 158.0.8127.37-3  # 特定のエンジンビルドをインストール
 ombrabrowser info                                # 環境・バイナリ・依存関係の診断（エイリアス: doctor）
 ombrabrowser info --quick --json                 # バイナリを起動しない高速な機械可読レポート
 ombrabrowser info --proxy socks5://user:pass@host:1080  # プロキシ経由での出口 IP・タイムゾーン・ロケール解決をテスト
@@ -563,7 +563,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "158.0.8127.37-2" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -730,10 +730,10 @@ RUN fc-cache -f
 | `user_data_dir` | 一時ディレクトリ | 明示的なプロファイルディレクトリパス（`profile` と排他） |
 | `args` | `[]` | 追加の Chromium 引数（変更せずそのまま渡す） |
 | `binary_path` | 自動解決 | エンジン実行ファイルへの明示的なパス |
-| `version` | 環境変数 / 自動 | エンジンバージョンの固定（例: `158.0.8127.37-2`）。`OMBRA_VERSION` を上書き |
+| `version` | 環境変数 / 自動 | エンジンバージョンの固定（例: `158.0.8127.37-3`）。`OMBRA_VERSION` を上書き |
 | `timeout_ms` | `30000` | エンジン起動および CDP 接続のタイムアウト（1000–600000 ms） |
 | `humanize` | エンジンデフォルト | `False`、`True`、または `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | 環境変数 / ファイル | 旧ライセンスビルド用キー（`158.0.8127.37-2+` では不要。ログ出力されない） |
+| `license_key` | 環境変数 / ファイル | 旧ライセンスビルド用キー（`158.0.8127.37-3+` では不要。ログ出力されない） |
 | `env` | `{}` | エンジンプロセスに渡す追加の環境変数 |
 | `download` | `True` | 不足しているエンジンバイナリの自動ダウンロードを許可 |
 
@@ -746,7 +746,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | 未設定 | エンジンバイナリへの明示的なパス |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | キャッシュ済みエンジンおよび名前付きプロファイルの保存ディレクトリ |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | エンジンダウンロードのベース URL / ミラー（`none`/`off` でダウンロード無効化） |
-| `OMBRA_VERSION` | 最新の互換版 | 固定するエンジンバージョン（例: `158.0.8127.37-2`） |
+| `OMBRA_VERSION` | 最新の互換版 | 固定するエンジンバージョン（例: `158.0.8127.37-3`） |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | エンジンリリースチャネル: `stable` または `beta` |
 | `OMBRA_AUTO_UPDATE` | `true` | 起動時に新しいエンジンビルドを確認 |
 | `OMBRA_SKIP_CHECKSUM` | `false` | ローカル開発専用: SHA-256 検証を無効化（警告をログ出力） |
@@ -768,10 +768,10 @@ RUN fc-cache -f
 
 | コンポーネント | サポート状況 | 備考 |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | 自律ビルド `158.0.8127.37-2`。Ombra Desktop は Developer ID 署名・公証済み |
+| **macOS ARM64 (Apple Silicon)** | ✅ | 自律ビルド `158.0.8127.37-3`。Ombra Desktop は Developer ID 署名・公証済み |
 | **macOS x64 (Intel)** | — | Chromium 158 の現行リリースはありません |
-| **Linux x64** | ✅ | 自律ビルド `158.0.8127.37-2`。`.tar.xz` 展開のため `xz-utils` (`xz`) が必要 |
-| **Windows x64** | ✅ | 自律ビルド `158.0.8127.37-2` および Ombra Desktop インストーラー |
+| **Linux x64** | ✅ | 自律ビルド `158.0.8127.37-3`。`.tar.xz` 展開のため `xz-utils` (`xz`) が必要 |
+| **Windows x64** | ✅ | 自律ビルド `158.0.8127.37-3` および Ombra Desktop インストーラー |
 | **Python** | `3.10+` | `ombrabrowser` と一緒に Playwright `>=1.60,<2.0` が自動インストール |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` または Puppeteer `>=22`（Puppeteer 25+ は Node.js `>=22.12` が必要） |
 
@@ -881,14 +881,14 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # 特定の起動で厳密なビルドを固定
-browser = launch(version="158.0.8127.37-2")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
 # または環境変数 / CLI で設定
-export OMBRA_VERSION=158.0.8127.37-2
+export OMBRA_VERSION=158.0.8127.37-3
 export OMBRA_RELEASE_CHANNEL=beta
-ombrabrowser install --version 158.0.8127.37-2
+ombrabrowser install --version 158.0.8127.37-3
 
 # またはローカルでビルドしたバイナリを指定
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Apple Silicon macOS 向けの公式 Ombra リリースは、Apple Developer ID 証明書で署名・公証されています。未署名のローカル開発ビルドを実行して macOS が検疫した場合は、一度だけ検疫属性を解除してください。
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### 同期 Python でページを待機する方法
@@ -964,7 +964,7 @@ for _ in range(15):
 
 ### Ombra は無料ですか？ライセンスキーは必要ですか？
 
-このリポジトリ内の SDK ソースコードは Apache License 2.0 のオープンソースです。現行エンジンビルド（`158.0.8127.37-2` 以降）およびローカルの Ombra Desktop プロファイルマネージャー（`desktop-v1.2.2`）は無料で自律動作し、アカウント、ライセンスキー、ハードウェア ID、プロファイル数制限はありません。`license_key` と `OMBRA_LICENSE_KEY` は旧ライセンスビルドでのみ必要です。
+このリポジトリ内の SDK ソースコードは Apache License 2.0 のオープンソースです。現行エンジンビルド（`158.0.8127.37-3` 以降）およびローカルの Ombra Desktop プロファイルマネージャー（`desktop-v1.2.2`）は無料で自律動作し、アカウント、ライセンスキー、ハードウェア ID、プロファイル数制限はありません。`license_key` と `OMBRA_LICENSE_KEY` は旧ライセンスビルドでのみ必要です。
 
 ### SDK を使うのに Ombra Desktop のインストールは必要ですか？
 

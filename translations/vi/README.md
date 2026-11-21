@@ -54,7 +54,7 @@ Cùng API, cùng selector và kiểu dữ liệu — chỉ cần đổi câu l�
 
 - **Bản vá Chromium ở cấp mã nguồn** — kiểm soát canvas, WebGL, WebGPU, âm thanh (audio), phông chữ, GPU, màn hình, truy vấn phương tiện CSS, thông số phần cứng, WebRTC không rò rỉ STUN, TLS ClientHello, múi giờ, ngôn ngữ vùng và loại bỏ các dấu hiệu tự động hóa (`navigator.webdriver`, `Runtime.enable`, các dấu hiệu chế độ headless).
 - **Mô phỏng thao tác người dùng gốc trong tiến trình trình duyệt (`humanize=True`)** — quỹ đạo con trỏ (`cursory-rs`), cú nhấp có căn điểm với thời gian giữ nút, nhịp điệu gõ phím kèm tự sửa lỗi chính tả và vật lý cuộn trang đều chạy bên trong Chromium. SDK trả về đối tượng `Browser` gốc hoàn toàn thuần túy, không qua lớp bọc proxy.
-- **Vận hành độc lập không cần khóa hay tài khoản** — các bản dựng engine hiện tại (`158.0.8127.37-2` trở lên) và Ombra Desktop chạy cục bộ mà không cần đăng ký, khóa bản quyền, mã phần cứng (hardware ID) hay máy chủ cấp phép.
+- **Vận hành độc lập không cần khóa hay tài khoản** — các bản dựng engine hiện tại (`158.0.8127.37-3` trở lên) và Ombra Desktop chạy cục bộ mà không cần đăng ký, khóa bản quyền, mã phần cứng (hardware ID) hay máy chủ cấp phép.
 - **Cài đặt tự động và xác minh mật mã cho tệp nhị phân** — chạy `pip install ombrabrowser` hoặc `npm install @ombralabs/sdk`; ở lần khởi chạy đầu tiên, SDK sẽ tự tải bản dựng phù hợp cho nền tảng của bạn, xác minh chữ ký Ed25519 và mã kiểm tra SHA-256.
 - **Hồ sơ bền vững và bộ chuyển tiếp proxy an toàn** — hồ sơ có tên lưu giữ cookie, `localStorage`, IndexedDB và `seed` xuyên suốt các lần chạy với cơ chế khóa liên tiến trình; các proxy yêu cầu xác thực (HTTP, HTTPS, SOCKS5) chạy qua bộ chuyển tiếp loopback cục bộ để thông tin đăng nhập không bao giờ xuất hiện trong tham số dòng lệnh tiến trình.
 - **Trình quản lý hồ sơ ngoại tuyến Ombra Desktop** — ứng dụng máy tính gốc ngay trong kho lưu trữ này ([`desktop/`](../../desktop/README.md)) đi kèm bộ cài đặt dựng sẵn cho macOS, Linux và Windows.
@@ -149,7 +149,7 @@ Khi khởi chạy, SDK tìm kiếm engine theo thứ tự nghiêm ngặt: `binar
 
 Để tắt tính năng tải tự động, hãy truyền `download=False` (`download: false` trong Node.js). Để tải trước và xác minh engine (ví dụ trong quá trình dựng container), hãy gọi `ensure_binary()` (`ensureBinary()`) hoặc dùng lệnh CLI `install`.
 
-> **Khởi chạy độc lập:** các bản dựng engine hiện tại (`158.0.8127.37-2` trở lên) hoàn toàn miễn phí và không yêu cầu tài khoản hay khóa bản quyền. `OMBRA_LICENSE_KEY` và lệnh `login` chỉ được giữ lại nhằm tương thích với các bản dựng có cấp phép đời cũ.
+> **Khởi chạy độc lập:** các bản dựng engine hiện tại (`158.0.8127.37-3` trở lên) hoàn toàn miễn phí và không yêu cầu tài khoản hay khóa bản quyền. `OMBRA_LICENSE_KEY` và lệnh `login` chỉ được giữ lại nhằm tương thích với các bản dựng có cấp phép đời cũ.
 
 **Chuyển đổi từ Playwright** chỉ tốn hai dòng — mọi thao tác trang, locator và lệnh chờ đều giữ nguyên:
 
@@ -185,9 +185,9 @@ Mỗi thành phần trong hệ sinh thái đều tuân theo hợp đồng khởi
 | **Hợp đồng SDK** | Bản nháp `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` trên PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` trên npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Engine Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-2` · macOS ARM64 / Linux x64 / Windows x64 |
+| **Engine Ombra Chromium** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Trình duyệt độc lập** | `v158.0.8127.37-2` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-2) |
+| **Trình duyệt độc lập** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
 | **Schema và kiểm thử tuân thủ** | JSON Schema + bộ kiểm thử dùng chung | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Phương pháp kiểm tra stealth** | 6 lớp (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -196,8 +196,8 @@ Các tính năng có trong các bản phát hành hiện tại:
 - **Bản vá ở cấp mã nguồn** — suy xuất fingerprint nhất quán từ `seed`, đồng bộ WebGL / WebGPU và danh sách mở rộng (extension), bảng phông chữ sát thực tế theo từng hệ điều hành, hồ sơ TLS ClientHello gốc (`chrome-<major>`), triệt tiêu rò rỉ ngăn xếp của `Runtime.enable` cùng `UtilityScript` và chống rò rỉ IP máy chủ qua WebRTC.
 - **Miền CDP `Ombra` cấp trình duyệt** — điều khiển trực tiếp chế độ mô phỏng thao tác người dùng (`getHumanizeState`, `setHumanize`) ngay trong thời gian chạy ở Python và Node.js mà không cần khởi động lại trình duyệt.
 - **Mô phỏng thao tác gốc trong tiến trình trình duyệt** — bộ lập kế hoạch con trỏ `cursory-rs`, hồ sơ cuộn chuột và bàn di chuột (trackpad), nhịp điệu gõ phím kèm tự sửa lỗi chính tả, và dán văn bản dài an toàn thông qua bộ nhớ tạm cô lập.
-- **Bản dựng độc lập không cần khóa** — các bản dựng engine hiện tại (`158.0.8127.37-2`) và Ombra Desktop `1.2.2` chạy hoàn toàn cục bộ không cần tài khoản, khóa hay thu thập dữ liệu từ xa.
-- **Ghim phiên bản engine (`version`)** — cố định một bản dựng chính xác qua `launch(version="158.0.8127.37-2")`, `OMBRA_VERSION` hoặc lệnh CLI `install --version`.
+- **Bản dựng độc lập không cần khóa** — các bản dựng engine hiện tại (`158.0.8127.37-3`) và Ombra Desktop `1.2.2` chạy hoàn toàn cục bộ không cần tài khoản, khóa hay thu thập dữ liệu từ xa.
+- **Ghim phiên bản engine (`version`)** — cố định một bản dựng chính xác qua `launch(version="158.0.8127.37-3")`, `OMBRA_VERSION` hoặc lệnh CLI `install --version`.
 - **Bộ chuyển tiếp proxy hợp nhất** — hỗ trợ proxy xác thực HTTP, HTTPS và SOCKS5 mà không để lộ thông tin đăng nhập trong dòng lệnh Chromium, nhật ký hay siêu dữ liệu hồ sơ.
 - **Hồ sơ bền vững có tên** — lưu trữ `seed`, cookie, `localStorage` và IndexedDB trong `~/.ombra/profiles/<slug>` với cơ chế khóa liên tiến trình (`ProfileBusyError`).
 - **Kiểm tra chuỗi cung ứng bằng mật mã** — xác minh chữ ký Ed25519 của gói tin phát hành và kiểm tra SHA-256 cho gói lưu trữ trước khi giải nén.
@@ -361,7 +361,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # Ghim một bản dựng engine cụ thể và truyền thêm các cờ Chromium
 browser = launch(
-    version="158.0.8127.37-2",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -451,11 +451,11 @@ from ombrabrowser import (
 
 # Kiểm tra tệp nhị phân engine đã được phân giải
 print(binary_info())
-# {'version': '158.0.8127.37-2', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # Tải xuống và xác minh engine mà không khởi chạy trình duyệt
-ensure_binary(version="158.0.8127.37-2")
+ensure_binary(version="158.0.8127.37-3")
 
 # Xóa các tệp nhị phân engine do SDK quản lý (hồ sơ trong ~/.ombra/profiles không bị ảnh hưởng)
 clear_cache()
@@ -474,7 +474,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # tải xuống và xác minh engine (Ed25519 + SHA-256)
-ombrabrowser install --version 158.0.8127.37-2  # cài đặt một bản dựng engine cụ thể
+ombrabrowser install --version 158.0.8127.37-3  # cài đặt một bản dựng engine cụ thể
 ombrabrowser info                                # chẩn đoán môi trường, tệp nhị phân và gói phụ thuộc (bí danh: doctor)
 ombrabrowser info --quick --json                 # báo cáo nhanh dạng máy đọc được mà không khởi chạy tệp nhị phân
 ombrabrowser info --proxy socks5://user:pass@host:1080  # kiểm tra phân giải IP đầu ra, múi giờ và ngôn ngữ vùng qua proxy
@@ -563,7 +563,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "158.0.8127.37-2" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -730,10 +730,10 @@ Tên tùy chọn tuân theo API Python và [Hợp đồng SDK](../../docs/sdk-co
 | `user_data_dir` | thư mục tạm | Đường dẫn thư mục hồ sơ tường minh (loại trừ lẫn nhau với `profile`) |
 | `args` | `[]` | Các tham số Chromium bổ sung (được truyền thẳng nguyên vẹn) |
 | `binary_path` | tự phân giải | Đường dẫn tường minh tới tệp thực thi của engine |
-| `version` | biến môi trường / tự động | Ghim phiên bản engine (ví dụ: `158.0.8127.37-2`), ghi đè `OMBRA_VERSION` |
+| `version` | biến môi trường / tự động | Ghim phiên bản engine (ví dụ: `158.0.8127.37-3`), ghi đè `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Thời hạn chờ khởi động engine và kết nối CDP (1000–600000 ms) |
 | `humanize` | mặc định của engine | `False`, `True`, hoặc `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | biến môi trường / tệp | Khóa dành cho các bản dựng cấp phép đời cũ (không cần từ bản `158.0.8127.37-2+`; không bao giờ ghi nhật ký) |
+| `license_key` | biến môi trường / tệp | Khóa dành cho các bản dựng cấp phép đời cũ (không cần từ bản `158.0.8127.37-3+`; không bao giờ ghi nhật ký) |
 | `env` | `{}` | Biến môi trường bổ sung cho tiến trình engine |
 | `download` | `True` | Cho phép tự động tải tệp nhị phân engine khi còn thiếu |
 
@@ -746,7 +746,7 @@ Thứ tự ưu tiên: **tùy chọn khởi chạy tường minh → biến môi 
 | `OMBRA_BINARY_PATH` | chưa đặt | Đường dẫn tường minh tới tệp nhị phân engine |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Thư mục lưu bộ nhớ đệm engine và các hồ sơ có tên |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | URL gốc / máy chủ gương tải engine (`none`/`off` để tắt tải xuống) |
-| `OMBRA_VERSION` | bản tương thích mới nhất | Phiên bản engine được ghim (ví dụ: `158.0.8127.37-2`) |
+| `OMBRA_VERSION` | bản tương thích mới nhất | Phiên bản engine được ghim (ví dụ: `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | Kênh phát hành engine: `stable` hoặc `beta` |
 | `OMBRA_AUTO_UPDATE` | `true` | Kiểm tra bản dựng engine mới hơn khi khởi chạy |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Chỉ dùng khi phát triển cục bộ: tắt xác minh SHA-256 (sẽ ghi cảnh báo) |
@@ -768,10 +768,10 @@ Hệ thống phân loại lỗi đầy đủ và quy tắc thử lại được 
 
 | Thành phần | Hỗ trợ | Ghi chú |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | Bản dựng độc lập `158.0.8127.37-2`; Ombra Desktop được ký Developer ID và công chứng |
+| **macOS ARM64 (Apple Silicon)** | ✅ | Bản dựng độc lập `158.0.8127.37-3`; Ombra Desktop được ký Developer ID và công chứng |
 | **macOS x64 (Intel)** | — | Chưa có bản phát hành Chromium 158 hiện tại |
-| **Linux x64** | ✅ | Bản dựng độc lập `158.0.8127.37-2`; cần `xz-utils` (`xz`) để giải nén `.tar.xz` |
-| **Windows x64** | ✅ | Bản dựng độc lập `158.0.8127.37-2` và bộ cài đặt Ombra Desktop |
+| **Linux x64** | ✅ | Bản dựng độc lập `158.0.8127.37-3`; cần `xz-utils` (`xz`) để giải nén `.tar.xz` |
+| **Windows x64** | ✅ | Bản dựng độc lập `158.0.8127.37-3` và bộ cài đặt Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` được cài đặt tự động cùng `ombrabrowser` |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` hoặc Puppeteer `>=22` (Puppeteer 25+ yêu cầu Node.js `>=22.12`) |
 
@@ -881,14 +881,14 @@ Thử nghiệm kênh `beta`, hoặc ghim / hạ phiên bản về một bản d�
 
 ```python
 # Ghim một bản dựng cụ thể cho một lần khởi chạy nhất định
-browser = launch(version="158.0.8127.37-2")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
 # Hoặc cấu hình qua biến môi trường / CLI
-export OMBRA_VERSION=158.0.8127.37-2
+export OMBRA_VERSION=158.0.8127.37-3
 export OMBRA_RELEASE_CHANNEL=beta
-ombrabrowser install --version 158.0.8127.37-2
+ombrabrowser install --version 158.0.8127.37-3
 
 # Hoặc trỏ tới tệp nhị phân được biên dịch cục bộ
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Các bản phát hành Ombra chính thức cho macOS Apple Silicon đều được ký bằng chứng chỉ Apple Developer ID và đã được công chứng. Nếu bạn chạy một bản dựng nhà phát triển cục bộ chưa ký và bị macOS cách ly (quarantine), hãy xóa thuộc tính cách ly một lần:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Chờ trên trang trong Python đồng bộ
@@ -965,7 +965,7 @@ Không. SDK kết nối client Playwright (hoặc Puppeteer) chính thức tới
 
 ### Ombra có miễn phí không và tôi có cần khóa bản quyền không?
 
-Mã nguồn SDK trong kho lưu trữ này là mã nguồn mở theo Giấy phép Apache 2.0. Các bản dựng engine hiện tại (`158.0.8127.37-2` trở lên) và trình quản lý hồ sơ cục bộ Ombra Desktop (`desktop-v1.2.2`) chạy hoàn toàn miễn phí và độc lập — không cần tài khoản, khóa bản quyền, mã phần cứng hay giới hạn số lượng hồ sơ. `license_key` và `OMBRA_LICENSE_KEY` chỉ cần dùng cho các bản dựng cấp phép đời cũ.
+Mã nguồn SDK trong kho lưu trữ này là mã nguồn mở theo Giấy phép Apache 2.0. Các bản dựng engine hiện tại (`158.0.8127.37-3` trở lên) và trình quản lý hồ sơ cục bộ Ombra Desktop (`desktop-v1.2.2`) chạy hoàn toàn miễn phí và độc lập — không cần tài khoản, khóa bản quyền, mã phần cứng hay giới hạn số lượng hồ sơ. `license_key` và `OMBRA_LICENSE_KEY` chỉ cần dùng cho các bản dựng cấp phép đời cũ.
 
 ### Tôi có cần cài đặt Ombra Desktop để sử dụng SDK không?
 

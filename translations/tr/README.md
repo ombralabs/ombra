@@ -54,7 +54,7 @@ Aynı API, aynı seçiciler ve tipler — yalnızca içe aktarma satırını ve 
 
 - **Kaynak düzeyinde Chromium yamaları** — canvas, WebGL, WebGPU, ses, yazı tipleri, GPU, ekran, CSS medya sorguları, donanım bildirimi, STUN sızıntısı olmadan WebRTC, TLS ClientHello, saat dilimi, yerel ayar ve otomasyon sinyallerinin kaldırılması (`navigator.webdriver`, `Runtime.enable`, headless işaretçileri).
 - **Tarayıcı sürecinde yerleşik doğal girdi simülasyonu (`humanize=True`)** — işaretçi yörüngeleri (`cursory-rs`), basılı tutma süreli hedefli tıklamalar, yazım hatası ve kendi kendini düzeltme içeren yazma ritmi ve kaydırma fiziği doğrudan Chromium içinde çalışır. SDK, proxy sarmalayıcıları olmadan düz ve doğal bir `Browser` nesnesi döndürür.
-- **Anahtar veya hesap gerektirmeden bağımsız çalışma** — güncel motor derlemeleri (`158.0.8127.37-2` ve sonrası) ile Ombra Desktop kayıt, lisans anahtarı, donanım kimliği veya lisans sunucusu olmadan yerel olarak çalışır.
+- **Anahtar veya hesap gerektirmeden bağımsız çalışma** — güncel motor derlemeleri (`158.0.8127.37-3` ve sonrası) ile Ombra Desktop kayıt, lisans anahtarı, donanım kimliği veya lisans sunucusu olmadan yerel olarak çalışır.
 - **Otomatik kurulum ve kriptografik ikili doğrulama** — `pip install ombrabrowser` veya `npm install @ombralabs/sdk`; ilk başlatmada SDK platformunuza uygun derlemeyi indirir, Ed25519 imzasını ve SHA-256 sağlama toplamını doğrular.
 - **Kalıcı profiller ve güvenli proxy aktarıcı** — adlandırılmış profiller çerezleri, `localStorage`, IndexedDB ve `seed` değerini süreçler arası kilitleme ile çalıştırmalar arasında korur; kimlik doğrulamalı proxy'ler (HTTP, HTTPS, SOCKS5) yerel loopback aktarıcı üzerinden çalışır, böylece kimlik bilgileri süreç argümanlarında asla görünmez.
 - **Çevrimdışı Ombra Desktop profil yöneticisi** — macOS, Linux ve Windows için önceden derlenmiş kurulum dosyalarıyla bu depoda yer alan yerleşik bir masaüstü uygulaması ([`desktop/`](../../desktop/README.md)).
@@ -149,7 +149,7 @@ Başlatma sırasında SDK, motoru kesin bir sırayla çözümler: `binary_path` 
 
 Otomatik indirmeyi devre dışı bırakmak için `download=False` (Node.js'te `download: false`) parametresini geçin. Motoru önceden indirip doğrulamak için (örneğin bir konteyner derlemesi sırasında) `ensure_binary()` (`ensureBinary()`) işlevini çağırın veya CLI `install` komutunu kullanın.
 
-> **Bağımsız başlatma:** güncel motor derlemeleri (`158.0.8127.37-2` ve sonrası) ücretsizdir; hesap veya lisans anahtarı gerektirmez. `OMBRA_LICENSE_KEY` ve `login` komutu yalnızca eski lisanslı derlemelerle uyumluluk için korunmaktadır.
+> **Bağımsız başlatma:** güncel motor derlemeleri (`158.0.8127.37-3` ve sonrası) ücretsizdir; hesap veya lisans anahtarı gerektirmez. `OMBRA_LICENSE_KEY` ve `login` komutu yalnızca eski lisanslı derlemelerle uyumluluk için korunmaktadır.
 
 **Playwright'tan geçiş** yalnızca iki satır sürer — tüm sayfa işlemleri, konumlandırıcılar (locator) ve beklemeler olduğu gibi kalır:
 
@@ -185,9 +185,9 @@ Ekosistemdeki her bileşen ortak başlatma sözleşmesini izler ve bağımsız o
 | **SDK sözleşmesi** | Taslak `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alfa `0.1.3` | [PyPI üzerinde `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alfa `0.1.0` | [npm üzerinde `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium motoru** | Chromium `158.0.8127.37` | `158.0.8127.37-2` · macOS ARM64 / Linux x64 / Windows x64 |
+| **Ombra Chromium motoru** | Chromium `158.0.8127.37` | `158.0.8127.37-3` · macOS ARM64 / Linux x64 / Windows x64 |
 | **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Bağımsız tarayıcı** | `v158.0.8127.37-2` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-2) |
+| **Bağımsız tarayıcı** | `v158.0.8127.37-3` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-3) |
 | **Şemalar ve uyumluluk testleri** | JSON Schema + ortak senaryolar | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Gizlilik kontrolü yöntemi** | 6 katman (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -196,8 +196,8 @@ Güncel sürümlerde yer alanlar:
 - **Kaynak düzeyinde yamalar** — `seed` tabanlı tutarlı parmak izi türetme, WebGL / WebGPU ve eklenti hizalaması, işletim sistemine özgü gerçekçi yazı tipi tabloları, yerleşik TLS ClientHello profili (`chrome-<major>`), `Runtime.enable` ve `UtilityScript` yığın sızıntılarının bastırılması ve WebRTC yerel IP sızıntı koruması.
 - **Tarayıcı düzeyinde `Ombra` CDP alanı** — Python ve Node.js üzerinde tarayıcıyı yeniden başlatmadan doğal girdi simülasyonu üzerinde canlı kontrol (`getHumanizeState`, `setHumanize`).
 - **Tarayıcı sürecinde yerleşik girdi simülasyonu** — `cursory-rs` işaretçi planlayıcısı, tekerlek ve dokunmatik yüzey (trackpad) kaydırma profilleri, yazım hatası düzeltmeli yazma ritmi ve yalıtılmış pano üzerinden güvenli uzun metin yapıştırma.
-- **Anahtarsız bağımsız derlemeler** — güncel motor derlemeleri (`158.0.8127.37-2`) ve Ombra Desktop `1.2.2` hesap, anahtar veya telemetri olmadan tamamen yerel olarak çalışır.
-- **Motor sürümü sabitleme (`version`)** — `launch(version="158.0.8127.37-2")`, `OMBRA_VERSION` veya CLI `install --version` ile belirli bir derlemeyi sabitleyin.
+- **Anahtarsız bağımsız derlemeler** — güncel motor derlemeleri (`158.0.8127.37-3`) ve Ombra Desktop `1.2.2` hesap, anahtar veya telemetri olmadan tamamen yerel olarak çalışır.
+- **Motor sürümü sabitleme (`version`)** — `launch(version="158.0.8127.37-3")`, `OMBRA_VERSION` veya CLI `install --version` ile belirli bir derlemeyi sabitleyin.
 - **Birleşik proxy aktarıcı** — kimlik bilgilerini Chromium'un komut satırına, günlüklerine veya profil meta verilerine sızdırmadan HTTP, HTTPS ve SOCKS5 kimlik doğrulamalı proxy desteği.
 - **Kalıcı adlandırılmış profiller** — `seed`, çerezler, `localStorage` ve IndexedDB verilerini süreçler arası kilitleme (`ProfileBusyError`) ile `~/.ombra/profiles/<slug>` altında saklar.
 - **Kriptografik tedarik zinciri doğrulamaları** — arşiv açılmadan önce sürüm zarflarının Ed25519 imza doğrulaması ve arşivlerin SHA-256 doğrulaması.
@@ -361,7 +361,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # Belirli bir motor derlemesini sabitle ve ek Chromium bayrakları geç
 browser = launch(
-    version="158.0.8127.37-2",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -451,11 +451,11 @@ from ombrabrowser import (
 
 # Çözümlenen motor ikili dosyasını incele
 print(binary_info())
-# {'version': '158.0.8127.37-2', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # Tarayıcı başlatmadan motoru indir ve doğrula
-ensure_binary(version="158.0.8127.37-2")
+ensure_binary(version="158.0.8127.37-3")
 
 # SDK tarafından yönetilen motor ikili dosyalarını temizle (~/.ombra/profiles altındaki profillere dokunulmaz)
 clear_cache()
@@ -474,7 +474,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # motoru indir ve doğrula (Ed25519 + SHA-256)
-ombrabrowser install --version 158.0.8127.37-2  # belirli bir motor derlemesini kur
+ombrabrowser install --version 158.0.8127.37-3  # belirli bir motor derlemesini kur
 ombrabrowser info                                # ortam, ikili dosya ve bağımlılık tanılaması (takma ad: doctor)
 ombrabrowser info --quick --json                 # ikili dosyayı başlatmadan hızlı, makine tarafından okunabilir rapor
 ombrabrowser info --proxy socks5://user:pass@host:1080  # proxy üzerinden çıkış IP'si, saat dilimi ve yerel ayar çözümlemesini test et
@@ -563,7 +563,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "158.0.8127.37-2" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -730,10 +730,10 @@ Seçenek adları Python API ve [SDK sözleşmesi](../../docs/sdk-contract.md) il
 | `user_data_dir` | geçici | Açık profil dizini yolu (`profile` ile birlikte kullanılamaz) |
 | `args` | `[]` | Ek Chromium argümanları (değiştirilmeden doğrudan iletilir) |
 | `binary_path` | çözümlenir | Bir motor yürütülebilir dosyasına açık yol |
-| `version` | ortam / otomatik | Motor sürümü sabitleme (örneğin `158.0.8127.37-2`), `OMBRA_VERSION` değerini geçersiz kılar |
+| `version` | ortam / otomatik | Motor sürümü sabitleme (örneğin `158.0.8127.37-3`), `OMBRA_VERSION` değerini geçersiz kılar |
 | `timeout_ms` | `30000` | Motor başlatma ve CDP bağlantısı için zaman aşımı (1000–600000 ms) |
 | `humanize` | motor varsayılanı | `False`, `True` veya `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | ortam / dosya | Eski lisanslı derlemeler için anahtar (`158.0.8127.37-2+` sürümlerinde gerekmez; asla günlüğe yazılmaz) |
+| `license_key` | ortam / dosya | Eski lisanslı derlemeler için anahtar (`158.0.8127.37-3+` sürümlerinde gerekmez; asla günlüğe yazılmaz) |
 | `env` | `{}` | Motor süreci için ek ortam değişkenleri |
 | `download` | `True` | Eksik motor ikili dosyasının otomatik indirilmesine izin ver |
 
@@ -746,7 +746,7 @@ Seçenek adları Python API ve [SDK sözleşmesi](../../docs/sdk-contract.md) il
 | `OMBRA_BINARY_PATH` | tanımlı değil | Bir motor ikili dosyasına açık yol |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Önbelleğe alınmış motorlar ve adlandırılmış profiller için dizin |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Motor indirmeleri için temel URL / yansı (`none`/`off` indirmeleri kapatır) |
-| `OMBRA_VERSION` | en son uyumlu | Sabitlenmiş motor sürümü (örneğin `158.0.8127.37-2`) |
+| `OMBRA_VERSION` | en son uyumlu | Sabitlenmiş motor sürümü (örneğin `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | Motor sürüm kanalı: `stable` veya `beta` |
 | `OMBRA_AUTO_UPDATE` | `true` | Başlatmada daha yeni motor derlemelerini kontrol et |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Yalnızca yerel geliştirme için: SHA-256 doğrulamasını devre dışı bırakır (uyarı günlüğü yazar) |
@@ -768,10 +768,10 @@ Tam hata taksonomisi ve yeniden deneme kuralları [SDK sözleşmesinde (`docs/sd
 
 | Bileşen | Destek | Notlar |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | Bağımsız derleme `158.0.8127.37-2`; Ombra Desktop Developer ID ile imzalı ve noter onaylıdır |
+| **macOS ARM64 (Apple Silicon)** | ✅ | Bağımsız derleme `158.0.8127.37-3`; Ombra Desktop Developer ID ile imzalı ve noter onaylıdır |
 | **macOS x64 (Intel)** | — | Chromium 158 için güncel sürüm yok |
-| **Linux x64** | ✅ | Bağımsız derleme `158.0.8127.37-2`; `.tar.xz` arşivini açmak için `xz-utils` (`xz`) gerektirir |
-| **Windows x64** | ✅ | Bağımsız derleme `158.0.8127.37-2` ve Ombra Desktop kurulum dosyası |
+| **Linux x64** | ✅ | Bağımsız derleme `158.0.8127.37-3`; `.tar.xz` arşivini açmak için `xz-utils` (`xz`) gerektirir |
+| **Windows x64** | ✅ | Bağımsız derleme `158.0.8127.37-3` ve Ombra Desktop kurulum dosyası |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0`, `ombrabrowser` ile otomatik olarak kurulur |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` veya Puppeteer `>=22` (Puppeteer 25+ için Node.js `>=22.12` gerekir) |
 
@@ -881,14 +881,14 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # Belirli bir başlatma için kesin bir derlemeyi sabitle
-browser = launch(version="158.0.8127.37-2")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
 # Veya ortam değişkenleri / CLI üzerinden yapılandır
-export OMBRA_VERSION=158.0.8127.37-2
+export OMBRA_VERSION=158.0.8127.37-3
 export OMBRA_RELEASE_CHANNEL=beta
-ombrabrowser install --version 158.0.8127.37-2
+ombrabrowser install --version 158.0.8127.37-3
 
 # Veya yerel olarak derlenmiş bir ikili dosyayı göster
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Apple Silicon macOS için resmi Ombra sürümleri bir Apple Developer ID sertifikasıyla imzalanmış ve noter onayından geçmiştir. İmzasız yerel bir geliştirici derlemesi çalıştırıyorsanız ve macOS bunu karantinaya alıyorsa, karantina özniteliğini bir kez temizleyin:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Eşzamanlı Python'da sayfada bekleme
@@ -965,7 +965,7 @@ Hayır. SDK, resmi Playwright (veya Puppeteer) istemcisini yerel CDP üzerinden 
 
 ### Ombra ücretsiz mi ve lisans anahtarına ihtiyacım var mı?
 
-Bu depodaki SDK kaynak kodu Apache License 2.0 altında açık kaynaklıdır. Güncel motor derlemeleri (`158.0.8127.37-2` ve sonrası) ile yerel Ombra Desktop profil yöneticisi (`desktop-v1.2.2`) ücretsiz ve bağımsız çalışır — hesap, lisans anahtarı, donanım kimliği veya profil sayısı sınırı yoktur. `license_key` ve `OMBRA_LICENSE_KEY` yalnızca eski lisanslı derlemeler için gereklidir.
+Bu depodaki SDK kaynak kodu Apache License 2.0 altında açık kaynaklıdır. Güncel motor derlemeleri (`158.0.8127.37-3` ve sonrası) ile yerel Ombra Desktop profil yöneticisi (`desktop-v1.2.2`) ücretsiz ve bağımsız çalışır — hesap, lisans anahtarı, donanım kimliği veya profil sayısı sınırı yoktur. `license_key` ve `OMBRA_LICENSE_KEY` yalnızca eski lisanslı derlemeler için gereklidir.
 
 ### SDK'yı kullanmak için Ombra Desktop'ı kurmam gerekiyor mu?
 

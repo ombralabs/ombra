@@ -168,14 +168,20 @@ def _read_ombra_build_json(binary: Path) -> dict[str, Any] | None:
         app_root / "ombra-build.json",
         binary.parent / "ombra-build.json",
     ]
-    for path in candidates:
+    metadata = None
+    for path in dict.fromkeys(candidates):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-            if isinstance(data, dict):
-                return data
         except (OSError, json.JSONDecodeError):
             continue
-    return None
+        if isinstance(data, dict):
+            if metadata is not None and any(
+                key in metadata and key in data and metadata[key] != data[key]
+                for key in ("version", "chromium", "platform", "commit")
+            ):
+                raise ChecksumMismatchError(f"Conflicting engine build metadata for {binary}. Reinstall the engine.")
+            metadata = {**data, **(metadata or {})}
+    return metadata
 
 
 def _read_macos_plist_version(app_root: Path) -> str | None:
@@ -410,10 +416,15 @@ def verify_binary(
 
 
 def _binary_candidates_in_dir(base_dir: Path, system: str) -> list[Path]:
-    rel = binary_relative_path(system)
-    candidates = [base_dir / rel]
-    if system != "Darwin":
-        candidates.append(base_dir / "Chromium" / rel)
+    if system == "Darwin":
+        candidates = [base_dir / binary_relative_path(system),
+                      base_dir / "Chromium.app/Contents/MacOS/Chromium",
+                      base_dir / "Ombra.app/Contents/MacOS/Chromium"]
+    else:
+        names = ("ombra.exe", "chrome.exe") if system == "Windows" else ("ombra", "chrome")
+        candidates = [base_dir / name for name in names] + [base_dir / "Chromium" / name for name in names]
+    if len({candidate.resolve() for candidate in candidates if candidate.is_file()}) > 1:
+        raise ChecksumMismatchError(f"Ambiguous engine executables under {base_dir}. Reinstall the engine.")
     return candidates
 
 
