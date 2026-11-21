@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 官方發布的 Apple Silicon macOS 版 Ombra 均具備 Apple Developer ID 憑證簽章並通過公證。若您執行的是本機未簽章的開發建置版並遭 macOS 隔離，只需清除一次隔離屬性即可：
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### 在同步 Python 中等待頁面

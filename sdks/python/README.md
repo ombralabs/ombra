@@ -248,3 +248,7 @@ OMBRA_REAL_BROWSER_TEST=1 pytest -v tests -m real_browser
 - Sync and async launchers share binary resolution, profile locking, option validation, and the loopback SOCKS5 proxy relay.
 - `launch_context()` / `launch_persistent_context()` close the underlying browser and engine process when the context closes.
 - Obeys all stealth invariants (`SI-01`..`SI-12`): connects via `connect_over_cdp(..., no_defaults=True, is_local=True)`, defaults `new_page()`/`new_context()` to `no_viewport=True`, and never injects init scripts, `Runtime.enable`, `--enable-automation`, proxy credentials on CLI, or `Emulation` overrides.
+
+### Native engine paths
+
+Engine `158.0.8127.37-3` and newer use `Ombra.app/Contents/MacOS/Ombra` on macOS, `ombra` on Linux and `ombra.exe` on Windows. The SDK also resolves historical `Chromium.app/Contents/MacOS/Chromium`, macOS DMG installs with `Ombra.app/Contents/MacOS/Chromium`, and `chrome` / `chrome.exe` layouts. Existing version caches and checksum receipts stay in place; an installation containing conflicting executables or build metadata is rejected. Archive names and signature verification are unchanged.

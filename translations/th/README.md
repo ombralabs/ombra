@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 รุ่นเผยแพร่อย่างเป็นทางการของ Ombra สำหรับ Apple Silicon macOS ลงนามด้วยใบรับรอง Apple Developer ID และผ่านการรับรอง (notarized) แล้ว หากคุณรันบิลด์สำหรับนักพัฒนาที่ไม่ได้ลงนามในเครื่องและ macOS กักกัน (quarantine) ไว้ ให้ล้างแอตทริบิวต์กักกันออกครั้งเดียว:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### การรอหน้าเว็บใน Python แบบ synchronous

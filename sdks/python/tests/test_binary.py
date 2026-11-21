@@ -39,10 +39,11 @@ def _create_signed_archive(
     *,
     version: str,
     private_key: Ed25519PrivateKey,
+    layout: str = "legacy",
 ) -> tuple[Path, str, int, bytes]:
     plat = get_platform_info()
     staging = dest_dir / "pkg_src"
-    bin_path = make_fake_engine(staging, version=version)
+    bin_path = make_fake_engine(staging, version=version, layout=layout)
     assert bin_path.exists()
 
     archive_name = f"ombra-engine-{version}-{plat.cdn_name}{plat.archive_ext}"

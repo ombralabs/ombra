@@ -281,3 +281,5 @@ These block the `0.1.0` freeze:
 7. **Humanize mapping.** Which engine flags are stable enough to be part of the SDK contract?
 
 Until these are resolved, SDKs implement the documented behavior and return `UnsupportedEngine` or `InvalidOption` for the unclear edges instead of guessing.
+
+Native engine distributions from `158.0.8127.37-3` use `Ombra.app/Contents/MacOS/Ombra`, `ombra`, or `ombra.exe`. Both SDKs retain explicit resolution of historical Chromium layouts, including the macOS DMG outer name `Ombra.app` with executable `Chromium`. Cache version directories and receipt bytes are preserved. Competing executables or conflicting build metadata in one installation are errors; recognizing a legacy layout does not bypass its signature, platform or checksum checks.

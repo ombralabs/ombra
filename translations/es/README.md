@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Los lanzamientos oficiales de Ombra para macOS Apple Silicon están firmados con un certificado de Apple Developer ID y notarizados. Si ejecutas una compilación local de desarrollo sin firmar y macOS la pone en cuarentena, limpia una vez el atributo de cuarentena:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Esperar en una página en Python síncrono

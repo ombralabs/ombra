@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Rilis resmi Ombra untuk macOS Apple Silicon ditandatangani dengan sertifikat Apple Developer ID dan dinotarisasi. Jika Anda menjalankan build pengembang lokal tanpa tanda tangan dan macOS mengkarantinanya, bersihkan atribut karantina sekali saja:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Menunggu di halaman pada Python sinkron

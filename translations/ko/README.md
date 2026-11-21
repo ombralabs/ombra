@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Apple Silicon macOS용 공식 Ombra 릴리스는 Apple Developer ID 인증서로 서명 및 공증되어 있습니다. 서명되지 않은 로컬 개발자 빌드를 실행할 때 macOS가 격리 처리한다면 격리 속성을 한 번 제거하세요:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### 동기 Python 환경에서 페이지 대기하기

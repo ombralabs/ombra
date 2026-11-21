@@ -899,7 +899,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Các bản phát hành Ombra chính thức cho macOS Apple Silicon đều được ký bằng chứng chỉ Apple Developer ID và đã được công chứng. Nếu bạn chạy một bản dựng nhà phát triển cục bộ chưa ký và bị macOS cách ly (quarantine), hãy xóa thuộc tính cách ly một lần:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Chờ trên trang trong Python đồng bộ

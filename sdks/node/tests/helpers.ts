@@ -62,6 +62,7 @@ export async function withIsolatedEnv<T>(
 export interface FakeEngineOptions {
   version?: string;
   platform?: string;
+  layout?: "legacy" | "ombra" | "hybrid";
   /** Custom Node.js body executed when the fake engine runs without `--version`. */
   scriptBody?: string;
 }
@@ -85,14 +86,14 @@ export function makeFakeEngine(baseDir: string, opts: FakeEngineOptions = {}): s
   let buildJsonPath: string;
 
   if (process.platform === "darwin") {
-    const appDir = path.join(baseDir, "Chromium.app");
-    binPath = path.join(appDir, "Contents", "MacOS", "Chromium");
+    const appDir = path.join(baseDir, opts.layout && opts.layout !== "legacy" ? "Ombra.app" : "Chromium.app");
+    binPath = path.join(appDir, "Contents", "MacOS", opts.layout === "ombra" ? "Ombra" : "Chromium");
     buildJsonPath = path.join(appDir, "Contents", "Resources", "ombra-build.json");
   } else if (process.platform === "win32") {
-    binPath = path.join(baseDir, "chrome.exe");
+    binPath = path.join(baseDir, opts.layout === "ombra" ? "ombra.exe" : "chrome.exe");
     buildJsonPath = path.join(baseDir, "ombra-build.json");
   } else {
-    binPath = path.join(baseDir, "chrome");
+    binPath = path.join(baseDir, opts.layout === "ombra" ? "ombra" : "chrome");
     buildJsonPath = path.join(baseDir, "ombra-build.json");
   }
 
@@ -357,6 +358,7 @@ export async function withSignedEngineServer(
     serial: number;
     archiveRequests: number;
     baseUrl: string;
+    layout: "legacy" | "ombra";
   }) => Promise<void>,
 ): Promise<void> {
   const { default: http } = await import("node:http");
@@ -364,12 +366,12 @@ export async function withSignedEngineServer(
   const plat = getPlatformInfo();
   const signer = createTestSigningKeypair();
   const originalKeys = [...BINARY_SIGNING_PUBKEYS];
-  const cdn = { signer, version: "151.0.7922.108-7", serial: 10, archiveRequests: 0, baseUrl: "" };
+  const cdn = { signer, version: "151.0.7922.108-7", serial: 10, archiveRequests: 0, baseUrl: "", layout: "legacy" as "legacy" | "ombra" };
   const archives = new Map<string, Buffer>();
   function archive(version: string): Buffer {
     if (!archives.has(version)) {
       const dir = path.join(tmpRoot, `fixture-${version}`);
-      makeFakeEngine(dir, { version });
+      makeFakeEngine(dir, { version, layout: cdn.layout });
       const files: ArchiveEntrySpec[] = [];
       function collect(root: string, prefix = ""): void {
         for (const ent of fs.readdirSync(root, { withFileTypes: true })) {

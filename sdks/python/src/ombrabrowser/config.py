@@ -261,13 +261,13 @@ def _normalize_license_key(raw: str) -> str:
 
 
 def binary_relative_path(system: str | None = None) -> Path:
-    """Relative path of the Chromium executable inside an extracted engine directory."""
+    """Canonical executable path inside a native Ombra engine distribution."""
     target = system or platform.system()
     if target == "Darwin":
-        return Path("Chromium.app") / "Contents" / "MacOS" / "Chromium"
+        return Path("Ombra.app") / "Contents" / "MacOS" / "Ombra"
     if target == "Windows":
-        return Path("chrome.exe")
-    return Path("chrome")
+        return Path("ombra.exe")
+    return Path("ombra")
 
 
 def is_loopback_host(host: str | None) -> bool:
