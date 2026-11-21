@@ -54,8 +54,8 @@ Același API, aceiași selectori și tipuri — trebuie doar să schimbi importu
 
 - **Patch-uri Chromium la nivel de cod sursă** — canvas, WebGL, WebGPU, audio, fonturi, GPU, ecran, interogări media CSS, raportare hardware, WebRTC fără scurgeri STUN, TLS ClientHello, fus orar, localizare și eliminarea semnalelor de automatizare (`navigator.webdriver`, `Runtime.enable`, markeri headless).
 - **Intrare umanizată nativă în procesul browserului (`humanize=True`)** — traiectoriile cursorului (`cursory-rs`), clicurile țintite cu durată de apăsare, ritmul de tastare cu autocorectarea greșelilor și fizica derulării rulează în interiorul Chromium. SDK-ul returnează un obiect `Browser` nativ, simplu, fără wrapper-e proxy.
-- **Funcționare autonomă fără chei sau conturi** — build-urile actuale ale motorului (`151.0.7922.108-9` și mai noi) și Ombra Desktop rulează local fără înregistrare, chei de licență, ID-uri hardware sau un server de licențiere.
-- **Instalare automată și verificare criptografică a binarului** — `pip install ombrabrowser` sau `npm install @ombralabs/sdk`; la prima lansare, SDK-ul descarcă build-ul pentru platforma ta și îi verifică semnătura Ed25519 și suma de control SHA-256.
+- **Funcționare autonomă fără chei sau conturi** — build-urile actuale ale motorului și Ombra Desktop rulează local fără înregistrare, chei de licență, ID-uri hardware sau un server de licențiere.
+- **Instalare automată și verificare criptografică a binarului** — `pip install ombrabrowser` sau `npm install @ombralabs/sdk`; la prima lansare, SDK-ul descarcă un build compatibil de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases) și îi verifică semnătura Ed25519 și suma de control SHA-256.
 - **Profiluri persistente și releu proxy sigur** — profilurile cu nume păstrează cookie-urile, `localStorage`, IndexedDB și `seed` între rulări cu blocare inter-proces; proxy-urile autentificate (HTTP, HTTPS, SOCKS5) trec printr-un releu loopback local, astfel încât datele de autentificare nu apar niciodată în argumentele procesului.
 - **Manager de profiluri offline Ombra Desktop** — o aplicație desktop nativă din acest depozit ([`desktop/`](../../desktop/README.md)) cu pachete de instalare precompilate pentru macOS, Linux și Windows.
 
@@ -136,7 +136,7 @@ python -m pip install "ombrabrowser[geoip]"
 # Cu Playwright (1.60.0+, nu este necesară descărcarea Chromium standard)
 npm install @ombralabs/sdk "playwright-core@^1.60.0"
 
-# Sau cu Puppeteer
+# Sau cu Puppeteer (Puppeteer 25+ necesită Node.js 22.12+)
 npm install @ombralabs/sdk puppeteer-core
 
 # Opțional: cititor offline de baze de date GeoIP pentru timezone: "auto" și locale: "auto"
@@ -145,11 +145,11 @@ npm install mmdb-lib
 
 ---
 
-La lansare, SDK-ul localizează motorul într-o ordine strictă: `binary_path` (`binaryPath` în Node.js), `OMBRA_BINARY_PATH`, directorul de motoare Ombra Desktop și cache-ul SDK (`~/.ombra/engines`). Dacă nu este găsit niciun motor compatibil, SDK-ul descarcă un build din canalul de lansare semnat, îi verifică semnătura Ed25519 și suma de control SHA-256 și îl stochează local în cache. Rularea `playwright install chromium` nu este necesară.
+La lansare, SDK-ul localizează motorul într-o ordine strictă: `binary_path` (`binaryPath` în Node.js), `OMBRA_BINARY_PATH`, directorul de motoare Ombra Desktop și cache-ul SDK (`~/.ombra/engines`). Dacă nu este găsit niciun motor compatibil, SDK-ul descarcă un build de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases), îi verifică semnătura Ed25519 și suma de control SHA-256 și îl stochează local în cache. Rularea `playwright install chromium` nu este necesară.
 
 Pentru a dezactiva descărcările automate, pasează `download=False` (`download: false` în Node.js). Pentru a descărca și verifica motorul în avans (de exemplu în timpul construirii unui container), apelează `ensure_binary()` (`ensureBinary()`) sau folosește comanda CLI `install`.
 
-> **Lansare autonomă:** build-urile actuale ale motorului (`151.0.7922.108-9` și mai noi) sunt gratuite și nu necesită cont sau cheie de licență. `OMBRA_LICENSE_KEY` și comanda `login` rămân disponibile doar pentru compatibilitatea cu build-uri mai vechi cu licență.
+> **Lansare autonomă:** build-urile actuale ale motorului sunt gratuite și nu necesită cont sau cheie de licență. `OMBRA_LICENSE_KEY` și comanda `login` rămân disponibile doar pentru compatibilitatea cu build-uri mai vechi cu licență.
 
 **Migrarea de la Playwright** necesită două linii — toate operațiile pe pagină, locatorii și așteptările rămân neschimbate:
 
@@ -185,22 +185,11 @@ Fiecare componentă din ecosistem respectă contractul comun de lansare și este
 | **Contract SDK** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` pe PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` pe npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Motor Ombra Chromium** | Chromium `151.0.7922.108` | Descărcat automat de SDK (`-9` pentru macOS ARM64 / Linux x64 / Windows x64, `-7` pentru macOS Intel) |
-| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Browser independent** | `v158.0.8127.37-1` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-1) |
+| **Motor Ombra Chromium** | Interval SDK `>=151.0.7922.108,<152` | Descărcat automat de SDK de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Desktop** | Manager de profiluri offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Browser independent** | Chromium `158+` (doar independent; SDK-urile `0.1.x` actuale acceptă `151.*` și resping `158.*` cu `UnsupportedEngineError`) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Scheme și conformitate** | JSON Schema + cazuri comune | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Metodă de audit stealth** | 6 straturi (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
-
-Incluse în versiunile curente:
-
-- **Patch-uri la nivel de cod sursă** — derivare coerentă a amprentei din `seed`, alinierea WebGL / WebGPU și a extensiilor, tabele realiste de fonturi per sistem de operare, profil nativ TLS ClientHello (`chrome-<major>`), suprimarea `Runtime.enable` și a scurgerilor de stivă `UtilityScript` și protecție împotriva scurgerii IP-ului gazdă prin WebRTC.
-- **Domeniul CDP `Ombra` la nivel de browser** — control în timp real asupra intrării umanizate (`getHumanizeState`, `setHumanize`) în Python și Node.js fără repornirea browserului.
-- **Simulare nativă a intrării în procesul browserului** — planificator de cursor `cursory-rs`, profiluri de derulare pentru rotiță și trackpad, ritm de tastare cu autocorectarea greșelilor și lipire sigură a textelor lungi printr-un clipboard izolat.
-- **Build-uri autonome fără chei** — build-urile actuale ale motorului (`151.0.7922.108-9`) și Ombra Desktop `1.2.2` rulează complet local fără conturi, chei sau telemetrie.
-- **Fixarea versiunii motorului (`version`)** — fixează un build exact prin `launch(version="151.0.7922.108-9")`, `OMBRA_VERSION` sau comanda CLI `install --version`.
-- **Releu proxy unificat** — proxy-uri HTTP, HTTPS și SOCKS5 cu autentificare, fără expunerea datelor de autentificare în linia de comandă Chromium, în jurnale sau în metadatele profilului.
-- **Profiluri persistente cu nume** — stochează `seed`, cookie-uri, `localStorage` și IndexedDB în `~/.ombra/profiles/<slug>`, cu blocare inter-proces (`ProfileBusyError`).
-- **Verificări criptografice ale lanțului de distribuție** — verificarea semnăturii Ed25519 pentru plicurile de lansare și verificarea SHA-256 a arhivelor înainte de extragere.
 
 Consultă [CHANGELOG.md](../../CHANGELOG.md) pentru istoricul complet al versiunilor.
 
@@ -222,7 +211,7 @@ Consultă [CHANGELOG.md](../../CHANGELOG.md) pentru istoricul complet al versiun
 - **Instalatoare precompilate** — macOS Apple Silicon (`.dmg`, semnat cu Apple Developer ID și notarizat), Linux (`.deb` și `.rpm`) și Windows x64 (`setup.exe`).
 - **Cataloage izolate** — setează `OMBRA_DESKTOP_DATA_DIR` pentru a lucra cu un catalog separat de test sau o copie de siguranță.
 
-[Descarcă `desktop-v1.2.2` →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [README Desktop](../../desktop/README.md) · [Ghid pentru profiluri și chei locale](../../docs/desktop/README.md)
+[Descarcă cea mai recentă versiune →](https://github.com/ombralabs/ombra/releases) · [README Desktop](../../desktop/README.md) · [Ghid pentru profiluri și chei locale](../../docs/desktop/README.md)
 
 ## Verificarea amprentei și auditul de stealth
 
@@ -236,7 +225,7 @@ Consultă [CHANGELOG.md](../../CHANGELOG.md) pentru istoricul complet al versiun
 | `window.chrome` | lipsește în headless | obiect complet | Corespunde cu Chrome obișnuit |
 | `navigator.plugins` | `0` în headless | set coerent de pluginuri | La nivel de motor |
 | User-Agent și Client Hints | `HeadlessChrome`, neconcordanță de brand | `Google Chrome` + `Sec-CH-UA*` aliniat | Patch `010-user-agent-and-webdriver` |
-| Artefacte CDP (`Runtime.enable`, `UtilityScript`) | semnalate de detectori | suprimate de motor; SDK-ul nu apelează niciodată `Runtime.enable` | Patch `110-runtime-enable` + invariant `SI-02` |
+| Artefacte CDP (`Runtime.enable`, `UtilityScript`) | semnalate de detectori | suprimate de motor; SDK-ul nu apelează niciodată `Runtime.enable` | Patch `110-runtime-enable` + invariant `SI-01` |
 | Scurgere IP WebRTC | expune IP-ul local/gazdă | raportează IP-ul de ieșire fără a trimite pachete STUN reale | Patch `100-webrtc-leak` (`--webrtc-ip`) |
 | TLS și HTTP/2 | depinde de configurare | stiva de rețea Chromium + profil ClientHello `chrome-<major>` | Patch `210-tls-network-persona` |
 | WebGL și WebGPU | randare software / neconcordanță GPU | limite WebGL/WebGPU și tabele de extensii unificate | Patch-uri `070`, `071`, `075`, `955` |
@@ -460,7 +449,7 @@ ensure_binary(version="151.0.7922.108-9")
 # Elimină binarele motorului gestionate de SDK (profilurile din ~/.ombra/profiles rămân intacte)
 clear_cache()
 
-# Inspectează comanda de lansare rezolvată fără a porni Chromium
+# Previzualizare dry-run a comenzii de lansare rezolvate fără a porni Chromium
 cmd = build_launch_options(profile="pricing-eu", humanize=True)
 
 # Citește metadatele de execuție (port CDP, ws_url, seed, pid) și verifică starea procesului
@@ -478,7 +467,7 @@ ombrabrowser install --version 151.0.7922.108-9  # instalează un build specific
 ombrabrowser info                                # diagnosticare mediu, binar și dependențe (alias: doctor)
 ombrabrowser info --quick --json                 # raport rapid în format JSON fără a porni binarul
 ombrabrowser info --proxy socks5://user:pass@host:1080  # testează IP-ul de ieșire, fusul orar și localizarea prin proxy
-ombrabrowser update                              # verifică canalul de lansare și actualizează motorul din cache
+ombrabrowser update                              # verifică GitHub Releases și actualizează motorul din cache
 ombrabrowser clear-cache                         # șterge binarele motorului din cache (profilurile sunt păstrate)
 ombrabrowser login                               # salvează cheia de licență în ~/.ombra/license.key (doar build-uri vechi)
 ombrabrowser logout                              # șterge cheia de licență salvată
@@ -666,7 +655,7 @@ Numele câmpurilor de mai jos respectă convenția Python (`snake_case`); Node.j
 
 ### Flag-uri suplimentare ale motorului (`args`)
 
-Flag-uri suportate de motor pe care SDK-ul nu le setează automat (pasează-le prin `args=[...]`):
+Flag-uri suplimentare ale motorului (setează sau suprascrie prin `args=[...]`):
 
 | Flag | Scop |
 |---|---|
@@ -680,9 +669,9 @@ Flag-uri suportate de motor pe care SDK-ul nu le setează automat (pasează-le p
 | `--fingerprint-color-depth=<bits>` | Adâncimea de culoare a ecranului |
 | `--disable-gpu-fingerprint` | Transmite GPU-ul real al gazdei (șiruri, limite și extensii WebGL/WebGPU) |
 | `--disable-gpu-string-spoof` | Transmite șirurile GPU reale păstrând celelalte setări ale profilului |
-| `--disable-fingerprint-noise` | Dezactivează zgomotul canvas/WebGL/audio păstrând activi parametrii de identitate |
+| `--disable-fingerprint-noise` | Dezactivează zgomotul canvas/WebGL/audio păstrând activi parametrii de identitate (setat și de `fingerprint={"noise": False}`) |
 | `--fingerprint-pixel-noise` | Activează explicit zgomotul idempotent la nivel de pixel pentru canvas 2D și `readPixels` |
-| `--profile-label=<text>` | Eticheta profilului afișată în bara de adrese a browserului (doar UI; invizibilă pentru paginile web) |
+| `--profile-label=<text>` | Eticheta profilului afișată în bara de adrese a browserului (doar UI; setată automat din `profile`, pasează prin `args` doar când `profile` nu este setat) |
 
 ### Configurarea fonturilor pe Linux
 
@@ -733,7 +722,7 @@ Numele opțiunilor urmează API-ul Python și [contractul SDK](../../docs/sdk-co
 | `version` | mediu / auto | Fixarea versiunii motorului (de exemplu, `151.0.7922.108-9`), suprascrie `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Termen limită pentru pornirea motorului și conexiunea CDP (1000–600000 ms) |
 | `humanize` | implicitul motorului | `False`, `True` sau `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | mediu / fișier | Cheie pentru build-urile vechi cu licență (nu este necesară pentru `151.0.7922.108-9+`; nu este niciodată înregistrată în jurnale) |
+| `license_key` | mediu / fișier | Cheie pentru build-urile vechi cu licență (nu este necesară pentru build-urile actuale; nu este niciodată înregistrată în jurnale) |
 | `env` | `{}` | Variabile de mediu suplimentare pentru procesul motorului |
 | `download` | `True` | Permite descărcarea automată a unui binar de motor lipsă |
 
@@ -745,9 +734,9 @@ Ordinea de prioritate: **opțiune explicită de lansare → variabilă de mediu 
 |---|---|---|
 | `OMBRA_BINARY_PATH` | nesetată | Cale explicită către un binar al motorului |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Directorul pentru motoarele din cache și profilurile cu nume |
-| `OMBRA_DOWNLOAD_URL` | `https://dl.ombrabrowser.dev` | URL de bază / oglindă pentru descărcarea motorului (`none`/`off` dezactivează descărcările) |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Sursa de descărcare a motorului; un URL personalizat activează modul oglindă vechi (`none`/`off` dezactivează descărcările) |
 | `OMBRA_VERSION` | cea mai recentă compatibilă | Versiune fixată a motorului (de exemplu, `151.0.7922.108-9`) |
-| `OMBRA_RELEASE_CHANNEL` | `stable` | Canalul de lansare al motorului: `stable` sau `beta` |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | Canalul de lansare al motorului: `stable` (versiuni GitHub) sau `beta` (versiuni preliminare GitHub) |
 | `OMBRA_AUTO_UPDATE` | `true` | Verifică existența unor build-uri mai noi ale motorului la lansare |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Doar pentru dezvoltare locală: dezactivează verificarea SHA-256 (afișează un avertisment în jurnal) |
 | `OMBRA_LICENSE_KEY` | nesetată | Cheie pentru build-urile vechi cu licență (nu este niciodată înregistrată în jurnale) |
@@ -768,10 +757,10 @@ Taxonomia completă a erorilor și regulile de reîncercare sunt documentate în
 
 | Componentă | Suport | Note |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | Build autonom `151.0.7922.108-9`; Ombra Desktop este semnat cu Developer ID și notarizat |
-| **macOS x64 (Intel)** | ✅ | Build-ul `151.0.7922.108-7` este disponibil pe canalul `stable` al SDK-ului |
-| **Linux x64** | ✅ | Build autonom `151.0.7922.108-9`; necesită `xz-utils` (`xz`) pentru a extrage `.tar.xz` |
-| **Windows x64** | ✅ | Build autonom `151.0.7922.108-9` și instalator Ombra Desktop |
+| **macOS ARM64 (Apple Silicon)** | ✅ | Build-uri autonome ale motorului prin GitHub Releases; Ombra Desktop este semnat cu Developer ID și notarizat |
+| **macOS x64 (Intel)** | ⚠️ | Suportat de SDK atunci când un build `darwin-x64` compatibil este publicat sau furnizat prin `binary_path` (build-urile `-7` mai vechi necesită o cheie de licență) |
+| **Linux x64** | ✅ | Build-uri autonome ale motorului prin GitHub Releases; SDK-ul Node.js necesită `xz-utils` (`xz`) pentru a extrage `.tar.xz` |
+| **Windows x64** | ✅ | Build-uri autonome ale motorului prin GitHub Releases și instalator Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` este instalat automat împreună cu `ombrabrowser` |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` sau Puppeteer `>=22` (Puppeteer 25+ necesită Node.js `>=22.12`) |
 
@@ -780,10 +769,16 @@ Taxonomia completă a erorilor și regulile de reîncercare sunt documentate în
 Ombra funcționează cu orice instrument de automatizare sau framework de agenți AI care acceptă un binar Chromium personalizat sau se conectează prin CDP (`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain` și altele):
 
 ```python
-# Opțiunea 1: rezolvă calea binarului verificat și argumentele motorului pentru propriul tău runner
+# Opțiunea 1: rezolvă calea binarului verificat și argumentele rulabile ale motorului pentru propriul tău runner
+# Notă: build_launch_options() este un helper dry-run — pasează explicit user_data_dir și seed
+# (profilurile cu nume și proxy-urile autentificate necesită Opțiunea 2).
 from ombrabrowser import build_launch_options
 
-cmd = build_launch_options(profile="agent-1", humanize=True)
+cmd = build_launch_options(
+    user_data_dir="./agent-1",
+    fingerprint={"seed": 20261116},
+    humanize=True,
+)
 binary_path = cmd["binary_path"]
 engine_args = cmd["args"]
 
@@ -837,17 +832,7 @@ Xvfb :99 -screen 0 1920x1080x24 &
 export DISPLAY=:99
 ```
 
-Apoi lansează cu un proxy rezidențial SOCKS5/HTTP, un profil persistent, fus orar și localizare aliniate, `headless=False` și `humanize=True`:
-
-```python
-context = launch_persistent_context(
-    profile="site-eu",
-    proxy="socks5://user:pass@residential-proxy:1080",
-    fingerprint={"timezone": "auto", "locale": "auto"},
-    headless=False,
-    humanize=True,
-)
-```
+Apoi lansează cu un proxy rezidențial SOCKS5/HTTP, un profil persistent, fus orar și localizare aliniate, `headless=False` și `humanize=True` (vezi exemplul `launch_persistent_context()` de la începutul acestui README).
 
 Dacă blocările continuă pe Linux, verifică secțiunea [Configurarea fonturilor pe Linux](#configurarea-fonturilor-pe-linux).
 
@@ -885,9 +870,13 @@ browser = launch(version="151.0.7922.108-9")
 ```
 
 ```bash
-# Sau configurează prin variabile de mediu / CLI
-export OMBRA_VERSION=151.0.7922.108-9
+# Testează canalul beta (dezactivează OMBRA_VERSION — o fixare exactă -N ignoră canalul)
+unset OMBRA_VERSION
 export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser update
+
+# Sau fixează / revino la un build exact al motorului
+export OMBRA_VERSION=151.0.7922.108-9
 ombrabrowser install --version 151.0.7922.108-9
 
 # Sau indică un binar compilat local
@@ -954,7 +943,7 @@ Raportează problemele de securitate în mod privat conform [SECURITY.md](../../
 └── .github/workflows/ci.yml
 ```
 
-Acest depozit găzduiește contractul SDK, schemele, cazurile de conformitate, documentația și codul sursă Ombra Desktop. Patch-urile motorului Chromium sunt întreținute într-un depozit separat, iar build-urile compilate sunt publicate prin canalul de descărcare și pe [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Acest depozit găzduiește contractul SDK, schemele, cazurile de conformitate, documentația și codul sursă Ombra Desktop. Patch-urile motorului Chromium sunt întreținute într-un depozit separat, iar build-urile compilate sunt publicate pe [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## Întrebări frecvente
 
@@ -964,7 +953,7 @@ Nu. SDK-ul conectează clientul oficial Playwright (sau Puppeteer) la Ombra Chro
 
 ### Este Ombra gratuit și am nevoie de o cheie de licență?
 
-Codul sursă al SDK-ului din acest depozit este open source sub licența Apache License 2.0. Build-urile actuale ale motorului (`151.0.7922.108-9` și mai noi) și managerul local de profiluri Ombra Desktop (`desktop-v1.2.2`) rulează gratuit și autonom — fără cont, cheie de licență, ID hardware sau limită a numărului de profiluri. `license_key` și `OMBRA_LICENSE_KEY` sunt necesare doar pentru build-urile vechi cu licență.
+Codul sursă al SDK-ului din acest depozit este open source sub licența Apache License 2.0. Build-urile actuale ale motorului și managerul local de profiluri Ombra Desktop rulează gratuit și autonom — fără cont, cheie de licență, ID hardware sau limită a numărului de profiluri. `license_key` și `OMBRA_LICENSE_KEY` sunt necesare doar pentru build-urile vechi cu licență.
 
 ### Trebuie să instalez Ombra Desktop pentru a folosi SDK-ul?
 

@@ -10,9 +10,11 @@ Usage:
 
 from __future__ import annotations
 
+from collections import Counter
 import json
 import re
 import sys
+import unicodedata
 import urllib.parse
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Set
@@ -76,6 +78,9 @@ ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 MD_LINK = re.compile(r"!?\[[^\]]*\]\((?P<target>[^)\s]+)(?:\s+\"[^\"]*\")?\)")
 HTML_LINK = re.compile(r"""(?:src|href)=["'](?P<target>[^"']+)["']""")
+ATX_HEADING = re.compile(r"^#{1,6}\s+(?P<text>.+?)\s*#*\s*$")
+HTML_HEADING = re.compile(r"^\s*<h([1-6])[^>]*>(?P<text>.*?)</h\1>", re.IGNORECASE)
+HTML_ANCHOR = re.compile(r"""\b(?:id|name)=["'](?P<id>[^"']+)["']""")
 SCHEME = re.compile(r"^[a-z][a-z0-9+.-]*:", re.IGNORECASE)
 FENCE = re.compile(r"^\s*(```|~~~)")
 
@@ -225,33 +230,85 @@ def iter_markdown_files() -> Iterable[Path]:
         yield path
 
 
-def check_local_link(source: Path, target: str) -> Optional[Path]:
+def github_heading_slug(heading: str) -> str:
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", heading)
+    text = text.replace("`", "")
+    text = re.sub(r"<[^>]+>", "", text).strip().lower()
+    out: List[str] = []
+    for ch in text:
+        if ch == " ":
+            out.append("-")
+        elif ch in ("-", "_"):
+            out.append(ch)
+        elif unicodedata.category(ch)[0] in ("L", "M", "N"):
+            out.append(ch)
+    return "".join(out)
+
+
+def extract_markdown_anchors(path: Path) -> Set[str]:
+    text = strip_code_fences(path.read_text(encoding="utf-8"))
+    anchors: Set[str] = set()
+    counts: Counter[str] = Counter()
+    for line in text.splitlines():
+        match = ATX_HEADING.match(line) or HTML_HEADING.match(line)
+        if match:
+            base = github_heading_slug(match.group("text"))
+            if base:
+                slug = base if counts[base] == 0 else "%s-%d" % (base, counts[base])
+                counts[base] += 1
+                anchors.add(slug)
+    for match in HTML_ANCHOR.finditer(text):
+        anchors.add(match.group("id"))
+    return anchors
+
+
+def check_local_link(
+    source: Path,
+    target: str,
+    anchor_cache: Optional[Dict[Path, Set[str]]] = None,
+) -> Optional[Path]:
     target = target.strip()
-    if not target or target.startswith("#"):
-        return
-    if target.startswith("<") or "{" in target or target.startswith("mailto:"):
-        return
-    if SCHEME.match(target):
-        return
-    if target.startswith("//"):
-        return
-
-    clean = urllib.parse.unquote(target.split("#", 1)[0].split("?", 1)[0])
-    if not clean:
-        return
-
-    resolved = (ROOT / clean.lstrip("/")) if clean.startswith("/") else (source.parent / clean)
-    try:
-        resolved = resolved.resolve()
-        resolved.relative_to(ROOT)
-    except (OSError, ValueError):
-        error("%s: link escapes the repository: %s" % (rel(source), target))
-        return
-
-    if not resolved.exists():
-        error("%s: broken link: %s" % (rel(source), target))
+    if not target:
         return None
-    return resolved
+    if target.startswith("<") or "{" in target or target.startswith("mailto:"):
+        return None
+    if SCHEME.match(target):
+        return None
+    if target.startswith("//"):
+        return None
+
+    path_part, _, raw_fragment = target.partition("#")
+    fragment = urllib.parse.unquote(raw_fragment).strip()
+    clean = urllib.parse.unquote(path_part.split("?", 1)[0])
+
+    if not clean:
+        resolved = source.resolve()
+    else:
+        resolved = (ROOT / clean.lstrip("/")) if clean.startswith("/") else (source.parent / clean)
+        try:
+            resolved = resolved.resolve()
+            resolved.relative_to(ROOT)
+        except (OSError, ValueError):
+            error("%s: link escapes the repository: %s" % (rel(source), target))
+            return None
+
+        if not resolved.exists():
+            error("%s: broken link: %s" % (rel(source), target))
+            return None
+
+    if fragment and resolved.is_file() and resolved.suffix.lower() == ".md":
+        if anchor_cache is None:
+            anchors = extract_markdown_anchors(resolved)
+        else:
+            anchors = anchor_cache.get(resolved)
+            if anchors is None:
+                anchors = extract_markdown_anchors(resolved)
+                anchor_cache[resolved] = anchors
+        if fragment not in anchors:
+            error("%s: broken anchor: %s" % (rel(source), target))
+            return None
+
+    return resolved if clean else None
 
 
 def iter_link_targets(path: Path) -> Iterable[str]:
@@ -264,11 +321,12 @@ def iter_link_targets(path: Path) -> Iterable[str]:
 def check_markdown_links() -> int:
     readmes = set((ROOT / "translations").glob("*/README.md"))
     readmes.add(ROOT / "README.md")
+    anchor_cache: Dict[Path, Set[str]] = {}
     checked = 0
     for path in iter_markdown_files():
         linked_paths = set()
         for target in iter_link_targets(path):
-            destination = check_local_link(path, target)
+            destination = check_local_link(path, target, anchor_cache)
             if destination is not None:
                 linked_paths.add(destination)
             checked += 1

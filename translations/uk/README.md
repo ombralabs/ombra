@@ -54,8 +54,8 @@
 
 - **Патчі Chromium на рівні вихідного коду** — canvas, WebGL, WebGPU, аудіо, шрифти, GPU, екран, медіазапити CSS, параметри апаратного забезпечення, WebRTC без витоків STUN, TLS ClientHello, часовий пояс, локаль і видалення сигналів автоматизації (`navigator.webdriver`, `Runtime.enable`, маркери headless).
 - **Нативна імітація людського введення в процесі браузера (`humanize=True`)** — траєкторії курсора (`cursory-rs`), прицільні кліки з тривалістю утримання, ритм набору тексту із самовиправленням одруківок і фізика прокручування виконуються всередині Chromium. SDK повертає звичайний нативний `Browser` без проксі-обгорток.
-- **Автономна робота без ключів та облікових записів** — актуальні збірки рушія (`151.0.7922.108-9` і новіші) та Ombra Desktop працюють локально без реєстрації, ліцензійних ключів, апаратних ідентифікаторів чи сервера ліцензування.
-- **Автоматичне встановлення й криптографічна перевірка бінарника** — `pip install ombrabrowser` або `npm install @ombralabs/sdk`; під час першого запуску SDK завантажує збірку для вашої платформи й перевіряє її підпис Ed25519 і контрольну суму SHA-256.
+- **Автономна робота без ключів та облікових записів** — актуальні збірки рушія та Ombra Desktop працюють локально без реєстрації, ліцензійних ключів, апаратних ідентифікаторів чи сервера ліцензування.
+- **Автоматичне встановлення й криптографічна перевірка бінарника** — `pip install ombrabrowser` або `npm install @ombralabs/sdk`; під час першого запуску SDK завантажує сумісну збірку з [GitHub Releases](https://github.com/ombralabs/ombra/releases) і перевіряє її підпис Ed25519 та контрольну суму SHA-256.
 - **Постійні профілі та безпечний проксі-ретранслятор** — іменовані профілі зберігають cookies, `localStorage`, IndexedDB і `seed` між запусками з міжпроцесним блокуванням; проксі з автентифікацією (HTTP, HTTPS, SOCKS5) працюють через локальний loopback-ретранслятор, тому облікові дані ніколи не потрапляють в аргументи процесу.
 - **Офлайн-менеджер профілів Ombra Desktop** — нативний десктопний застосунок у цьому репозиторії ([`desktop/`](../../desktop/README.md)) із готовими інсталяторами для macOS, Linux і Windows.
 
@@ -136,7 +136,7 @@ python -m pip install "ombrabrowser[geoip]"
 # Із Playwright (1.60.0+, завантажувати стандартний Chromium не потрібно)
 npm install @ombralabs/sdk "playwright-core@^1.60.0"
 
-# Або з Puppeteer
+# Або з Puppeteer (Puppeteer 25+ потребує Node.js 22.12+)
 npm install @ombralabs/sdk puppeteer-core
 
 # Необов'язково: офлайн-читач бази GeoIP для timezone: "auto" і locale: "auto"
@@ -145,11 +145,11 @@ npm install mmdb-lib
 
 ---
 
-Під час запуску SDK шукає рушій у суворо визначеному порядку: `binary_path` (`binaryPath` у Node.js), `OMBRA_BINARY_PATH`, каталог рушія Ombra Desktop і кеш SDK (`~/.ombra/engines`). Якщо сумісного рушія не знайдено, SDK завантажує збірку з підписаного каналу релізів, перевіряє її підпис Ed25519 та контрольну суму SHA-256 і кешує локально. Запускати `playwright install chromium` не потрібно.
+Під час запуску SDK шукає рушій у суворо визначеному порядку: `binary_path` (`binaryPath` у Node.js), `OMBRA_BINARY_PATH`, каталог рушія Ombra Desktop і кеш SDK (`~/.ombra/engines`). Якщо сумісного рушія не знайдено, SDK завантажує збірку з [GitHub Releases](https://github.com/ombralabs/ombra/releases), перевіряє її підпис Ed25519 та контрольну суму SHA-256 і кешує локально. Запускати `playwright install chromium` не потрібно.
 
 Щоб вимкнути автоматичне завантаження, передайте `download=False` (`download: false` у Node.js). Щоб завантажити й перевірити рушій заздалегідь (наприклад, під час збирання контейнера), викличте `ensure_binary()` (`ensureBinary()`) або скористайтеся командою CLI `install`.
 
-> **Автономний запуск:** актуальні збірки рушія (`151.0.7922.108-9` і новіші) безкоштовні й не потребують облікового запису чи ліцензійного ключа. `OMBRA_LICENSE_KEY` і команда `login` залишені лише для сумісності зі старішими ліцензованими збірками.
+> **Автономний запуск:** актуальні збірки рушія безкоштовні й не потребують облікового запису чи ліцензійного ключа. `OMBRA_LICENSE_KEY` і команда `login` залишені лише для сумісності зі старішими ліцензованими збірками.
 
 **Міграція з Playwright** займає два рядки — усі операції зі сторінками, локатори й очікування залишаються без змін:
 
@@ -185,22 +185,11 @@ npm install mmdb-lib
 | **Контракт SDK** | Чернетка `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Альфа `0.1.3` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Альфа `0.1.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Рушій Ombra Chromium** | Chromium `151.0.7922.108` | Автоматично завантажується SDK (`-9` для macOS ARM64 / Linux x64 / Windows x64, `-7` для Intel macOS) |
-| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Окремий браузер** | `v158.0.8127.37-1` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-1) |
+| **Рушій Ombra Chromium** | Діапазон SDK `>=151.0.7922.108,<152` | Автоматично завантажується SDK із [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Desktop** | Офлайн-менеджер профілів | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Окремий браузер** | Chromium `158+` (лише окремий браузер; поточні SDK `0.1.x` приймають `151.*` і відхиляють `158.*` із помилкою `UnsupportedEngineError`) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Схеми та тести сумісності** | JSON Schema + спільні кейси | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Методика перевірки непомітності** | 6 рівнів (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
-
-Що входить до поточних релізів:
-
-- **Патчі на рівні вихідного коду** — узгоджена генерація відбитка на основі `seed`, узгодження WebGL / WebGPU та їхніх розширень, реалістичні таблиці шрифтів для кожної ОС, нативний профіль TLS ClientHello (`chrome-<major>`), придушення витоків `Runtime.enable` і стеку `UtilityScript`, а також захист від витоку хостової IP-адреси через WebRTC.
-- **Домен CDP `Ombra` рівня браузера** — динамічне керування імітацією людського введення (`getHumanizeState`, `setHumanize`) у Python і Node.js без перезапуску браузера.
-- **Нативна імітація введення в процесі браузера** — планувальник курсора `cursory-rs`, профілі прокручування коліщатком і трекпадом, ритм набору тексту із самовиправленням одруківок та безпечна вставка довгих текстів через ізольований буфер обміну.
-- **Автономні збірки без ключів** — поточні збірки рушія (`151.0.7922.108-9`) та Ombra Desktop `1.2.2` працюють повністю локально без облікових записів, ключів чи телеметрії.
-- **Фіксація версії рушія (`version`)** — закріплюйте точну збірку через `launch(version="151.0.7922.108-9")`, `OMBRA_VERSION` або команду CLI `install --version`.
-- **Єдиний проксі-ретранслятор** — підтримка проксі HTTP, HTTPS і SOCKS5 з автентифікацією без розкриття облікових даних у командному рядку Chromium, логах чи метаданих профілю.
-- **Постійні іменовані профілі** — збереження `seed`, cookies, `localStorage` та IndexedDB у `~/.ombra/profiles/<slug>` із міжпроцесним блокуванням (`ProfileBusyError`).
-- **Криптографічні перевірки ланцюжка постачання** — перевірка підпису Ed25519 конверта релізу та перевірка SHA-256 архівів перед розпакуванням.
 
 Повну історію змін див. у [CHANGELOG.md](../../CHANGELOG.md).
 
@@ -222,7 +211,7 @@ npm install mmdb-lib
 - **Готові інсталятори** — macOS Apple Silicon (`.dmg`, підписаний сертифікатом Apple Developer ID і нотаризований), Linux (`.deb` і `.rpm`) та Windows x64 (`setup.exe`).
 - **Ізольовані каталоги** — задайте `OMBRA_DESKTOP_DATA_DIR`, щоб працювати з окремим тестовим каталогом або резервною копією.
 
-[Завантажити `desktop-v1.2.2` →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [README для Desktop](../../desktop/README.md) · [Посібник із профілів і локальних ключів](../../docs/desktop/README.md)
+[Завантажити останній реліз →](https://github.com/ombralabs/ombra/releases) · [README для Desktop](../../desktop/README.md) · [Посібник із профілів і локальних ключів](../../docs/desktop/README.md)
 
 ## Перевірка відбитка та непомітності
 
@@ -236,7 +225,7 @@ npm install mmdb-lib
 | `window.chrome` | відсутній у headless | повний об'єкт | Відповідає звичайному Chrome |
 | `navigator.plugins` | `0` у headless | узгоджений набір плагінів | На рівні рушія |
 | User-Agent та Client Hints | `HeadlessChrome`, розбіжність бренду | `Google Chrome` + узгоджені `Sec-CH-UA*` | Патч `010-user-agent-and-webdriver` |
-| Артефакти CDP (`Runtime.enable`, `UtilityScript`) | фіксуються детекторами | придушуються рушієм; SDK ніколи не викликає `Runtime.enable` | Патч `110-runtime-enable` + інваріант `SI-02` |
+| Артефакти CDP (`Runtime.enable`, `UtilityScript`) | фіксуються детекторами | придушуються рушієм; SDK ніколи не викликає `Runtime.enable` | Патч `110-runtime-enable` + інваріант `SI-01` |
 | Витік IP через WebRTC | розкриває локальну/хостову IP-адресу | передає вихідну IP-адресу без реального STUN | Патч `100-webrtc-leak` (`--webrtc-ip`) |
 | TLS і HTTP/2 | залежить від конфігурації | мережевий стек Chromium + профіль ClientHello `chrome-<major>` | Патч `210-tls-network-persona` |
 | WebGL і WebGPU | програмний рендерер / невідповідність GPU | єдині ліміти й таблиці розширень WebGL/WebGPU | Патчі `070`, `071`, `075`, `955` |
@@ -460,7 +449,7 @@ ensure_binary(version="151.0.7922.108-9")
 # Видалити керовані SDK бінарники рушія (профілі в ~/.ombra/profiles залишаються недоторканими)
 clear_cache()
 
-# Переглянути сформовану команду запуску без старту Chromium
+# Пробний перегляд (dry-run) сформованої команди запуску без старту Chromium
 cmd = build_launch_options(profile="pricing-eu", humanize=True)
 
 # Прочитати метадані виконання (порт CDP, ws_url, seed, pid) і перевірити стан процесу
@@ -478,7 +467,7 @@ ombrabrowser install --version 151.0.7922.108-9  # встановити конк
 ombrabrowser info                                # діагностика середовища, бінарника та залежностей (псевдонім: doctor)
 ombrabrowser info --quick --json                 # швидкий машинозчитуваний звіт без запуску бінарника
 ombrabrowser info --proxy socks5://user:pass@host:1080  # перевірити визначення вихідного IP, часового поясу та локалі через проксі
-ombrabrowser update                              # перевірити канал релізів і оновити кешований рушій
+ombrabrowser update                              # перевірити GitHub Releases і оновити кешований рушій
 ombrabrowser clear-cache                         # очистити кешовані бінарники рушія (профілі зберігаються)
 ombrabrowser login                               # зберегти ліцензійний ключ у ~/.ombra/license.key (лише для застарілих збірок)
 ombrabrowser logout                              # видалити збережений ліцензійний ключ
@@ -666,7 +655,7 @@ console.log(await cdp.getHumanizeState());
 
 ### Додаткові прапорці рушія (`args`)
 
-Прапорці, які підтримує рушій, але SDK не додає автоматично (передаються через `args=[...]`):
+Додаткові прапорці рушія (задавайте або перевизначайте через `args=[...]`):
 
 | Прапорець | Призначення |
 |---|---|
@@ -680,9 +669,9 @@ console.log(await cdp.getHumanizeState());
 | `--fingerprint-color-depth=<bits>` | Глибина кольору екрана |
 | `--disable-gpu-fingerprint` | Передати напряму реальний GPU хоста (рядки WebGL/WebGPU, ліміти та розширення) |
 | `--disable-gpu-string-spoof` | Передати напряму реальні рядки GPU, зберігши решту налаштувань профілю |
-| `--disable-fingerprint-noise` | Вимкнути шум canvas/WebGL/аудіо, залишивши активними параметри ідентичності |
+| `--disable-fingerprint-noise` | Вимкнути шум canvas/WebGL/аудіо, залишивши активними параметри ідентичності (також задається через `fingerprint={"noise": False}`) |
 | `--fingerprint-pixel-noise` | Увімкнути опційний ідемпотентний піксельний шум для 2D canvas і `readPixels` |
-| `--profile-label=<text>` | Мітка профілю в адресному рядку браузера (лише інтерфейс; невидима для вебсторінок) |
+| `--profile-label=<text>` | Мітка профілю в адресному рядку браузера (лише інтерфейс; задається автоматично з `profile`, передавайте через `args` лише коли `profile` не задано) |
 
 ### Налаштування шрифтів у Linux
 
@@ -733,7 +722,7 @@ RUN fc-cache -f
 | `version` | змінна / авто | Фіксація версії рушія (наприклад, `151.0.7922.108-9`), має пріоритет над `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Таймаут запуску рушія та підключення CDP (1000–600000 мс) |
 | `humanize` | типове для рушія | `False`, `True` або `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | змінна / файл | Ключ для застарілих ліцензованих збірок (не потрібен на `151.0.7922.108-9+`; ніколи не логується) |
+| `license_key` | змінна / файл | Ключ для застарілих ліцензованих збірок (не потрібен на актуальних збірках; ніколи не логується) |
 | `env` | `{}` | Додаткові змінні середовища для процесу рушія |
 | `download` | `True` | Дозволити автоматичне завантаження відсутнього бінарника рушія |
 
@@ -745,9 +734,9 @@ RUN fc-cache -f
 |---|---|---|
 | `OMBRA_BINARY_PATH` | не задано | Явний шлях до бінарника рушія |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Каталог для кешованих рушіїв та іменованих профілів |
-| `OMBRA_DOWNLOAD_URL` | `https://dl.ombrabrowser.dev` | Базовий URL / дзеркало для завантаження рушія (`none`/`off` вимикає завантаження) |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Джерело завантаження рушія; власний URL вмикає застарілий режим дзеркала (`none`/`off` вимикає завантаження) |
 | `OMBRA_VERSION` | остання сумісна | Зафіксована версія рушія (наприклад, `151.0.7922.108-9`) |
-| `OMBRA_RELEASE_CHANNEL` | `stable` | Канал релізів рушія: `stable` або `beta` |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | Канал релізів рушія: `stable` (релізи GitHub) або `beta` (попередні релізи GitHub) |
 | `OMBRA_AUTO_UPDATE` | `true` | Перевіряти наявність новіших збірок рушія під час запуску |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Лише для локальної розробки: вимикає перевірку SHA-256 (виводить попередження) |
 | `OMBRA_LICENSE_KEY` | не задано | Ключ для застарілих ліцензованих збірок (ніколи не логується) |
@@ -768,10 +757,10 @@ RUN fc-cache -f
 
 | Компонент | Підтримка | Примітки |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | Автономна збірка `151.0.7922.108-9`; Ombra Desktop підписаний Developer ID і нотаризований |
-| **macOS x64 (Intel)** | ✅ | Збірка `151.0.7922.108-7` доступна на стабільному каналі SDK |
-| **Linux x64** | ✅ | Автономна збірка `151.0.7922.108-9`; потрібен `xz-utils` (`xz`) для розпакування `.tar.xz` |
-| **Windows x64** | ✅ | Автономна збірка `151.0.7922.108-9` та інсталятор Ombra Desktop |
+| **macOS ARM64 (Apple Silicon)** | ✅ | Автономні збірки рушія через GitHub Releases; Ombra Desktop підписаний Developer ID і нотаризований |
+| **macOS x64 (Intel)** | ⚠️ | Підтримується SDK, коли опубліковано відповідну збірку `darwin-x64` або передано шлях через `binary_path` (старіші збірки `-7` потребують ліцензійного ключа) |
+| **Linux x64** | ✅ | Автономні збірки рушія через GitHub Releases; Node.js SDK потребує `xz-utils` (`xz`) для розпакування `.tar.xz` |
+| **Windows x64** | ✅ | Автономні збірки рушія через GitHub Releases та інсталятор Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` встановлюється автоматично разом з `ombrabrowser` |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` або Puppeteer `>=22` (Puppeteer 25+ потребує Node.js `>=22.12`) |
 
@@ -780,10 +769,16 @@ RUN fc-cache -f
 Ombra працює з будь-яким інструментом автоматизації або фреймворком AI-агентів, який приймає власний бінарник Chromium або підключається через CDP (`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain` тощо):
 
 ```python
-# Варіант 1: отримати перевірений шлях до бінарника та аргументи рушія для власного раннера
+# Варіант 1: отримати перевірений шлях до бінарника та робочі аргументи рушія для власного раннера
+# Примітка: build_launch_options() — це dry-run-утиліта; передавайте явні user_data_dir і seed
+# (іменовані профілі та проксі з автентифікацією потребують Варіанту 2).
 from ombrabrowser import build_launch_options
 
-cmd = build_launch_options(profile="agent-1", humanize=True)
+cmd = build_launch_options(
+    user_data_dir="./agent-1",
+    fingerprint={"seed": 20261116},
+    humanize=True,
+)
 binary_path = cmd["binary_path"]
 engine_args = cmd["args"]
 
@@ -837,17 +832,7 @@ Xvfb :99 -screen 0 1920x1080x24 &
 export DISPLAY=:99
 ```
 
-Після цього запускайте з резидентським SOCKS5/HTTP-проксі, постійним профілем, узгодженими часовим поясом/локаллю, `headless=False` і `humanize=True`:
-
-```python
-context = launch_persistent_context(
-    profile="site-eu",
-    proxy="socks5://user:pass@residential-proxy:1080",
-    fingerprint={"timezone": "auto", "locale": "auto"},
-    headless=False,
-    humanize=True,
-)
-```
+Після цього запускайте з резидентським SOCKS5/HTTP-проксі, постійним профілем, узгодженими часовим поясом/локаллю, `headless=False` і `humanize=True` (див. приклад `launch_persistent_context()` на початку цього README).
 
 Якщо блокування на Linux тривають, перевірте розділ [Налаштування шрифтів у Linux](#налаштування-шрифтів-у-linux).
 
@@ -885,9 +870,13 @@ browser = launch(version="151.0.7922.108-9")
 ```
 
 ```bash
-# Або налаштувати через змінні середовища / CLI
-export OMBRA_VERSION=151.0.7922.108-9
+# Перевірка каналу beta (скиньте OMBRA_VERSION — точне закріплення -N ігнорує канал)
+unset OMBRA_VERSION
 export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser update
+
+# Або зафіксувати / відкотити точну збірку рушія
+export OMBRA_VERSION=151.0.7922.108-9
 ombrabrowser install --version 151.0.7922.108-9
 
 # Або вказати шлях до локально зібраного бінарника
@@ -955,7 +944,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-Цей репозиторій містить контракт SDK, схеми, тести сумісності, документацію та вихідний код Ombra Desktop. Патчі рушія Chromium підтримуються в окремому репозиторії, а скомпільовані збірки публікуються через канал завантаження та [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Цей репозиторій містить контракт SDK, схеми, тести сумісності, документацію та вихідний код Ombra Desktop. Патчі рушія Chromium підтримуються в окремому репозиторії, а скомпільовані збірки публікуються через [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## Часті запитання (FAQ)
 
@@ -965,7 +954,7 @@ for _ in range(15):
 
 ### Чи безкоштовний Ombra і чи потрібен ліцензійний ключ?
 
-Вихідний код SDK у цьому репозиторії відкритий за ліцензією Apache License 2.0. Поточні збірки рушія (`151.0.7922.108-9` і новіші) та локальний менеджер профілів Ombra Desktop (`desktop-v1.2.2`) працюють безкоштовно й автономно — без облікового запису, ліцензійного ключа, апаратного ідентифікатора чи обмеження на кількість профілів. `license_key` і `OMBRA_LICENSE_KEY` потрібні лише для застарілих ліцензованих збірок.
+Вихідний код SDK у цьому репозиторії відкритий за ліцензією Apache License 2.0. Поточні збірки рушія та локальний менеджер профілів Ombra Desktop працюють безкоштовно й автономно — без облікового запису, ліцензійного ключа, апаратного ідентифікатора чи обмеження на кількість профілів. `license_key` і `OMBRA_LICENSE_KEY` потрібні лише для застарілих ліцензованих збірок.
 
 ### Чи потрібно встановлювати Ombra Desktop для використання SDK?
 

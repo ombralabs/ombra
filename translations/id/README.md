@@ -54,8 +54,8 @@ API, selektor, dan tipe yang sama — cukup ganti pernyataan impor dan panggilan
 
 - **Patch Chromium tingkat kode sumber** — canvas, WebGL, WebGPU, audio, font, GPU, layar, media query CSS, pelaporan perangkat keras, WebRTC tanpa kebocoran STUN, TLS ClientHello, zona waktu, locale, serta penghapusan sinyal otomatisasi (`navigator.webdriver`, `Runtime.enable`, penanda headless).
 - **Input seperti manusia bawaan di dalam proses browser (`humanize=True`)** — lintasan kursor (`cursory-rs`), klik terarah dengan durasi tekan, irama pengetikan dengan koreksi otomatis salah ketik, dan fisika pengguliran (scroll) berjalan di dalam Chromium. SDK mengembalikan objek `Browser` native biasa tanpa pembungkus proxy.
-- **Operasi mandiri tanpa kunci atau akun** — build mesin terkini (`151.0.7922.108-9` dan yang lebih baru) serta Ombra Desktop berjalan secara lokal tanpa pendaftaran, kunci lisensi, ID perangkat keras, atau server lisensi.
-- **Instalasi otomatis dan verifikasi biner kriptografis** — `pip install ombrabrowser` atau `npm install @ombralabs/sdk`; pada peluncuran pertama, SDK mengunduh build untuk platform Anda dan memverifikasi tanda tangan Ed25519 serta checksum SHA-256.
+- **Operasi mandiri tanpa kunci atau akun** — build mesin terkini serta Ombra Desktop berjalan secara lokal tanpa pendaftaran, kunci lisensi, ID perangkat keras, atau server lisensi.
+- **Instalasi otomatis dan verifikasi biner kriptografis** — `pip install ombrabrowser` atau `npm install @ombralabs/sdk`; pada peluncuran pertama, SDK mengunduh build yang kompatibel dari [GitHub Releases](https://github.com/ombralabs/ombra/releases) dan memverifikasi tanda tangan Ed25519 serta checksum SHA-256.
 - **Profil persisten dan relay proksi aman** — profil bernama menyimpan cookie, `localStorage`, IndexedDB, dan `seed` antar sesi dengan penguncian lintas proses; proksi terautentikasi (HTTP, HTTPS, SOCKS5) berjalan melalui relay loopback lokal sehingga kredensial tidak pernah muncul di argumen proses.
 - **Manajer profil offline Ombra Desktop** — aplikasi desktop native di dalam repositori ini ([`desktop/`](../../desktop/README.md)) dengan installer siap pakai untuk macOS, Linux, dan Windows.
 
@@ -136,7 +136,7 @@ python -m pip install "ombrabrowser[geoip]"
 # Dengan Playwright (1.60.0+, tidak perlu mengunduh Chromium bawaan)
 npm install @ombralabs/sdk "playwright-core@^1.60.0"
 
-# Atau dengan Puppeteer
+# Atau dengan Puppeteer (Puppeteer 25+ memerlukan Node.js 22.12+)
 npm install @ombralabs/sdk puppeteer-core
 
 # Opsional: pembaca basis data GeoIP offline untuk timezone: "auto" dan locale: "auto"
@@ -145,11 +145,11 @@ npm install mmdb-lib
 
 ---
 
-Saat diluncurkan, SDK mencari mesin dalam urutan yang ketat: `binary_path` (`binaryPath` di Node.js), `OMBRA_BINARY_PATH`, direktori mesin Ombra Desktop, dan cache SDK (`~/.ombra/engines`). Jika tidak ada mesin yang kompatibel ditemukan, SDK akan mengunduh build dari saluran rilis bertanda tangan, memverifikasi tanda tangan Ed25519 dan checksum SHA-256, lalu menyimpannya di cache lokal. Menjalankan `playwright install chromium` tidak diperlukan.
+Saat diluncurkan, SDK mencari mesin dalam urutan yang ketat: `binary_path` (`binaryPath` di Node.js), `OMBRA_BINARY_PATH`, direktori mesin Ombra Desktop, dan cache SDK (`~/.ombra/engines`). Jika tidak ada mesin yang kompatibel ditemukan, SDK akan mengunduh build dari [GitHub Releases](https://github.com/ombralabs/ombra/releases), memverifikasi tanda tangan Ed25519 dan checksum SHA-256, lalu menyimpannya di cache lokal. Menjalankan `playwright install chromium` tidak diperlukan.
 
 Untuk menonaktifkan pengunduhan otomatis, teruskan `download=False` (`download: false` di Node.js). Untuk mengunduh dan memverifikasi mesin terlebih dahulu (misalnya saat membangun image kontainer), panggil `ensure_binary()` (`ensureBinary()`) atau gunakan perintah CLI `install`.
 
-> **Peluncuran mandiri:** build mesin terkini (`151.0.7922.108-9` dan yang lebih baru) bersifat gratis dan tidak memerlukan akun atau kunci lisensi. `OMBRA_LICENSE_KEY` dan perintah `login` tetap tersedia hanya untuk kompatibilitas dengan build berlisensi versi lama.
+> **Peluncuran mandiri:** build mesin terkini bersifat gratis dan tidak memerlukan akun atau kunci lisensi. `OMBRA_LICENSE_KEY` dan perintah `login` tetap tersedia hanya untuk kompatibilitas dengan build berlisensi versi lama.
 
 **Migrasi dari Playwright** hanya memerlukan dua baris — semua operasi halaman, locator, dan mekanisme tunggu tetap tidak berubah:
 
@@ -185,22 +185,11 @@ Setiap komponen dalam ekosistem mengikuti kontrak peluncuran bersama dan diberi 
 | **Kontrak SDK** | Draf `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` di PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` di npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Mesin Ombra Chromium** | Chromium `151.0.7922.108` | Diunduh otomatis oleh SDK (`-9` untuk macOS ARM64 / Linux x64 / Windows x64, `-7` untuk Intel macOS) |
-| **Ombra Desktop** | `desktop-v1.2.2` | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) |
-| **Browser mandiri** | `v158.0.8127.37-1` | [GitHub Releases](https://github.com/ombralabs/ombra/releases/tag/v158.0.8127.37-1) |
+| **Mesin Ombra Chromium** | Rentang SDK `>=151.0.7922.108,<152` | Diunduh otomatis oleh SDK dari [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Desktop** | Manajer profil offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Browser mandiri** | Chromium `158+` (khusus mandiri; SDK `0.1.x` saat ini menerima `151.*` dan menolak `158.*` dengan `UnsupportedEngineError`) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Skema dan conformance** | JSON Schema + kasus uji bersama | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Metode pemeriksaan stealth** | 6 lapisan (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
-
-Tersedia pada rilis saat ini:
-
-- **Patch tingkat kode sumber** — derivasi fingerprint yang konsisten terhadap seed, penyelarasan WebGL / WebGPU dan ekstensi, tabel font realistis per OS, profil TLS ClientHello native (`chrome-<major>`), peredaman kebocoran stack `Runtime.enable` dan `UtilityScript`, serta perlindungan kebocoran IP host WebRTC.
-- **Domain CDP `Ombra` tingkat browser** — kontrol langsung atas input seperti manusia (`getHumanizeState`, `setHumanize`) di Python dan Node.js tanpa perlu memulai ulang browser.
-- **Simulasi input native di dalam proses browser** — perencana kursor `cursory-rs`, profil scroll roda mouse dan trackpad, irama pengetikan dengan koreksi otomatis salah ketik, serta penempelan (paste) teks panjang yang aman melalui clipboard terisolasi.
-- **Build mandiri tanpa kunci** — build mesin terkini (`151.0.7922.108-9`) dan Ombra Desktop `1.2.2` berjalan sepenuhnya secara lokal tanpa akun, kunci, atau telemetri.
-- **Penyematan versi mesin (`version`)** — kunci ke build spesifik melalui `launch(version="151.0.7922.108-9")`, `OMBRA_VERSION`, atau CLI `install --version`.
-- **Relay proksi terpadu** — proksi terautentikasi HTTP, HTTPS, dan SOCKS5 tanpa mengekspos kredensial di baris perintah Chromium, log, atau metadata profil.
-- **Profil bernama persisten** — simpan `seed`, cookie, `localStorage`, dan IndexedDB di `~/.ombra/profiles/<slug>` dengan penguncian lintas proses (`ProfileBusyError`).
-- **Pemeriksaan rantai pasok kriptografis** — verifikasi tanda tangan Ed25519 pada amplop rilis dan verifikasi SHA-256 pada arsip sebelum ekstraksi.
 
 Lihat [CHANGELOG.md](../../CHANGELOG.md) untuk riwayat rilis lengkap.
 
@@ -222,7 +211,7 @@ Lihat [CHANGELOG.md](../../CHANGELOG.md) untuk riwayat rilis lengkap.
 - **Installer siap pakai** — macOS Apple Silicon (`.dmg`, ditandatangani dengan Apple Developer ID dan dinotarisasi), Linux (`.deb` dan `.rpm`), serta Windows x64 (`setup.exe`).
 - **Katalog terisolasi** — atur `OMBRA_DESKTOP_DATA_DIR` untuk bekerja dengan katalog pengujian terpisah atau salinan cadangan.
 
-[Unduh `desktop-v1.2.2` →](https://github.com/ombralabs/ombra/releases/tag/desktop-v1.2.2) · [README Desktop](../../desktop/README.md) · [Panduan profil dan kunci lokal](../../docs/desktop/README.md)
+[Unduh rilis terbaru →](https://github.com/ombralabs/ombra/releases) · [README Desktop](../../desktop/README.md) · [Panduan profil dan kunci lokal](../../docs/desktop/README.md)
 
 ## Verifikasi fingerprint dan pemeriksaan stealth
 
@@ -236,7 +225,7 @@ Alih-alih memberikan janji kosong "100% tidak terdeteksi", Ombra mengandalkan pr
 | `window.chrome` | tidak ada di mode headless | objek lengkap | Sesuai dengan Chrome biasa |
 | `navigator.plugins` | `0` di mode headless | set plugin yang selaras | Tingkat mesin |
 | User-Agent dan Client Hints | `HeadlessChrome`, merek tidak cocok | `Google Chrome` + `Sec-CH-UA*` yang selaras | Patch `010-user-agent-and-webdriver` |
-| Artefak CDP (`Runtime.enable`, `UtilityScript`) | ditandai oleh detektor | diredam oleh mesin; SDK tidak pernah memanggil `Runtime.enable` | Patch `110-runtime-enable` + invarian `SI-02` |
+| Artefak CDP (`Runtime.enable`, `UtilityScript`) | ditandai oleh detektor | diredam oleh mesin; SDK tidak pernah memanggil `Runtime.enable` | Patch `110-runtime-enable` + invarian `SI-01` |
 | Kebocoran IP WebRTC | mengekspos IP lokal/host | melaporkan IP keluar tanpa mengirim STUN asli | Patch `100-webrtc-leak` (`--webrtc-ip`) |
 | TLS dan HTTP/2 | bergantung pada konfigurasi | stack jaringan Chromium + profil ClientHello `chrome-<major>` | Patch `210-tls-network-persona` |
 | WebGL dan WebGPU | renderer perangkat lunak / GPU tidak cocok | batas WebGL/WebGPU dan tabel ekstensi terpadu | Patch `070`, `071`, `075`, `955` |
@@ -460,7 +449,7 @@ ensure_binary(version="151.0.7922.108-9")
 # Hapus biner mesin yang dikelola SDK (profil di ~/.ombra/profiles tidak disentuh)
 clear_cache()
 
-# Periksa perintah peluncuran hasil resolusi tanpa menjalankan Chromium
+# Pratinjau dry-run perintah peluncuran hasil resolusi tanpa menjalankan Chromium
 cmd = build_launch_options(profile="pricing-eu", humanize=True)
 
 # Baca metadata runtime (port CDP, ws_url, seed, pid) dan periksa kesehatan proses
@@ -478,7 +467,7 @@ ombrabrowser install --version 151.0.7922.108-9  # instal build mesin tertentu
 ombrabrowser info                                # diagnostik lingkungan, biner, dan dependensi (alias: doctor)
 ombrabrowser info --quick --json                 # laporan cepat yang mudah dibaca mesin tanpa menjalankan biner
 ombrabrowser info --proxy socks5://user:pass@host:1080  # uji resolusi IP keluar, zona waktu, dan locale lewat proksi
-ombrabrowser update                              # periksa saluran rilis dan perbarui mesin di cache
+ombrabrowser update                              # periksa GitHub Releases dan perbarui mesin di cache
 ombrabrowser clear-cache                         # bersihkan cache biner mesin (profil tetap dipertahankan)
 ombrabrowser login                               # simpan kunci lisensi ke ~/.ombra/license.key (khusus build lama)
 ombrabrowser logout                              # hapus kunci lisensi yang tersimpan
@@ -666,7 +655,7 @@ Nama field di bawah mengikuti konvensi Python (`snake_case`); Node.js menerima b
 
 ### Flag mesin tambahan (`args`)
 
-Flag yang didukung oleh mesin tetapi tidak diatur otomatis oleh SDK (teruskan melalui `args=[...]`):
+Flag mesin tambahan (atur atau timpa melalui `args=[...]`):
 
 | Flag | Tujuan |
 |---|---|
@@ -680,9 +669,9 @@ Flag yang didukung oleh mesin tetapi tidak diatur otomatis oleh SDK (teruskan me
 | `--fingerprint-color-depth=<bits>` | Kedalaman warna layar |
 | `--disable-gpu-fingerprint` | Teruskan GPU asli milik host (string, batas, dan ekstensi WebGL/WebGPU) |
 | `--disable-gpu-string-spoof` | Teruskan string GPU asli sambil tetap mempertahankan pengaturan profil lainnya |
-| `--disable-fingerprint-noise` | Nonaktifkan noise canvas/WebGL/audio sambil tetap menjaga parameter identitas aktif |
+| `--disable-fingerprint-noise` | Nonaktifkan noise canvas/WebGL/audio sambil tetap menjaga parameter identitas aktif (juga diatur oleh `fingerprint={"noise": False}`) |
 | `--fingerprint-pixel-noise` | Aktifkan noise piksel idempoten secara opt-in untuk canvas 2D dan `readPixels` |
-| `--profile-label=<text>` | Label profil yang ditampilkan di bilah alamat browser (khusus UI; tidak terlihat oleh halaman web) |
+| `--profile-label=<text>` | Label profil yang ditampilkan di bilah alamat browser (khusus UI; diatur otomatis dari `profile`, teruskan melalui `args` hanya saat `profile` tidak disetel) |
 
 ### Pengaturan font di Linux
 
@@ -733,7 +722,7 @@ Nama opsi mengikuti API Python dan [kontrak SDK](../../docs/sdk-contract.md); No
 | `version` | env / otomatis | Penyematan versi mesin (misalnya `151.0.7922.108-9`), menimpa `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Batas waktu untuk startup mesin dan koneksi CDP (1000–600000 ms) |
 | `humanize` | default mesin | `False`, `True`, atau `{"preset": "default" \| "careful" \| "fast"}` |
-| `license_key` | env / berkas | Kunci untuk build berlisensi versi lama (tidak diperlukan di `151.0.7922.108-9+`; tidak pernah dicatat di log) |
+| `license_key` | env / berkas | Kunci untuk build berlisensi versi lama (tidak diperlukan pada build terkini; tidak pernah dicatat di log) |
 | `env` | `{}` | Variabel lingkungan tambahan untuk proses mesin |
 | `download` | `True` | Izinkan pengunduhan otomatis biner mesin yang belum tersedia |
 
@@ -745,9 +734,9 @@ Urutan prioritas: **opsi peluncuran eksplisit → variabel lingkungan → metada
 |---|---|---|
 | `OMBRA_BINARY_PATH` | tidak disetel | Path eksplisit ke biner mesin |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Direktori untuk cache mesin dan profil bernama |
-| `OMBRA_DOWNLOAD_URL` | `https://dl.ombrabrowser.dev` | URL dasar / mirror untuk unduhan mesin (`none`/`off` menonaktifkan unduhan) |
+| `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Sumber unduhan mesin; URL kustom mengaktifkan mode mirror lama (`none`/`off` menonaktifkan unduhan) |
 | `OMBRA_VERSION` | versi kompatibel terbaru | Versi mesin yang disematkan (misalnya `151.0.7922.108-9`) |
-| `OMBRA_RELEASE_CHANNEL` | `stable` | Saluran rilis mesin: `stable` atau `beta` |
+| `OMBRA_RELEASE_CHANNEL` | `stable` | Saluran rilis mesin: `stable` (GitHub releases) atau `beta` (GitHub prereleases) |
 | `OMBRA_AUTO_UPDATE` | `true` | Periksa build mesin yang lebih baru saat peluncuran |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Khusus pengembangan lokal: menonaktifkan verifikasi SHA-256 (mencatat peringatan) |
 | `OMBRA_LICENSE_KEY` | tidak disetel | Kunci untuk build berlisensi versi lama (tidak pernah dicatat di log) |
@@ -768,10 +757,10 @@ Taksonomi error lengkap dan aturan percobaan ulang (retry) didokumentasikan dala
 
 | Komponen | Dukungan | Catatan |
 |---|---|---|
-| **macOS ARM64 (Apple Silicon)** | ✅ | Build mandiri `151.0.7922.108-9`; Ombra Desktop ditandatangani dengan Developer ID dan dinotarisasi |
-| **macOS x64 (Intel)** | ✅ | Build `151.0.7922.108-7` tersedia di saluran stable SDK |
-| **Linux x64** | ✅ | Build mandiri `151.0.7922.108-9`; memerlukan `xz-utils` (`xz`) untuk mengekstrak `.tar.xz` |
-| **Windows x64** | ✅ | Build mandiri `151.0.7922.108-9` dan installer Ombra Desktop |
+| **macOS ARM64 (Apple Silicon)** | ✅ | Build mesin mandiri melalui GitHub Releases; Ombra Desktop ditandatangani dengan Developer ID dan dinotarisasi |
+| **macOS x64 (Intel)** | ⚠️ | Didukung oleh SDK jika build `darwin-x64` yang cocok dipublikasikan atau diberikan melalui `binary_path` (build `-7` yang lebih lama memerlukan kunci lisensi) |
+| **Linux x64** | ✅ | Build mesin mandiri melalui GitHub Releases; SDK Node.js memerlukan `xz-utils` (`xz`) untuk mengekstrak `.tar.xz` |
+| **Windows x64** | ✅ | Build mesin mandiri melalui GitHub Releases dan installer Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` diinstal secara otomatis bersama `ombrabrowser` |
 | **Node.js** | `20+` | Playwright `>=1.60,<2.0` atau Puppeteer `>=22` (Puppeteer 25+ memerlukan Node.js `>=22.12`) |
 
@@ -780,10 +769,16 @@ Taksonomi error lengkap dan aturan percobaan ulang (retry) didokumentasikan dala
 Ombra bekerja dengan alat otomatisasi atau framework agen AI apa pun yang menerima biner Chromium kustom atau terhubung melalui CDP (`browser-use`, `Crawl4AI`, `Crawlee`, `Scrapling`, `Stagehand`, `LangChain`, dan lainnya):
 
 ```python
-# Opsi 1: dapatkan path biner terverifikasi dan argumen mesin untuk runner Anda sendiri
+# Opsi 1: dapatkan path biner terverifikasi dan argumen mesin yang siap dijalankan untuk runner Anda sendiri
+# Catatan: build_launch_options() adalah helper dry-run — berikan user_data_dir dan seed secara eksplisit
+# (profil bernama dan proksi terautentikasi memerlukan Opsi 2).
 from ombrabrowser import build_launch_options
 
-cmd = build_launch_options(profile="agent-1", humanize=True)
+cmd = build_launch_options(
+    user_data_dir="./agent-1",
+    fingerprint={"seed": 20261116},
+    humanize=True,
+)
 binary_path = cmd["binary_path"]
 engine_args = cmd["args"]
 
@@ -837,17 +832,7 @@ Xvfb :99 -screen 0 1920x1080x24 &
 export DISPLAY=:99
 ```
 
-Kemudian luncurkan dengan proksi SOCKS5/HTTP residensial, profil persisten, zona waktu/locale yang cocok, `headless=False`, dan `humanize=True`:
-
-```python
-context = launch_persistent_context(
-    profile="site-eu",
-    proxy="socks5://user:pass@residential-proxy:1080",
-    fingerprint={"timezone": "auto", "locale": "auto"},
-    headless=False,
-    humanize=True,
-)
-```
+Kemudian luncurkan dengan proksi SOCKS5/HTTP residensial, profil persisten, zona waktu/locale yang cocok, `headless=False`, dan `humanize=True` (lihat contoh `launch_persistent_context()` di bagian atas README ini).
 
 Jika pemblokiran terus berlanjut di Linux, periksa [Pengaturan font di Linux](#pengaturan-font-di-linux).
 
@@ -885,9 +870,13 @@ browser = launch(version="151.0.7922.108-9")
 ```
 
 ```bash
-# Atau konfigurasikan melalui variabel lingkungan / CLI
-export OMBRA_VERSION=151.0.7922.108-9
+# Uji saluran beta (hapus OMBRA_VERSION — penyematan eksak -N mengabaikan saluran)
+unset OMBRA_VERSION
 export OMBRA_RELEASE_CHANNEL=beta
+ombrabrowser update
+
+# Atau sematkan / kembalikan ke build mesin eksak
+export OMBRA_VERSION=151.0.7922.108-9
 ombrabrowser install --version 151.0.7922.108-9
 
 # Atau arahkan ke biner hasil build lokal
@@ -955,7 +944,7 @@ Laporkan masalah keamanan secara privat sesuai dengan [SECURITY.md](../../SECURI
 └── .github/workflows/ci.yml
 ```
 
-Repositori ini menghosting kontrak SDK, skema, kasus uji conformance, dokumentasi, dan kode sumber Ombra Desktop. Patch mesin Chromium dikelola di repositori terpisah, dengan build terkompilasi dipublikasikan melalui saluran unduhan dan [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Repositori ini menghosting kontrak SDK, skema, kasus uji conformance, dokumentasi, dan kode sumber Ombra Desktop. Patch mesin Chromium dikelola di repositori terpisah, dengan build terkompilasi dipublikasikan melalui [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## FAQ
 
@@ -965,7 +954,7 @@ Tidak. SDK menghubungkan klien Playwright (atau Puppeteer) resmi ke Ombra Chromi
 
 ### Apakah Ombra gratis, dan apakah saya memerlukan kunci lisensi?
 
-Kode sumber SDK di repositori ini bersifat open source di bawah Lisensi Apache 2.0. Build mesin terkini (`151.0.7922.108-9` dan yang lebih baru) serta manajer profil lokal Ombra Desktop (`desktop-v1.2.2`) berjalan gratis dan mandiri — tanpa akun, kunci lisensi, ID perangkat keras, atau batasan jumlah profil. `license_key` dan `OMBRA_LICENSE_KEY` hanya diperlukan untuk build berlisensi versi lama.
+Kode sumber SDK di repositori ini bersifat open source di bawah Lisensi Apache 2.0. Build mesin terkini serta manajer profil lokal Ombra Desktop berjalan gratis dan mandiri — tanpa akun, kunci lisensi, ID perangkat keras, atau batasan jumlah profil. `license_key` dan `OMBRA_LICENSE_KEY` hanya diperlukan untuk build berlisensi versi lama.
 
 ### Apakah saya perlu menginstal Ombra Desktop untuk menggunakan SDK?
 
