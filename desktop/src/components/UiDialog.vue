@@ -8,6 +8,7 @@ const props = withDefaults(defineProps<{ title: string; description?: string; wi
   width: 520,
   busy: false,
 })
+const emit = defineEmits<{ openAutoFocus: [event: Event]; closeAutoFocus: [event: Event] }>()
 const { t } = useI18n()
 
 /** Пока идёт операция, диалог не закрывается ни Escape, ни щелчком снаружи. */
@@ -26,6 +27,8 @@ function keepOpenWhileBusy(event: Event) {
         @escape-key-down="keepOpenWhileBusy"
         @pointer-down-outside="keepOpenWhileBusy"
         @interact-outside="keepOpenWhileBusy"
+        @open-auto-focus="emit('openAutoFocus', $event)"
+        @close-auto-focus="emit('closeAutoFocus', $event)"
       >
         <header class="head">
           <DialogTitle class="section-title">{{ title }}</DialogTitle>

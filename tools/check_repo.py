@@ -15,13 +15,13 @@ import re
 import sys
 import urllib.parse
 from pathlib import Path
-from typing import Dict, Iterable, List, Set
+from typing import Dict, Iterable, List, Optional, Set
 
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_ROOT_FILES = [
     "README.md",
-    "README.ru.md",
+    "translations/ru/README.md",
     "LICENSE",
     "CONTRIBUTING.md",
     "SECURITY.md",
@@ -225,7 +225,7 @@ def iter_markdown_files() -> Iterable[Path]:
         yield path
 
 
-def check_local_link(source: Path, target: str) -> None:
+def check_local_link(source: Path, target: str) -> Optional[Path]:
     target = target.strip()
     if not target or target.startswith("#"):
         return
@@ -250,19 +250,31 @@ def check_local_link(source: Path, target: str) -> None:
 
     if not resolved.exists():
         error("%s: broken link: %s" % (rel(source), target))
+        return None
+    return resolved
+
+
+def iter_link_targets(path: Path) -> Iterable[str]:
+    text = strip_code_fences(path.read_text(encoding="utf-8"))
+    for pattern in (MD_LINK, HTML_LINK):
+        for match in pattern.finditer(text):
+            yield match.group("target")
 
 
 def check_markdown_links() -> int:
-    files = list(iter_markdown_files())
+    readmes = set((ROOT / "translations").glob("*/README.md"))
+    readmes.add(ROOT / "README.md")
     checked = 0
-    for path in files:
-        text = strip_code_fences(path.read_text(encoding="utf-8"))
-        for match in MD_LINK.finditer(text):
-            check_local_link(path, match.group("target"))
+    for path in iter_markdown_files():
+        linked_paths = set()
+        for target in iter_link_targets(path):
+            destination = check_local_link(path, target)
+            if destination is not None:
+                linked_paths.add(destination)
             checked += 1
-        for match in HTML_LINK.finditer(text):
-            check_local_link(path, match.group("target"))
-            checked += 1
+        if path in readmes:
+            for missing in sorted(readmes - linked_paths - {path}):
+                warn("%s does not link to %s" % (rel(path), rel(missing)))
     return checked
 
 
@@ -279,15 +291,6 @@ def check_json_files() -> int:
             error("%s: cannot read: %s" % (rel(path), exc))
         count += 1
     return count
-
-
-def check_readme_pair() -> None:
-    english = (ROOT / "README.md").read_text(encoding="utf-8")
-    russian = (ROOT / "README.ru.md").read_text(encoding="utf-8")
-    if "README.ru.md" not in english:
-        warn("README.md does not link to README.ru.md")
-    if "README.md" not in russian:
-        warn("README.ru.md does not link back to README.md")
 
 
 def check_benchmark_reports() -> int:
@@ -379,14 +382,11 @@ def check_benchmark_reports() -> int:
                         ))
                         break
     return count
-
-
 def main() -> int:
     check_root_files()
     manifest = load_manifest()
     if manifest:
         check_manifest(manifest)
-    check_readme_pair()
     json_count = check_json_files()
     check_benchmark_reports()
     checked_links = check_markdown_links()

@@ -6,21 +6,21 @@
       "id": "python",
       "language": "Python",
       "directory": "sdks/python",
-      "package": "ombra",
+      "package": "ombrabrowser",
       "registry": "PyPI",
       "runtime": "Python 3.10+",
-      "source_root": "sdks/python/src/ombra",
+      "source_root": "sdks/python/src/ombrabrowser",
       "tests_root": "sdks/python/tests",
       "cdp_clients": [
         "Playwright"
       ],
-      "status": "scaffold"
+      "status": "alpha"
     },
     {
       "id": "node",
       "language": "Node.js / TypeScript",
       "directory": "sdks/node",
-      "package": "@ombra/sdk",
+      "package": "@ombralabs/sdk",
       "registry": "npm",
       "runtime": "Node.js 20+",
       "source_root": "sdks/node/src",
@@ -29,7 +29,7 @@
         "Playwright",
         "Puppeteer"
       ],
-      "status": "scaffold"
+      "status": "alpha"
     },
     {
       "id": "dotnet",
