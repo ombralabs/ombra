@@ -29,6 +29,8 @@ Files: desktop/src/components/BrowserDownload.vue, App.vue/App.test.ts, EN/RU me
 - [x] Implement local status, check/install/update, Channel progress, cancel and actionable errors with existing controls.
 - [x] Verify success/error/cancel paths without changing catalog tests' assertions.
 - [x] Run Vue check/build, inspect rendered960px and530px EN/RU, then bump all Desktop version declarations to1.2.3.
-- [ ] Review the whole diff, run final relevant checks, commit/push and create a reviewable PR. Do not merge or publish a Desktop binary without an explicit request.
+- [x] Review the whole diff, run final relevant checks, commit/push and create a reviewable PR. Do not merge or publish a Desktop binary without an explicit request.
 
 Verified results are recorded in [the validation record](../../desktop/browser-download-validation-20261121.md). Source publication is the final handoff step.
+
+Delivered as [Desktop PR14](https://github.com/ombralabs/ombra/pull/14), feature commit `c863704bdeacccefa3843bc01fc7ec4fde5687d1`.
