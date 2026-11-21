@@ -180,19 +180,26 @@ function readOmbraBuildJson(
     path.join(appRoot, "ombra-build.json"),
     path.join(path.dirname(binaryPath), "ombra-build.json"),
   ];
-  for (const candidate of candidates) {
+  let metadata: Record<string, unknown> | null = null;
+  for (const candidate of new Set(candidates)) {
+    let parsed: unknown;
     try {
       if (fs.existsSync(candidate)) {
-        const parsed = JSON.parse(fs.readFileSync(candidate, "utf8"));
-        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-          return parsed as Record<string, unknown>;
-        }
+        parsed = JSON.parse(fs.readFileSync(candidate, "utf8"));
       }
     } catch {
       // continue
     }
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      const record = parsed as Record<string, unknown>;
+      if (metadata && ["version", "chromium", "platform", "commit"].some(key =>
+        metadata![key] !== undefined && record[key] !== undefined && metadata![key] !== record[key])) {
+        throw new ChecksumMismatchError(`Conflicting engine build metadata for ${binaryPath}. Reinstall the engine.`);
+      }
+      metadata = Object.assign(metadata ?? {}, record);
+    }
   }
-  return null;
+  return metadata;
 }
 
 function readMacPlistVersion(appRoot: string): string | null {

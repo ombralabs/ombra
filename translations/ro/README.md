@@ -185,9 +185,9 @@ Fiecare componentă din ecosistem respectă contractul comun de lansare și este
 | **Contract SDK** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **SDK Python** | Alpha `0.1.3` | [`ombrabrowser` pe PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.1.0` | [`@ombralabs/sdk` pe npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Motor Ombra Chromium** | Interval SDK `>=151.0.7922.108,<152` | Descărcat automat de SDK de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **Motor Ombra Chromium** | Interval SDK `>=151.0.7922.108,<159` | Descărcat automat de SDK de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Manager de profiluri offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Browser independent** | Chromium `158+` (doar independent; SDK-urile `0.1.x` actuale acceptă `151.*` și resping `158.*` cu `UnsupportedEngineError`) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Browser independent** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Scheme și conformitate** | JSON Schema + cazuri comune | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Metodă de audit stealth** | 6 straturi (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # Fixează un build exact al motorului și pasează flag-uri Chromium suplimentare
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # Inspectează binarul motorului rezolvat
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # Descarcă și verifică motorul fără a lansa un browser
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # Elimină binarele motorului gestionate de SDK (profilurile din ~/.ombra/profiles rămân intacte)
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # descarcă și verifică motorul (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # instalează un build specific al motorului
+ombrabrowser install --version 158.0.8127.37-3  # instalează un build specific al motorului
 ombrabrowser info                                # diagnosticare mediu, binar și dependențe (alias: doctor)
 ombrabrowser info --quick --json                 # raport rapid în format JSON fără a porni binarul
 ombrabrowser info --proxy socks5://user:pass@host:1080  # testează IP-ul de ieșire, fusul orar și localizarea prin proxy
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ Numele opțiunilor urmează API-ul Python și [contractul SDK](../../docs/sdk-co
 | `user_data_dir` | temporar | Cale explicită către directorul profilului (se exclude reciproc cu `profile`) |
 | `args` | `[]` | Argumente Chromium suplimentare (transmise nemodificate) |
 | `binary_path` | rezolvat | Cale explicită către un executabil al motorului |
-| `version` | mediu / auto | Fixarea versiunii motorului (de exemplu, `151.0.7922.108-9`), suprascrie `OMBRA_VERSION` |
+| `version` | mediu / auto | Fixarea versiunii motorului (de exemplu, `158.0.8127.37-3`), suprascrie `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Termen limită pentru pornirea motorului și conexiunea CDP (1000–600000 ms) |
 | `humanize` | implicitul motorului | `False`, `True` sau `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | mediu / fișier | Cheie pentru build-urile vechi cu licență (nu este necesară pentru build-urile actuale; nu este niciodată înregistrată în jurnale) |
@@ -735,7 +735,7 @@ Ordinea de prioritate: **opțiune explicită de lansare → variabilă de mediu 
 | `OMBRA_BINARY_PATH` | nesetată | Cale explicită către un binar al motorului |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Directorul pentru motoarele din cache și profilurile cu nume |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Sursa de descărcare a motorului; un URL personalizat activează modul oglindă vechi (`none`/`off` dezactivează descărcările) |
-| `OMBRA_VERSION` | cea mai recentă compatibilă | Versiune fixată a motorului (de exemplu, `151.0.7922.108-9`) |
+| `OMBRA_VERSION` | cea mai recentă compatibilă | Versiune fixată a motorului (de exemplu, `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | Canalul de lansare al motorului: `stable` (versiuni GitHub) sau `beta` (versiuni preliminare GitHub) |
 | `OMBRA_AUTO_UPDATE` | `true` | Verifică existența unor build-uri mai noi ale motorului la lansare |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Doar pentru dezvoltare locală: dezactivează verificarea SHA-256 (afișează un avertisment în jurnal) |
@@ -758,7 +758,7 @@ Taxonomia completă a erorilor și regulile de reîncercare sunt documentate în
 | Componentă | Suport | Note |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | Build-uri autonome ale motorului prin GitHub Releases; Ombra Desktop este semnat cu Developer ID și notarizat |
-| **macOS x64 (Intel)** | ⚠️ | Suportat de SDK atunci când un build `darwin-x64` compatibil este publicat sau furnizat prin `binary_path` (build-urile `-7` mai vechi necesită o cheie de licență) |
+| **macOS x64 (Intel)** | — | Nu există o versiune curentă de Chromium 158 |
 | **Linux x64** | ✅ | Build-uri autonome ale motorului prin GitHub Releases; SDK-ul Node.js necesită `xz-utils` (`xz`) pentru a extrage `.tar.xz` |
 | **Windows x64** | ✅ | Build-uri autonome ale motorului prin GitHub Releases și instalator Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` este instalat automat împreună cu `ombrabrowser` |
@@ -866,7 +866,7 @@ Testează canalul `beta` sau fixează / revino la un build exact al motorului:
 
 ```python
 # Fixează un build exact pentru o lansare specifică
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # Sau fixează / revino la un build exact al motorului
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # Sau indică un binar compilat local
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Versiunile oficiale Ombra pentru macOS Apple Silicon sunt semnate cu un certificat Apple Developer ID și notarizate. Dacă rulezi o compilare locală de dezvoltare nesemnată și macOS o plasează în carantină, șterge o singură dată atributul de carantină:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Așteptarea pe o pagină în Python sincron

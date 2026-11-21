@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **SDK 계약** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [PyPI의 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm의 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium 엔진** | SDK 지원 범위 `>=151.0.7922.108,<152` | SDK가 [GitHub Releases](https://github.com/ombralabs/ombra/releases)에서 자동 다운로드 (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Chromium 엔진** | SDK 지원 범위 `>=151.0.7922.108,<159` | SDK가 [GitHub Releases](https://github.com/ombralabs/ombra/releases)에서 자동 다운로드 (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | 오프라인 프로필 관리자 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **단독 실행 브라우저** | Chromium `158+` (단독 실행 전용; 현재 `0.1.x` SDK는 `151.*`만 허용하며 `158.*`는 `UnsupportedEngineError`로 거부) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **단독 실행 브라우저** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **스키마 및 적합성 테스트** | JSON Schema + 공통 케이스 | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **스텔스 점검 방법론** | 6개 계층 (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # 특정 엔진 빌드 고정 및 추가 Chromium 플래그 전달
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # 결정된 엔진 바이너리 정보 확인
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # 브라우저를 실행하지 않고 엔진 다운로드 및 검증
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # SDK가 관리하는 엔진 바이너리 삭제 (~/.ombra/profiles 아래의 프로필은 유지됨)
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # 엔진 다운로드 및 검증 (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # 특정 엔진 빌드 설치
+ombrabrowser install --version 158.0.8127.37-3  # 특정 엔진 빌드 설치
 ombrabrowser info                                # 환경, 바이너리 및 의존성 진단 (별칭: doctor)
 ombrabrowser info --quick --json                 # 바이너리를 실행하지 않고 빠른 기계 판독 가능 보고서 출력
 ombrabrowser info --proxy socks5://user:pass@host:1080  # 프록시를 통한 출구 IP, 시간대 및 로케일 확인 테스트
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ RUN fc-cache -f
 | `user_data_dir` | 임시 경로 | 명시적 프로필 디렉터리 경로 (`profile`과 동시 사용 불가) |
 | `args` | `[]` | 추가 Chromium 인자 (변경 없이 그대로 전달) |
 | `binary_path` | 자동 탐색 | 엔진 실행 파일의 명시적 경로 |
-| `version` | 환경 변수 / 자동 | 엔진 버전 고정(예: `151.0.7922.108-9`), `OMBRA_VERSION`보다 우선 |
+| `version` | 환경 변수 / 자동 | 엔진 버전 고정(예: `158.0.8127.37-3`), `OMBRA_VERSION`보다 우선 |
 | `timeout_ms` | `30000` | 엔진 시작 및 CDP 연결 제한 시간 (1000–600000 ms) |
 | `humanize` | 엔진 기본값 | `False`, `True`, 또는 `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | 환경 변수 / 파일 | 레거시 라이선스 빌드용 키 (현재 빌드에서는 불필요, 로그에 기록되지 않음) |
@@ -735,7 +735,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | 미설정 | 엔진 바이너리의 명시적 경로 |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | 캐시된 엔진 및 이름 지정 프로필 저장 디렉터리 |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | 엔진 다운로드 소스; 커스텀 URL 지정 시 레거시 미러 모드 활성화 (`none`/`off` 설정 시 다운로드 비활성화) |
-| `OMBRA_VERSION` | 최신 호환 버전 | 고정할 엔진 버전(예: `151.0.7922.108-9`) |
+| `OMBRA_VERSION` | 최신 호환 버전 | 고정할 엔진 버전(예: `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | 엔진 릴리스 채널: `stable` (GitHub 정식 릴리스) 또는 `beta` (GitHub 프리릴리스) |
 | `OMBRA_AUTO_UPDATE` | `true` | 실행 시 최신 엔진 빌드 확인 여부 |
 | `OMBRA_SKIP_CHECKSUM` | `false` | 로컬 개발 전용: SHA-256 검증 비활성화 (경고 로그 출력) |
@@ -758,7 +758,7 @@ RUN fc-cache -f
 | 구성 요소 | 지원 여부 | 비고 |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | GitHub Releases를 통한 독립 실행 엔진 빌드; Ombra Desktop은 Developer ID 서명 및 공증 완료 |
-| **macOS x64 (Intel)** | ⚠️ | 일치하는 `darwin-x64` 빌드가 배포되었거나 `binary_path`로 제공된 경우 SDK에서 지원 (이전 `-7` 빌드는 라이선스 키 필요) |
+| **macOS x64 (Intel)** | — | 현재 Chromium 158 릴리스 없음 |
 | **Linux x64** | ✅ | GitHub Releases를 통한 독립 실행 엔진 빌드; Node.js SDK에서 `.tar.xz` 압축 해제를 위해 `xz-utils`(`xz`) 필요 |
 | **Windows x64** | ✅ | GitHub Releases를 통한 독립 실행 엔진 빌드 및 Ombra Desktop 설치 프로그램 제공 |
 | **Python** | `3.10+` | `ombrabrowser` 설치 시 Playwright `>=1.60,<2.0` 자동 설치 |
@@ -866,7 +866,7 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # 특정 실행에 정확한 빌드 버전 고정
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # 또는 특정 엔진 빌드로 고정 / 롤백
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # 또는 로컬에서 빌드한 바이너리 경로 지정
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Apple Silicon macOS용 공식 Ombra 릴리스는 Apple Developer ID 인증서로 서명 및 공증되어 있습니다. 서명되지 않은 로컬 개발자 빌드를 실행할 때 macOS가 격리 처리한다면 격리 속성을 한 번 제거하세요:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### 동기 Python 환경에서 페이지 대기하기

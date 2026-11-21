@@ -185,9 +185,9 @@ Jede Komponente im Ökosystem folgt dem gemeinsamen Startvertrag und wird unabh�
 | **SDK-Vertrag** | Entwurf `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python-SDK** | Alpha `0.1.3` | [`ombrabrowser` auf PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js-/TypeScript-SDK** | Alpha `0.1.0` | [`@ombralabs/sdk` auf npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium Engine** | SDK-Bereich `>=151.0.7922.108,<152` | Automatischer Download durch das SDK von [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Chromium Engine** | SDK-Bereich `>=151.0.7922.108,<159` | Automatischer Download durch das SDK von [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline-Profilmanager | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Standalone-Browser** | Chromium `158+` (nur Standalone; aktuelle `0.1.x`-SDKs akzeptieren `151.*` und lehnen `158.*` mit `UnsupportedEngineError` ab) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Standalone-Browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schemas und Konformität** | JSON Schema + gemeinsame Testfälle | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Stealth-Checkup-Methode** | 6 Ebenen (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # Exakten Engine-Build festlegen und zusätzliche Chromium-Flags übergeben
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # Aufgelöste Engine-Binärdatei prüfen
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # Engine herunterladen und verifizieren, ohne einen Browser zu starten
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # Vom SDK verwaltete Engine-Binärdateien entfernen (Profile unter ~/.ombra/profiles bleiben unangetastet)
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # Engine herunterladen und verifizieren (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # bestimmten Engine-Build installieren
+ombrabrowser install --version 158.0.8127.37-3  # bestimmten Engine-Build installieren
 ombrabrowser info                                # Diagnose von Umgebung, Binärdatei und Abhängigkeiten (Alias: doctor)
 ombrabrowser info --quick --json                 # schneller maschinenlesbarer Bericht ohne Start der Binärdatei
 ombrabrowser info --proxy socks5://user:pass@host:1080  # Exit-IP, Zeitzone und Locale-Auflösung über Proxy testen
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ Die Optionsnamen folgen der Python-API und dem [SDK-Vertrag](../../docs/sdk-cont
 | `user_data_dir` | temporär | Expliziter Pfad zum Profilverzeichnis (schließt sich mit `profile` gegenseitig aus) |
 | `args` | `[]` | Zusätzliche Chromium-Argumente (werden unverändert weitergereicht) |
 | `binary_path` | aufgelöst | Expliziter Pfad zu einer Engine-Binärdatei |
-| `version` | Env / Auto | Fixierte Engine-Version (z. B. `151.0.7922.108-9`), überschreibt `OMBRA_VERSION` |
+| `version` | Env / Auto | Fixierte Engine-Version (z. B. `158.0.8127.37-3`), überschreibt `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Zeitlimit für Engine-Start und CDP-Verbindung (1000–600000 ms) |
 | `humanize` | Engine-Standard | `False`, `True` oder `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | Env / Datei | Schlüssel für ältere lizenzierte Builds (bei aktuellen Builds nicht benötigt; wird niemals protokolliert) |
@@ -735,7 +735,7 @@ Rangfolge: **explizite Startoption → Umgebungsvariable → Profilmetadaten →
 | `OMBRA_BINARY_PATH` | nicht gesetzt | Expliziter Pfad zu einer Engine-Binärdatei |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Verzeichnis für zwischengespeicherte Engines und benannte Profile |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Download-Quelle für die Engine; eine benutzerdefinierte URL aktiviert den Legacy-Mirror-Modus (`none`/`off` deaktiviert Downloads) |
-| `OMBRA_VERSION` | neueste kompatible | Fixierte Engine-Version (z. B. `151.0.7922.108-9`) |
+| `OMBRA_VERSION` | neueste kompatible | Fixierte Engine-Version (z. B. `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | Engine-Release-Kanal: `stable` (GitHub-Releases) oder `beta` (GitHub-Prereleases) |
 | `OMBRA_AUTO_UPDATE` | `true` | Beim Start auf neuere Engine-Builds prüfen |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Nur für lokale Entwicklung: deaktiviert die SHA-256-Prüfung (protokolliert eine Warnung) |
@@ -758,7 +758,7 @@ Die vollständige Fehlertaxonomie und Wiederholungsregeln sind im [SDK-Vertrag (
 | Komponente | Unterstützung | Hinweise |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | Autonome Engine-Builds über GitHub Releases; Ombra Desktop ist mit Developer ID signiert und notarisiert |
-| **macOS x64 (Intel)** | ⚠️ | Vom SDK unterstützt, wenn ein passender `darwin-x64`-Build veröffentlicht oder über `binary_path` angegeben wird (ältere `-7`-Builds erfordern einen Lizenzschlüssel) |
+| **macOS x64 (Intel)** | — | Keine aktuelle Chromium-158-Version |
 | **Linux x64** | ✅ | Autonome Engine-Builds über GitHub Releases; das Node.js-SDK erfordert `xz-utils` (`xz`) zum Entpacken von `.tar.xz` |
 | **Windows x64** | ✅ | Autonome Engine-Builds über GitHub Releases und Installationsprogramm für Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` wird automatisch zusammen mit `ombrabrowser` installiert |
@@ -866,7 +866,7 @@ Testen Sie den `beta`-Kanal oder pinnen bzw. setzen Sie die Engine auf einen exa
 
 ```python
 # Exakten Build für einen bestimmten Start festlegen
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # Oder auf einen exakten Engine-Build festlegen / zurücksetzen
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # Oder auf eine lokal kompilierte Binärdatei verweisen
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Offizielle Ombra-Releases für Apple-Silicon-macOS sind mit einem Apple-Developer-ID-Zertifikat signiert und notarisiert. Wenn Sie einen lokalen, unsignierten Entwickler-Build ausführen und macOS diesen unter Quarantäne stellt, entfernen Sie das Quarantäne-Attribut einmalig:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Auf einer Seite im synchronen Python warten

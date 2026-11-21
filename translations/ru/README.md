@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **Контракт SDK** | Черновик `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Альфа `0.1.3` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Альфа `0.1.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Движок Ombra Chromium** | Диапазон SDK `>=151.0.7922.108,<152` | Автозагрузка через SDK из [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **Движок Ombra Chromium** | Диапазон SDK `>=151.0.7922.108,<159` | Автозагрузка через SDK из [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Офлайн-менеджер профилей | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Автономный браузер** | Chromium `158+` (только автономно; текущие SDK `0.1.x` принимают `151.*` и отклоняют `158.*` с `UnsupportedEngineError`) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Автономный браузер** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Схемы и проверка соответствия** | JSON Schema + кейсы | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **Методика проверки движка** | 6 слоёв (`L0`–`L5`) | [`docs/stealth-checkup.ru.md`](../../docs/stealth-checkup.ru.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # Закрепление точной сборки движка и дополнительные флаги Chromium
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # Информация об установленном движке
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # Скачать и проверить движок без запуска браузера
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # Удалить кеш движков SDK (профили в ~/.ombra/profiles не затрагиваются)
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # скачать и проверить движок (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # установить конкретную сборку
+ombrabrowser install --version 158.0.8127.37-3  # установить конкретную сборку
 ombrabrowser info                                # диагностика окружения, движка и зависимостей (алиас: doctor)
 ombrabrowser info --quick --json                 # быстрая машиночитаемая диагностика без запуска бинарника
 ombrabrowser info --proxy socks5://user:pass@host:1080  # проверить разрешение IP, TZ и локали через прокси
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ RUN fc-cache -f
 | `user_data_dir` | временный | Явный путь к каталогу профиля (взаимоисключим с `profile`) |
 | `args` | `[]` | Дополнительные аргументы Chromium (передаются без изменений) |
 | `binary_path` | автопоиск | Явный путь к исполняемому файлу движка |
-| `version` | из env / авто | Закрепление версии движка (например, `151.0.7922.108-9`), переопределяет `OMBRA_VERSION` |
+| `version` | из env / авто | Закрепление версии движка (например, `158.0.8127.37-3`), переопределяет `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | Лимит времени на старт движка и подключение по CDP (1000–600000 мс) |
 | `humanize` | по умолчанию движка | `False`, `True` или `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | из env / файла | Ключ для старых лицензируемых сборок (не требуется на актуальных сборках; не логируется) |
@@ -735,7 +735,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | не задана | Явный путь к бинарнику движка |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | Каталог кеша движков и именованных профилей |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | Источник загрузки движка; свой URL включает режим зеркала (`none`/`off` отключает загрузку) |
-| `OMBRA_VERSION` | последняя совместимая | Закреплённая версия движка (например, `151.0.7922.108-9`) |
+| `OMBRA_VERSION` | последняя совместимая | Закреплённая версия движка (например, `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | Канал обновлений движка: `stable` (релизы GitHub) или `beta` (пререлизы GitHub) |
 | `OMBRA_AUTO_UPDATE` | `true` | Проверять наличие новой сборки движка при запуске |
 | `OMBRA_SKIP_CHECKSUM` | `false` | Только для локальной разработки: отключает проверку SHA-256 (выводит предупреждение) |
@@ -758,7 +758,7 @@ RUN fc-cache -f
 | Компонент | Поддержка | Примечания |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | Автономные сборки движка через GitHub Releases; Ombra Desktop подписан Developer ID и нотаризован |
-| **macOS x64 (Intel)** | ⚠️ | Поддерживается SDK при наличии опубликованной сборки `darwin-x64` или через `binary_path` (старые сборки `-7` требуют ключ лицензии) |
+| **macOS x64 (Intel)** | — | Текущей сборки Chromium 158 нет |
 | **Linux x64** | ✅ | Автономные сборки движка через GitHub Releases; Node.js SDK требует `xz-utils` (`xz`) для распаковки `.tar.xz` |
 | **Windows x64** | ✅ | Автономные сборки движка через GitHub Releases и установщик Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` устанавливается вместе с `ombrabrowser` |
@@ -866,7 +866,7 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # Закрепить точную сборку для конкретного запуска
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # Или закрепить / откатить точную сборку движка
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # Или указать локально собранный бинарник
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Официальные релизы Ombra для macOS Apple Silicon подписываются сертификатом Apple Developer ID и проходят нотаризацию. Если вы запускаете локальную неподписанную сборку разработчика и macOS блокирует её карантином, снимите атрибут карантина один раз:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### Как ждать на странице в синхронном Python

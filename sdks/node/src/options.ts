@@ -6,16 +6,20 @@
 import path from "node:path";
 import { expandTilde, getTimeoutMs, isLoopbackHost, logger, normalizeRequestedVersion } from "./config.js";
 import { InvalidOptionError } from "./errors.js";
+import { checkMobileViewportOS } from "./profile.js";
 import { parseProxy, type NormalizedProxy } from "./proxy.js";
 import type {
   FingerprintOptions,
   HumanizePreset,
   LaunchOptions,
   PersonaOS,
+  ScreenSize,
 } from "./types.js";
 
 const ALLOWED_TOP_KEYS = new Set([
   "headless",
+  "mobileViewport",
+  "mobile_viewport",
   "proxy",
   "fingerprint",
   "profile",
@@ -69,6 +73,7 @@ export interface ValidatedFingerprint {
 
 export interface ValidatedLaunchOptions {
   headless: boolean;
+  mobileViewport?: ScreenSize;
   proxy: NormalizedProxy | null;
   fingerprint: ValidatedFingerprint;
   profile?: string;
@@ -273,6 +278,19 @@ function validateExtraArgs(raw: unknown): string[] {
   return [...raw];
 }
 
+function validateMobileViewport(raw: unknown): ScreenSize | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  if (typeof raw !== "object" || Array.isArray(raw)) {
+    throw new InvalidOptionError("mobileViewport must be an object with width and height.");
+  }
+  const size = raw as Record<string, unknown>;
+  rejectUnknownKeys(size, new Set(["width", "height"]), "mobileViewport");
+  return {
+    width: requireInt(size.width, "mobileViewport.width", { min: 1, max: 10000 }),
+    height: requireInt(size.height, "mobileViewport.height", { min: 1, max: 10000 }),
+  };
+}
+
 export function validateLaunchOptions(rawOptions: LaunchOptions = {}): ValidatedLaunchOptions {
   if (!rawOptions || typeof rawOptions !== "object" || Array.isArray(rawOptions)) {
     throw new InvalidOptionError("Launch options must be an object.");
@@ -343,10 +361,17 @@ export function validateLaunchOptions(rawOptions: LaunchOptions = {}): Validated
   const timeoutRaw = pickDualField<number>(raw, "timeoutMs", "timeout_ms", "launch");
   const timeoutMs = getTimeoutMs(timeoutRaw);
 
+  const proxy = parseProxy(raw.proxy as LaunchOptions["proxy"]);
+  const fingerprint = validateFingerprint(raw.fingerprint as FingerprintOptions | undefined);
+  const mobileViewport = validateMobileViewport(pickDualField(raw, "mobileViewport", "mobile_viewport", "launch"));
+  if (mobileViewport) {
+    checkMobileViewportOS(fingerprint.os, userDataDir, profile);
+  }
   return {
     headless,
-    proxy: parseProxy(raw.proxy as LaunchOptions["proxy"]),
-    fingerprint: validateFingerprint(raw.fingerprint as FingerprintOptions | undefined),
+    ...(mobileViewport ? { mobileViewport } : {}),
+    proxy,
+    fingerprint,
     profile,
     userDataDir,
     args: validateExtraArgs(raw.args),
@@ -389,6 +414,10 @@ export function buildEngineArgs(params: BuildEngineArgsParams): string[] {
   }
   if (options.headless) {
     cmdArgs.push("--headless=new");
+  }
+  if (options.mobileViewport) {
+    const { width, height } = options.mobileViewport;
+    cmdArgs.push(`--mobile-layout-viewport=${width},${height}`);
   }
 
   if (options.profile) {

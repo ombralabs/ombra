@@ -184,7 +184,7 @@ def normalize_requested_version(version: str | None = None) -> str | None:
     if not _VERSION_PIN_RE.fullmatch(cleaned):
         raise InvalidOptionError(
             f"Invalid engine version pin {raw!r}. Expected '<a.b.c.d>' or '<a.b.c.d>-<N>' "
-            "(for example '151.0.7922.108' or '151.0.7922.108-7').",
+            "(for example '158.0.8127.37' or '158.0.8127.37-2').",
             details={"version": cleaned},
         )
     return cleaned
@@ -261,13 +261,13 @@ def _normalize_license_key(raw: str) -> str:
 
 
 def binary_relative_path(system: str | None = None) -> Path:
-    """Relative path of the Chromium executable inside an extracted engine directory."""
+    """Canonical executable path inside a native Ombra engine distribution."""
     target = system or platform.system()
     if target == "Darwin":
-        return Path("Chromium.app") / "Contents" / "MacOS" / "Chromium"
+        return Path("Ombra.app") / "Contents" / "MacOS" / "Ombra"
     if target == "Windows":
-        return Path("chrome.exe")
-    return Path("chrome")
+        return Path("ombra.exe")
+    return Path("ombra")
 
 
 def is_loopback_host(host: str | None) -> bool:

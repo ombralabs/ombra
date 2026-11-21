@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **SDK अनुबंध** | ड्राफ़्ट `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | अल्फ़ा `0.1.3` | [PyPI पर `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | अल्फ़ा `0.1.0` | [npm पर `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium इंजन** | SDK सीमा `>=151.0.7922.108,<152` | SDK द्वारा [GitHub Releases](https://github.com/ombralabs/ombra/releases) से स्वतः डाउनलोड किया जाता है (macOS ARM64 / Linux x64 / Windows x64) |
+| **Ombra Chromium इंजन** | SDK सीमा `>=151.0.7922.108,<159` | SDK द्वारा [GitHub Releases](https://github.com/ombralabs/ombra/releases) से स्वतः डाउनलोड किया जाता है (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | ऑफ़लाइन प्रोफ़ाइल मैनेजर | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **स्टैंडअलोन ब्राउज़र** | Chromium `158+` (केवल स्टैंडअलोन; वर्तमान `0.1.x` SDKs `151.*` को स्वीकार करते हैं और `158.*` को `UnsupportedEngineError` के साथ अस्वीकार करते हैं) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **स्टैंडअलोन ब्राउज़र** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **स्कीमा और कन्फ़ॉर्मेंस** | JSON Schema + साझा टेस्ट केस | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **स्टेल्थ चेकअप पद्धति** | 6 परतें (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # सटीक इंजन बिल्ड पिन करें और अतिरिक्त Chromium फ़्लैग्स पास करें
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # खोजे गए इंजन बाइनरी की जाँच करें
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # ब्राउज़र लॉन्च किए बिना इंजन डाउनलोड और सत्यापित करें
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # SDK द्वारा प्रबंधित इंजन बाइनरी हटाएँ (~/.ombra/profiles के अंतर्गत प्रोफ़ाइल सुरक्षित रहती हैं)
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # इंजन डाउनलोड और सत्यापित करें (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # किसी विशिष्ट इंजन बिल्ड को इंस्टॉल करें
+ombrabrowser install --version 158.0.8127.37-3  # किसी विशिष्ट इंजन बिल्ड को इंस्टॉल करें
 ombrabrowser info                                # एनवायरनमेंट, बाइनरी और निर्भरता डायग्नोस्टिक्स (उपनाम: doctor)
 ombrabrowser info --quick --json                 # बाइनरी चलाए बिना त्वरित मशीन-पठनीय रिपोर्ट
 ombrabrowser info --proxy socks5://user:pass@host:1080  # प्रॉक्सी के माध्यम से एग्ज़िट IP, टाइमज़ोन और लोकेल रिज़ॉल्यूशन का परीक्षण करें
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ RUN fc-cache -f
 | `user_data_dir` | अस्थायी | स्पष्ट प्रोफ़ाइल डायरेक्टरी पाथ (`profile` के साथ परस्पर अपवर्जी) |
 | `args` | `[]` | अतिरिक्त Chromium आर्ग्यूमेंट्स (बिना बदलाव के आगे भेजे जाते हैं) |
 | `binary_path` | स्वतः निर्धारित | इंजन निष्पादन योग्य फ़ाइल (एक्ज़ीक्यूटेबल) का स्पष्ट पाथ |
-| `version` | env / ऑटो | इंजन संस्करण पिन (उदाहरण के लिए `151.0.7922.108-9`), `OMBRA_VERSION` को ओवरराइड करता है |
+| `version` | env / ऑटो | इंजन संस्करण पिन (उदाहरण के लिए `158.0.8127.37-3`), `OMBRA_VERSION` को ओवरराइड करता है |
 | `timeout_ms` | `30000` | इंजन स्टार्टअप और CDP कनेक्शन के लिए समय-सीमा (1000–600000 ms) |
 | `humanize` | इंजन डिफ़ॉल्ट | `False`, `True`, या `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | env / फ़ाइल | पुराने लाइसेंस वाले बिल्ड के लिए कुंजी (वर्तमान बिल्ड पर आवश्यक नहीं; कभी लॉग नहीं की जाती) |
@@ -735,7 +735,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | अनसेट | इंजन बाइनरी का स्पष्ट पाथ |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | कैश्ड इंजन और नामित प्रोफ़ाइल की डायरेक्टरी |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | इंजन डाउनलोड स्रोत; कस्टम URL लीगेसी मिरर मोड सक्षम करता है (`none`/`off` डाउनलोड अक्षम करता है) |
-| `OMBRA_VERSION` | नवीनतम संगत | पिन किया गया इंजन संस्करण (उदाहरण के लिए `151.0.7922.108-9`) |
+| `OMBRA_VERSION` | नवीनतम संगत | पिन किया गया इंजन संस्करण (उदाहरण के लिए `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | इंजन रिलीज़ चैनल: `stable` (GitHub releases) या `beta` (GitHub prereleases) |
 | `OMBRA_AUTO_UPDATE` | `true` | लॉन्च पर नए इंजन बिल्ड की जाँच करें |
 | `OMBRA_SKIP_CHECKSUM` | `false` | केवल लोकल डेवलपमेंट के लिए: SHA-256 सत्यापन अक्षम करता है (चेतावनी लॉग करता है) |
@@ -758,7 +758,7 @@ RUN fc-cache -f
 | घटक | समर्थन | टिप्पणियाँ |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | GitHub Releases के माध्यम से स्वायत्त इंजन बिल्ड; Ombra Desktop Developer ID से हस्ताक्षरित और नोटराइज़्ड है |
-| **macOS x64 (Intel)** | ⚠️ | जब कोई संगत `darwin-x64` बिल्ड प्रकाशित हो या `binary_path` के माध्यम से दिया जाए तो SDK द्वारा समर्थित (पुराने `-7` बिल्ड के लिए लाइसेंस कुंजी आवश्यक है) |
+| **macOS x64 (Intel)** | — | Chromium 158 का वर्तमान रिलीज़ उपलब्ध नहीं है |
 | **Linux x64** | ✅ | GitHub Releases के माध्यम से स्वायत्त इंजन बिल्ड; Node.js SDK को `.tar.xz` निकालने के लिए `xz-utils` (`xz`) आवश्यक है |
 | **Windows x64** | ✅ | GitHub Releases के माध्यम से स्वायत्त इंजन बिल्ड और Ombra Desktop इंस्टॉलर |
 | **Python** | `3.10+` | `ombrabrowser` के साथ Playwright `>=1.60,<2.0` स्वतः इंस्टॉल होता है |
@@ -866,7 +866,7 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # किसी विशिष्ट लॉन्च के लिए सटीक बिल्ड पिन करें
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # या किसी सटीक इंजन बिल्ड को पिन / रोल बैक करें
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # या लोकल रूप से बिल्ड की गई बाइनरी की ओर संकेत करें
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Apple Silicon macOS के लिए आधिकारिक Ombra रिलीज़ Apple Developer ID प्रमाणपत्र से हस्ताक्षरित और नोटराइज़्ड होती हैं। यदि आप कोई लोकल अहस्ताक्षरित डेवलपर बिल्ड चलाते हैं और macOS उसे क्वारंटीन कर देता है, तो एक बार क्वारंटीन एट्रिब्यूट हटा दें:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### सिंक्रोनस Python में पेज पर प्रतीक्षा करना

@@ -9,6 +9,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 ### Added
 
 - Existing Python and Node.js SDK implementations, package metadata, build tooling, and regression tests are now included in this repository.
+- Python and Node.js SDK launchers expose native mobile page layout through `mobile_viewport` / `mobileViewport`, preserving saved-profile host OS validation and explicit Playwright context viewports.
 - Repository scaffold for the Ombra SDK monorepo: eight language directories, a machine-readable manifest, and an idiomatic layout per ecosystem.
 - English and Russian root READMEs with the drop-in Playwright/Puppeteer positioning, the `launch()` quick start, the SDK matrix, and the stealth design rules.
 - `docs/architecture.md` — launcher and CDP-bridge boundaries, the launch sequence, trust boundaries, and failure modes.
@@ -21,6 +22,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 
 ### Changed
 
+- Python and Node.js SDK sources support Chromium `>=151.0.7922.108,<159`, defaulting to `158.0.8127.37` while preserving existing 151 release pins and verified caches. This compatibility update will ship in the next SDK package releases.
 - Python and Node.js download browser releases from GitHub Releases by default, preserving Ed25519, SHA-256, and archive size verification. Explicit legacy mirrors remain supported; GitHub failures do not fall back to GCore.
 - README translations moved to `translations/<locale>/README.md`. Find each language in the [root README](README.md).
 - The SDK is a launcher and CDP bridge, not a control-plane client. It spawns the engine, connects Playwright/Puppeteer/chromedp/Ferrum/chromiumoxide, and returns the native browser object.

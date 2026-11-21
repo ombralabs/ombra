@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **สัญญา SDK** | ฉบับร่าง `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [`ombrabrowser` บน PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [`@ombralabs/sdk` บน npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **เอนจิน Ombra Chromium** | ช่วงที่ SDK รองรับ `>=151.0.7922.108,<152` | ดาวน์โหลดอัตโนมัติโดย SDK จาก [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **เอนจิน Ombra Chromium** | ช่วงที่ SDK รองรับ `>=151.0.7922.108,<159` | ดาวน์โหลดอัตโนมัติโดย SDK จาก [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | ตัวจัดการโปรไฟล์ออฟไลน์ | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **เบราว์เซอร์แบบสแตนด์อโลน** | Chromium `158+` (แบบสแตนด์อโลนเท่านั้น; SDK รุ่น `0.1.x` ปัจจุบันรองรับ `151.*` และปฏิเสธ `158.*` ด้วย `UnsupportedEngineError`) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **เบราว์เซอร์แบบสแตนด์อโลน** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **สคีมาและการทดสอบความสอดคล้อง** | JSON Schema + กรณีทดสอบร่วม | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **วิธีการตรวจเช็กความแนบเนียน** | 6 ระดับ (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # ล็อกบิลด์ของเอนจินแบบเจาะจงและส่งแฟล็กเพิ่มเติมให้ Chromium
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # ตรวจสอบไบนารีของเอนจินที่เลือกใช้งาน
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # ดาวน์โหลดและตรวจสอบเอนจินโดยยังไม่เปิดเบราว์เซอร์
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # ลบไบนารีของเอนจินที่ SDK จัดการไว้ (โปรไฟล์ใน ~/.ombra/profiles จะไม่ถูกแตะต้อง)
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # ดาวน์โหลดและตรวจสอบเอนจิน (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # ติดตั้งบิลด์ของเอนจินแบบเจาะจงเวอร์ชัน
+ombrabrowser install --version 158.0.8127.37-3  # ติดตั้งบิลด์ของเอนจินแบบเจาะจงเวอร์ชัน
 ombrabrowser info                                # วินิจฉัยสภาพแวดล้อม ไบนารี และไลบรารีที่ต้องใช้ (ชื่อย่อ: doctor)
 ombrabrowser info --quick --json                 # รายงานแบบเครื่องอ่านได้อย่างรวดเร็วโดยไม่เปิดไบนารี
 ombrabrowser info --proxy socks5://user:pass@host:1080  # ทดสอบ IP ขาออก โซนเวลา และการระบุภาษาผ่านพร็อกซี
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ RUN fc-cache -f
 | `user_data_dir` | ชั่วคราว | พาธไดเรกทอรีโปรไฟล์แบบระบุเอง (ห้ามใช้ร่วมกับ `profile`) |
 | `args` | `[]` | อาร์กิวเมนต์เพิ่มเติมของ Chromium (ส่งผ่านโดยไม่เปลี่ยนแปลง) |
 | `binary_path` | ค้นหาอัตโนมัติ | พาธแบบระบุเองไปยังไฟล์ไบนารีของเอนจิน |
-| `version` | env / อัตโนมัติ | การล็อกเวอร์ชันเอนจิน (เช่น `151.0.7922.108-9`) มีลำดับความสำคัญเหนือ `OMBRA_VERSION` |
+| `version` | env / อัตโนมัติ | การล็อกเวอร์ชันเอนจิน (เช่น `158.0.8127.37-3`) มีลำดับความสำคัญเหนือ `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | เวลาจำกัดสำหรับการเริ่มเอนจินและเชื่อมต่อ CDP (1000–600000 มิลลิวินาที) |
 | `humanize` | ค่าเริ่มต้นเอนจิน | `False`, `True` หรือ `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | env / ไฟล์ | คีย์สำหรับบิลด์รุ่นเก่าที่ต้องใช้ไลเซนส์ (ไม่จำเป็นสำหรับบิลด์รุ่นปัจจุบัน; ไม่เคยถูกบันทึกลงล็อก) |
@@ -735,7 +735,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | ไม่กำหนด | พาธแบบระบุเองไปยังไบนารีเอนจิน |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | ไดเรกทอรีเก็บแคชเอนจินและโปรไฟล์แบบตั้งชื่อ |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | แหล่งดาวน์โหลดเอนจิน; การกำหนด URL เองจะเปิดใช้โหมดมิร์เรอร์รุ่นเก่า (`none`/`off` เพื่อปิดการดาวน์โหลด) |
-| `OMBRA_VERSION` | รุ่นล่าสุดที่เข้ากันได้ | เวอร์ชันเอนจินที่ล็อกไว้ (เช่น `151.0.7922.108-9`) |
+| `OMBRA_VERSION` | รุ่นล่าสุดที่เข้ากันได้ | เวอร์ชันเอนจินที่ล็อกไว้ (เช่น `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | แชนเนลการเผยแพร่เอนจิน: `stable` (GitHub releases) หรือ `beta` (GitHub prereleases) |
 | `OMBRA_AUTO_UPDATE` | `true` | ตรวจสอบบิลด์เอนจินรุ่นใหม่กว่าเมื่อเปิดใช้งาน |
 | `OMBRA_SKIP_CHECKSUM` | `false` | เฉพาะการพัฒนาในเครื่องเท่านั้น: ปิดการตรวจสอบ SHA-256 (แสดงคำเตือนในล็อก) |
@@ -758,7 +758,7 @@ RUN fc-cache -f
 | คอมโพเนนต์ | การรองรับ | หมายเหตุ |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | บิลด์เอนจินแบบอิสระผ่าน GitHub Releases; Ombra Desktop ลงนามด้วย Developer ID และผ่านการรับรอง notarized |
-| **macOS x64 (Intel)** | ⚠️ | รองรับโดย SDK เมื่อมีการเผยแพร่บิลด์ `darwin-x64` ที่ตรงกันหรือระบุผ่าน `binary_path` (บิลด์ `-7` รุ่นเก่าต้องใช้ไลเซนส์คีย์) |
+| **macOS x64 (Intel)** | — | ยังไม่มีรุ่น Chromium 158 ปัจจุบัน |
 | **Linux x64** | ✅ | บิลด์เอนจินแบบอิสระผ่าน GitHub Releases; Node.js SDK ต้องใช้ `xz-utils` (`xz`) เพื่อแตกไฟล์ `.tar.xz` |
 | **Windows x64** | ✅ | บิลด์เอนจินแบบอิสระผ่าน GitHub Releases และตัวติดตั้ง Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` จะถูกติดตั้งให้อัตโนมัติพร้อมกับ `ombrabrowser` |
@@ -866,7 +866,7 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # ล็อกบิลด์แบบเจาะจงสำหรับการเปิดใช้งานครั้งนั้น
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # หรือล็อก / ย้อนกลับไปยังบิลด์เอนจินแบบเจาะจง
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # หรือชี้ไปยังไบนารีที่คอมไพล์เองในเครื่อง
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 รุ่นเผยแพร่อย่างเป็นทางการของ Ombra สำหรับ Apple Silicon macOS ลงนามด้วยใบรับรอง Apple Developer ID และผ่านการรับรอง (notarized) แล้ว หากคุณรันบิลด์สำหรับนักพัฒนาที่ไม่ได้ลงนามในเครื่องและ macOS กักกัน (quarantine) ไว้ ให้ล้างแอตทริบิวต์กักกันออกครั้งเดียว:
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### การรอหน้าเว็บใน Python แบบ synchronous

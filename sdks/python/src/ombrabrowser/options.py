@@ -6,11 +6,20 @@ import os
 import platform
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .config import get_timeout_ms, is_loopback_host, logger, normalize_requested_version
 from .errors import InvalidOptionError
+from .profile import check_mobile_viewport_os
 from .proxy import NormalizedProxy, parse_proxy
+
+if TYPE_CHECKING:
+    from playwright.sync_api import ViewportSize
+
+    MobileViewport = dict[str, int] | ViewportSize
+else:
+    # Building a command can run before the Playwright client is loaded.
+    MobileViewport = dict[str, int]
 
 _ALLOWED_OS = frozenset({"macos", "windows", "linux"})
 _ALLOWED_FINGERPRINT_KEYS = frozenset({
@@ -49,6 +58,7 @@ class ValidatedLaunchOptions:
     license_key: str | None = None
     env: dict[str, str] = field(default_factory=dict)
     download: bool = True
+    mobile_viewport: dict[str, int] | None = None
 
 
 def _reject_unknown_keys(data: dict[str, Any], allowed: frozenset[str], scope: str) -> None:
@@ -165,6 +175,18 @@ def _validate_fingerprint(raw: Any) -> dict[str, Any]:
     return out
 
 
+def _validate_mobile_viewport(raw: Any) -> dict[str, int] | None:
+    if raw is None:
+        return None
+    if not isinstance(raw, dict) or any(not isinstance(key, str) for key in raw):
+        raise InvalidOptionError("mobile_viewport must be an object with width and height.")
+    _reject_unknown_keys(raw, frozenset({"width", "height"}), "mobile_viewport")
+    return {
+        axis: _require_int(raw.get(axis), f"mobile_viewport.{axis}", minimum=1, maximum=10000)
+        for axis in ("width", "height")
+    }
+
+
 def _validate_humanize(raw: Any) -> bool | dict[str, Any] | None:
     if raw is None or isinstance(raw, bool):
         return raw
@@ -220,6 +242,7 @@ def validate_launch_options(
     headless: bool = True,
     proxy: str | dict[str, Any] | None = None,
     fingerprint: dict[str, Any] | None = None,
+    mobile_viewport: MobileViewport | None = None,
     profile: str | None = None,
     user_data_dir: str | os.PathLike[str] | None = None,
     args: list[str] | tuple[str, ...] | None = None,
@@ -271,11 +294,20 @@ def validate_launch_options(
     if license_key is not None and (not isinstance(license_key, str) or not license_key.strip()):
         raise InvalidOptionError("license_key must be a non-empty string.")
 
+    profile = profile.strip() if isinstance(profile, str) else None
+    validated_headless = _require_bool(headless, "headless")
+    normalized_proxy = parse_proxy(proxy)
+    fp = _validate_fingerprint(fingerprint)
+    viewport = _validate_mobile_viewport(mobile_viewport)
+    if viewport is not None:
+        check_mobile_viewport_os(fp.get("os"), user_data_dir=resolved_udd, profile=profile)
+
     return ValidatedLaunchOptions(
-        headless=_require_bool(headless, "headless"),
-        proxy=parse_proxy(proxy),
-        fingerprint=_validate_fingerprint(fingerprint),
-        profile=profile.strip() if isinstance(profile, str) else None,
+        headless=validated_headless,
+        proxy=normalized_proxy,
+        fingerprint=fp,
+        mobile_viewport=viewport,
+        profile=profile,
         user_data_dir=resolved_udd,
         args=_validate_extra_args(args),
         binary_path=resolved_bin,
@@ -338,6 +370,9 @@ def build_engine_args(
         cmd_args.append("--window-position=0,0")
     if options.headless:
         cmd_args.append("--headless=new")
+    if options.mobile_viewport is not None:
+        size = options.mobile_viewport
+        cmd_args.append(f"--mobile-layout-viewport={size['width']},{size['height']}")
 
     if options.profile:
         clean_label = "".join(ch for ch in options.profile if ord(ch) >= 32)

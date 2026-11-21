@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **SDK 契约** | 草案 `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium 引擎** | SDK 兼容范围 `>=151.0.7922.108,<152` | 由 SDK 从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载（macOS ARM64 / Linux x64 / Windows x64） |
+| **Ombra Chromium 引擎** | SDK 兼容范围 `>=151.0.7922.108,<159` | 由 SDK 从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载（macOS ARM64 / Linux x64 / Windows x64） |
 | **Ombra Desktop** | 离线配置文件管理器 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **独立浏览器版本** | Chromium `158+`（仅独立使用；当前 `0.1.x` SDK 仅接受 `151.*`，对 `158.*` 会抛出 `UnsupportedEngineError`） | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **独立浏览器版本** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schema 与一致性测试** | JSON Schema + 共享测试用例 | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **隐匿性检查方法** | 6 层体系（`L0`–`L5`） | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # 锁定特定引擎构建版本并传递额外的 Chromium 启动参数
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # 查看已解析的引擎二进制信息
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # 仅下载并校验引擎，不启动浏览器
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # 清理 SDK 管理的引擎缓存（不会影响 ~/.ombra/profiles 下的配置文件）
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # 下载并校验引擎（Ed25519 + SHA-256）
-ombrabrowser install --version 151.0.7922.108-9  # 安装指定的引擎构建版本
+ombrabrowser install --version 158.0.8127.37-3  # 安装指定的引擎构建版本
 ombrabrowser info                                # 环境、二进制文件与依赖诊断（别名：doctor）
 ombrabrowser info --quick --json                 # 快速输出机器可读报告，不启动引擎进程
 ombrabrowser info --proxy socks5://user:pass@host:1080  # 测试通过代理获取出口 IP、时区与语言区域
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ RUN fc-cache -f
 | `user_data_dir` | 临时目录 | 显式指定的配置文件目录路径（与 `profile` 互斥） |
 | `args` | `[]` | 额外的 Chromium 启动参数（原样透传） |
 | `binary_path` | 自动解析 | 显式指定引擎可执行文件路径 |
-| `version` | 环境变量 / 自动 | 锁定引擎版本（例如 `151.0.7922.108-9`），优先级高于 `OMBRA_VERSION` |
+| `version` | 环境变量 / 自动 | 锁定引擎版本（例如 `158.0.8127.37-3`），优先级高于 `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | 引擎启动与 CDP 连接超时时间（1000–600000 ms） |
 | `humanize` | 引擎默认 | `False`、`True` 或 `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | 环境变量 / 文件 | 旧版授权构建所需的密钥（当前构建无需使用；永不写入日志） |
@@ -735,7 +735,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | 未设置 | 显式指定引擎二进制文件路径 |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | 缓存引擎与命名配置文件的根目录 |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | 引擎下载源；传入自定义 URL 时启用旧版镜像模式（设为 `none`/`off` 可禁用下载） |
-| `OMBRA_VERSION` | 最新兼容版本 | 锁定的引擎版本（例如 `151.0.7922.108-9`） |
+| `OMBRA_VERSION` | 最新兼容版本 | 锁定的引擎版本（例如 `158.0.8127.37-3`） |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | 引擎发布通道：`stable`（GitHub 正式发布）或 `beta`（GitHub 预发布） |
 | `OMBRA_AUTO_UPDATE` | `true` | 启动时检查是否存在更新的引擎构建 |
 | `OMBRA_SKIP_CHECKSUM` | `false` | 仅限本地开发：禁用 SHA-256 校验（会输出警告日志） |
@@ -758,7 +758,7 @@ RUN fc-cache -f
 | 组件 | 支持状态 | 说明 |
 |---|---|---|
 | **macOS ARM64（Apple Silicon）** | ✅ | 通过 GitHub Releases 提供自主引擎构建；Ombra Desktop 已获 Apple Developer ID 签名与公证 |
-| **macOS x64（Intel）** | ⚠️ | 当发布了匹配的 `darwin-x64` 构建或通过 `binary_path` 提供时可由 SDK 支持（较旧的 `-7` 构建需要许可证密钥） |
+| **macOS x64（Intel）** | — | 暂无 Chromium 158 当前版本 |
 | **Linux x64** | ✅ | 通过 GitHub Releases 提供自主引擎构建；Node.js SDK 解压 `.tar.xz` 需安装 `xz-utils`（`xz`） |
 | **Windows x64** | ✅ | 通过 GitHub Releases 提供自主引擎构建与 Ombra Desktop 安装包 |
 | **Python** | `3.10+` | 安装 `ombrabrowser` 时会自动安装 Playwright `>=1.60,<2.0` |
@@ -866,7 +866,7 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # 为某次启动锁定精确的引擎构建版本
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # 或锁定 / 回滚到精确的引擎构建版本
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # 或直接指向本地编译的二进制文件
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 官方发布的 Apple Silicon macOS 版 Ombra 均经过 Apple Developer ID 证书签名并完成公证。如果你运行的是本地未签名的开发构建且被 macOS 隔离，执行一次以下命令清除隔离属性即可：
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### 在同步 Python 中等待页面加载

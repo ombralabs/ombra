@@ -362,6 +362,7 @@ async function prepareRuntime(rawOptions: LaunchOptions): Promise<{
     userDataDir: opts.userDataDir,
     explicitSeed: opts.fingerprint.seed,
     osHint: opts.fingerprint.os,
+    requireHostOS: opts.mobileViewport !== undefined,
     timezone: opts.fingerprint.timezone,
     locale: opts.fingerprint.locale,
     humanizePreset: explicitPreset,
@@ -845,7 +846,7 @@ function splitContextOptions(options: LaunchContextOptions): {
 
   const pwContextOpts: Record<string, unknown> = {
     ...cleanCtx,
-    viewport: viewport !== undefined ? viewport : null,
+    viewport: viewport !== undefined ? viewport : cleanCtx.viewport ?? null,
   };
 
   return {

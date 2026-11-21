@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **កិច្ចសន្យា SDK** | សេចក្តីព្រាង `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [`ombrabrowser` នៅលើ PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [`@ombralabs/sdk` នៅលើ npm](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **ម៉ាស៊ីន Ombra Chromium** | ចន្លោះកំណែ SDK `>=151.0.7922.108,<152` | ទាញយកដោយស្វ័យប្រវត្តិដោយ SDK ពី [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
+| **ម៉ាស៊ីន Ombra Chromium** | ចន្លោះកំណែ SDK `>=151.0.7922.108,<159` | ទាញយកដោយស្វ័យប្រវត្តិដោយ SDK ពី [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញ | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **កម្មវិធីរុករកឯករាជ្យ** | Chromium `158+` (សម្រាប់ប្រើឯករាជ្យប៉ុណ្ណោះ; SDK `0.1.x` បច្ចុប្បន្នទទួលយក `151.*` ហើយបដិសេធ `158.*` ដោយ `UnsupportedEngineError`) | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **កម្មវិធីរុករកឯករាជ្យ** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **គ្រោងការណ៍ និងការអនុលោមតាម** | JSON Schema + ករណីសាកល្បងរួម | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង** | 6 ស្រទាប់ (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # ភ្ជាប់កំណែស្ថាបនាម៉ាស៊ីនជាក់លាក់ និងបញ្ជូនទង់បញ្ជា Chromium បន្ថែម
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # ពិនិត្យមើលឯកសារប្រតិបត្តិម៉ាស៊ីនដែលបានកំណត់
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # ទាញយក និងផ្ទៀងផ្ទាត់ម៉ាស៊ីនដោយមិនចាំបាច់បើកកម្មវិធីរុករក
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # លុបឯកសារប្រតិបត្តិម៉ាស៊ីនដែលគ្រប់គ្រងដោយ SDK (ប្រវត្តិរូបក្រោម ~/.ombra/profiles មិនត្រូវបានប៉ះពាល់ទេ)
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # ទាញយក និងផ្ទៀងផ្ទាត់ម៉ាស៊ីន (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # ដំឡើងកំណែស្ថាបនាម៉ាស៊ីនជាក់លាក់
+ombrabrowser install --version 158.0.8127.37-3  # ដំឡើងកំណែស្ថាបនាម៉ាស៊ីនជាក់លាក់
 ombrabrowser info                                # ការវិនិច្ឆ័យបរិស្ថាន ឯកសារប្រតិបត្តិ និងភាពអាស្រ័យ (ឈ្មោះផ្សេង៖ doctor)
 ombrabrowser info --quick --json                 # របាយការណ៍លឿនដែលម៉ាស៊ីនអាចអានបានដោយមិនបើកដំណើរការឯកសារប្រតិបត្តិ
 ombrabrowser info --proxy socks5://user:pass@host:1080  # សាកល្បងការកំណត់ IP ច្រកចេញ តំបន់ពេលវេលា និងភាសាតំបន់តាមរយៈប្រូកស៊ី
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ RUN fc-cache -f
 | `user_data_dir` | បណ្តោះអាសន្ន | ផ្លូវថតប្រវត្តិរូបជាក់លាក់ (មិនអាចប្រើរួមគ្នាជាមួយ `profile`) |
 | `args` | `[]` | អាគុយម៉ង់ Chromium បន្ថែម (បញ្ជូនឆ្លងដោយមិនកែប្រែ) |
 | `binary_path` | កំណត់ស្វ័យប្រវត្តិ | ផ្លូវជាក់លាក់ទៅឯកសារប្រតិបត្តិម៉ាស៊ីន |
-| `version` | env / auto | ការភ្ជាប់កំណែម៉ាស៊ីន (ឧទាហរណ៍ `151.0.7922.108-9`), ជំនួស `OMBRA_VERSION` |
+| `version` | env / auto | ការភ្ជាប់កំណែម៉ាស៊ីន (ឧទាហរណ៍ `158.0.8127.37-3`), ជំនួស `OMBRA_VERSION` |
 | `timeout_ms` | `30000` | កាលកំណត់សម្រាប់ការចាប់ផ្តើមម៉ាស៊ីន និងការតភ្ជាប់ CDP (1000–600000 ms) |
 | `humanize` | លំនាំដើមម៉ាស៊ីន | `False`, `True`, ឬ `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | env / file | កូនសោសម្រាប់កំណែស្ថាបនាចាស់ដែលមានអាជ្ញាបណ្ណ (មិនចាំបាច់លើកំណែស្ថាបនាបច្ចុប្បន្ន; មិនដែលកត់ត្រាក្នុងកំណត់ហេតុ) |
@@ -735,7 +735,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | មិនបានកំណត់ | ផ្លូវជាក់លាក់ទៅឯកសារប្រតិបត្តិម៉ាស៊ីន |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | ថតសម្រាប់ម៉ាស៊ីនក្នុងឃ្លាំងសម្ងាត់ និងប្រវត្តិរូបដែលមានឈ្មោះ |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | ប្រភពទាញយកម៉ាស៊ីន; URL ផ្ទាល់ខ្លួនបើករបៀបម៉ាស៊ីនមេកញ្ចក់ចាស់ (`none`/`off` បិទការទាញយក) |
-| `OMBRA_VERSION` | ថ្មីបំផុតដែលឆបគ្នា | កំណែម៉ាស៊ីនដែលបានភ្ជាប់ (ឧទាហរណ៍ `151.0.7922.108-9`) |
+| `OMBRA_VERSION` | ថ្មីបំផុតដែលឆបគ្នា | កំណែម៉ាស៊ីនដែលបានភ្ជាប់ (ឧទាហរណ៍ `158.0.8127.37-3`) |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | បណ្តាញចេញផ្សាយម៉ាស៊ីន៖ `stable` (កំណែចេញផ្សាយ GitHub) ឬ `beta` (កំណែចេញផ្សាយសាកល្បង GitHub) |
 | `OMBRA_AUTO_UPDATE` | `true` | ពិនិត្យរកកំណែស្ថាបនាម៉ាស៊ីនថ្មីជាងនៅពេលបើកដំណើរការ |
 | `OMBRA_SKIP_CHECKSUM` | `false` | សម្រាប់ការអភិវឌ្ឍក្នុងម៉ាស៊ីនតែប៉ុណ្ណោះ៖ បិទការផ្ទៀងផ្ទាត់ SHA-256 (កត់ត្រាការព្រមាន) |
@@ -758,7 +758,7 @@ RUN fc-cache -f
 | សមាសធាតុ | ការគាំទ្រ | កំណត់ចំណាំ |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | កំណែស្ថាបនាម៉ាស៊ីនឯករាជ្យតាម GitHub Releases; Ombra Desktop ចុះហត្ថលេខា Developer ID និងបញ្ជាក់ភាពត្រឹមត្រូវ |
-| **macOS x64 (Intel)** | ⚠️ | គាំទ្រដោយ SDK នៅពេលកំណែស្ថាបនា `darwin-x64` ដែលត្រូវគ្នាត្រូវបានបោះពុម្ពផ្សាយ ឬផ្តល់ជូនតាម `binary_path` (កំណែស្ថាបនា `-7` ចាស់ៗត្រូវការកូនសោអាជ្ញាបណ្ណ) |
+| **macOS x64 (Intel)** | — | មិនមានការចេញផ្សាយ Chromium 158 បច្ចុប្បន្នទេ |
 | **Linux x64** | ✅ | កំណែស្ថាបនាម៉ាស៊ីនឯករាជ្យតាម GitHub Releases; Node.js SDK ត្រូវការ `xz-utils` (`xz`) ដើម្បីពន្លា `.tar.xz` |
 | **Windows x64** | ✅ | កំណែស្ថាបនាម៉ាស៊ីនឯករាជ្យតាម GitHub Releases និងកម្មវិធីដំឡើង Ombra Desktop |
 | **Python** | `3.10+` | Playwright `>=1.60,<2.0` ត្រូវបានដំឡើងដោយស្វ័យប្រវត្តិជាមួយ `ombrabrowser` |
@@ -866,7 +866,7 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # ភ្ជាប់កំណែស្ថាបនាជាក់លាក់សម្រាប់ការបើកដំណើរការជាក់លាក់មួយ
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # ឬភ្ជាប់ / ត្រឡប់ទៅកំណែស្ថាបនាម៉ាស៊ីនជាក់លាក់
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # ឬចង្អុលទៅឯកសារប្រតិបត្តិដែលបានបង្កើតក្នុងម៉ាស៊ីន
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 កំណែចេញផ្សាយផ្លូវការរបស់ Ombra សម្រាប់ Apple Silicon macOS ត្រូវបានចុះហត្ថលេខាជាមួយវិញ្ញាបនបត្រ Apple Developer ID និងបញ្ជាក់ភាពត្រឹមត្រូវ។ ប្រសិនបើអ្នកដំណើរការកំណែស្ថាបនាអ្នកអភិវឌ្ឍន៍ក្នុងម៉ាស៊ីនដែលគ្មានហត្ថលេខា ហើយ macOS ដាក់វាក្នុងការដាក់ឱ្យនៅដាច់ដោយឡែក (quarantine) សូមលុបគុណលក្ខណៈ quarantine តែម្តងប៉ុណ្ណោះ៖
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### ការរង់ចាំនៅលើទំព័រក្នុង Python បែប synchronous

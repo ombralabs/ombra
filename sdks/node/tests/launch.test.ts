@@ -493,6 +493,26 @@ describe("engine lifecycle, Playwright & Puppeteer launchers, CLI, and dual ESM/
     }
   });
 
+  it("forwards the context viewport unless a top-level viewport is specified", async (t) => {
+    const client = createFakePlaywrightClient();
+    t.mock.method(_clientLoader, "loadPlaywright", async () => client.module);
+    await withIsolatedEnv(async ({ tmpRoot }) => {
+      const binaryPath = makeFakeEngine(tmpRoot);
+      const nested = { width: 713, height: 491 };
+      const top = { width: 807, height: 559 };
+      const cases = [
+        [{}, nested],
+        [{ viewport: top }, top],
+        [{ viewport: null }, null],
+      ] as const;
+      for (const [options, expected] of cases) {
+        const context = await launchContext({ binaryPath, contextOptions: { viewport: nested }, ...options });
+        await context.close();
+        assert.deepEqual(client.contextCalls.at(-1)?.viewport, expected);
+      }
+    });
+  });
+
   it("launches Puppeteer via both launchPuppeteer() and @ombralabs/sdk/puppeteer with defaultViewport:null", async () => {
     const origPup = _clientLoader.loadPuppeteer;
     const fakePup = createFakePuppeteerClient();

@@ -39,10 +39,11 @@ def _create_signed_archive(
     *,
     version: str,
     private_key: Ed25519PrivateKey,
+    layout: str = "legacy",
 ) -> tuple[Path, str, int, bytes]:
     plat = get_platform_info()
     staging = dest_dir / "pkg_src"
-    bin_path = make_fake_engine(staging, version=version)
+    bin_path = make_fake_engine(staging, version=version, layout=layout)
     assert bin_path.exists()
 
     archive_name = f"ombra-engine-{version}-{plat.cdn_name}{plat.archive_ext}"
@@ -117,7 +118,7 @@ def test_binary_info_matches_schema_when_not_installed(monkeypatch: pytest.Monke
     monkeypatch.setenv("OMBRA_DOWNLOAD_URL", "off")
     info = binary_info()
     assert set(info.keys()) == {"version", "platform", "path", "installed", "source", "sha256"}
-    assert isinstance(info["version"], str) and info["version"]
+    assert info["version"] == "158.0.8127.37"
     assert info["installed"] is False
     assert info["source"] == "none"
     assert info["path"] is None
@@ -160,12 +161,20 @@ def test_binary_resolution_precedence(tmp_path: Path, monkeypatch: pytest.Monkey
     assert len(info["sha256"]) == 64
 
 
-def test_rejects_incompatible_engine_version(tmp_path: Path):
-    old_exe = make_fake_engine(tmp_path / "old_engine", version="150.0.7871.114-1", chromium="150.0.7871.114")
+@pytest.mark.parametrize("version", ["151.0.7922.108-9", "158.0.8127.37-2"])
+def test_resolves_supported_engine_with_chromium_family_pin(tmp_path: Path, version):
+    exe = make_fake_engine(tmp_path / "engine", version=version)
+    assert ensure_binary(binary_path=exe, version=version.split("-")[0]) == str(exe)
+    assert binary_info(binary_path=exe)["version"] == version
+
+
+@pytest.mark.parametrize("version", ["150.0.7871.114-1", "159.0.1.1"])
+def test_rejects_incompatible_engine_version(tmp_path: Path, version):
+    old_exe = make_fake_engine(tmp_path / "unsupported_engine", version=version)
     with pytest.raises(UnsupportedEngineError) as exc_info:
         ensure_binary(binary_path=old_exe)
     assert exc_info.value.kind == "UnsupportedEngine"
-    assert "150.0.7871.114" in str(exc_info.value)
+    assert version in str(exc_info.value)
     assert "151.0.7922.108" in str(exc_info.value)
 
 

@@ -185,9 +185,9 @@ npm install mmdb-lib
 | **SDK コントラクト** | Draft `0.1.0` | [`docs/sdk-contract.md`](../../docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.1.3` | [PyPI 上の `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.1.0` | [npm 上の `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
-| **Ombra Chromium エンジン** | SDK 対応範囲 `>=151.0.7922.108,<152` | SDK が [GitHub Releases](https://github.com/ombralabs/ombra/releases) から自動ダウンロード（macOS ARM64 / Linux x64 / Windows x64） |
+| **Ombra Chromium エンジン** | SDK 対応範囲 `>=151.0.7922.108,<159` | SDK が [GitHub Releases](https://github.com/ombralabs/ombra/releases) から自動ダウンロード（macOS ARM64 / Linux x64 / Windows x64） |
 | **Ombra Desktop** | オフラインプロファイルマネージャー | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **スタンドアロンブラウザ** | Chromium `158+`（スタンドアロン専用。現行の `0.1.x` SDK は `151.*` を受け入れ、`158.*` は `UnsupportedEngineError` で拒否します） | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **スタンドアロンブラウザ** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **スキーマとコンフォーマンス** | JSON Schema + 共通ケース | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
 | **ステルスチェックアップ手法** | 6 層 (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
@@ -350,7 +350,7 @@ browser = launch(humanize={"preset": "careful"})
 
 # 特定のエンジンビルドを固定し、追加の Chromium フラグを渡す
 browser = launch(
-    version="151.0.7922.108-9",
+    version="158.0.8127.37-3",
     args=["--webrtc-ip=203.0.113.10"],
 )
 ```
@@ -440,11 +440,11 @@ from ombrabrowser import (
 
 # 解決されたエンジンバイナリを確認
 print(binary_info())
-# {'version': '151.0.7922.108-9', 'platform': 'macos-arm64',
+# {'version': '158.0.8127.37-3', 'platform': 'macos-arm64',
 #  'path': '…', 'installed': True, 'source': 'cache', 'sha256': '…'}
 
 # ブラウザを起動せずにエンジンをダウンロード・検証
-ensure_binary(version="151.0.7922.108-9")
+ensure_binary(version="158.0.8127.37-3")
 
 # SDK 管理下のエンジンバイナリを削除（~/.ombra/profiles 配下のプロファイルは保持）
 clear_cache()
@@ -463,7 +463,7 @@ browser.close()
 
 ```bash
 ombrabrowser install                             # エンジンをダウンロードして検証 (Ed25519 + SHA-256)
-ombrabrowser install --version 151.0.7922.108-9  # 特定のエンジンビルドをインストール
+ombrabrowser install --version 158.0.8127.37-3  # 特定のエンジンビルドをインストール
 ombrabrowser info                                # 環境・バイナリ・依存関係の診断（エイリアス: doctor）
 ombrabrowser info --quick --json                 # バイナリを起動しない高速な機械可読レポート
 ombrabrowser info --proxy socks5://user:pass@host:1080  # プロキシ経由での出口 IP・タイムゾーン・ロケール解決をテスト
@@ -552,7 +552,7 @@ import {
 } from "@ombralabs/sdk";
 
 console.log(await binaryInfo());
-await ensureBinary({ version: "151.0.7922.108-9" });
+await ensureBinary({ version: "158.0.8127.37-3" });
 await clearCache();
 ```
 
@@ -719,7 +719,7 @@ RUN fc-cache -f
 | `user_data_dir` | 一時ディレクトリ | 明示的なプロファイルディレクトリパス（`profile` と排他） |
 | `args` | `[]` | 追加の Chromium 引数（変更せずそのまま渡す） |
 | `binary_path` | 自動解決 | エンジン実行ファイルへの明示的なパス |
-| `version` | 環境変数 / 自動 | エンジンバージョンの固定（例: `151.0.7922.108-9`）。`OMBRA_VERSION` を上書き |
+| `version` | 環境変数 / 自動 | エンジンバージョンの固定（例: `158.0.8127.37-3`）。`OMBRA_VERSION` を上書き |
 | `timeout_ms` | `30000` | エンジン起動および CDP 接続のタイムアウト（1000–600000 ms） |
 | `humanize` | エンジンデフォルト | `False`、`True`、または `{"preset": "default" \| "careful" \| "fast"}` |
 | `license_key` | 環境変数 / ファイル | 旧ライセンスビルド用キー（現行ビルドでは不要。ログ出力されない） |
@@ -735,7 +735,7 @@ RUN fc-cache -f
 | `OMBRA_BINARY_PATH` | 未設定 | エンジンバイナリへの明示的なパス |
 | `OMBRA_CACHE_DIR` | `~/.ombra` | キャッシュ済みエンジンおよび名前付きプロファイルの保存ディレクトリ |
 | `OMBRA_DOWNLOAD_URL` | `https://api.github.com/repos/ombralabs/ombra/releases` | エンジンのダウンロード元。カスタム URL を指定すると旧ミラーモードを有効化（`none`/`off` でダウンロード無効化） |
-| `OMBRA_VERSION` | 最新の互換版 | 固定するエンジンバージョン（例: `151.0.7922.108-9`） |
+| `OMBRA_VERSION` | 最新の互換版 | 固定するエンジンバージョン（例: `158.0.8127.37-3`） |
 | `OMBRA_RELEASE_CHANNEL` | `stable` | エンジンリリースチャネル: `stable`（GitHub リリース）または `beta`（GitHub プレリリース） |
 | `OMBRA_AUTO_UPDATE` | `true` | 起動時に新しいエンジンビルドを確認 |
 | `OMBRA_SKIP_CHECKSUM` | `false` | ローカル開発専用: SHA-256 検証を無効化（警告をログ出力） |
@@ -758,7 +758,7 @@ RUN fc-cache -f
 | コンポーネント | サポート状況 | 備考 |
 |---|---|---|
 | **macOS ARM64 (Apple Silicon)** | ✅ | GitHub Releases 経由の自律エンジンビルド。Ombra Desktop は Developer ID 署名・公証済み |
-| **macOS x64 (Intel)** | ⚠️ | 対応する `darwin-x64` ビルドが公開されているか、`binary_path` で指定された場合に SDK でサポート（旧 `-7` ビルドにはライセンスキーが必要） |
+| **macOS x64 (Intel)** | — | Chromium 158 の現行リリースはありません |
 | **Linux x64** | ✅ | GitHub Releases 経由の自律エンジンビルド。Node.js SDK では `.tar.xz` 展開のため `xz-utils` (`xz`) が必要 |
 | **Windows x64** | ✅ | GitHub Releases 経由の自律エンジンビルドおよび Ombra Desktop インストーラー |
 | **Python** | `3.10+` | `ombrabrowser` と一緒に Playwright `>=1.60,<2.0` が自動インストール |
@@ -866,7 +866,7 @@ npm install @ombralabs/sdk@latest
 
 ```python
 # 特定の起動で厳密なビルドを固定
-browser = launch(version="151.0.7922.108-9")
+browser = launch(version="158.0.8127.37-3")
 ```
 
 ```bash
@@ -876,8 +876,8 @@ export OMBRA_RELEASE_CHANNEL=beta
 ombrabrowser update
 
 # または特定のエンジンビルドを固定 / ロールバック
-export OMBRA_VERSION=151.0.7922.108-9
-ombrabrowser install --version 151.0.7922.108-9
+export OMBRA_VERSION=158.0.8127.37-3
+ombrabrowser install --version 158.0.8127.37-3
 
 # またはローカルでビルドしたバイナリを指定
 export OMBRA_BINARY_PATH=/path/to/ombra/chromium
@@ -888,7 +888,7 @@ export OMBRA_BINARY_PATH=/path/to/ombra/chromium
 Apple Silicon macOS 向けの公式 Ombra リリースは、Apple Developer ID 証明書で署名・公証されています。未署名のローカル開発ビルドを実行して macOS が検疫した場合は、一度だけ検疫属性を解除してください。
 
 ```bash
-xattr -cr ~/.ombra/engines/*/Chromium.app
+xattr -cr ~/.ombra/engines/*/*.app
 ```
 
 ### 同期 Python でページを待機する方法

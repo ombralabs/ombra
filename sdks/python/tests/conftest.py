@@ -14,7 +14,6 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
-from ombrabrowser._version import DEFAULT_ENGINE_VERSION
 from ombrabrowser.config import DEFAULT_DOWNLOAD_URL, get_managed_engines_dir, get_platform_info
 
 _CACHE_SIGNING_KEY = Ed25519PrivateKey.from_private_bytes(bytes(range(32)))
@@ -55,12 +54,13 @@ def isolated_ombra_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 def make_fake_engine(
     base_dir: Path,
     *,
-    version: str = DEFAULT_ENGINE_VERSION,
+    version: str = "151.0.7922.108",
     chromium: str | None = None,
     platform_name: str | None = None,
     script_body: str = "#!/bin/sh\necho \"Chromium 151.0.7922.108\"\n",
     write_build_json: bool = True,
     channel: str | None = "stable",
+    layout: str = "legacy",
 ) -> Path:
     """Create a realistic fake Ombra Chromium tree under *base_dir* and return executable path."""
     plat = get_platform_info()
@@ -68,8 +68,8 @@ def make_fake_engine(
     chr_ver = chromium or version.split("-", 1)[0]
 
     if plat.system == "Darwin":
-        app_root = base_dir / "Chromium.app"
-        exe = app_root / "Contents" / "MacOS" / "Chromium"
+        app_root = base_dir / ("Chromium.app" if layout == "legacy" else "Ombra.app")
+        exe = app_root / "Contents" / "MacOS" / ("Ombra" if layout == "ombra" else "Chromium")
         build_json = app_root / "Contents" / "Resources" / "ombra-build.json"
         plist = app_root / "Contents" / "Info.plist"
         plist.parent.mkdir(parents=True, exist_ok=True)
@@ -82,11 +82,11 @@ def make_fake_engine(
         )
     elif plat.system == "Windows":
         app_root = base_dir
-        exe = app_root / "chrome.exe"
+        exe = app_root / ("ombra.exe" if layout == "ombra" else "chrome.exe")
         build_json = app_root / "ombra-build.json"
     else:
         app_root = base_dir
-        exe = app_root / "chrome"
+        exe = app_root / ("ombra" if layout == "ombra" else "chrome")
         build_json = app_root / "ombra-build.json"
 
     exe.parent.mkdir(parents=True, exist_ok=True)
