@@ -532,4 +532,156 @@ test('fp-core.js context.agreement accepts Blink empty userAgent on detached ifr
   assert.deepEqual(Array.from(spoofLeak.probes['context.agreement'].v.mismatches), ['detached.userAgent']);
 });
 
+test('fp-core.js auto.consistency catches uaArchMismatch, innerExceedsOuter, windowExceedsScreen, and osFontMismatch with zero false positives', async () => {
+  const src = readFileSync(join(BENCH_DIR, 'probe', 'fp-core.js'), 'utf8');
+
+  async function runConsistency({ ua, platform, uaPlatform, uaArch, renderer, inner, outer, screenSize, presentFonts = [] }) {
+    const nav = {
+      userAgent: ua,
+      platform,
+      language: 'en-US',
+      languages: ['en-US'],
+      plugins: /Android|Mobi/.test(ua) ? [] : [{ name: 'PDF', filename: 'pdf', description: 'PDF' }],
+      mimeTypes: [],
+      maxTouchPoints: /Android|Mobi/.test(ua) ? 5 : 0,
+      webdriver: false,
+      userAgentData: {
+        platform: uaPlatform,
+        mobile: /Android|Mobi/.test(ua),
+        brands: [{ brand: 'Chromium', version: '158' }],
+        getHighEntropyValues: async () => ({ architecture: uaArch, bitness: '64' })
+      }
+    };
+    const fakeGl = {
+      VENDOR: 1, RENDERER: 2, VERSION: 3, SHADING_LANGUAGE_VERSION: 4,
+      isContextLost: () => false,
+      getExtension: (name) => (name === 'WEBGL_debug_renderer_info' ? { UNMASKED_VENDOR_WEBGL: 5, UNMASKED_RENDERER_WEBGL: 6 } : null),
+      getParameter: (p) => (p === 6 ? renderer : 'Google Inc.')
+    };
+    const fake2d = {
+      font: '',
+      measureText() {
+        for (const f of presentFonts) {
+          if (this.font.includes(`"${f}"`)) return { width: 250 };
+        }
+        return { width: 100 };
+      }
+    };
+    const win = {
+      location: { protocol: 'http:' },
+      navigator: nav,
+      screen: { width: screenSize[0], height: screenSize[1], isExtended: false },
+      innerWidth: inner[0],
+      innerHeight: inner[1],
+      outerWidth: outer[0],
+      outerHeight: outer[1],
+      chrome: { app: {}, runtime: {} }
+    };
+    const ctx = {
+      window: win,
+      document: {
+        createElement: (tag) => (tag === 'canvas'
+          ? {
+              width: 0,
+              height: 0,
+              getContext: (kind) => (kind === '2d' ? fake2d : (kind === 'webgl' ? fakeGl : null))
+            }
+          : { style: {}, remove() {}, appendChild() {} })
+      },
+      navigator: nav,
+      screen: win.screen,
+      performance: { now: () => 0 },
+      Object,
+      Array,
+      Promise,
+      setTimeout,
+      clearTimeout
+    };
+    vm.runInNewContext(src, ctx);
+    const snap = await ctx.window.FPAudit.run({ hardOnly: true, doubleRun: false });
+    return snap.probes['auto.consistency'].v;
+  }
+
+  // 1. Broken Windows x64 persona on ARM Mac host (matches real 158.0.8127.37-2 finding)
+  const badWin = await runConsistency({
+    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/158.0.0.0 Safari/537.36',
+    platform: 'Win32',
+    uaPlatform: 'Windows',
+    uaArch: 'arm',
+    renderer: 'ANGLE (Intel, Intel(R) UHD Graphics 770 Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    inner: [1440, 813],
+    outer: [1366, 728],
+    screenSize: [1366, 768],
+    presentFonts: ['Arial', 'Menlo', 'Bodoni 72', 'Apple Color Emoji']
+  });
+  assert.equal(badWin.uaArchMismatch, true);
+  assert.equal(badWin.innerExceedsOuter, true);
+  assert.equal(badWin.windowExceedsScreen, true);
+  assert.equal(badWin.osFontMismatch, true);
+  assert.deepEqual(Array.from(badWin.osFontLeak), ['Apple Color Emoji', 'Bodoni 72', 'Menlo']);
+
+  // 2. Broken Linux x86_64 persona with ARM architecture
+  const badLinux = await runConsistency({
+    ua: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/158.0.0.0 Safari/537.36',
+    platform: 'Linux x86_64',
+    uaPlatform: 'Linux',
+    uaArch: 'arm',
+    renderer: 'ANGLE (Intel, Mesa Intel(R) UHD Graphics 770)',
+    inner: [1280, 700],
+    outer: [1280, 728],
+    screenSize: [1366, 768],
+    presentFonts: ['DejaVu Sans', 'Noto Sans']
+  });
+  assert.equal(badLinux.uaArchMismatch, true);
+  assert.equal(badLinux.innerExceedsOuter, false);
+  assert.equal(badLinux.windowExceedsScreen, false);
+  assert.equal(badLinux.osFontMismatch, false);
+
+  // 3. Legitimate Apple Silicon macOS (Intel Mac OS X UA + MacIntel + arm arch + Apple GPU + Mac fonts) -> 0 false positives
+  const goodMac = await runConsistency({
+    ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/158.0.0.0 Safari/537.36',
+    platform: 'MacIntel',
+    uaPlatform: 'macOS',
+    uaArch: 'arm',
+    renderer: 'ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)',
+    inner: [1440, 813],
+    outer: [1440, 900],
+    screenSize: [3840, 1600],
+    presentFonts: ['Arial', 'Menlo', 'Bodoni 72', 'Apple Color Emoji']
+  });
+  assert.equal(goodMac.uaArchMismatch, false);
+  assert.equal(goodMac.innerExceedsOuter, false);
+  assert.equal(goodMac.windowExceedsScreen, false);
+  assert.equal(goodMac.osFontMismatch, false);
+
+  // 4. Legitimate Windows ARM64 (Qualcomm Adreno GPU + arm arch) -> 0 false positives
+  const goodWinArm = await runConsistency({
+    ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/158.0.0.0 Safari/537.36',
+    platform: 'Win32',
+    uaPlatform: 'Windows',
+    uaArch: 'arm',
+    renderer: 'ANGLE (Qualcomm, Adreno(TM) X1-85 GPU Direct3D11, D3D11)',
+    inner: [1280, 700],
+    outer: [1280, 728],
+    screenSize: [1920, 1080],
+    presentFonts: ['Arial', 'Segoe UI']
+  });
+  assert.equal(goodWinArm.uaArchMismatch, false);
+  assert.equal(goodWinArm.osFontMismatch, false);
+
+  // 5. evaluateL101 surfaces all four new flags cleanly
+  const snapWithLeaks = makeCleanSnapshot('leaks', {
+    probes: {
+      'auto.consistency': { c: 'hard', h: 'x', v: badWin, ok: true, s: null, ms: 1, n: false }
+    }
+  });
+  const l1 = evaluateL101([snapWithLeaks], { sandbox: true });
+  assert.equal(l1.status, 'FAIL');
+  assert.ok(l1.failures.some((f) => f.includes('uaArchMismatch=true (uaArch=arm, gpuArch=x86)')));
+  assert.ok(l1.failures.some((f) => f.includes('innerExceedsOuter=true')));
+  assert.ok(l1.failures.some((f) => f.includes('windowExceedsScreen=true')));
+  assert.ok(l1.failures.some((f) => f.includes('osFontMismatch=true (Apple Color Emoji, Bodoni 72, Menlo)')));
+});
+
+
 

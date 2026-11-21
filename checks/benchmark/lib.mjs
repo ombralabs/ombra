@@ -391,13 +391,25 @@ export function evaluateL101(snapshots, options = {}) {
       'chromeNoPlugins',
       'outerZero',
       'screenZero',
+      'innerExceedsOuter',
+      'windowExceedsScreen',
       'uaPlatformMismatch',
       'uaMobileMismatch',
+      'uaArchMismatch',
       'gpuOsMismatch',
+      'osFontMismatch',
       'webdriverOwnProp'
     ];
     for (const key of criticalConsistencyKeys) {
-      if (consistency[key]) pushUnique(critical, `${tag}auto.consistency.${key}=true`);
+      if (consistency[key]) {
+        if (key === 'osFontMismatch' && Array.isArray(consistency.osFontLeak) && consistency.osFontLeak.length) {
+          pushUnique(critical, `${tag}auto.consistency.osFontMismatch=true (${consistency.osFontLeak.join(', ')})`);
+        } else if (key === 'uaArchMismatch') {
+          pushUnique(critical, `${tag}auto.consistency.uaArchMismatch=true (uaArch=${consistency.uaArch}, gpuArch=${consistency.gpuArch})`);
+        } else {
+          pushUnique(critical, `${tag}auto.consistency.${key}=true`);
+        }
+      }
     }
 
     const perms = probes['auto.permissions'];

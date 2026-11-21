@@ -217,8 +217,10 @@
   // ---------------------------------------------------------- WebGL helpers
 
   var glCache = { 1: null, 2: null };
+  var passFontsCache = null;
 
   function resetPassState() {
+    passFontsCache = null;
     var keys = [1, 2];
     for (var i = 0; i < keys.length; i++) {
       var entry = glCache[keys[i]];
@@ -1190,6 +1192,7 @@
   ];
 
   function detectFonts() {
+    if (passFontsCache) return passFontsCache;
     var pair = newCanvas(600, 80);
     var ctx = pair.ctx;
     var text = 'mmmmmmmmmmlliWWQ@#%&';
@@ -1217,7 +1220,8 @@
         metrics[font] = widths;
       }
     }
-    return { available: available, metrics: metrics };
+    passFontsCache = { available: available, metrics: metrics };
+    return passFontsCache;
   }
 
   add('fonts.available', 'fonts', 'Установленные шрифты', 'hard', function () {
@@ -1837,7 +1841,24 @@
     return null;
   }
 
-  add('auto.consistency', 'automation', 'Согласованность полей', 'hard', function () {
+  function inferGpuArch(renderer) {
+    if (!renderer) return null;
+    if (/Apple\s+M\d|Apple\s+GPU|Mali|Adreno|PowerVR/i.test(renderer)) return 'arm';
+    if (/\b(Intel|NVIDIA|GeForce|Radeon|AMD)\b/i.test(renderer)) return 'x86';
+    return null;
+  }
+
+  var MAC_ONLY_FONTS = [
+    'Apple Color Emoji', 'Apple SD Gothic Neo', 'Bodoni 72', 'Hiragino Sans',
+    'Hiragino Mincho ProN', 'Hoefler Text', 'Marker Felt', 'Menlo',
+    'PingFang SC', 'SF Pro Display', 'SF Pro Text'
+  ];
+
+  var WIN_ONLY_FONTS = [
+    'Segoe UI', 'Segoe Print', 'Segoe Script', 'MS Gothic', 'MS Sans Serif', 'MS Serif'
+  ];
+
+  add('auto.consistency', 'automation', 'Согласованность полей', 'hard', async function () {
     var ua = navigator.userAgent;
     var isChrome = /Chrome\//.test(ua);
     var isFirefox = /Firefox\//.test(ua);
@@ -1850,6 +1871,21 @@
     var glState = getGL(1);
     var unmaskedRenderer = glState ? safe(function () { return glInfo(glState.gl).unmaskedRenderer; }, null) : null;
     var gpuOs = inferGpuOs(unmaskedRenderer);
+    var gpuArch = inferGpuArch(unmaskedRenderer);
+
+    var uaArch = null;
+    if (uaData && typeof uaData.getHighEntropyValues === 'function') {
+      try {
+        var highArch = await withTimeout(
+          uaData.getHighEntropyValues(['architecture', 'bitness']),
+          1200,
+          'consistency.uaData'
+        );
+        if (highArch && typeof highArch.architecture === 'string' && highArch.architecture.trim()) {
+          uaArch = highArch.architecture.trim().toLowerCase();
+        }
+      } catch (e) { /* ignore */ }
+    }
 
     var navPlatformMismatch = !!(uaOs && platformOs && uaOs !== platformOs &&
       !((uaOs === 'android' || uaOs === 'chromeos') && platformOs === 'linux'));
@@ -1860,6 +1896,42 @@
       (gpuOs === 'windows' && uaOs !== 'windows') ||
       (gpuOs === 'apple' && uaOs !== 'macos' && uaOs !== 'ios')
     ));
+
+    var platStr = String(navigator.platform || '');
+    var platformHasX86 = /x86_64|amd64|i[3-6]86/i.test(platStr) || /Linux\s+x86_64/i.test(ua);
+    var platformHasArm = /aarch64|armv\d/i.test(platStr);
+    var uaArchMismatch = !!(uaArch && (
+      (platformHasX86 && uaArch === 'arm') ||
+      (platformHasArm && uaArch === 'x86') ||
+      (uaOs === 'windows' && uaArch === 'arm' && gpuArch === 'x86') ||
+      (uaArch === 'x86' && gpuArch === 'arm')
+    ));
+
+    var hasInner = typeof window.innerWidth === 'number' && typeof window.innerHeight === 'number';
+    var hasOuter = typeof window.outerWidth === 'number' && typeof window.outerHeight === 'number';
+    var innerExceedsOuter = !!(hasInner && hasOuter && window.outerWidth > 0 && window.outerHeight > 0 &&
+      (window.innerWidth > window.outerWidth || window.innerHeight > window.outerHeight));
+    var windowExceedsScreen = !!(!screen.isExtended && screen.width > 0 && screen.height > 0 && (
+      (hasInner && (window.innerWidth > screen.width || window.innerHeight > screen.height)) ||
+      (hasOuter && (window.outerWidth > screen.width || window.outerHeight > screen.height))
+    ));
+
+    var detectedFonts = safe(function () { return detectFonts().available || []; }, []);
+    var osFontLeak = [];
+    if (uaOs && detectedFonts.length) {
+      if (uaOs !== 'macos' && uaOs !== 'ios') {
+        for (var mf = 0; mf < MAC_ONLY_FONTS.length; mf++) {
+          if (detectedFonts.indexOf(MAC_ONLY_FONTS[mf]) !== -1) osFontLeak.push(MAC_ONLY_FONTS[mf]);
+        }
+      }
+      if (uaOs !== 'windows') {
+        for (var wf = 0; wf < WIN_ONLY_FONTS.length; wf++) {
+          if (detectedFonts.indexOf(WIN_ONLY_FONTS[wf]) !== -1) osFontLeak.push(WIN_ONLY_FONTS[wf]);
+        }
+      }
+    }
+    osFontLeak.sort();
+    var osFontMismatch = osFontLeak.length > 0;
     var webdriverOwnProp = Object.prototype.hasOwnProperty.call(navigator, 'webdriver');
 
     return {
@@ -1874,6 +1946,8 @@
       platformOs: platformOs,
       uaDataOs: uaDataOs,
       gpuOs: gpuOs,
+      uaArch: uaArch,
+      gpuArch: gpuArch,
       touchPoints: navigator.maxTouchPoints,
       plugins: navigator.plugins.length,
       mimeTypes: navigator.mimeTypes.length,
@@ -1881,15 +1955,20 @@
       chromeObject: !!window.chrome,
       outerZero: window.outerWidth === 0 || window.outerHeight === 0,
       screenZero: screen.width === 0 || screen.height === 0,
+      innerExceedsOuter: innerExceedsOuter,
+      windowExceedsScreen: windowExceedsScreen,
       mobileNoTouch: mobileUA && navigator.maxTouchPoints === 0,
       chromeNoPlugins: isChrome && !mobileUA && navigator.plugins.length === 0,
       uaPlatformMismatch: uaPlatformMismatch,
       uaMobileMismatch: uaMobileMismatch,
+      uaArchMismatch: uaArchMismatch,
       gpuOsMismatch: gpuOsMismatch,
+      osFontLeak: osFontLeak,
+      osFontMismatch: osFontMismatch,
       webdriverOwnProp: webdriverOwnProp,
       webdriver: navigator.webdriver === true
     };
-  });
+  }, 2500);
 
   add('auto.headless', 'automation', 'Headless-эвристики', 'hard', function () {
     var mobileUA = /Mobi|Android|iPhone|iPad/.test(navigator.userAgent);

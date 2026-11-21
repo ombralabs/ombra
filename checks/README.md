@@ -173,8 +173,9 @@ The target evaluates **all** cold-start snapshots and fails if any run shows:
 - a headless marker is present (`uaHeadless`, zero screen, zero outer size,
   no Chrome object, no plugins on desktop, no languages);
 - `mobileNoTouch`, `chromeNoPlugins` (desktop), `outerZero`, `screenZero`,
-  `uaPlatformMismatch`, `uaMobileMismatch`, `gpuOsMismatch`, or
-  `webdriverOwnProp` is true.
+  `innerExceedsOuter`, `windowExceedsScreen`, `uaPlatformMismatch`,
+  `uaMobileMismatch`, `uaArchMismatch`, `gpuOsMismatch`, `osFontMismatch`,
+  or `webdriverOwnProp` is true.
 
 Unavailable hard probes, missing UA-CH, skipped hard probes (for example
 `auto.permissions` on `file://`), and `--no-sandbox` are `DEGRADED` with an
