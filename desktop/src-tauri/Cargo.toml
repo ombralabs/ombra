@@ -2,6 +2,7 @@
 name = "ombra-desktop-store"
 version = "1.2.3"
 description = "Ombra Desktop local profile manager"
+license-file = "../LICENSE"
 edition = "2024"
 rust-version = "1.90"
 publish = false
