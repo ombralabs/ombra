@@ -49,6 +49,20 @@ import {
   reportVerdict,
   redactReport
 } from './lib.mjs';
+import {
+  EXTERNAL_VERSION,
+  EXTERNAL_PRESETS,
+  CHECKER_ORDER,
+  DEFAULT_EXTERNAL_TIMEOUT,
+  resolveExternalSelection,
+  detectHostPublicIp,
+  runExternalCheckers
+} from './external.mjs';
+import {
+  DEFAULT_MIN_SCORE,
+  computeQualityScore,
+  formatQualitySummary
+} from './score.mjs';
 
 const BENCH_DIR = dirname(fileURLToPath(import.meta.url));
 const PROBE_DIR = join(BENCH_DIR, 'probe');
@@ -90,6 +104,14 @@ Options:
   --operator NAME          value written to report.operator
   --known-gap-owner NAME   owner recorded on DEGRADED targets
   --known-gap-expires DATE expiry YYYY-MM-DD recorded on DEGRADED targets
+  --external [LIST]        run external antidetect checkers (presets: ${Object.keys(EXTERNAL_PRESETS).join('|')}; or comma list: ${CHECKER_ORDER.join(',')})
+  --external-only          skip local probe runs and execute external checkers only
+  --external-timeout MS    per-external-checker timeout (default ${DEFAULT_EXTERNAL_TIMEOUT})
+  --retries N              retries per UNREACHABLE external checker (default 1)
+  --proxy URL              proxy URL for external checkers (no embedded credentials; e.g. socks5://127.0.0.1:10808)
+  --proxy-country CC       ISO alpha-2 exit country code or "direct" (auto-detected if --proxy is set)
+  --min-score N            minimum quality score floor 0..100 (default ${DEFAULT_MIN_SCORE})
+  --score-tolerance N      allowed score delta vs baseline before regression (default 0 local / 2 external)
 
 The report is saved to checks/results/ and follows
 conformance/schema/report.schema.json. Exit code 0 means PASS; 1 means
@@ -166,7 +188,7 @@ async function resolveEngine(explicit) {
     engineRoots.push(join(localAppData, 'Ombra', 'engines'));
   }
 
-  for (const engines of engineRoots) {
+  for (const engines of [...engineRoots, join(homedir(), '.ombra', 'engines')]) {
     try {
       const selection = JSON.parse(await readFile(join(engines, 'selection.json'), 'utf8'));
       if (selection.active) {
@@ -524,6 +546,83 @@ async function runOnce({
   }
 }
 
+async function runExternalSession({
+  engine,
+  profileDir,
+  mode,
+  sandbox,
+  seed,
+  platformName,
+  timezone,
+  location,
+  profilePreset,
+  dpr,
+  proxy,
+  hostIp,
+  selection,
+  timeout,
+  retries,
+  gapOptions
+}) {
+  try { await rm(join(profileDir, 'DevToolsActivePort'), { force: true }); } catch { /* ignore */ }
+
+  const flags = buildEngineFlags({
+    profileDir,
+    mode,
+    sandbox,
+    seed,
+    platform: platformName,
+    timezone,
+    location,
+    profilePreset,
+    dpr,
+    proxy
+  });
+
+  const child = spawn(engine, flags, { stdio: ['ignore', 'pipe', 'pipe'] });
+  let stderr = '';
+  child.stderr.on('data', (chunk) => { stderr += String(chunk); });
+  child.stdout.on('data', () => { /* drain */ });
+
+  let cdp = null;
+  try {
+    const port = await waitForPort(profileDir, 30000);
+    const version = await waitForVersion(port);
+    cdp = new CDP(version.webSocketDebuggerUrl);
+    await cdp.connect();
+
+    const result = await runExternalCheckers({
+      selection,
+      cdp,
+      evaluate,
+      timeout,
+      retries,
+      proxy,
+      hostIp,
+      gapOptions,
+      onResult: (target, meta) => {
+        const detail = target.failures.length
+          ? ` — ${target.failures.join('; ')}`
+          : (target.flags?.length ? ` (${target.flags.join(', ')})` : '');
+        console.log(
+          `external ${target.id} [${target.checker}]: ${target.status} ` +
+          `(${target.duration_ms}ms, attempt ${target.attempts})${detail}`
+        );
+      }
+    });
+
+    await cdp.send('Browser.close').catch(() => {});
+    await waitExit(child, 12000);
+    return { ...result, flags };
+  } catch (error) {
+    try { child.kill('SIGKILL'); } catch { /* ignore */ }
+    const tail = stderr.trim().split(/\r?\n/).slice(-10).join('\n');
+    throw new Error(`${error.message}${tail ? `\nengine stderr:\n${tail}` : ''}`);
+  } finally {
+    if (cdp) cdp.close();
+  }
+}
+
 async function loadBaseline({
   explicit,
   startedAt,
@@ -534,10 +633,14 @@ async function loadBaseline({
   hardOnly,
   sandbox,
   profilePlatform,
+  scope,
+  externalVersion,
   outPath,
   currentTargets,
   currentMetrics,
-  currentVerdict
+  currentVerdict,
+  currentQuality,
+  scoreTolerance
 }) {
   let file = null;
   if (explicit) {
@@ -560,6 +663,8 @@ async function loadBaseline({
       hardOnly,
       sandbox,
       profilePlatform,
+      scope,
+      externalVersion,
       startedAt
     };
     for (const path of files) {
@@ -573,7 +678,7 @@ async function loadBaseline({
     if (reports.length) file = reports[reports.length - 1].path;
   }
 
-  if (!file) return { baseline: null, regressions: [] };
+  if (!file) return { baseline: null, qualityDelta: null, layerDeltas: {}, regressions: [] };
 
   const baselineReport = JSON.parse(await readFile(file, 'utf8'));
   return diffBaseline({
@@ -581,13 +686,16 @@ async function loadBaseline({
     baselineFile: relative(REPO_ROOT, file),
     currentTargets,
     currentMetrics,
-    currentVerdict
+    currentVerdict,
+    currentQuality,
+    scoreTolerance
   });
 }
 
-function makeRunId(startedAt, engineVersion, mode) {
+function makeRunId(startedAt, engineVersion, mode, scope = 'local') {
   const stamp = startedAt.replace(/\.\d{3}Z$/, 'Z').replace(/[:]/g, '-');
-  return `${stamp}-${engineVersion}-${mode}`.replace(/[^A-Za-z0-9._-]/g, '-');
+  const suffix = scope === 'local' ? mode : `${mode}-${scope}`;
+  return `${stamp}-${engineVersion}-${suffix}`.replace(/[^A-Za-z0-9._-]/g, '-');
 }
 
 async function writeReport(report, outPath) {
@@ -602,7 +710,15 @@ async function main() {
     printHelp();
     return 0;
   }
-  if (!(await fileExists(join(PROBE_DIR, 'index.html')))) {
+  const externalSelection = resolveExternalSelection(args.external);
+  const runLocal = !args.externalOnly;
+  const runExternal = externalSelection.length > 0;
+  const scope = runLocal && runExternal ? 'full' : (runExternal ? 'external' : 'local');
+  const scoreTolerance = args.scoreTolerance !== null
+    ? args.scoreTolerance
+    : (runExternal ? 2 : 0);
+
+  if (runLocal && !(await fileExists(join(PROBE_DIR, 'index.html')))) {
     throw new Error(`probe not found: ${PROBE_DIR}`);
   }
 
@@ -610,10 +726,10 @@ async function main() {
   const engine = await engineInfo(enginePath);
   const startedAt = new Date().toISOString();
   const osName = `${platform()} ${release()} ${arch()}`;
-  const runId = makeRunId(startedAt, engine.version, args.mode);
+  const runId = makeRunId(startedAt, engine.version, args.mode, scope);
   const outPath = args.out || join(RESULTS_DIR, `${runId}.json`);
   const seedHash = hashSeed(args.seed);
-  const effectiveSeed2 = args.seedCheck && args.runs >= 2
+  const effectiveSeed2 = runLocal && args.seedCheck && args.runs >= 2
     ? (args.seed2 || deriveAlternateSeed(args.seed))
     : null;
   const gapOptions = {
@@ -634,99 +750,146 @@ async function main() {
   let serverInfo = null;
   let standalone = null;
   let altProfileDir = null;
+  let extProfileDir = null;
   const snapshots = [];
   const allFlags = new Set();
   let runError = null;
+  let externalError = null;
+  let externalTargets = [];
+  let detectedCountry = null;
+  let hostIp = null;
   let seedCheck = { checked: false, changed: null, seed2_hash: null, diff_probes: [], error: null };
 
-  console.log(`Ombra fingerprint benchmark (probe v${PROBE_VERSION})`);
+  console.log(`Ombra antidetect checkup (probe v${PROBE_VERSION}, external v${EXTERNAL_VERSION})`);
   console.log(`  engine:    ${engine.name} ${engine.version}`);
   console.log(`  sha256:    ${engine.sha256.slice(0, 16)}… (${engine.hash_source})`);
+  console.log(`  scope:     ${scope}`);
   console.log(`  mode:      ${args.mode}`);
-  console.log(`  transport: ${args.transport}`);
+  if (runLocal) console.log(`  transport: ${args.transport}`);
   console.log(`  seed_hash: ${seedHash.slice(0, 23)}…`);
   if (args.platform) console.log(`  platform:  ${args.platform}`);
+  if (args.proxy) console.log(`  proxy:     configured (redacted in report)`);
   console.log(`  profile:   ${profileDir}${temporaryProfile ? ' (temporary)' : ''}`);
-  console.log(`  runs:      ${args.runs}${effectiveSeed2 ? ' (+1 alternate-seed check)' : ''}`);
+  if (runLocal) console.log(`  runs:      ${args.runs}${effectiveSeed2 ? ' (+1 alternate-seed check)' : ''}`);
+  if (runExternal) console.log(`  external:  ${externalSelection.join(', ')}`);
   console.log('');
 
   try {
-    let probeUrl;
-    if (args.transport === 'file') {
-      standalone = await buildStandalone();
-      probeUrl = standalone.url;
-    } else {
-      serverInfo = await startProbeServer();
-      probeUrl = serverInfo.url;
-    }
-    console.log(`  probe:     ${probeUrl}`);
-    console.log('');
-
-    for (let index = 1; index <= args.runs; index++) {
-      const result = await runOnce({
-        engine: enginePath,
-        profileDir,
-        url: probeUrl,
-        mode: args.mode,
-        sandbox: args.sandbox,
-        doubleRun: args.doubleRun,
-        hardOnly: args.hardOnly,
-        seed: args.seed,
-        platformName: args.platform,
-        timezone: args.timezone,
-        location: args.location,
-        profilePreset: args.profilePreset,
-        dpr: args.dpr,
-        timeout: args.timeout,
-        label: `cold ${index}`
-      });
-      snapshots.push(result.snapshot);
-      for (const flag of result.flags) {
-        if (flag.startsWith('--fingerprint=')) continue;
-        if (flag.startsWith('--user-data-dir=')) continue;
-        allFlags.add(flag);
+    if (runLocal) {
+      let probeUrl;
+      if (args.transport === 'file') {
+        standalone = await buildStandalone();
+        probeUrl = standalone.url;
+      } else {
+        serverInfo = await startProbeServer();
+        probeUrl = serverInfo.url;
       }
-      console.log(
-        `run ${index}/${args.runs}: hard=${result.snapshot.hardHash.slice(0, 12)} ` +
-        `probes=${result.snapshot.counts.total} skipped=${result.snapshot.counts.hardSkipped || 0} ` +
-        `noise=${result.snapshot.noise.length} hardErrors=${result.snapshot.hardErr.length} ` +
-        `duration=${result.snapshot.durationMs}ms`
-      );
-    }
+      console.log(`  probe:     ${probeUrl}`);
+      console.log('');
 
-    if (effectiveSeed2 && snapshots.length >= 2) {
-      altProfileDir = await mkdtemp(join(tmpdir(), 'ombra-check-seed2-'));
-      seedCheck.checked = true;
-      seedCheck.seed2_hash = hashSeed(effectiveSeed2);
-      try {
-        const alt = await runOnce({
+      for (let index = 1; index <= args.runs; index++) {
+        const result = await runOnce({
           engine: enginePath,
-          profileDir: altProfileDir,
+          profileDir,
           url: probeUrl,
           mode: args.mode,
           sandbox: args.sandbox,
-          doubleRun: false,
+          doubleRun: args.doubleRun,
           hardOnly: args.hardOnly,
-          seed: effectiveSeed2,
+          seed: args.seed,
           platformName: args.platform,
           timezone: args.timezone,
           location: args.location,
           profilePreset: args.profilePreset,
           dpr: args.dpr,
           timeout: args.timeout,
-          label: 'seed-check'
+          label: `cold ${index}`
         });
-        const diff = compareSnapshots(snapshots[0], alt.snapshot);
-        seedCheck.changed = alt.snapshot.hardHash !== snapshots[0].hardHash;
-        seedCheck.seed2_hard_hash = alt.snapshot.hardHash;
-        seedCheck.diff_probes = diff.hardBad.map((row) => row.id);
+        snapshots.push(result.snapshot);
+        for (const flag of result.flags) {
+          if (flag.startsWith('--fingerprint=')) continue;
+          if (flag.startsWith('--user-data-dir=')) continue;
+          if (flag.startsWith('--proxy-server=')) continue;
+          allFlags.add(flag);
+        }
         console.log(
-          `seed check: hard=${alt.snapshot.hardHash.slice(0, 12)} ` +
-          `changed=${seedCheck.changed} (${seedCheck.diff_probes.length} hard probe(s) differed)`
+          `run ${index}/${args.runs}: hard=${result.snapshot.hardHash.slice(0, 12)} ` +
+          `probes=${result.snapshot.counts.total} skipped=${result.snapshot.counts.hardSkipped || 0} ` +
+          `noise=${result.snapshot.noise.length} hardErrors=${result.snapshot.hardErr.length} ` +
+          `duration=${result.snapshot.durationMs}ms`
         );
+      }
+
+      if (effectiveSeed2 && snapshots.length >= 2) {
+        altProfileDir = await mkdtemp(join(tmpdir(), 'ombra-check-seed2-'));
+        seedCheck.checked = true;
+        seedCheck.seed2_hash = hashSeed(effectiveSeed2);
+        try {
+          const alt = await runOnce({
+            engine: enginePath,
+            profileDir: altProfileDir,
+            url: probeUrl,
+            mode: args.mode,
+            sandbox: args.sandbox,
+            doubleRun: false,
+            hardOnly: args.hardOnly,
+            seed: effectiveSeed2,
+            platformName: args.platform,
+            timezone: args.timezone,
+            location: args.location,
+            profilePreset: args.profilePreset,
+            dpr: args.dpr,
+            timeout: args.timeout,
+            label: 'seed-check'
+          });
+          const diff = compareSnapshots(snapshots[0], alt.snapshot);
+          seedCheck.changed = alt.snapshot.hardHash !== snapshots[0].hardHash;
+          seedCheck.seed2_hard_hash = alt.snapshot.hardHash;
+          seedCheck.diff_probes = diff.hardBad.map((row) => row.id);
+          console.log(
+            `seed check: hard=${alt.snapshot.hardHash.slice(0, 12)} ` +
+            `changed=${seedCheck.changed} (${seedCheck.diff_probes.length} hard probe(s) differed)`
+          );
+        } catch (error) {
+          seedCheck.error = error.message;
+          console.error(`seed check failed: ${error.message}`);
+        }
+      }
+    }
+
+    if (runExternal) {
+      if (args.proxy) hostIp = await detectHostPublicIp();
+      extProfileDir = runLocal ? await mkdtemp(join(tmpdir(), 'ombra-check-ext-')) : profileDir;
+      try {
+        const ext = await runExternalSession({
+          engine: enginePath,
+          profileDir: extProfileDir,
+          mode: args.mode,
+          sandbox: args.sandbox,
+          seed: args.seed,
+          platformName: args.platform,
+          timezone: args.timezone,
+          location: args.location,
+          profilePreset: args.profilePreset,
+          dpr: args.dpr,
+          proxy: args.proxy,
+          hostIp,
+          selection: externalSelection,
+          timeout: args.externalTimeout,
+          retries: args.retries,
+          gapOptions
+        });
+        externalTargets = ext.targets;
+        detectedCountry = ext.detectedCountry;
+        for (const flag of ext.flags) {
+          if (flag.startsWith('--fingerprint=')) continue;
+          if (flag.startsWith('--user-data-dir=')) continue;
+          if (flag.startsWith('--proxy-server=')) continue;
+          allFlags.add(flag);
+        }
       } catch (error) {
-        seedCheck.error = error.message;
-        console.error(`seed check failed: ${error.message}`);
+        externalError = error;
+        console.error(`external checkers failed: ${error.message}`);
       }
     }
   } catch (error) {
@@ -736,21 +899,37 @@ async function main() {
     if (serverInfo) await new Promise((resolvePromise) => serverInfo.server.close(resolvePromise));
     if (standalone) await rm(standalone.dir, { recursive: true, force: true }).catch(() => {});
     if (altProfileDir) await rm(altProfileDir, { recursive: true, force: true }).catch(() => {});
+    if (extProfileDir && extProfileDir !== profileDir) {
+      await rm(extProfileDir, { recursive: true, force: true }).catch(() => {});
+    }
   }
 
-  const l101 = evaluateL101(snapshots, {
-    ...gapOptions,
-    sandbox: args.sandbox,
-    runError: runError?.message
-  });
-  const l501 = evaluateL501(snapshots, {
-    ...gapOptions,
-    expectedRuns: args.runs,
-    runError: runError?.message,
-    seedCheck
-  });
-  const l502 = evaluateL502(snapshots, gapOptions);
-  const targets = l502 ? [l101, l501, l502] : [l101, l501];
+  const localTargets = [];
+  if (runLocal) {
+    const l101 = evaluateL101(snapshots, {
+      ...gapOptions,
+      sandbox: args.sandbox,
+      runError: runError?.message
+    });
+    const l501 = evaluateL501(snapshots, {
+      ...gapOptions,
+      expectedRuns: args.runs,
+      runError: runError?.message,
+      seedCheck
+    });
+    const l502 = evaluateL502(snapshots, gapOptions);
+    localTargets.push(l101, l501);
+    if (l502) localTargets.push(l502);
+  }
+  const targets = [...localTargets, ...externalTargets];
+  if (!targets.length && externalError) {
+    targets.push({
+      id: 'L3-01',
+      status: 'UNREACHABLE',
+      failures: [externalError.message],
+      duration_ms: 0
+    });
+  }
 
   const comparisons = snapshots.length > 1
     ? snapshots.slice(1).map((snapshot) => compareSnapshots(snapshots[0], snapshot))
@@ -760,11 +939,15 @@ async function main() {
     ? [...new Set(snapshots.flatMap((snapshot) => skippedProbes(snapshot)))].sort()
     : [];
 
-  const preBaselineVerdict = runError ? 'INCOMPLETE' : reportVerdict(targets, []);
+  const quality = computeQualityScore(targets, { minScore: args.minScore });
+
+  const preBaselineVerdict = (runError || externalError) ? 'INCOMPLETE' : reportVerdict(targets, []);
   let baseline = null;
+  let qualityDelta = null;
+  let layerDeltas = {};
   let regressions = [];
   let baselineError = null;
-  if (!runError && snapshots.length) {
+  if (!runError && !externalError && targets.length) {
     try {
       const result = await loadBaseline({
         explicit: args.baseline,
@@ -776,12 +959,18 @@ async function main() {
         hardOnly: args.hardOnly,
         sandbox: args.sandbox,
         profilePlatform: args.platform,
+        scope,
+        externalVersion: runExternal ? EXTERNAL_VERSION : null,
         outPath,
         currentTargets: targets,
         currentMetrics: metrics,
-        currentVerdict: preBaselineVerdict
+        currentVerdict: preBaselineVerdict,
+        currentQuality: quality,
+        scoreTolerance
       });
       baseline = result.baseline;
+      qualityDelta = result.qualityDelta;
+      layerDeltas = result.layerDeltas || {};
       regressions = result.regressions;
     } catch (error) {
       baselineError = error;
@@ -789,8 +978,38 @@ async function main() {
     }
   }
 
-  const verdict = (runError || baselineError) ? 'INCOMPLETE' : reportVerdict(targets, regressions);
-  const errorText = [runError?.message, baselineError?.message].filter(Boolean).join('; ') || null;
+  if (!runError && !externalError && !quality.meets_floor && quality.coverage.measured > 0) {
+    const floorMsg = `quality score ${quality.score} below minimum floor ${args.minScore}`;
+    if (!regressions.includes(floorMsg)) regressions.push(floorMsg);
+  }
+
+  const verdict = (runError || externalError || baselineError) ? 'INCOMPLETE' : reportVerdict(targets, regressions);
+  const errorText = [runError?.message, externalError?.message, baselineError?.message].filter(Boolean).join('; ') || null;
+  const proxyCountry = args.proxyCountry || (args.proxy ? (detectedCountry || undefined) : 'direct');
+
+  const environment = {
+    os: osName,
+    mode: args.mode,
+    transport: runLocal ? args.transport : 'network',
+    sandbox: args.sandbox,
+    hard_only: args.hardOnly,
+    profile_platform: args.platform,
+    seed_hash: seedHash,
+    notes: [
+      `scope=${scope}`,
+      `sandbox=${args.sandbox ? 'enabled' : 'disabled'}`,
+      'window=1440x900',
+      args.dpr !== null ? `dpr=${args.dpr}` : 'dpr=native',
+      runLocal ? `probe=${PROBE_VERSION}` : null,
+      runLocal ? `probes=${args.hardOnly ? 'hard-only' : 'all'}` : null,
+      runLocal ? `transport=${args.transport}` : null,
+      runExternal ? `external=${EXTERNAL_VERSION}(${externalSelection.join(',')})` : null,
+      args.proxy ? 'proxy=configured' : 'proxy=direct',
+      args.platform ? `platform=${args.platform}` : null,
+      args.sandbox ? null : 'no-sandbox is required on this host; do not treat this run as an L0-01 pass'
+    ].filter(Boolean).join('; ')
+  };
+  if (proxyCountry) environment.proxy_country = proxyCountry;
 
   const report = {
     run_id: runId,
@@ -809,56 +1028,50 @@ async function main() {
       artifact: engine.artifact,
       binary: engine.binary
     },
-    environment: {
-      os: osName,
-      mode: args.mode,
-      transport: args.transport,
-      sandbox: args.sandbox,
-      hard_only: args.hardOnly,
-      profile_platform: args.platform,
-      proxy_country: 'direct',
-      seed_hash: seedHash,
-      notes: [
-        `sandbox=${args.sandbox ? 'enabled' : 'disabled'}`,
-        'window=1440x900',
-        args.dpr !== null ? `dpr=${args.dpr}` : 'dpr=native',
-        `probe=${PROBE_VERSION}`,
-        `probes=${args.hardOnly ? 'hard-only' : 'all'}`,
-        `transport=${args.transport}`,
-        args.platform ? `platform=${args.platform}` : null,
-        args.sandbox ? null : 'no-sandbox is required on this host; do not treat this run as an L0-01 pass'
-      ].filter(Boolean).join('; ')
-    },
+    environment,
     targets,
     verdict,
     checks: {
+      scope,
       probe_version: PROBE_VERSION,
       result_file: relative(REPO_ROOT, outPath),
       flags: [...allFlags].sort(),
       metrics,
+      quality,
+      external: runExternal ? {
+        version: EXTERNAL_VERSION,
+        checkers: externalSelection,
+        proxy_used: Boolean(args.proxy),
+        error: externalError?.message || null
+      } : null,
       skipped,
       seed_check: seedCheck,
       comparisons,
       runs: snapshots,
       baseline,
+      quality_delta: qualityDelta,
+      layer_deltas: layerDeltas,
       regressions,
       error: errorText
     }
   };
 
   const finalReport = args.redact
-    ? redactReport(report, { profileDir, seed: args.seed, seed2: effectiveSeed2 })
+    ? redactReport(report, { profileDir, seed: args.seed, seed2: effectiveSeed2, proxy: args.proxy, hostIp })
     : report;
   const savedPath = await writeReport(finalReport, outPath);
 
   console.log('');
   for (const target of targets) {
-    console.log(`${target.id}: ${target.status}${target.failures.length ? ` (${target.failures.join('; ')})` : ''}`);
+    const label = target.checker ? `${target.id} (${target.checker})` : target.id;
+    console.log(`${label}: ${target.status}${target.failures.length ? ` (${target.failures.join('; ')})` : ''}`);
   }
+  console.log('');
+  console.log(formatQualitySummary(quality, { delta: qualityDelta }));
   if (baseline) {
-    console.log(`baseline: ${baseline.run_id} (${baseline.verdict})`);
+    console.log(`baseline: ${baseline.run_id} (${baseline.verdict}, score ${baseline.score ?? '?'})`);
   } else if (!baselineError) {
-    console.log('baseline: none (first compatible run for this engine/mode/os/transport/probe)');
+    console.log(`baseline: none (first compatible ${scope} run for this engine/mode/os)`);
   }
   if (regressions.length) {
     for (const regression of regressions) console.log(`REGRESSION: ${regression}`);

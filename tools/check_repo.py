@@ -59,6 +59,8 @@ REQUIRED_ROOT_FILES = [
     "checks/README.md",
     "checks/fingerprint-stability.md",
     "checks/benchmark/lib.mjs",
+    "checks/benchmark/external.mjs",
+    "checks/benchmark/score.mjs",
     "checks/benchmark/run.mjs",
     "checks/benchmark/compare.py",
     "checks/benchmark/serve.py",
@@ -428,8 +430,24 @@ def check_benchmark_reports() -> int:
         if isinstance(checks, dict):
             flags = checks.get("flags") or []
             for flag in flags:
-                if isinstance(flag, str) and (flag.startswith("--fingerprint=") or flag.startswith("--user-data-dir=")):
+                if isinstance(flag, str) and (
+                    flag.startswith("--fingerprint=")
+                    or flag.startswith("--user-data-dir=")
+                    or flag.startswith("--proxy-server=")
+                ):
                     error("%s: sensitive flag leaked in checks.flags (%s)" % (where, flag.split("=", 1)[0]))
+            quality = checks.get("quality")
+            if quality is not None:
+                if not isinstance(quality, dict):
+                    error("%s: checks.quality must be an object" % where)
+                else:
+                    q_score = quality.get("score")
+                    if not isinstance(q_score, (int, float)) or q_score < 0 or q_score > 100:
+                        error("%s: checks.quality.score must be a number in 0..100" % where)
+                    if quality.get("grade") not in {"A+", "A", "B", "C", "D", "F"}:
+                        error("%s: checks.quality.grade is invalid (%r)" % (where, quality.get("grade")))
+                    if not isinstance(quality.get("layers"), dict):
+                        error("%s: checks.quality.layers must be an object" % where)
             for r_idx, run in enumerate(checks.get("runs") or []):
                 probes = run.get("probes") if isinstance(run, dict) else None
                 if isinstance(probes, dict):

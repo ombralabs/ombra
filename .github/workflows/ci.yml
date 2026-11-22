@@ -64,10 +64,13 @@ jobs:
         run: python checks/benchmark/compare.py checks/results/
 
       - name: Syntax-check JavaScript probe and runner
-        run: node --check checks/benchmark/lib.mjs checks/benchmark/run.mjs checks/benchmark/probe/fp-core.js checks/benchmark/probe/app.js
+        run: node --check checks/benchmark/lib.mjs checks/benchmark/external.mjs checks/benchmark/score.mjs checks/benchmark/run.mjs checks/benchmark/probe/fp-core.js checks/benchmark/probe/app.js
 
       - name: Run Node benchmark unit tests
         run: node --test checks/benchmark/tests/*.test.mjs
+
+      - name: Verify quality scorecard CLI on committed results
+        run: node checks/benchmark/score.mjs checks/results/
 
   python-sdk:
     name: Python SDK unit and conformance tests
