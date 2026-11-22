@@ -61,3 +61,28 @@ Shared JSON report format for benchmark, stealth checkup, and SDK runs (validate
 - Required top-level fields: `run_id`, `started_at` (ISO 8601), `operator`, `sdk` (`name`, `version`, optional `contract`/`sha256`), `engine` (`name`, `version`, optional `sha256`), `environment`, `targets` (non-empty), `verdict` (`PASS` | `PASS_WITH_GAPS` | `FAIL` | `INCOMPLETE`).
 - `environment`: `os`, `mode` (`headed` | `headless`), `seed_hash` (`sha256:...` — never store the raw seed), optional `proxy_country` (ISO alpha-2 or `direct`), optional `notes`.
 - Each entry in `targets`: `id` (e.g. `L1-01`, `SI-03`), `status` (`PASS` | `DEGRADED` | `FAIL` | `UNREACHABLE`), `failures[]`, optional `artifacts[]`, `duration_ms`, and `known_gap` (`{ owner, reason, expires: YYYY-MM-DD, issue? }`, required whenever `status == "DEGRADED"`).
+
+## SDK launch options and binary info schemas
+
+Language-neutral schemas shared across all SDKs (`additionalProperties: false` on every object; contract details in `docs/sdk-contract.md`):
+
+### Launch options (`launch()`)
+
+- `headless`: `bool` (default `true`)
+- `mobile_viewport`: `{ width: int(1..10000), height: int(1..10000) } | null` (CSS pixels; host OS only)
+- `proxy`: non-empty URL string **or** `{ type: "http"|"https"|"socks5", host: string, port: int(1..65535), username?: string, password?: string }`
+- `fingerprint`: `{ seed?: int(>=0), os?: "macos"|"windows"|"linux", os_version?: string, timezone?: IANA|"auto", locale?: BCP-47|"auto", screen?: "auto"|{ width: int(>=320), height: int(>=240) }, gpu?: "auto"|{ vendor: string, renderer: string }, hardware_concurrency?: "auto"|int(>=1), device_memory?: "auto"|int(>=1), noise?: bool }`
+- `profile` (named persistent profile, slugified) and `user_data_dir` (explicit path): non-empty strings, **mutually exclusive**
+- `args`: `string[]` (default `[]`, passed through unchanged)
+- `binary_path`: non-empty string
+- `version`: string matching `^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?:-(?:[1-9][0-9]*|0\+dev\.[0-9a-fA-F]+))?$` (overrides `OMBRA_VERSION`)
+- `timeout_ms`: `int(1000..600000)` (default `30000`)
+- `humanize`: `bool` **or** `{ preset?: "default"|"careful"|"fast" }`
+- `license_key`: non-empty string (never logged)
+- `env`: `Record<string, string>`
+- `download`: `bool` (default `true`)
+
+### Binary info (`binary_info()`)
+
+- Required: `version` (non-empty string), `platform` (e.g. `macos-arm64`, `windows-x64`), `installed` (`bool`, `true` only after resolution + verification), `source` (`"argument"|"env"|"app"|"cache"|"download"|"none"`).
+- Optional/nullable: `path` (`string | null`), `sha256` (`^[a-f0-9]{64}$ | null`).

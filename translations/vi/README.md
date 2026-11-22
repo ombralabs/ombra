@@ -188,7 +188,7 @@ Mỗi thành phần trong hệ sinh thái đều tuân theo hợp đồng khởi
 | **Engine Ombra Chromium** | Phạm vi SDK `>=151.0.7922.108,<159` | SDK tự động tải xuống từ [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Trình quản lý hồ sơ ngoại tuyến | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Trình duyệt độc lập** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schema và kiểm thử tuân thủ** | JSON Schema + bộ kiểm thử dùng chung | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **Schema và kiểm thử tuân thủ** | JSON Schema + bộ kiểm thử dùng chung | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Phương pháp kiểm tra stealth** | 6 lớp (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Xem [CHANGELOG.md](../../CHANGELOG.md) để theo dõi đầy đủ lịch sử phát hành.
@@ -931,8 +931,6 @@ Vui lòng báo cáo riêng tư các vấn đề bảo mật theo hướng dẫn 
 │   ├── stealth-checkup.ru.md    # phương pháp kiểm tra stealth (tiếng Nga)
 │   ├── versioning.md            # đánh phiên bản cho SDK, engine và client
 │   └── desktop/                 # hướng dẫn hồ sơ và khóa cục bộ của Desktop
-├── spec/
-│   └── schemas/                 # JSON Schema cho tùy chọn khởi chạy và siêu dữ liệu tệp nhị phân
 ├── sdks/
 │   ├── manifest.json            # danh bạ SDK dạng máy đọc được
 │   ├── README.md                # cấu trúc SDK và quy tắc đóng góp
@@ -983,7 +981,7 @@ Ombra được xây dựng cho tự động hóa được ủy quyền, kiểm t
 
 Hướng dẫn đóng góp nằm trong [CONTRIBUTING.md](../../CONTRIBUTING.md), chuẩn mực cộng đồng trong [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) và hướng dẫn riêng cho SDK tại [sdks/README.md](../../sdks/README.md).
 
-- Cập nhật [Hợp đồng SDK](../../docs/sdk-contract.md) và [các schema](../../spec/schemas) trước khi thêm tùy chọn khởi chạy mới.
+- Cập nhật [Hợp đồng SDK](../../docs/sdk-contract.md) và [các schema](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) trước khi thêm tùy chọn khởi chạy mới.
 - Khi thay đổi hành vi của SDK, hãy cập nhật đồng bộ phần triển khai, bài kiểm thử và bộ kiểm thử dùng chung trong [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Chạy `python3 tools/check_repo.py` trước khi mở pull request để xác thực bố cục kho lưu trữ và các liên kết.
 

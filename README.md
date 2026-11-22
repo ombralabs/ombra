@@ -189,7 +189,7 @@ Each component in the ecosystem follows the shared launch contract and is versio
 | **Ombra Chromium engine** | SDK range `>=151.0.7922.108,<159` | Auto-downloaded by the SDK from [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline profile manager | [`desktop/`](desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Standalone browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schemas and conformance** | JSON Schema + invariants | [`spec/schemas`](spec/schemas) · [`AGENTS.md`](AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **Schemas and conformance** | Launch schemas + invariants | [`AGENTS.md`](AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`invariants`](AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Stealth checkup method** | 6 layers (`L0`–`L5`) | [`docs/stealth-checkup.md`](docs/stealth-checkup.md) |
 
 See [CHANGELOG.md](CHANGELOG.md) for full release history.
@@ -931,8 +931,6 @@ Report security issues privately according to [SECURITY.md](SECURITY.md).
 │   ├── stealth-checkup.ru.md    # checkup method (Russian)
 │   ├── versioning.md            # SDK, engine, and client versioning
 │   └── desktop/                 # Desktop local profile and key guides
-├── spec/
-│   └── schemas/                 # JSON Schemas for launch options and binary metadata
 ├── sdks/
 │   ├── manifest.json            # machine-readable SDK registry
 │   ├── README.md                # SDK layout and contribution rules
@@ -983,7 +981,7 @@ Ombra is built for authorized automation, QA testing, monitoring, research, and 
 
 Contribution guidelines are in [CONTRIBUTING.md](CONTRIBUTING.md), community standards in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and SDK instructions in [sdks/README.md](sdks/README.md).
 
-- Update the [SDK contract](docs/sdk-contract.md) and [schemas](spec/schemas) before adding a new launch option.
+- Update the [SDK contract](docs/sdk-contract.md) and [schemas](AGENTS.md#sdk-launch-options-and-binary-info-schemas) before adding a new launch option.
 - When changing SDK behavior, update the implementation, tests, and invariants in [AGENTS.md](AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Run `python3 tools/check_repo.py` before opening a pull request to validate repository layout and links.
 

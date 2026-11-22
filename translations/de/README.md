@@ -188,7 +188,7 @@ Jede Komponente im Ökosystem folgt dem gemeinsamen Startvertrag und wird unabh�
 | **Ombra Chromium Engine** | SDK-Bereich `>=151.0.7922.108,<159` | Automatischer Download durch das SDK von [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline-Profilmanager | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Standalone-Browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schemas und Konformität** | JSON Schema + gemeinsame Testfälle | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **Schemas und Konformität** | JSON Schema + gemeinsame Testfälle | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Stealth-Checkup-Methode** | 6 Ebenen (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Die vollständige Release-Historie finden Sie in [CHANGELOG.md](../../CHANGELOG.md).
@@ -931,8 +931,6 @@ Bitte melden Sie Sicherheitslücken vertraulich gemäß [SECURITY.md](../../SECU
 │   ├── stealth-checkup.ru.md    # Checkup-Methode (Russisch)
 │   ├── versioning.md            # Versionierung von SDK, Engine und Clients
 │   └── desktop/                 # Leitfäden zu lokalen Desktop-Profilen und Schlüsseln
-├── spec/
-│   └── schemas/                 # JSON-Schemas für Startoptionen und Binärdatei-Metadaten
 ├── sdks/
 │   ├── manifest.json            # maschinenlesbare SDK-Registrierung
 │   ├── README.md                # SDK-Struktur und Richtlinien für Beiträge
@@ -983,7 +981,7 @@ Ombra ist für autorisierte Automatisierung, QA-Tests, Monitoring, Forschung und
 
 Richtlinien für Beiträge finden Sie in [CONTRIBUTING.md](../../CONTRIBUTING.md), Community-Standards in [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) und Hinweise zu den SDKs in [sdks/README.md](../../sdks/README.md).
 
-- Aktualisieren Sie den [SDK-Vertrag](../../docs/sdk-contract.md) und die [Schemas](../../spec/schemas), bevor Sie eine neue Startoption hinzufügen.
+- Aktualisieren Sie den [SDK-Vertrag](../../docs/sdk-contract.md) und die [Schemas](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas), bevor Sie eine neue Startoption hinzufügen.
 - Aktualisieren Sie bei Änderungen am SDK-Verhalten die Implementierung, Tests und gemeinsamen Testfälle unter [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Führen Sie vor dem Eröffnen eines Pull Requests `python3 tools/check_repo.py` aus, um Repository-Struktur und Links zu prüfen.
 

@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **Ombra Chromium 엔진** | SDK 지원 범위 `>=151.0.7922.108,<159` | SDK가 [GitHub Releases](https://github.com/ombralabs/ombra/releases)에서 자동 다운로드 (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | 오프라인 프로필 관리자 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **단독 실행 브라우저** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **스키마 및 적합성 테스트** | JSON Schema + 공통 케이스 | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **스키마 및 적합성 테스트** | JSON Schema + 공통 케이스 | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **스텔스 점검 방법론** | 6개 계층 (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 전체 릴리스 이력은 [CHANGELOG.md](../../CHANGELOG.md)에서 확인하세요.
@@ -931,8 +931,6 @@ for _ in range(15):
 │   ├── stealth-checkup.ru.md    # 스텔스 점검 방법론 (러시아어)
 │   ├── versioning.md            # SDK, 엔진 및 클라이언트 버전 관리
 │   └── desktop/                 # Desktop 로컬 프로필 및 키 가이드
-├── spec/
-│   └── schemas/                 # 실행 옵션 및 바이너리 메타데이터용 JSON Schema
 ├── sdks/
 │   ├── manifest.json            # 기계 판독 가능 SDK 레지스트리
 │   ├── README.md                # SDK 구성 및 기여 규칙
@@ -983,7 +981,7 @@ Ombra는 인가된 자동화, QA 테스트, 모니터링, 연구, 격리된 업�
 
 기여 지침은 [CONTRIBUTING.md](../../CONTRIBUTING.md), 커뮤니티 행동 강령은 [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md), SDK 관련 안내는 [sdks/README.md](../../sdks/README.md)에 있습니다.
 
-- 새 실행 옵션을 추가하기 전에 [SDK 계약](../../docs/sdk-contract.md)과 [스키마](../../spec/schemas)를 먼저 업데이트하세요.
+- 새 실행 옵션을 추가하기 전에 [SDK 계약](../../docs/sdk-contract.md)과 [스키마](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas)를 먼저 업데이트하세요.
 - SDK 동작을 변경할 때는 구현, 테스트 및 [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants)의 공통 케이스를 함께 업데이트하세요.
 - 풀 리퀘스트를 열기 전에 `python3 tools/check_repo.py`를 실행하여 저장소 구조와 링크를 검증하세요.
 

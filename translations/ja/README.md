@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **Ombra Chromium エンジン** | SDK 対応範囲 `>=151.0.7922.108,<159` | SDK が [GitHub Releases](https://github.com/ombralabs/ombra/releases) から自動ダウンロード（macOS ARM64 / Linux x64 / Windows x64） |
 | **Ombra Desktop** | オフラインプロファイルマネージャー | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **スタンドアロンブラウザ** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **スキーマとコンフォーマンス** | JSON Schema + 共通ケース | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **スキーマとコンフォーマンス** | JSON Schema + 共通ケース | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **ステルスチェックアップ手法** | 6 層 (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 完全なリリース履歴は [CHANGELOG.md](../../CHANGELOG.md) を参照してください。
@@ -930,8 +930,6 @@ for _ in range(15):
 │   ├── stealth-checkup.ru.md    # チェックアップ手法 (Русский)
 │   ├── versioning.md            # SDK、エンジン、クライアントのバージョニング
 │   └── desktop/                 # Desktop のローカルプロファイルおよびキーのガイド
-├── spec/
-│   └── schemas/                 # 起動オプションおよびバイナリメタデータの JSON Schema
 ├── sdks/
 │   ├── manifest.json            # 機械可読な SDK レジストリ
 │   ├── README.md                # SDK の構成とコントリビューション規約
@@ -982,7 +980,7 @@ Ombra は、認可された自動化、QA テスト、監視、調査研究、�
 
 コントリビューションガイドラインは [CONTRIBUTING.md](../../CONTRIBUTING.md)、コミュニティ行動規範は [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md)、SDK の開発手順は [sdks/README.md](../../sdks/README.md) を参照してください。
 
-- 新しい起動オプションを追加する前に、[SDK コントラクト](../../docs/sdk-contract.md) と [スキーマ](../../spec/schemas) を更新してください。
+- 新しい起動オプションを追加する前に、[SDK コントラクト](../../docs/sdk-contract.md) と [スキーマ](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) を更新してください。
 - SDK の挙動を変更する場合は、実装、テスト、および [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants) 内の共通ケースを更新してください。
 - プルリクエストを作成する前に `python3 tools/check_repo.py` を実行し、リポジトリ構成とリンクを検証してください。
 

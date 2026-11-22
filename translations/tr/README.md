@@ -188,7 +188,7 @@ Ekosistemdeki her bileşen ortak başlatma sözleşmesini izler ve bağımsız o
 | **Ombra Chromium motoru** | SDK aralığı `>=151.0.7922.108,<159` | SDK tarafından [GitHub Releases](https://github.com/ombralabs/ombra/releases) üzerinden otomatik indirilir (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Çevrimdışı profil yöneticisi | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Bağımsız tarayıcı** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Şemalar ve uyumluluk testleri** | JSON Schema + ortak senaryolar | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **Şemalar ve uyumluluk testleri** | JSON Schema + ortak senaryolar | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Gizlilik kontrolü yöntemi** | 6 katman (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Tüm sürüm geçmişi için [CHANGELOG.md](../../CHANGELOG.md) dosyasına bakın.
@@ -931,8 +931,6 @@ Güvenlik sorunlarını [SECURITY.md](../../SECURITY.md) dosyasına uygun olarak
 │   ├── stealth-checkup.ru.md    # gizlilik kontrolü yöntemi (Rusça)
 │   ├── versioning.md            # SDK, motor ve istemci sürümleme kuralları
 │   └── desktop/                 # Desktop yerel profil ve anahtar kılavuzları
-├── spec/
-│   └── schemas/                 # başlatma seçenekleri ve ikili meta verileri için JSON Şemaları
 ├── sdks/
 │   ├── manifest.json            # makine tarafından okunabilir SDK kayıt defteri
 │   ├── README.md                # SDK dizin yapısı ve katkı kuralları
@@ -983,7 +981,7 @@ Ombra yetkili otomasyon, QA testi, izleme, araştırma ve yalıtılmış çalı�
 
 Katkı yönergeleri [CONTRIBUTING.md](../../CONTRIBUTING.md), topluluk standartları [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) ve SDK talimatları [sdks/README.md](../../sdks/README.md) dosyalarındadır.
 
-- Yeni bir başlatma seçeneği eklemeden önce [SDK sözleşmesini](../../docs/sdk-contract.md) ve [şemaları](../../spec/schemas) güncelleyin.
+- Yeni bir başlatma seçeneği eklemeden önce [SDK sözleşmesini](../../docs/sdk-contract.md) ve [şemaları](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) güncelleyin.
 - SDK davranışını değiştirirken uygulamayı, testleri ve [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants) içindeki ortak senaryoları güncelleyin.
 - Bir pull request açmadan önce depo yapısını ve bağlantıları doğrulamak için `python3 tools/check_repo.py` komutunu çalıştırın.
 

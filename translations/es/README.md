@@ -188,7 +188,7 @@ Cada componente del ecosistema sigue el contrato de lanzamiento compartido y se 
 | **Motor Ombra Chromium** | Rango del SDK `>=151.0.7922.108,<159` | Descargado automáticamente por el SDK desde [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Gestor de perfiles sin conexión | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Navegador independiente** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Esquemas y conformidad** | JSON Schema + casos compartidos | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **Esquemas y conformidad** | JSON Schema + casos compartidos | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Método de comprobación de sigilo** | 6 capas (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Consulta [CHANGELOG.md](../../CHANGELOG.md) para ver el historial completo de lanzamientos.
@@ -931,8 +931,6 @@ Informa de problemas de seguridad de forma privada siguiendo [SECURITY.md](../..
 │   ├── stealth-checkup.ru.md    # método de comprobación (ruso)
 │   ├── versioning.md            # versionado del SDK, motor y clientes
 │   └── desktop/                 # guías de perfiles locales y claves de Desktop
-├── spec/
-│   └── schemas/                 # esquemas JSON Schema para opciones de lanzamiento y metadatos del binario
 ├── sdks/
 │   ├── manifest.json            # registro de SDK legible por máquina
 │   ├── README.md                # estructura de los SDK y reglas de contribución
@@ -983,7 +981,7 @@ Ombra está diseñado para automatización autorizada, pruebas de QA, monitoriza
 
 Las directrices de contribución están en [CONTRIBUTING.md](../../CONTRIBUTING.md), las normas de la comunidad en [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) y las instrucciones para SDK en [sdks/README.md](../../sdks/README.md).
 
-- Actualiza el [contrato del SDK](../../docs/sdk-contract.md) y los [esquemas](../../spec/schemas) antes de añadir una nueva opción de lanzamiento.
+- Actualiza el [contrato del SDK](../../docs/sdk-contract.md) y los [esquemas](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) antes de añadir una nueva opción de lanzamiento.
 - Al modificar el comportamiento de un SDK, actualiza la implementación, las pruebas y los casos compartidos en [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Ejecuta `python3 tools/check_repo.py` antes de abrir un pull request para validar la estructura del repositorio y los enlaces.
 

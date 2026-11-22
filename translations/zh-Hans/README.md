@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **Ombra Chromium 引擎** | SDK 兼容范围 `>=151.0.7922.108,<159` | 由 SDK 从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载（macOS ARM64 / Linux x64 / Windows x64） |
 | **Ombra Desktop** | 离线配置文件管理器 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **独立浏览器版本** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schema 与一致性测试** | JSON Schema + 共享测试用例 | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **Schema 与一致性测试** | JSON Schema + 共享测试用例 | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **隐匿性检查方法** | 6 层体系（`L0`–`L5`） | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 完整的版本变更记录请参阅 [CHANGELOG.md](../../CHANGELOG.md)。
@@ -931,8 +931,6 @@ for _ in range(15):
 │   ├── stealth-checkup.ru.md    # 隐匿性检查方法（俄文）
 │   ├── versioning.md            # SDK、引擎与客户端版本控制策略
 │   └── desktop/                 # Desktop 本地配置文件与密钥指南
-├── spec/
-│   └── schemas/                 # 启动选项与二进制元数据的 JSON Schema
 ├── sdks/
 │   ├── manifest.json            # 机器可读的 SDK 清单
 │   ├── README.md                # SDK 目录布局与贡献规范
@@ -983,7 +981,7 @@ Ombra 面向经过授权的自动化任务、QA 测试、监控、研究以及�
 
 贡献指南请参阅 [CONTRIBUTING.md](../../CONTRIBUTING.md)，社区行为准则请参阅 [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md)，SDK 开发说明请参阅 [sdks/README.md](../../sdks/README.md)。
 
-- 新增启动选项前，请先更新 [SDK 契约](../../docs/sdk-contract.md) 与 [Schema 定义](../../spec/schemas)。
+- 新增启动选项前，请先更新 [SDK 契约](../../docs/sdk-contract.md) 与 [Schema 定义](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas)。
 - 修改 SDK 行为时，请同步更新代码实现、测试以及[一致性测试](../../AGENTS.md#sdk-conformance-and-stealth-invariants)中的共享用例。
 - 提交 Pull Request 前，请运行 `python3 tools/check_repo.py` 校验仓库结构与链接。
 

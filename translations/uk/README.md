@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **Рушій Ombra Chromium** | Діапазон SDK `>=151.0.7922.108,<159` | Автоматично завантажується SDK із [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Офлайн-менеджер профілів | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Окремий браузер** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Схеми та тести сумісності** | JSON Schema + спільні кейси | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
+| **Схеми та тести сумісності** | JSON Schema + спільні кейси | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Методика перевірки непомітності** | 6 рівнів (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Повну історію змін див. у [CHANGELOG.md](../../CHANGELOG.md).
@@ -931,8 +931,6 @@ for _ in range(15):
 │   ├── stealth-checkup.ru.md    # методика перевірки (російською)
 │   ├── versioning.md            # версіонування SDK, рушія та клієнтів
 │   └── desktop/                 # посібники щодо локальних профілів і ключів Desktop
-├── spec/
-│   └── schemas/                 # JSON-схеми параметрів запуску та метаданих бінарника
 ├── sdks/
 │   ├── manifest.json            # машинозчитуваний реєстр SDK
 │   ├── README.md                # структура SDK та правила внеску
@@ -983,7 +981,7 @@ Ombra створено для авторизованої автоматизац�
 
 Настанови щодо внеску наведено в [CONTRIBUTING.md](../../CONTRIBUTING.md), стандарти спільноти — в [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md), а інструкції щодо SDK — в [sdks/README.md](../../sdks/README.md).
 
-- Оновлюйте [контракт SDK](../../docs/sdk-contract.md) і [схеми](../../spec/schemas) перед додаванням нового параметра запуску.
+- Оновлюйте [контракт SDK](../../docs/sdk-contract.md) і [схеми](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) перед додаванням нового параметра запуску.
 - Змінюючи поведінку SDK, оновлюйте реалізацію, тести та спільні кейси в [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Перед відкриттям pull request запускайте `python3 tools/check_repo.py` для перевірки структури репозиторію та посилань.
 
