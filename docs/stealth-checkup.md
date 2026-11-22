@@ -199,7 +199,7 @@ The SDK does not change the engine, but it chooses the binary, launch options, a
 - the local probe output;
 - the public target screenshots and raw text.
 
-A conformance runner for this step is planned under `conformance/stealth/`; until it lands, use the engine harness for the engine and the manual matrix below for the client. The runner must not be a separate implementation of the checks — it consumes the same cases and the same report schema.
+Use the engine harness for the engine and the manual matrix below for the client; any automated runner must follow the invariants and report format in [AGENTS.md](../AGENTS.md#sdk-conformance-and-stealth-invariants).
 
 ### Step 3 — Collect artifacts
 
@@ -309,7 +309,7 @@ Use this as the manual matrix when the automated runner is not available.
 
 ## 9. Reporting
 
-Reports are JSON first, Markdown second. The schema lives at [conformance/schema/report.schema.json](../conformance/schema/report.schema.json). A minimal report:
+Reports are JSON first, Markdown second. The schema lives in [AGENTS.md](../AGENTS.md#conformance-and-stealth-report-format). A minimal report:
 
 ```json
 {

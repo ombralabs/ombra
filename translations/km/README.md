@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **ម៉ាស៊ីន Ombra Chromium** | ចន្លោះកំណែ SDK `>=151.0.7922.108,<159` | ទាញយកដោយស្វ័យប្រវត្តិដោយ SDK ពី [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញ | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **កម្មវិធីរុករកឯករាជ្យ** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **គ្រោងការណ៍ និងការអនុលោមតាម** | JSON Schema + ករណីសាកល្បងរួម | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **គ្រោងការណ៍ និងការអនុលោមតាម** | JSON Schema + ករណីសាកល្បងរួម | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង** | 6 ស្រទាប់ (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 សូមមើល [CHANGELOG.md](../../CHANGELOG.md) សម្រាប់ប្រវត្តិកំណែចេញផ្សាយពេញលេញ។
@@ -931,15 +931,12 @@ for _ in range(15):
 │   ├── stealth-checkup.ru.md    # វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង (ភាសារុស្ស៊ី)
 │   ├── versioning.md            # ការកំណត់កំណែ SDK, ម៉ាស៊ីន និងកម្មវិធីអតិថិជន
 │   └── desktop/                 # មគ្គុទ្ទេសក៍ប្រវត្តិរូប និងកូនសោក្នុងម៉ាស៊ីនរបស់ Desktop
-├── spec/
-│   └── schemas/                 # JSON Schemas សម្រាប់ជម្រើសបើកដំណើរការ និងមេតាទិន្នន័យឯកសារប្រតិបត្តិ
 ├── sdks/
 │   ├── manifest.json            # បញ្ជីចុះឈ្មោះ SDK ដែលម៉ាស៊ីនអាចអានបាន
 │   ├── README.md                # ប្លង់ SDK និងច្បាប់រួមចំណែក
 │   ├── python/                  # Python SDK (បោះពុម្ពជា ombrabrowser)
 │   ├── node/                    # Node.js / TypeScript SDK (បោះពុម្ពជា @ombralabs/sdk)
 │   └── ...                      # គ្រោងកិច្ចសន្យាសម្រាប់ភាសាផ្សេងទៀត (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # ករណីសាកល្បងបើកដំណើរការ និងលក្ខខណ្ឌថេរភាពលាក់កំបាំងឆ្លងភាសា
 ├── tools/check_repo.py          # ឧបករណ៍ផ្ទៀងផ្ទាត់រចនាសម្ព័ន្ធ គ្រោងការណ៍ និងតំណភ្ជាប់ (CI)
 └── .github/workflows/ci.yml
 ```
@@ -984,8 +981,8 @@ Ombra ត្រូវបានបង្កើតឡើងសម្រាប់�
 
 គោលការណ៍ណែនាំអំពីការរួមចំណែកមាននៅក្នុង [CONTRIBUTING.md](../../CONTRIBUTING.md), ស្តង់ដារសហគមន៍មាននៅក្នុង [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) និងការណែនាំ SDK មាននៅក្នុង [sdks/README.md](../../sdks/README.md)។
 
-- ធ្វើបច្ចុប្បន្នភាព [កិច្ចសន្យា SDK](../../docs/sdk-contract.md) និង [គ្រោងការណ៍](../../spec/schemas) មុនពេលបន្ថែមជម្រើសបើកដំណើរការថ្មី។
-- នៅពេលផ្លាស់ប្តូរឥរិយាបថ SDK សូមធ្វើបច្ចុប្បន្នភាពការអនុវត្ត ការធ្វើតេស្ត និងករណីរួមនៅក្នុង [conformance](../../conformance/README.md)។
+- ធ្វើបច្ចុប្បន្នភាព [កិច្ចសន្យា SDK](../../docs/sdk-contract.md) និង [គ្រោងការណ៍](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) មុនពេលបន្ថែមជម្រើសបើកដំណើរការថ្មី។
+- នៅពេលផ្លាស់ប្តូរឥរិយាបថ SDK សូមធ្វើបច្ចុប្បន្នភាពការអនុវត្ត ការធ្វើតេស្ត និងករណីរួមនៅក្នុង [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants)។
 - ដំណើរការ `python3 tools/check_repo.py` មុនពេលបើក pull request ដើម្បីផ្ទៀងផ្ទាត់ប្លង់ឃ្លាំងកូដ និងតំណភ្ជាប់។
 
 ## អាជ្ញាបណ្ណ

@@ -199,6 +199,10 @@ There is no automatic fallback to a CDN.
 
 `launch()` returns a real Playwright `Browser`. There is no wrapper and no new page API.
 
+## Examples
+
+- [01 — Pure-Ombra YouTube video downloader](https://github.com/ombralabs/ombra/tree/main/examples/01-youtube-download) — launches Ombra stealth Chromium (ephemeral or persistent `--profile`, optional `--proxy` and `--humanize`), passively decodes YouTube's SABR/UMP media stream from CDP Network responses without `yt-dlp`, logs full fragment URLs, and muxes `.mp4` via `ffmpeg`.
+
 ## Layout
 
 ```text

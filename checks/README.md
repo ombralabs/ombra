@@ -188,8 +188,8 @@ sandbox cannot initialize. The runner records a `known_gap` and reports
 
 ## Report
 
-The JSON follows
-[`conformance/schema/report.schema.json`](../conformance/schema/report.schema.json).
+The JSON follows the report format in
+[`AGENTS.md`](../AGENTS.md#conformance-and-stealth-report-format).
 Required fields are populated:
 
 - `run_id`, `started_at`, `operator`;

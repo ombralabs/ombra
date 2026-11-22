@@ -16,4 +16,3 @@
 
 docs/** linguist-documentation
 sdks/**/README.md linguist-documentation
-conformance/** linguist-documentation

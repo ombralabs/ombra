@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
-import fs from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
-import { fileURLToPath } from "node:url";
 import {
   InvalidOptionError,
   type PuppeteerBrowserLike,
@@ -16,11 +14,23 @@ import {
 } from "../dist/esm/index.js";
 import { makeFakeEngine, withIsolatedEnv } from "./helpers.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(__dirname, "..", "..", "..");
-const stealthSpec = JSON.parse(
-  fs.readFileSync(path.join(repoRoot, "conformance", "cases", "stealth-invariants.json"), "utf8"),
-);
+// Canonical SDK stealth invariants (SI-05..SI-11; see AGENTS.md).
+const STEALTH_INVARIANTS = {
+  "SI-05": [
+    "--enable-automation",
+    "--disable-blink-features=AutomationControlled",
+    "--headless=old",
+    "--disable-web-security",
+    "--ignore-certificate-errors",
+  ],
+  "SI-06": [
+    "://[^/@:]+:[^/@]+@",
+    "OMBRA_LICENSE_KEY=",
+    "Authorization: Bearer",
+  ],
+  "SI-07": ["--user-agent"],
+  "SI-11": ["--no-sandbox", "--disable-setuid-sandbox"],
+} as const;
 
 describe("SDK-owned stealth configuration conformance", () => {
   it("satisfies SI-05, SI-06, SI-07, SI-11, and SI-12 on CLI flags and binaryInfo()", async () => {
@@ -42,14 +52,13 @@ describe("SDK-owned stealth configuration conformance", () => {
       });
 
       const joined = built.args.join(" ");
-      const byId = Object.fromEntries(stealthSpec.invariants.map((inv: any) => [inv.id, inv]));
 
       // SI-05 forbidden automation flags
-      for (const flag of byId["SI-05"].forbidden) {
+      for (const flag of STEALTH_INVARIANTS["SI-05"]) {
         assert.ok(!built.args.some((a) => a.startsWith(flag)), `Forbidden flag found: ${flag}`);
       }
       // SI-06 no credentials or license key on command line
-      for (const pat of byId["SI-06"].forbidden_patterns) {
+      for (const pat of STEALTH_INVARIANTS["SI-06"]) {
         assert.doesNotMatch(joined, new RegExp(pat));
       }
       assert.ok(!joined.includes("proxyuser"));
@@ -57,11 +66,11 @@ describe("SDK-owned stealth configuration conformance", () => {
       assert.ok(!joined.includes("lic_super_secret_999"));
 
       // SI-07 no --user-agent flag
-      for (const flag of byId["SI-07"].forbidden) {
+      for (const flag of STEALTH_INVARIANTS["SI-07"]) {
         assert.ok(!built.args.some((a) => a.startsWith(flag)));
       }
       // SI-11 no --no-sandbox unless explicitly requested
-      for (const flag of byId["SI-11"].forbidden) {
+      for (const flag of STEALTH_INVARIANTS["SI-11"]) {
         assert.ok(!built.args.includes(flag));
       }
     });

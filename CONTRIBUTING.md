@@ -26,7 +26,7 @@ Per-SDK toolchains are documented in each SDK README. They are not installed by 
 
 Launch-contract changes, SDK changes, and engine changes have different owners. Follow this order:
 
-1. **Contract first.** Update [docs/sdk-contract.md](docs/sdk-contract.md) and, if an option changes, [spec/schemas](spec/schemas).
+1. **Contract first.** Update [docs/sdk-contract.md](docs/sdk-contract.md) and, if an option changes, [AGENTS.md](AGENTS.md#sdk-launch-options-and-binary-info-schemas).
 2. **Engine second.** The flag or capability must exist in the engine before an SDK exposes it.
 3. **SDK third.** Implement against the updated contract and add a conformance case.
 4. **Docs last.** Update the root README, the Russian mirror, and the SDK README.

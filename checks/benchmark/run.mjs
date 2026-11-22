@@ -8,7 +8,7 @@
  * seed, compares the hard probes, and writes a conformance report to
  * checks/results/.
  *
- * The report follows conformance/schema/report.schema.json and covers:
+ * The report follows the format in AGENTS.md and covers:
  *   L1-01  local fingerprint probe (across all runs)
  *   L5-01  seed stability across cold starts + seed-change sensitivity
  *   L5-02  cross-context agreement (Main / Worker / iframe / detached iframe)
@@ -114,7 +114,7 @@ Options:
   --score-tolerance N      allowed score delta vs baseline before regression (default 0 local / 2 external)
 
 The report is saved to checks/results/ and follows
-conformance/schema/report.schema.json. Exit code 0 means PASS; 1 means
+the report format in AGENTS.md. Exit code 0 means PASS; 1 means
 PASS_WITH_GAPS or FAIL; 2 means the benchmark could not be completed.
 `);
 }

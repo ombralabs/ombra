@@ -188,7 +188,7 @@ Ogni componente dell'ecosistema segue il contratto di avvio condiviso ed è vers
 | **Motore Ombra Chromium** | Intervallo SDK `>=151.0.7922.108,<159` | Scaricato automaticamente dall'SDK da [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Gestore di profili offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Browser standalone** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schemi e conformità** | JSON Schema + casi condivisi | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Schemi e conformità** | JSON Schema + casi condivisi | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Metodo di checkup stealth** | 6 livelli (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Consulta [CHANGELOG.md](../../CHANGELOG.md) per la cronologia completa delle release.
@@ -930,15 +930,12 @@ Segnala i problemi di sicurezza in privato seguendo [SECURITY.md](../../SECURITY
 │   ├── stealth-checkup.ru.md    # metodo di checkup (russo)
 │   ├── versioning.md            # versionamento di SDK, motore e client
 │   └── desktop/                 # guide ai profili locali e alle chiavi di Desktop
-├── spec/
-│   └── schemas/                 # JSON Schema per le opzioni di avvio e i metadati del binario
 ├── sdks/
 │   ├── manifest.json            # registro SDK leggibile da macchina
 │   ├── README.md                # struttura degli SDK e regole di contribuzione
 │   ├── python/                  # SDK Python (pubblicato come ombrabrowser)
 │   ├── node/                    # SDK Node.js / TypeScript (pubblicato come @ombralabs/sdk)
 │   └── ...                      # scaffold del contratto per altri linguaggi (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # casi cross-linguaggio per l'avvio e gli invarianti stealth
 ├── tools/check_repo.py          # validatore di struttura, schemi e link (CI)
 └── .github/workflows/ci.yml
 ```
@@ -983,8 +980,8 @@ Ombra è progettato per automazione autorizzata, test QA, monitoraggio, ricerca 
 
 Le linee guida per contribuire si trovano in [CONTRIBUTING.md](../../CONTRIBUTING.md), gli standard della community in [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) e le istruzioni per gli SDK in [sdks/README.md](../../sdks/README.md).
 
-- Aggiorna il [contratto SDK](../../docs/sdk-contract.md) e gli [schemi](../../spec/schemas) prima di aggiungere una nuova opzione di avvio.
-- Quando modifichi il comportamento dell'SDK, aggiorna implementazione, test e casi condivisi in [conformance](../../conformance/README.md).
+- Aggiorna il [contratto SDK](../../docs/sdk-contract.md) e gli [schemi](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) prima di aggiungere una nuova opzione di avvio.
+- Quando modifichi il comportamento dell'SDK, aggiorna implementazione, test e casi condivisi in [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Esegui `python3 tools/check_repo.py` prima di aprire una pull request per validare struttura del repository e link.
 
 ## Licenza

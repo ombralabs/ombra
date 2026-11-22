@@ -131,7 +131,7 @@ The `sdks/go/` prefix is required by Go modules; the other prefixes are a reposi
 A release is allowed only when:
 
 1. The launch and lifecycle conformance cases pass for that SDK.
-2. The SDK passes the stealth invariants in [conformance/cases/stealth-invariants.json](../conformance/cases/stealth-invariants.json).
+2. The SDK passes the stealth invariants in [AGENTS.md](../AGENTS.md#sdk-conformance-and-stealth-invariants).
 3. The checkup is `PASS` or `PASS_WITH_GAPS` for the engine build the SDK is tested against.
 4. [CHANGELOG.md](../CHANGELOG.md) has an entry with the contract range and engine build.
 5. The package manifest version and the tag agree.

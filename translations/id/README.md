@@ -188,7 +188,7 @@ Setiap komponen dalam ekosistem mengikuti kontrak peluncuran bersama dan diberi 
 | **Mesin Ombra Chromium** | Rentang SDK `>=151.0.7922.108,<159` | Diunduh otomatis oleh SDK dari [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Manajer profil offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Browser mandiri** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Skema dan conformance** | JSON Schema + kasus uji bersama | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Skema dan conformance** | JSON Schema + kasus uji bersama | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Metode pemeriksaan stealth** | 6 lapisan (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Lihat [CHANGELOG.md](../../CHANGELOG.md) untuk riwayat rilis lengkap.
@@ -931,15 +931,12 @@ Laporkan masalah keamanan secara privat sesuai dengan [SECURITY.md](../../SECURI
 │   ├── stealth-checkup.ru.md    # metode pemeriksaan stealth (Bahasa Rusia)
 │   ├── versioning.md            # pembuatan versi SDK, mesin, dan klien
 │   └── desktop/                 # panduan profil lokal dan kunci untuk Desktop
-├── spec/
-│   └── schemas/                 # JSON Schema untuk opsi peluncuran dan metadata biner
 ├── sdks/
 │   ├── manifest.json            # registri SDK yang dapat dibaca mesin
 │   ├── README.md                # tata letak SDK dan aturan kontribusi
 │   ├── python/                  # SDK Python (dipublikasikan sebagai ombrabrowser)
 │   ├── node/                    # SDK Node.js / TypeScript (dipublikasikan sebagai @ombralabs/sdk)
 │   └── ...                      # kerangka awal kontrak untuk bahasa lain (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # kasus uji peluncuran dan invarian stealth lintas bahasa
 ├── tools/check_repo.py          # validator struktur, skema, dan tautan (CI)
 └── .github/workflows/ci.yml
 ```
@@ -984,8 +981,8 @@ Ombra dirancang untuk otomatisasi berizin, pengujian QA, pemantauan, riset, sert
 
 Panduan kontribusi tersedia di [CONTRIBUTING.md](../../CONTRIBUTING.md), standar komunitas di [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md), dan petunjuk SDK di [sdks/README.md](../../sdks/README.md).
 
-- Perbarui [kontrak SDK](../../docs/sdk-contract.md) dan [skema](../../spec/schemas) sebelum menambahkan opsi peluncuran baru.
-- Saat mengubah perilaku SDK, perbarui implementasi, pengujian, dan kasus uji bersama di [conformance](../../conformance/README.md).
+- Perbarui [kontrak SDK](../../docs/sdk-contract.md) dan [skema](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) sebelum menambahkan opsi peluncuran baru.
+- Saat mengubah perilaku SDK, perbarui implementasi, pengujian, dan kasus uji bersama di [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Jalankan `python3 tools/check_repo.py` sebelum membuka pull request untuk memvalidasi tata letak repositori dan tautan.
 
 ## Lisensi
