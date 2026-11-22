@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **Движок Ombra Chromium** | Диапазон SDK `>=151.0.7922.108,<159` | Автозагрузка через SDK из [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Офлайн-менеджер профилей | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Автономный браузер** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Схемы и проверка соответствия** | JSON Schema + кейсы | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Схемы и проверка соответствия** | JSON Schema + кейсы | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Методика проверки движка** | 6 слоёв (`L0`–`L5`) | [`docs/stealth-checkup.ru.md`](../../docs/stealth-checkup.ru.md) |
 
 Подробная история изменений — в [CHANGELOG.md](../../CHANGELOG.md).
@@ -938,7 +938,6 @@ for _ in range(15):
 │   ├── python/                  # Python SDK (опубликован как ombrabrowser)
 │   ├── node/                    # Node.js / TypeScript SDK (опубликован как @ombralabs/sdk)
 │   └── ...                      # заготовки контракта для других языков (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # общие межъязыковые кейсы запуска и stealth-инвариантов
 ├── tools/check_repo.py          # валидация структуры, схем и ссылок в CI
 └── .github/workflows/ci.yml
 ```
@@ -984,7 +983,7 @@ Ombra предназначен для авторизованной автома�
 Порядок внесения изменений описан в [CONTRIBUTING.md](../../CONTRIBUTING.md), правила сообщества — в [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md), а инструкции по SDK — в [sdks/README.md](../../sdks/README.md).
 
 - Перед добавлением нового параметра запуска обновите [контракт SDK](../../docs/sdk-contract.md) и [схемы](../../spec/schemas).
-- При изменении поведения SDK обновите реализацию, тесты и общие кейсы в [conformance](../../conformance/README.md).
+- При изменении поведения SDK обновите реализацию, тесты и общие кейсы в [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Перед отправкой PR проверьте структуру и ссылки командой `python3 tools/check_repo.py`.
 
 ## Лицензия

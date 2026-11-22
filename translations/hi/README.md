@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **Ombra Chromium इंजन** | SDK सीमा `>=151.0.7922.108,<159` | SDK द्वारा [GitHub Releases](https://github.com/ombralabs/ombra/releases) से स्वतः डाउनलोड किया जाता है (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | ऑफ़लाइन प्रोफ़ाइल मैनेजर | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **स्टैंडअलोन ब्राउज़र** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **स्कीमा और कन्फ़ॉर्मेंस** | JSON Schema + साझा टेस्ट केस | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **स्कीमा और कन्फ़ॉर्मेंस** | JSON Schema + साझा टेस्ट केस | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **स्टेल्थ चेकअप पद्धति** | 6 परतें (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 पूर्ण रिलीज़ इतिहास के लिए [CHANGELOG.md](../../CHANGELOG.md) देखें।
@@ -938,7 +938,6 @@ for _ in range(15):
 │   ├── python/                  # Python SDK (ombrabrowser के रूप में प्रकाशित)
 │   ├── node/                    # Node.js / TypeScript SDK (@ombralabs/sdk के रूप में प्रकाशित)
 │   └── ...                      # अन्य भाषाओं (Go, Rust, C#, Java, PHP, Ruby) के लिए अनुबंध ढाँचे
-├── conformance/                 # क्रॉस-लैंग्वेज लॉन्च और स्टेल्थ-इनवेरिएंट टेस्ट केस
 ├── tools/check_repo.py          # संरचना, स्कीमा और लिंक सत्यापनकर्ता (CI)
 └── .github/workflows/ci.yml
 ```
@@ -984,7 +983,7 @@ Ombra अधिकृत ऑटोमेशन, QA परीक्षण, मॉ
 योगदान के दिशा-निर्देश [CONTRIBUTING.md](../../CONTRIBUTING.md) में, समुदाय के मानक [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) में, और SDK निर्देश [sdks/README.md](../../sdks/README.md) में दिए गए हैं।
 
 - कोई नया लॉन्च विकल्प जोड़ने से पहले [SDK अनुबंध](../../docs/sdk-contract.md) और [स्कीमा](../../spec/schemas) अपडेट करें।
-- SDK व्यवहार में बदलाव करते समय, कार्यान्वयन, टेस्ट्स और [conformance](../../conformance/README.md) में साझा टेस्ट केस अपडेट करें।
+- SDK व्यवहार में बदलाव करते समय, कार्यान्वयन, टेस्ट्स और [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants) में साझा टेस्ट केस अपडेट करें।
 - पुल रिक्वेस्ट खोलने से पहले रिपॉज़िटरी संरचना और लिंक सत्यापित करने के लिए `python3 tools/check_repo.py` चलाएँ।
 
 ## लाइसेंस

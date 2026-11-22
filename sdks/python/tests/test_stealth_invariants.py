@@ -1,4 +1,4 @@
-"""Tests verifying conformance/cases/stealth-invariants.json (SI-01..SI-12)."""
+"""Tests verifying SDK stealth invariants (SI-01..SI-12; see AGENTS.md)."""
 
 from __future__ import annotations
 
@@ -14,13 +14,6 @@ from tests.conftest import make_fake_engine
 
 STEALTH_CASE_PATH = Path(__file__).with_name("fixtures") / "stealth-invariants.json"
 STEALTH_CASE = json.loads(STEALTH_CASE_PATH.read_text(encoding="utf-8"))
-
-
-def test_packaged_stealth_case_matches_canonical():
-    canonical = Path(__file__).resolve().parents[3] / "conformance/cases/stealth-invariants.json"
-    if not canonical.is_file():
-        pytest.skip("Canonical conformance case is only available in the repository")
-    assert STEALTH_CASE_PATH.read_bytes() == canonical.read_bytes()
 
 
 def _invariants_by_id() -> dict[str, dict]:

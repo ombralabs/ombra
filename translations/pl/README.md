@@ -188,7 +188,7 @@ Każdy komponent ekosystemu przestrzega wspólnego kontraktu uruchamiania i jest
 | **Silnik Ombra Chromium** | Zakres SDK `>=151.0.7922.108,<159` | Pobierany automatycznie przez SDK z [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Menedżer profili offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Samodzielna przeglądarka** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schematy i testy zgodności** | JSON Schema + wspólne przypadki | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Schematy i testy zgodności** | JSON Schema + wspólne przypadki | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Metodyka przeglądu stealth** | 6 warstw (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Pełna historia zmian znajduje się w pliku [CHANGELOG.md](../../CHANGELOG.md).
@@ -938,7 +938,6 @@ Zgłaszaj podatności bezpieczeństwa poufnie zgodnie z [SECURITY.md](../../SECU
 │   ├── python/                  # Python SDK (publikowane jako ombrabrowser)
 │   ├── node/                    # Node.js / TypeScript SDK (publikowane jako @ombralabs/sdk)
 │   └── ...                      # szkielety kontraktowe dla innych języków (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # międzyjęzykowe przypadki uruchamiania i niezmienników stealth
 ├── tools/check_repo.py          # walidator struktury, schematów i linków (CI)
 └── .github/workflows/ci.yml
 ```
@@ -984,7 +983,7 @@ Ombra powstała z myślą o autoryzowanej automatyzacji, testach QA, monitoringu
 Wytyczne dotyczące współtworzenia znajdują się w [CONTRIBUTING.md](../../CONTRIBUTING.md), zasady społeczności w [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md), a instrukcje dotyczące SDK w [sdks/README.md](../../sdks/README.md).
 
 - Zaktualizuj [kontrakt SDK](../../docs/sdk-contract.md) oraz [schematy](../../spec/schemas) przed dodaniem nowej opcji uruchamiania.
-- Zmieniając zachowanie SDK, zaktualizuj implementację, testy oraz wspólne przypadki w [conformance](../../conformance/README.md).
+- Zmieniając zachowanie SDK, zaktualizuj implementację, testy oraz wspólne przypadki w [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Przed otwarciem pull requesta uruchom `python3 tools/check_repo.py`, aby zweryfikować strukturę repozytorium i linki.
 
 ## Licencja

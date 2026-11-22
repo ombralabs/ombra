@@ -188,7 +188,7 @@ Mỗi thành phần trong hệ sinh thái đều tuân theo hợp đồng khởi
 | **Engine Ombra Chromium** | Phạm vi SDK `>=151.0.7922.108,<159` | SDK tự động tải xuống từ [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Trình quản lý hồ sơ ngoại tuyến | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Trình duyệt độc lập** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schema và kiểm thử tuân thủ** | JSON Schema + bộ kiểm thử dùng chung | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Schema và kiểm thử tuân thủ** | JSON Schema + bộ kiểm thử dùng chung | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Phương pháp kiểm tra stealth** | 6 lớp (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Xem [CHANGELOG.md](../../CHANGELOG.md) để theo dõi đầy đủ lịch sử phát hành.
@@ -939,7 +939,6 @@ Vui lòng báo cáo riêng tư các vấn đề bảo mật theo hướng dẫn 
 │   ├── python/                  # SDK Python (phát hành dưới tên ombrabrowser)
 │   ├── node/                    # SDK Node.js / TypeScript (phát hành dưới tên @ombralabs/sdk)
 │   └── ...                      # khung mã mẫu theo hợp đồng cho các ngôn ngữ khác (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # bộ kiểm thử khởi chạy và bất biến stealth đa ngôn ngữ
 ├── tools/check_repo.py          # trình kiểm tra cấu trúc, schema và liên kết (CI)
 └── .github/workflows/ci.yml
 ```
@@ -985,7 +984,7 @@ Ombra được xây dựng cho tự động hóa được ủy quyền, kiểm t
 Hướng dẫn đóng góp nằm trong [CONTRIBUTING.md](../../CONTRIBUTING.md), chuẩn mực cộng đồng trong [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) và hướng dẫn riêng cho SDK tại [sdks/README.md](../../sdks/README.md).
 
 - Cập nhật [Hợp đồng SDK](../../docs/sdk-contract.md) và [các schema](../../spec/schemas) trước khi thêm tùy chọn khởi chạy mới.
-- Khi thay đổi hành vi của SDK, hãy cập nhật đồng bộ phần triển khai, bài kiểm thử và bộ kiểm thử dùng chung trong [conformance](../../conformance/README.md).
+- Khi thay đổi hành vi của SDK, hãy cập nhật đồng bộ phần triển khai, bài kiểm thử và bộ kiểm thử dùng chung trong [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Chạy `python3 tools/check_repo.py` trước khi mở pull request để xác thực bố cục kho lưu trữ và các liên kết.
 
 ## Giấy phép

@@ -188,7 +188,7 @@ Ang bawat bahagi sa ecosystem ay sumusunod sa pinagsasaluhang kontrata ng pag-la
 | **Ombra Chromium engine** | Saklaw ng SDK `>=151.0.7922.108,<159` | Awtomatikong dina-download ng SDK mula sa [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline na tagapamahala ng profile | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Standalone browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Mga schema at conformance** | JSON Schema + mga shared case | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Mga schema at conformance** | JSON Schema + mga shared case | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Paraan ng stealth checkup** | 6 na layer (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Tingnan ang [CHANGELOG.md](../../CHANGELOG.md) para sa kumpletong kasaysayan ng mga release.
@@ -938,7 +938,6 @@ Iulat nang pribado ang mga isyu sa seguridad alinsunod sa [SECURITY.md](../../SE
 │   ├── python/                  # Python SDK (inilathala bilang ombrabrowser)
 │   ├── node/                    # Node.js / TypeScript SDK (inilathala bilang @ombralabs/sdk)
 │   └── ...                      # mga scaffold ng kontrata para sa ibang wika (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # mga kaso para sa cross-language na pag-launch at stealth invariant
 ├── tools/check_repo.py          # tagapag-validate ng istruktura, schema, at link (CI)
 └── .github/workflows/ci.yml
 ```
@@ -984,7 +983,7 @@ Ginawa ang Ombra para sa awtorisadong automation, QA testing, pagsubaybay, panan
 Nasa [CONTRIBUTING.md](../../CONTRIBUTING.md) ang mga gabay sa pag-ambag, nasa [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) ang mga pamantayan ng komunidad, at nasa [sdks/README.md](../../sdks/README.md) ang mga tagubilin para sa SDK.
 
 - I-update ang [kontrata ng SDK](../../docs/sdk-contract.md) at [mga schema](../../spec/schemas) bago magdagdag ng bagong opsyon sa pag-launch.
-- Kapag binabago ang pag-uugali ng SDK, i-update ang implementasyon, mga pagsubok, at mga shared case sa [conformance](../../conformance/README.md).
+- Kapag binabago ang pag-uugali ng SDK, i-update ang implementasyon, mga pagsubok, at mga shared case sa [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Patakbuhin ang `python3 tools/check_repo.py` bago magbukas ng pull request upang i-validate ang istruktura at mga link ng repository.
 
 ## Lisensya

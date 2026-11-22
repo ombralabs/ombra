@@ -188,7 +188,7 @@ Fiecare componentă din ecosistem respectă contractul comun de lansare și este
 | **Motor Ombra Chromium** | Interval SDK `>=151.0.7922.108,<159` | Descărcat automat de SDK de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Manager de profiluri offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Browser independent** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Scheme și conformitate** | JSON Schema + cazuri comune | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Scheme și conformitate** | JSON Schema + cazuri comune | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Metodă de audit stealth** | 6 straturi (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Consultă [CHANGELOG.md](../../CHANGELOG.md) pentru istoricul complet al versiunilor.
@@ -938,7 +938,6 @@ Raportează problemele de securitate în mod privat conform [SECURITY.md](../../
 │   ├── python/                  # SDK Python (publicat ca ombrabrowser)
 │   ├── node/                    # SDK Node.js / TypeScript (publicat ca @ombralabs/sdk)
 │   └── ...                      # schelete de contract pentru alte limbaje (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # cazuri comune multi-limbaj de lansare și invarianți stealth
 ├── tools/check_repo.py          # validator de structură, scheme și linkuri (CI)
 └── .github/workflows/ci.yml
 ```
@@ -984,7 +983,7 @@ Ombra este construit pentru automatizare autorizată, testare QA, monitorizare, 
 Ghidul de contribuție se află în [CONTRIBUTING.md](../../CONTRIBUTING.md), standardele comunității în [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md), iar instrucțiunile pentru SDK în [sdks/README.md](../../sdks/README.md).
 
 - Actualizează [contractul SDK](../../docs/sdk-contract.md) și [schemele](../../spec/schemas) înainte de a adăuga o nouă opțiune de lansare.
-- Când modifici comportamentul SDK-ului, actualizează implementarea, testele și cazurile comune din [conformance](../../conformance/README.md).
+- Când modifici comportamentul SDK-ului, actualizează implementarea, testele și cazurile comune din [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Rulează `python3 tools/check_repo.py` înainte de a deschide un pull request pentru a valida structura depozitului și linkurile.
 
 ## Licență

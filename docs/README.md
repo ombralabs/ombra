@@ -11,13 +11,13 @@ Start here if you are integrating Ombra from a script, adding a language SDK, wo
 | [Stealth checkup (RU)](stealth-checkup.ru.md) | Same, in Russian |
 | [Versioning](versioning.md) | You are releasing a package or changing the launch contract |
 | [SDK index](../sdks/README.md) | You want the per-language layout and build commands |
-| [Conformance](../conformance/README.md) | You are adding a test case or a report consumer |
+| [Repository rules & conformance](../AGENTS.md#sdk-conformance-and-stealth-invariants) | You are checking stealth invariants or report format |
 
 ## Reading order
 
 **Integrator:** README → [SDK contract](sdk-contract.md) → the SDK README for your language → [architecture](architecture.md) if something behaves unexpectedly.
 
-**SDK author:** [Architecture](architecture.md) → [SDK contract](sdk-contract.md) → [conformance](../conformance/README.md) → [sdks/README.md](../sdks/README.md).
+**SDK author:** [Architecture](architecture.md) → [SDK contract](sdk-contract.md) → [conformance rules](../AGENTS.md#sdk-conformance-and-stealth-invariants) → [sdks/README.md](../sdks/README.md).
 
 **Release owner:** [Stealth checkup](stealth-checkup.md) → [versioning](versioning.md) → [CHANGELOG](../CHANGELOG.md).
 

@@ -10,21 +10,25 @@ namespace OmbraTests;
 [Collection("OmbraEnv")]
 public sealed class LaunchAndStealthTests
 {
-    private static string FindRepoRoot()
-    {
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir is not null)
-        {
-            if (File.Exists(Path.Combine(dir.FullName, "conformance", "cases", "stealth-invariants.json")))
-            {
-                return dir.FullName;
-            }
+    // Canonical SDK stealth invariants (SI-05..SI-11; see AGENTS.md).
+    private static readonly string[] ForbiddenFlags =
+    [
+        "--enable-automation",
+        "--disable-blink-features=AutomationControlled",
+        "--headless=old",
+        "--disable-web-security",
+        "--ignore-certificate-errors",
+        "--user-agent",
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+    ];
 
-            dir = dir.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate repository root containing conformance/cases/stealth-invariants.json");
-    }
+    private static readonly string[] ForbiddenSecretPatterns =
+    [
+        @"://[^/@:]+:[^/@]+@",
+        "OMBRA_LICENSE_KEY=",
+        "Authorization: Bearer",
+    ];
 
     [Fact]
     public async Task SatisfiesCanonicalStealthInvariantsOnCliFlagsAndBinaryInfo()
@@ -49,28 +53,18 @@ public sealed class LaunchAndStealthTests
             },
         });
 
-        var specPath = Path.Combine(FindRepoRoot(), "conformance", "cases", "stealth-invariants.json");
-        using var doc = JsonDocument.Parse(File.ReadAllText(specPath));
-        var invariants = doc.RootElement.GetProperty("invariants")
-            .EnumerateArray()
-            .ToDictionary(e => e.GetProperty("id").GetString()!, e => e);
-
         var joined = string.Join(" ", built.Args);
 
         // SI-05, SI-07, SI-11 forbidden flags
-        foreach (var id in new[] { "SI-05", "SI-07", "SI-11" })
+        foreach (var flag in ForbiddenFlags)
         {
-            foreach (var forbidden in invariants[id].GetProperty("forbidden").EnumerateArray())
-            {
-                var flag = forbidden.GetString()!;
-                Assert.DoesNotContain(built.Args, a => a.StartsWith(flag, StringComparison.Ordinal));
-            }
+            Assert.DoesNotContain(built.Args, a => a.StartsWith(flag, StringComparison.Ordinal));
         }
 
         // SI-06 no proxy credentials or license key on CLI
-        foreach (var pat in invariants["SI-06"].GetProperty("forbidden_patterns").EnumerateArray())
+        foreach (var pat in ForbiddenSecretPatterns)
         {
-            Assert.DoesNotMatch(new Regex(pat.GetString()!), joined);
+            Assert.DoesNotMatch(new Regex(pat), joined);
         }
 
         Assert.DoesNotContain("proxyuser", joined);

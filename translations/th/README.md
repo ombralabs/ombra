@@ -188,7 +188,7 @@ npm install mmdb-lib
 | **เอนจิน Ombra Chromium** | ช่วงที่ SDK รองรับ `>=151.0.7922.108,<159` | ดาวน์โหลดอัตโนมัติโดย SDK จาก [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | ตัวจัดการโปรไฟล์ออฟไลน์ | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **เบราว์เซอร์แบบสแตนด์อโลน** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **สคีมาและการทดสอบความสอดคล้อง** | JSON Schema + กรณีทดสอบร่วม | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **สคีมาและการทดสอบความสอดคล้อง** | JSON Schema + กรณีทดสอบร่วม | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **วิธีการตรวจเช็กความแนบเนียน** | 6 ระดับ (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 ดูประวัติการเผยแพร่ฉบับเต็มได้ที่ [CHANGELOG.md](../../CHANGELOG.md)
@@ -939,7 +939,6 @@ for _ in range(15):
 │   ├── python/                  # Python SDK (เผยแพร่ในชื่อ ombrabrowser)
 │   ├── node/                    # Node.js / TypeScript SDK (เผยแพร่ในชื่อ @ombralabs/sdk)
 │   └── ...                      # โครงร่างสัญญาสำหรับภาษาอื่น (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # กรณีทดสอบข้ามภาษาสำหรับการเปิดใช้งานและข้อกำหนดด้านความแนบเนียน
 ├── tools/check_repo.py          # ตัวตรวจสอบโครงสร้าง สคีมา และลิงก์ (CI)
 └── .github/workflows/ci.yml
 ```
@@ -985,7 +984,7 @@ Ombra ถูกสร้างมาเพื่อระบบอัตโน�
 ดูแนวทางการมีส่วนร่วมได้ที่ [CONTRIBUTING.md](../../CONTRIBUTING.md) มาตรฐานชุมชนที่ [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) และคำแนะนำเกี่ยวกับ SDK ที่ [sdks/README.md](../../sdks/README.md)
 
 - อัปเดต [สัญญา SDK](../../docs/sdk-contract.md) และ [สคีมา](../../spec/schemas) ก่อนเพิ่มตัวเลือกการเปิดใช้งานใหม่
-- เมื่อเปลี่ยนพฤติกรรมของ SDK ให้อัปเดตโค้ด การทดสอบ และกรณีทดสอบร่วมใน [conformance](../../conformance/README.md)
+- เมื่อเปลี่ยนพฤติกรรมของ SDK ให้อัปเดตโค้ด การทดสอบ และกรณีทดสอบร่วมใน [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants)
 - รัน `python3 tools/check_repo.py` ก่อนเปิด pull request เพื่อตรวจสอบโครงสร้างรีพอซิทอรีและลิงก์ต่าง ๆ
 
 ## สัญญาอนุญาต

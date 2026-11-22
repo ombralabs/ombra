@@ -188,7 +188,7 @@ Elk onderdeel in het ecosysteem volgt het gedeelde startcontract en wordt onafha
 | **Ombra Chromium-engine** | SDK-bereik `>=151.0.7922.108,<159` | Automatisch gedownload door de SDK van [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline profielbeheerder | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Losstaande browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schema's en conformiteit** | JSON Schema + gedeelde testcases | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../conformance/README.md) |
+| **Schema's en conformiteit** | JSON Schema + gedeelde testcases | [`spec/schemas`](../../spec/schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Stealth-checkupmethode** | 6 lagen (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
 
 Zie [CHANGELOG.md](../../CHANGELOG.md) voor de volledige releasegeschiedenis.
@@ -939,7 +939,6 @@ Meld beveiligingsproblemen vertrouwelijk volgens [SECURITY.md](../../SECURITY.md
 │   ├── python/                  # Python-SDK (gepubliceerd als ombrabrowser)
 │   ├── node/                    # Node.js- / TypeScript-SDK (gepubliceerd als @ombralabs/sdk)
 │   └── ...                      # contract-scaffolds voor andere talen (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # taaloverschrijdende start- en stealth-invariantcases
 ├── tools/check_repo.py          # validator voor structuur, schema's en links (CI)
 └── .github/workflows/ci.yml
 ```
@@ -985,7 +984,7 @@ Ombra is gebouwd voor geautoriseerde automatisering, QA-testen, monitoring, onde
 Richtlijnen voor bijdragen staan in [CONTRIBUTING.md](../../CONTRIBUTING.md), gedragsregels voor de community in [CODE_OF_CONDUCT.md](../../CODE_OF_CONDUCT.md) en SDK-instructies in [sdks/README.md](../../sdks/README.md).
 
 - Werk het [SDK-contract](../../docs/sdk-contract.md) en de [schema's](../../spec/schemas) bij voordat je een nieuwe startoptie toevoegt.
-- Werk bij wijzigingen in het SDK-gedrag ook de implementatie, tests en gedeelde cases in [conformance](../../conformance/README.md) bij.
+- Werk bij wijzigingen in het SDK-gedrag ook de implementatie, tests en gedeelde cases in [conformance](../../AGENTS.md#sdk-conformance-and-stealth-invariants) bij.
 - Voer `python3 tools/check_repo.py` uit voordat je een pull request opent om de repositorystructuur en links te valideren.
 
 ## Licentie

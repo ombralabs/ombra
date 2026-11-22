@@ -189,7 +189,7 @@ Each component in the ecosystem follows the shared launch contract and is versio
 | **Ombra Chromium engine** | SDK range `>=151.0.7922.108,<159` | Auto-downloaded by the SDK from [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline profile manager | [`desktop/`](desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Standalone browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
-| **Schemas and conformance** | JSON Schema + shared cases | [`spec/schemas`](spec/schemas) · [`conformance`](conformance/README.md) |
+| **Schemas and conformance** | JSON Schema + invariants | [`spec/schemas`](spec/schemas) · [`AGENTS.md`](AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Stealth checkup method** | 6 layers (`L0`–`L5`) | [`docs/stealth-checkup.md`](docs/stealth-checkup.md) |
 
 See [CHANGELOG.md](CHANGELOG.md) for full release history.
@@ -939,7 +939,6 @@ Report security issues privately according to [SECURITY.md](SECURITY.md).
 │   ├── python/                  # Python SDK (published as ombrabrowser)
 │   ├── node/                    # Node.js / TypeScript SDK (published as @ombralabs/sdk)
 │   └── ...                      # contract scaffolds for other languages (Go, Rust, C#, Java, PHP, Ruby)
-├── conformance/                 # cross-language launch and stealth-invariant cases
 ├── tools/check_repo.py          # structure, schema, and link validator (CI)
 └── .github/workflows/ci.yml
 ```
@@ -985,7 +984,7 @@ Ombra is built for authorized automation, QA testing, monitoring, research, and 
 Contribution guidelines are in [CONTRIBUTING.md](CONTRIBUTING.md), community standards in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and SDK instructions in [sdks/README.md](sdks/README.md).
 
 - Update the [SDK contract](docs/sdk-contract.md) and [schemas](spec/schemas) before adding a new launch option.
-- When changing SDK behavior, update the implementation, tests, and shared cases in [conformance](conformance/README.md).
+- When changing SDK behavior, update the implementation, tests, and invariants in [AGENTS.md](AGENTS.md#sdk-conformance-and-stealth-invariants).
 - Run `python3 tools/check_repo.py` before opening a pull request to validate repository layout and links.
 
 ## License
