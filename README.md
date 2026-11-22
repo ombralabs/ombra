@@ -951,7 +951,7 @@ No. The SDK connects the official Playwright (or Puppeteer) client to Ombra Chro
 
 ### Is Ombra free, and do I need a license key?
 
-SDK source code in this repository is open source under the Apache License 2.0. Current engine builds and the local Ombra Desktop profile manager run free and autonomously — with no account, license key, hardware ID, or profile count limit. `license_key` and `OMBRA_LICENSE_KEY` are only needed for legacy licensed builds.
+SDK source code in this repository (`sdks/`) is open source under the [Apache License 2.0](LICENSE). The compiled Ombra Chromium engine builds and Ombra Desktop (`desktop/`) are free for personal and noncommercial use under the [PolyForm Noncommercial License 1.0.0](LICENSE-NONCOMMERCIAL) — with no account, hardware ID, or profile count limit. Commercial use of the Ombra Chromium engine or Ombra Desktop requires a separate commercial license from Ombra Labs (`admin@ombrabrowser.dev`). `license_key` and `OMBRA_LICENSE_KEY` are only needed for legacy licensed builds.
 
 ### Do I need to install Ombra Desktop to use the SDK?
 
@@ -987,7 +987,12 @@ Contribution guidelines are in [CONTRIBUTING.md](CONTRIBUTING.md), community sta
 
 ## License
 
-SDK source code in this repository is licensed under the [Apache License 2.0](LICENSE). The license does not grant rights to Ombra trademarks, the Ombra Chromium engine, or Ombra Desktop — see [NOTICE](NOTICE) for trademark and third-party terms.
+This repository uses split licensing:
+
+- **SDKs (`sdks/`), examples, docs, and tooling**: [Apache License 2.0](LICENSE).
+- **Ombra Desktop (`desktop/`) and Ombra Chromium engine binaries**: [PolyForm Noncommercial License 1.0.0](LICENSE-NONCOMMERCIAL) ([`desktop/LICENSE`](desktop/LICENSE)) — free for personal and noncommercial use only. Commercial use requires a separate commercial license from Ombra Labs (`admin@ombrabrowser.dev`).
+
+See [NOTICE](NOTICE) for trademark and third-party terms.
 
 ## Links
 

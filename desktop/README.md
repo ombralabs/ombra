@@ -44,4 +44,4 @@ Use the [Tauri system prerequisites](https://v2.tauri.app/start/prerequisites/) 
 
 Set `OMBRA_DESKTOP_DATA_DIR` to an absolute path before launching the executable to work with a test catalog or a backup copy. The app will create a catalog if the directory is empty.
 
-The desktop source is covered by the repository’s existing desktop terms. [NOTICE](../NOTICE).
+Ombra Desktop is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE) (personal and noncommercial use only). Commercial use requires a separate commercial license from Ombra Labs (`admin@ombrabrowser.dev`). See [NOTICE](../NOTICE).

@@ -25,6 +25,7 @@ REQUIRED_ROOT_FILES = [
     "README.md",
     "translations/ru/README.md",
     "LICENSE",
+    "LICENSE-NONCOMMERCIAL",
     "CONTRIBUTING.md",
     "SECURITY.md",
     "CODE_OF_CONDUCT.md",
@@ -39,6 +40,7 @@ REQUIRED_ROOT_FILES = [
     "sdks/manifest.json",
     "sdks/README.md",
     "desktop/README.md",
+    "desktop/LICENSE",
     "desktop/src-tauri/Cargo.toml",
     "desktop/package.json",
     "docs/desktop/README.md",
@@ -113,6 +115,12 @@ def check_root_files() -> None:
     license_text = (ROOT / "LICENSE").read_text(encoding="utf-8") if (ROOT / "LICENSE").exists() else ""
     if "Apache License" not in license_text:
         error("LICENSE does not look like the Apache License, Version 2.0")
+
+    for noncommercial_file in ("LICENSE-NONCOMMERCIAL", "desktop/LICENSE"):
+        path = ROOT / noncommercial_file
+        nc_text = path.read_text(encoding="utf-8") if path.exists() else ""
+        if "PolyForm Noncommercial License 1.0.0" not in nc_text:
+            error("%s does not look like the PolyForm Noncommercial License 1.0.0" % noncommercial_file)
 
 
 def check_manifest(manifest: Dict) -> None:
