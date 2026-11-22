@@ -10,7 +10,7 @@ The machine-readable registry is [`manifest.json`](manifest.json). It is the sou
 |---|---|---|---|---|---|
 | [Python](python/README.md) | `ombrabrowser` | PyPI | 3.10+ | Playwright `Browser` | Alpha |
 | [Node.js](node/README.md) | `@ombralabs/sdk` | npm | Node 20+ | Playwright `Browser`; Puppeteer via `launchPuppeteer()` | Alpha |
-| [.NET](dotnet/README.md) | `Ombra` | NuGet | .NET 8+ | Playwright `IBrowser` | Scaffold |
+| [.NET](dotnet/README.md) | `Ombra` | GitHub Packages (NuGet) | .NET 8+ | Playwright `IBrowser` | Alpha |
 | [Java](java/README.md) | `dev.ombra:ombra` | Maven Central | 17+ | Playwright `Browser` | Scaffold |
 | [Go](go/README.md) | `github.com/ombralabs/ombra/sdks/go` | Go modules | 1.22+ | chromedp-ready session | Scaffold |
 | [PHP](php/README.md) | `ombralabs/ombra` | Packagist | 8.2+ | `Ombra\Browser` CDP handle | Scaffold |

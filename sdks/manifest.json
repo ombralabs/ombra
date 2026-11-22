@@ -36,14 +36,14 @@
       "language": "C# / .NET",
       "directory": "sdks/dotnet",
       "package": "Ombra",
-      "registry": "NuGet",
+      "registry": "GitHub Packages (NuGet)",
       "runtime": ".NET 8+",
       "source_root": "sdks/dotnet/src/Ombra",
       "tests_root": "sdks/dotnet/tests/Ombra.Tests",
       "cdp_clients": [
         "Microsoft.Playwright"
       ],
-      "status": "scaffold"
+      "status": "alpha"
     },
     {
       "id": "java",

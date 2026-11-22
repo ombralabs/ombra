@@ -185,6 +185,7 @@ Each component in the ecosystem follows the shared launch contract and is versio
 | **SDK contract** | Draft `0.2.0` | [`docs/sdk-contract.md`](docs/sdk-contract.md) |
 | **Python SDK** | Alpha `0.2.0` | [`ombrabrowser` on PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.2.0` | [`@ombralabs/sdk` on npm](https://www.npmjs.com/package/@ombralabs/sdk) |
+| **C# / .NET SDK** | Alpha `0.2.0` | [`Ombra` on GitHub Packages (NuGet)](https://github.com/orgs/ombralabs/packages?repo_name=ombra) · [`sdks/dotnet/`](sdks/dotnet/README.md) |
 | **Ombra Chromium engine** | SDK range `>=151.0.7922.108,<159` | Auto-downloaded by the SDK from [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
 | **Ombra Desktop** | Offline profile manager | [`desktop/`](desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Standalone browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
