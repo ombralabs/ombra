@@ -22,6 +22,8 @@ The local fingerprint benchmark in `checks/` is release evidence, not an optiona
 - Compare the new result with the previous accepted result for the same engine mode, OS, transport, and probe version (the runner does this automatically; `--baseline` can name a specific report).
 - Quality must not decrease from release to release. A regression is any of:
   - `L1-01`, `L5-01`, or `L5-02` dropping from `PASS` to `DEGRADED`, `FAIL`, or `UNREACHABLE`;
+  - any external checker (`L0-02`..`L3-02`) dropping to `DEGRADED`/`FAIL` or gaining new detector flags;
+  - the overall quality score (`checks.quality.score`) or any measured layer score dropping beyond tolerance, or falling below the release floor (`85`);
   - hard stability dropping below `100%`;
   - executed hard probe coverage decreasing;
   - hard noise rate rising above `0`;

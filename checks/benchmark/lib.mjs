@@ -8,6 +8,8 @@
 
 import { createHash } from 'node:crypto';
 import { basename, dirname, resolve } from 'node:path';
+import { EXTERNAL_VERSION, DEFAULT_EXTERNAL_TIMEOUT, resolveExternalSelection, scrubIps } from './external.mjs';
+import { DEFAULT_MIN_SCORE, compareQuality, inferScope, qualityOfReport } from './score.mjs';
 
 export const PROBE_VERSION = '1.1.0';
 export const CONTRACT_VERSION = '0.1.0';
@@ -16,6 +18,7 @@ export const DEFAULT_SEED = '20261119';
 export const TARGET_RANK = { UNREACHABLE: 0, FAIL: 1, DEGRADED: 2, PASS: 3 };
 export const VERDICT_RANK = { INCOMPLETE: 0, FAIL: 1, PASS_WITH_GAPS: 2, PASS: 3 };
 export const VALID_PLATFORMS = ['windows', 'macos', 'linux', 'android'];
+const LOCAL_TARGET_IDS = new Set(['L1-01', 'L5-01', 'L5-02']);
 
 export const DEFAULTS = {
   runs: 5,
@@ -35,6 +38,14 @@ export const DEFAULTS = {
   location: null,
   profilePreset: null,
   dpr: null,
+  external: null,
+  externalOnly: false,
+  externalTimeout: DEFAULT_EXTERNAL_TIMEOUT,
+  retries: 1,
+  proxy: null,
+  proxyCountry: null,
+  minScore: DEFAULT_MIN_SCORE,
+  scoreTolerance: null,
   knownGapOwner: null,
   knownGapExpires: null,
   operator: process.env.USER || process.env.USERNAME || 'local'
@@ -192,6 +203,75 @@ export function parseArgs(argv) {
       case '--no-redact':
         args.redact = false;
         break;
+      case '--external': {
+        const peek = argv[i + 1];
+        if (peek && !peek.startsWith('-')) {
+          args.external = next();
+        } else {
+          args.external = 'all';
+        }
+        resolveExternalSelection(args.external);
+        break;
+      }
+      case '--external-only':
+        args.externalOnly = true;
+        if (!args.external) args.external = 'all';
+        break;
+      case '--external-timeout': {
+        const raw = next();
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed) || parsed < 10000) {
+          throw new Error(`--external-timeout must be a number >= 10000 (got ${JSON.stringify(raw)})`);
+        }
+        args.externalTimeout = parsed;
+        break;
+      }
+      case '--retries': {
+        const raw = next();
+        const parsed = Number(raw);
+        if (!Number.isInteger(parsed) || parsed < 0 || parsed > 5) {
+          throw new Error(`--retries must be an integer 0..5 (got ${JSON.stringify(raw)})`);
+        }
+        args.retries = parsed;
+        break;
+      }
+      case '--proxy': {
+        const value = next().trim();
+        if (!/^(?:https?|socks[45]h?):\/\/[^/\s]+$/i.test(value)) {
+          throw new Error('--proxy must be a proxy URL such as socks5://127.0.0.1:10808 or http://127.0.0.1:8080');
+        }
+        if (/:\/\/[^/@]+@/.test(value)) {
+          throw new Error('--proxy must not embed credentials (conformance SI-06); route authenticated proxies through a local loopback relay');
+        }
+        args.proxy = value;
+        break;
+      }
+      case '--proxy-country': {
+        const value = next().trim();
+        if (!/^([A-Z]{2}|direct)$/.test(value)) {
+          throw new Error('--proxy-country must be an ISO alpha-2 code (e.g. DE) or "direct"');
+        }
+        args.proxyCountry = value;
+        break;
+      }
+      case '--min-score': {
+        const raw = next();
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) {
+          throw new Error(`--min-score must be a number 0..100 (got ${JSON.stringify(raw)})`);
+        }
+        args.minScore = parsed;
+        break;
+      }
+      case '--score-tolerance': {
+        const raw = next();
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed) || parsed < 0 || parsed > 25) {
+          throw new Error(`--score-tolerance must be a number 0..25 (got ${JSON.stringify(raw)})`);
+        }
+        args.scoreTolerance = parsed;
+        break;
+      }
       case '-h':
       case '--help':
         args.help = true;
@@ -215,7 +295,8 @@ export function buildEngineFlags({
   timezone = null,
   location = null,
   profilePreset = null,
-  dpr = null
+  dpr = null,
+  proxy = null
 }) {
   const flags = [
     `--user-data-dir=${profileDir}`,
@@ -239,6 +320,12 @@ export function buildEngineFlags({
   if (profilePreset) flags.splice(3, 0, `--fingerprint-profile=${profilePreset}`);
   if (dpr !== null && dpr !== undefined) {
     flags.splice(3, 0, `--fingerprint-device-pixel-ratio=${dpr}`);
+  }
+  if (proxy) {
+    if (/:\/\/[^/@]+@/.test(proxy)) {
+      throw new Error('proxy credentials must not be passed in engine command-line flags (SI-06)');
+    }
+    flags.splice(3, 0, `--proxy-server=${proxy}`);
   }
   if (mode === 'headless') flags.unshift('--headless=new');
   if (!sandbox) flags.unshift('--no-sandbox', '--disable-gpu-sandbox');
@@ -649,9 +736,16 @@ export function isCompatibleBaseline(report, criteria) {
   if (report?.engine?.name !== criteria.engineName) return false;
   if (report?.environment?.mode !== criteria.mode) return false;
   if (report?.environment?.os !== criteria.os) return false;
-  if ((report?.environment?.transport || 'http') !== criteria.transport) return false;
-  if (report?.checks?.probe_version !== criteria.probeVersion) return false;
-  if (inferHardOnly(report) !== criteria.hardOnly) return false;
+  const scope = criteria.scope || 'local';
+  if (inferScope(report) !== scope) return false;
+  if (scope !== 'external') {
+    if ((report?.environment?.transport || 'http') !== criteria.transport) return false;
+    if (report?.checks?.probe_version !== criteria.probeVersion) return false;
+    if (inferHardOnly(report) !== criteria.hardOnly) return false;
+  }
+  if (scope !== 'local' && criteria.externalVersion) {
+    if ((report?.checks?.external?.version || null) !== criteria.externalVersion) return false;
+  }
   if ((report?.environment?.profile_platform || null) !== (criteria.profilePlatform || null)) return false;
   if (criteria.sandbox && !inferSandbox(report)) return false;
   if (!['PASS', 'PASS_WITH_GAPS'].includes(report?.verdict)) return false;
@@ -659,19 +753,39 @@ export function isCompatibleBaseline(report, criteria) {
   return true;
 }
 
-export function diffBaseline({ baselineReport, baselineFile, currentTargets, currentMetrics, currentVerdict }) {
-  const baselineTargets = new Map((baselineReport.targets || []).map((target) => [target.id, target.status]));
-  const currentTargetMap = new Map((currentTargets || []).map((target) => [target.id, target.status]));
+export function diffBaseline({
+  baselineReport,
+  baselineFile,
+  currentTargets,
+  currentMetrics,
+  currentVerdict,
+  currentQuality = null,
+  scoreTolerance = 0
+}) {
+  const baselineTargetMap = new Map((baselineReport.targets || []).map((target) => [target.id, target]));
+  const currentTargetMap = new Map((currentTargets || []).map((target) => [target.id, target]));
   const regressions = [];
 
-  for (const [id, status] of currentTargetMap) {
-    const previous = baselineTargets.get(id);
-    if (previous && (TARGET_RANK[status] ?? -1) < (TARGET_RANK[previous] ?? -1)) {
+  for (const [id, currentTarget] of currentTargetMap) {
+    const previousTarget = baselineTargetMap.get(id);
+    if (!previousTarget) continue;
+    const status = currentTarget.status;
+    const previous = previousTarget.status;
+    // Third-party external target becoming UNREACHABLE yields INCOMPLETE, not a stealth regression.
+    if (!LOCAL_TARGET_IDS.has(id) && status === 'UNREACHABLE') continue;
+    if ((TARGET_RANK[status] ?? -1) < (TARGET_RANK[previous] ?? -1)) {
       regressions.push(`${id}: ${previous} -> ${status}`);
+    }
+    if (!LOCAL_TARGET_IDS.has(id) && Array.isArray(currentTarget.flags) && Array.isArray(previousTarget.flags)) {
+      const prevSet = new Set(previousTarget.flags);
+      const added = currentTarget.flags.filter((flag) => !prevSet.has(flag));
+      if (added.length) {
+        regressions.push(`${id} new flag(s): ${added.join(', ')}`);
+      }
     }
   }
 
-  if (baselineReport.verdict && currentVerdict &&
+  if (baselineReport.verdict && currentVerdict && currentVerdict !== 'INCOMPLETE' &&
       (VERDICT_RANK[currentVerdict] ?? -1) < (VERDICT_RANK[baselineReport.verdict] ?? -1)) {
     regressions.push(`verdict: ${baselineReport.verdict} -> ${currentVerdict}`);
   }
@@ -714,14 +828,26 @@ export function diffBaseline({ baselineReport, baselineFile, currentTargets, cur
     regressions.push(`hard error rate: ${prevErrRate}/run -> ${currErrRate}/run`);
   }
 
+  let qualityDiff = { delta: null, layerDeltas: {}, regressions: [] };
+  if (currentQuality) {
+    const baselineQuality = qualityOfReport(baselineReport);
+    qualityDiff = compareQuality(baselineQuality, currentQuality, { tolerance: scoreTolerance });
+    for (const item of qualityDiff.regressions) {
+      if (!regressions.includes(item)) regressions.push(item);
+    }
+  }
+
   return {
     baseline: {
       file: baselineFile,
       run_id: baselineReport.run_id,
       started_at: baselineReport.started_at,
       verdict: baselineReport.verdict,
+      score: qualityOfReport(baselineReport).score,
       metrics: prev
     },
+    qualityDelta: qualityDiff.delta,
+    layerDeltas: qualityDiff.layerDeltas,
     regressions
   };
 }
@@ -743,7 +869,7 @@ export function sanitizeErrorText(text, secrets = []) {
     if (str.length < 3) continue;
     out = out.split(str).join('<redacted>');
   }
-  return out;
+  return scrubIps(out);
 }
 
 export function redactReport(report, options = {}) {
@@ -754,9 +880,11 @@ export function redactReport(report, options = {}) {
     }
   }
   copy.checks.flags = (copy.checks.flags || []).filter((flag) =>
-    !flag.startsWith('--user-data-dir=') && !flag.startsWith('--fingerprint=')
+    !flag.startsWith('--user-data-dir=') &&
+    !flag.startsWith('--fingerprint=') &&
+    !flag.startsWith('--proxy-server=')
   );
-  const secrets = [options.profileDir, options.seed, options.seed2].filter(Boolean);
+  const secrets = [options.profileDir, options.seed, options.seed2, options.proxy, options.hostIp].filter(Boolean);
   if (copy.checks.error) {
     copy.checks.error = sanitizeErrorText(copy.checks.error, secrets);
   }
@@ -764,6 +892,12 @@ export function redactReport(report, options = {}) {
     if (Array.isArray(target.failures)) {
       target.failures = target.failures.map((item) => sanitizeErrorText(item, secrets));
     }
+    if (target.known_gap?.reason) {
+      target.known_gap.reason = sanitizeErrorText(target.known_gap.reason, secrets);
+    }
+  }
+  if (copy.checks?.external?.error) {
+    copy.checks.external.error = sanitizeErrorText(copy.checks.external.error, secrets);
   }
   return copy;
 }
