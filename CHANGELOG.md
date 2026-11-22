@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 
 ### Added
 
+- C# / .NET 8+ SDK (`Ombra` `0.2.0`, Alpha, contract `>=0.2,<0.3`, engine range `>=151.0.7922.108,<159`, verified build `158.0.8127.37-3`) in `sdks/dotnet/` with `Microsoft.Playwright` (`>=1.60.0,<2.0.0`) CDP attachment, Ed25519 + SHA-256 GitHub Releases binary management, persistent profile locking, loopback SOCKS5/HTTP/HTTPS proxy relay, `MobileViewport`, browser-level `Ombra` CDP controls, and GitHub Packages NuGet publishing workflow.
 - Existing Python and Node.js SDK implementations, package metadata, build tooling, and regression tests are now included in this repository.
 - Repository scaffold for the Ombra SDK monorepo: eight language directories, a machine-readable manifest, and an idiomatic layout per ecosystem.
 - English and Russian root READMEs with the drop-in Playwright/Puppeteer positioning, the `launch()` quick start, the SDK matrix, and the stealth design rules.

@@ -5,7 +5,7 @@ Ombra has four independently versioned things. Mixing them up is the most common
 | Artifact | Current | Versioned by | Source of truth |
 |---|---|---|---|
 | SDK API contract | `0.2.0` | This repository | [sdk-contract.md](sdk-contract.md) |
-| SDK package | Python `0.2.0`, Node.js `0.2.0` (alpha) | Each language package | `sdks/manifest.json` and package manifests |
+| SDK package | Python `0.2.0`, Node.js `0.2.0`, .NET `0.2.0` (alpha) | Each language package | `sdks/manifest.json` and package manifests |
 | Ombra engine | external | Engine builds | Engine releases; reported by `binary_info()` |
 | Automation client | external | Upstream | Playwright, Puppeteer, chromedp, Ferrum, chromiumoxide |
 

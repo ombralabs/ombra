@@ -1,0 +1,113 @@
+name: release-dotnet
+
+on:
+  push:
+    tags:
+      - "sdks/dotnet/v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (e.g. sdks/dotnet/v0.2.0). Leave empty to pack/push current version from main without creating a release."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release-dotnet-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build, test, and publish Ombra NuGet package to GitHub Packages
+    if: ${{ github.repository_visibility == 'public' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: sdks/dotnet
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Verify package version matches tag
+        shell: bash
+        run: |
+          PKG_VERSION=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/Ombra/Ombra.csproj | head -n 1)
+          echo "PKG_VERSION=${PKG_VERSION}" >> "$GITHUB_ENV"
+          TAG_NAME="${{ github.event_name == 'push' && github.ref_name || inputs.tag }}"
+          echo "TAG_NAME=${TAG_NAME}" >> "$GITHUB_ENV"
+          if [ -n "$TAG_NAME" ]; then
+            EXPECTED_TAG="sdks/dotnet/v${PKG_VERSION}"
+            if [ "$TAG_NAME" != "$EXPECTED_TAG" ]; then
+              echo "Tag '$TAG_NAME' does not match Ombra.csproj Version '$PKG_VERSION' (expected '$EXPECTED_TAG')." >&2
+              exit 1
+            fi
+          fi
+
+      - name: Restore, format check, build, and test
+        run: |
+          dotnet restore Ombra.sln
+          dotnet format Ombra.sln --verify-no-changes --no-restore
+          dotnet build Ombra.sln -c Release --no-restore
+          dotnet test Ombra.sln -c Release --no-build --verbosity normal
+
+      - name: Pack NuGet package
+        run: |
+          dotnet pack src/Ombra/Ombra.csproj -c Release --no-build \
+            -p:RepositoryUrl="https://github.com/${{ github.repository }}" \
+            -o ./artifacts
+          sha256sum ./artifacts/*.nupkg ./artifacts/*.snupkg > ./artifacts/SHA256SUMS.txt
+          cat ./artifacts/SHA256SUMS.txt
+
+      - name: Push NuGet package to GitHub Packages
+        run: |
+          dotnet nuget add source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --name github \
+            --username "${{ github.actor }}" \
+            --password "${{ secrets.GITHUB_TOKEN }}" \
+            --store-password-in-clear-text
+          dotnet nuget push "./artifacts/Ombra.${PKG_VERSION}.nupkg" \
+            --source github \
+            --api-key "${{ secrets.GITHUB_TOKEN }}" \
+            --no-symbols \
+            --skip-duplicate
+
+      - name: Publish GitHub Release
+        if: env.TAG_NAME != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat > ./artifacts/RELEASE_NOTES.md <<EOF
+          Release \`Ombra\` ${PKG_VERSION} (.NET 8+ / C# SDK) from commit \`${GITHUB_SHA}\`.
+
+          Install from GitHub Packages NuGet:
+
+          \`\`\`bash
+          dotnet nuget add source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --name github-ombralabs --username <GITHUB_USER> --password <GITHUB_PAT>
+          dotnet add package Ombra --version ${PKG_VERSION}
+          \`\`\`
+
+          - Contract \`0.2.0\` (\`>=0.2,<0.3\`); engine range \`>=151.0.7922.108,<159\`, current verified browser build \`158.0.8127.37-3\`.
+          - Drop-in \`Microsoft.Playwright\` (\`>=1.60.0,<2.0.0\`) launcher over loopback CDP (\`IsLocal = true\`, \`NoDefaults = true\`).
+          - Ed25519 + SHA-256 + archive-size verified GitHub Releases engine downloads, named profiles with OS file locks, authenticated HTTP/HTTPS/SOCKS5 loopback proxy relay, \`MobileViewport\`, and browser-level \`Ombra\` CDP controls.
+
+          SHA-256:
+
+          \`\`\`text
+          $(cat ./artifacts/SHA256SUMS.txt)
+          \`\`\`
+          EOF
+          if gh release view "${TAG_NAME}" -R "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload "${TAG_NAME}" -R "${{ github.repository }}" ./artifacts/*.nupkg ./artifacts/*.snupkg ./artifacts/SHA256SUMS.txt --clobber
+          else
+            gh release create "${TAG_NAME}" -R "${{ github.repository }}" \
+              ./artifacts/*.nupkg ./artifacts/*.snupkg ./artifacts/SHA256SUMS.txt \
+              --title ".NET SDK ${PKG_VERSION}" \
+              --notes-file ./artifacts/RELEASE_NOTES.md
+          fi
