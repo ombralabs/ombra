@@ -57,7 +57,7 @@ API, selektor, dan tipe yang sama — cukup ganti pernyataan impor dan panggilan
 - **Operasi mandiri tanpa kunci atau akun** — build mesin terkini serta Ombra Desktop berjalan secara lokal tanpa pendaftaran, kunci lisensi, ID perangkat keras, atau server lisensi.
 - **Instalasi otomatis dan verifikasi biner kriptografis** — `pip install ombrabrowser` atau `npm install @ombralabs/sdk`; pada peluncuran pertama, SDK mengunduh build yang kompatibel dari [GitHub Releases](https://github.com/ombralabs/ombra/releases) dan memverifikasi tanda tangan Ed25519 serta checksum SHA-256.
 - **Profil persisten dan relay proksi aman** — profil bernama menyimpan cookie, `localStorage`, IndexedDB, dan `seed` antar sesi dengan penguncian lintas proses; proksi terautentikasi (HTTP, HTTPS, SOCKS5) berjalan melalui relay loopback lokal sehingga kredensial tidak pernah muncul di argumen proses.
-- **Manajer profil offline Ombra Desktop** — aplikasi desktop native di dalam repositori ini ([`desktop/`](../../desktop/README.md)) dengan installer siap pakai untuk macOS, Linux, dan Windows.
+- **Manajer profil offline Ombra Desktop** — aplikasi desktop native di repositori terpisah ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) dengan installer siap pakai untuk macOS, Linux, dan Windows.
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ Setiap komponen dalam ekosistem mengikuti kontrak peluncuran bersama dan diberi 
 | **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` di PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` di npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Mesin Ombra Chromium** | Rentang SDK `>=151.0.7922.108,<159` | Diunduh otomatis oleh SDK dari [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | Manajer profil offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | Manajer profil offline | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **Browser mandiri** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Skema dan conformance** | JSON Schema + kasus uji bersama | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Metode pemeriksaan stealth** | 6 lapisan (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ Lihat [CHANGELOG.md](../../CHANGELOG.md) untuk riwayat rilis lengkap.
 
 ## Ombra Desktop
 
-**Manajer profil offline lokal dengan antarmuka grafis (GUI).** Kode sumbernya tersedia langsung di repositori ini ([`desktop/`](../../desktop/README.md)) dan dibangun dengan Tauri (Rust + Vue).
+**Manajer profil offline lokal dengan antarmuka grafis (GUI).** Kode sumbernya berada di repositori terpisah ([`ombralabs/manager`](https://github.com/ombralabs/manager), berlisensi `GPL-3.0-only`) dan dibangun dengan Tauri (Rust + Vue).
 
 - **Sepenuhnya offline dan lokal** — katalog profil tersimpan di basis data SQLite lokal pada mesin Anda dengan kunci enkripsi lokal; tidak memerlukan akun, layanan cloud, atau akses jaringan.
 - **Manajemen profil terstruktur** — buat profil, cari berdasarkan nama, catatan, atau nomor, edit deskripsi, dan kelola entri dengan grup, tag, label, serta bookmark pada katalog Rust.
@@ -211,7 +211,7 @@ Lihat [CHANGELOG.md](../../CHANGELOG.md) untuk riwayat rilis lengkap.
 - **Installer siap pakai** — macOS Apple Silicon (`.dmg`, ditandatangani dengan Apple Developer ID dan dinotarisasi), Linux (`.deb` dan `.rpm`), serta Windows x64 (`setup.exe`).
 - **Katalog terisolasi** — atur `OMBRA_DESKTOP_DATA_DIR` untuk bekerja dengan katalog pengujian terpisah atau salinan cadangan.
 
-[Unduh rilis terbaru →](https://github.com/ombralabs/ombra/releases) · [README Desktop](../../desktop/README.md) · [Panduan profil dan kunci lokal](../../docs/desktop/README.md)
+[Unduh rilis terbaru →](https://github.com/ombralabs/manager/releases) · [README Desktop](https://github.com/ombralabs/manager/blob/main/README.md) · [Panduan profil dan kunci lokal](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## Verifikasi fingerprint dan pemeriksaan stealth
 
@@ -923,14 +923,12 @@ Laporkan masalah keamanan secara privat sesuai dengan [SECURITY.md](../../SECURI
 │   ├── id/README.md             # berkas ini (Bahasa Indonesia)
 │   ├── ru/README.md             # terjemahan Bahasa Rusia
 │   └── <locale>/README.md       # 19 lokalisasi lainnya
-├── desktop/                     # Ombra Desktop (Tauri: katalog Rust + UI Vue)
 ├── docs/
 │   ├── architecture.md          # arsitektur, batas kepercayaan, siklus hidup
 │   ├── sdk-contract.md          # kontrak peluncuran v0.2, opsi, error, invarian
 │   ├── stealth-checkup.md       # metode pemeriksaan stealth (Bahasa Inggris)
 │   ├── stealth-checkup.ru.md    # metode pemeriksaan stealth (Bahasa Rusia)
-│   ├── versioning.md            # pembuatan versi SDK, mesin, dan klien
-│   └── desktop/                 # panduan profil lokal dan kunci untuk Desktop
+│   └── versioning.md            # pembuatan versi SDK, mesin, dan klien
 ├── sdks/
 │   ├── manifest.json            # registri SDK yang dapat dibaca mesin
 │   ├── README.md                # tata letak SDK dan aturan kontribusi
@@ -941,7 +939,7 @@ Laporkan masalah keamanan secara privat sesuai dengan [SECURITY.md](../../SECURI
 └── .github/workflows/ci.yml
 ```
 
-Repositori ini menghosting kontrak SDK, skema, kasus uji conformance, dokumentasi, dan kode sumber Ombra Desktop. Patch mesin Chromium dikelola di repositori terpisah, dengan build terkompilasi dipublikasikan melalui [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Repositori ini menghosting kontrak SDK, skema, kasus uji conformance, dan dokumentasi. Ombra Desktop berada di [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`). Patch mesin Chromium dikelola di repositori terpisah, dengan build terkompilasi dipublikasikan melalui [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## FAQ
 
@@ -987,7 +985,7 @@ Panduan kontribusi tersedia di [CONTRIBUTING.md](../../CONTRIBUTING.md), standar
 
 ## Lisensi
 
-Kode sumber SDK di repositori ini dilisensikan di bawah [Lisensi Apache 2.0](../../LICENSE). Lisensi ini tidak memberikan hak atas merek dagang Ombra, mesin Ombra Chromium, atau Ombra Desktop — lihat [NOTICE](../../NOTICE) untuk ketentuan merek dagang dan pihak ketiga.
+Kode sumber SDK di repositori ini dilisensikan di bawah [Lisensi Apache 2.0](../../LICENSE). Ombra Desktop dikembangkan secara terpisah di [`ombralabs/manager`](https://github.com/ombralabs/manager) di bawah `GPL-3.0-only`. Lisensi Apache 2.0 tidak memberikan hak atas merek dagang Ombra atau mesin Ombra Chromium — lihat [NOTICE](../../NOTICE) untuk ketentuan merek dagang dan pihak ketiga.
 
 ## Tautan
 

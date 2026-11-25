@@ -57,7 +57,7 @@ Python および Node.js における Playwright・Puppeteer のドロップイ�
 - **キーやアカウント不要の自律動作** — 現行エンジンビルドおよび Ombra Desktop は、ユーザー登録、ライセンスキー、ハードウェア ID、ライセンスサーバーなしでローカル動作します。
 - **自動インストールと暗号学的バイナリ検証** — `pip install ombrabrowser` または `npm install @ombralabs/sdk` で導入でき、初回起動時に SDK が [GitHub Releases](https://github.com/ombralabs/ombra/releases) から互換ビルドをダウンロードし、Ed25519 署名と SHA-256 チェックサムを検証します。
 - **永続プロファイルと安全なプロキシリレー** — 名前付きプロファイルは Cookie、`localStorage`、IndexedDB、`seed` をプロセス間ロック付きで実行をまたいで保持します。認証付きプロキシ（HTTP、HTTPS、SOCKS5）はローカルループバックリレー経由で動作するため、認証情報がプロセス引数に露出することはありません。
-- **オフライン動作の Ombra Desktop プロファイルマネージャー** — 本リポジトリに収録されたネイティブデスクトップアプリ（[`desktop/`](../../desktop/README.md)）で、macOS、Linux、Windows 向けのビルド済みインストーラーを提供しています。
+- **オフライン動作の Ombra Desktop プロファイルマネージャー** — 別リポジトリ（[`ombralabs/manager`](https://github.com/ombralabs/manager)、`GPL-3.0-only`）で公開されているネイティブデスクトップアプリで、macOS、Linux、Windows 向けのビルド済みインストーラーを提供しています。
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ npm install mmdb-lib
 | **Python SDK** | Alpha `0.2.0` | [PyPI 上の `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm 上の `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium エンジン** | SDK 対応範囲 `>=151.0.7922.108,<159` | SDK が [GitHub Releases](https://github.com/ombralabs/ombra/releases) から自動ダウンロード（macOS ARM64 / Linux x64 / Windows x64） |
-| **Ombra Desktop** | オフラインプロファイルマネージャー | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | オフラインプロファイルマネージャー | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **スタンドアロンブラウザ** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **スキーマとコンフォーマンス** | JSON Schema + 共通ケース | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **ステルスチェックアップ手法** | 6 層 (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ npm install mmdb-lib
 
 ## Ombra Desktop
 
-**GUI を備えたローカル・オフラインのプロファイルマネージャーです。** ソースコードはこのリポジトリ内（[`desktop/`](../../desktop/README.md)）に直接配置されており、Tauri（Rust + Vue）で構築されています。
+**GUI を備えたローカル・オフラインのプロファイルマネージャーです。** ソースコードは別リポジトリ（[`ombralabs/manager`](https://github.com/ombralabs/manager)、`GPL-3.0-only` ライセンス）で管理されており、Tauri（Rust + Vue）で構築されています。
 
 - **完全オフラインかつローカル動作** — プロファイルカタログはローカルの暗号化キーを用いたマシン上の SQLite データベースに保存され、アカウント、クラウドサービス、ネットワーク接続は不要です。
 - **構造化されたプロファイル管理** — プロファイルの作成、名前・メモ・番号による検索、説明の編集に加え、Rust カタログ内でグループ、タグ、ラベル、ブックマークを使って整理できます。
@@ -211,7 +211,7 @@ npm install mmdb-lib
 - **ビルド済みインストーラー** — macOS Apple Silicon（`.dmg`、Apple Developer ID 署名・公証済み）、Linux（`.deb` および `.rpm`）、Windows x64（`setup.exe`）向けに提供しています。
 - **分離カタログ** — `OMBRA_DESKTOP_DATA_DIR` を設定することで、テスト用の別カタログやバックアップコピーを扱えます。
 
-[最新リリースをダウンロード →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [プロファイルとローカルキーのガイド](../../docs/desktop/README.md)
+[最新リリースをダウンロード →](https://github.com/ombralabs/manager/releases) · [Desktop README](https://github.com/ombralabs/manager/blob/main/README.md) · [プロファイルとローカルキーのガイド](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## フィンガープリント検証とステルスチェックアップ
 
@@ -922,14 +922,12 @@ for _ in range(15):
 ├── translations/
 │   ├── ja/README.md             # このファイル (日本語)
 │   └── <locale>/README.md       # その他 20 言語のローカライズ
-├── desktop/                     # Ombra Desktop (Tauri: Rust カタログ + Vue UI)
 ├── docs/
 │   ├── architecture.md          # アーキテクチャ、信頼境界、ライフサイクル
 │   ├── sdk-contract.md          # v0.2 起動コントラクト、オプション、エラー、不変条件
 │   ├── stealth-checkup.md       # チェックアップ手法 (English)
 │   ├── stealth-checkup.ru.md    # チェックアップ手法 (Русский)
-│   ├── versioning.md            # SDK、エンジン、クライアントのバージョニング
-│   └── desktop/                 # Desktop のローカルプロファイルおよびキーのガイド
+│   └── versioning.md            # SDK、エンジン、クライアントのバージョニング
 ├── sdks/
 │   ├── manifest.json            # 機械可読な SDK レジストリ
 │   ├── README.md                # SDK の構成とコントリビューション規約
@@ -940,7 +938,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-このリポジトリでは、SDK コントラクト、スキーマ、コンフォーマンスケース、ドキュメント、および Ombra Desktop のソースコードを管理しています。Chromium エンジンパッチは別リポジトリで保守されており、コンパイル済みビルドは [GitHub Releases](https://github.com/ombralabs/ombra/releases) から公開されています。
+このリポジトリでは、SDK コントラクト、スキーマ、コンフォーマンスケース、およびドキュメントを管理しています。Ombra Desktop は [`ombralabs/manager`](https://github.com/ombralabs/manager)（`GPL-3.0-only`）で管理されています。Chromium エンジンパッチは別リポジトリで保守されており、コンパイル済みビルドは [GitHub Releases](https://github.com/ombralabs/ombra/releases) から公開されています。
 
 ## よくある質問 (FAQ)
 
@@ -986,7 +984,7 @@ Ombra は、認可された自動化、QA テスト、監視、調査研究、�
 
 ## ライセンス
 
-このリポジトリ内の SDK ソースコードは [Apache License 2.0](../../LICENSE) の下でライセンスされています。このライセンスは Ombra の商標、Ombra Chromium エンジン、および Ombra Desktop に対する権利を付与するものではありません。商標およびサードパーティの条件については [NOTICE](../../NOTICE) を参照してください。
+このリポジトリ内の SDK ソースコードは [Apache License 2.0](../../LICENSE) の下でライセンスされています。Ombra Desktop は [`ombralabs/manager`](https://github.com/ombralabs/manager) で `GPL-3.0-only` の下に別途開発されています。Apache License 2.0 は Ombra の商標および Ombra Chromium エンジンに対する権利を付与するものではありません。商標およびサードパーティの条件については [NOTICE](../../NOTICE) を参照してください。
 
 ## リンク
 

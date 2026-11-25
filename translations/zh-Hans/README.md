@@ -57,7 +57,7 @@
 - **无需密钥或账号的自主运行** —— 当前引擎构建版本与 Ombra Desktop 均可在本地独立运行，无需注册账号、许可证密钥、硬件 ID 或授权服务器。
 - **自动安装与加密二进制校验** —— 执行 `pip install ombrabrowser` 或 `npm install @ombralabs/sdk`；首次启动时，SDK 会从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载兼容构建版本，并校验其 Ed25519 签名与 SHA-256 校验和。
 - **持久化配置文件与安全代理中继** —— 命名配置文件可在多次运行间保留 Cookie、`localStorage`、IndexedDB 及 `seed`，并提供跨进程锁保护；带认证的代理（HTTP、HTTPS、SOCKS5）通过本地环回中继转发，确保凭据绝不出现在进程启动参数中。
-- **离线桌面管理器 Ombra Desktop** —— 位于本仓库中的原生桌面应用程序（[`desktop/`](../../desktop/README.md)），提供 macOS、Linux 与 Windows 的预构建安装包。
+- **离线桌面管理器 Ombra Desktop** —— 位于独立仓库中的原生桌面应用程序（[`ombralabs/manager`](https://github.com/ombralabs/manager)，`GPL-3.0-only`），提供 macOS、Linux 与 Windows 的预构建安装包。
 
 **Python（Playwright）：**
 
@@ -186,7 +186,7 @@ npm install mmdb-lib
 | **Python SDK** | Alpha `0.2.0` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium 引擎** | SDK 兼容范围 `>=151.0.7922.108,<159` | 由 SDK 从 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自动下载（macOS ARM64 / Linux x64 / Windows x64） |
-| **Ombra Desktop** | 离线配置文件管理器 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | 离线配置文件管理器 | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **独立浏览器版本** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schema 与一致性测试** | JSON Schema + 共享测试用例 | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **隐匿性检查方法** | 6 层体系（`L0`–`L5`） | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ npm install mmdb-lib
 
 ## Ombra Desktop
 
-**一款带图形界面的本地离线配置文件管理器。** 源码直接托管在本仓库中（[`desktop/`](../../desktop/README.md)），基于 Tauri（Rust + Vue）构建。
+**一款带图形界面的本地离线配置文件管理器。** 源码托管在独立仓库中（[`ombralabs/manager`](https://github.com/ombralabs/manager)，采用 `GPL-3.0-only` 许可），基于 Tauri（Rust + Vue）构建。
 
 - **完全离线、纯本地存储** —— 配置文件目录保存在本机 SQLite 数据库中，并使用本地加密密钥保护；无需账号、云服务或网络连接。
 - **结构化配置文件管理** —— 在 Rust 目录层支持创建配置文件，按名称、备注或编号搜索，编辑描述，并通过分组、标签、标记和书签进行整理。
@@ -211,7 +211,7 @@ npm install mmdb-lib
 - **预构建安装包** —— 提供 macOS Apple Silicon（`.dmg`，经 Apple Developer ID 签名与公证）、Linux（`.deb` 与 `.rpm`）以及 Windows x64（`setup.exe`）安装包。
 - **隔离的目录环境** —— 设置 `OMBRA_DESKTOP_DATA_DIR` 即可切换到独立的测试目录或备份副本。
 
-[下载最新版本 →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [配置文件与本地密钥指南](../../docs/desktop/README.md)
+[下载最新版本 →](https://github.com/ombralabs/manager/releases) · [Desktop README](https://github.com/ombralabs/manager/blob/main/README.md) · [配置文件与本地密钥指南](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## 指纹验证与隐匿性检查
 
@@ -923,14 +923,12 @@ for _ in range(15):
 │   ├── zh-Hans/README.md        # 本文件（简体中文）
 │   ├── ru/README.md             # 俄语翻译
 │   └── <locale>/README.md       # 其余 19 种语言本地化版本
-├── desktop/                     # Ombra Desktop（Tauri：Rust 目录层 + Vue 界面）
 ├── docs/
 │   ├── architecture.md          # 架构设计、信任边界与生命周期
 │   ├── sdk-contract.md          # v0.2 启动契约、选项、错误与不变量
 │   ├── stealth-checkup.md       # 隐匿性检查方法（英文）
 │   ├── stealth-checkup.ru.md    # 隐匿性检查方法（俄文）
-│   ├── versioning.md            # SDK、引擎与客户端版本控制策略
-│   └── desktop/                 # Desktop 本地配置文件与密钥指南
+│   └── versioning.md            # SDK、引擎与客户端版本控制策略
 ├── sdks/
 │   ├── manifest.json            # 机器可读的 SDK 清单
 │   ├── README.md                # SDK 目录布局与贡献规范
@@ -941,7 +939,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-本仓库托管 SDK 契约、Schema 定义、一致性测试用例、文档以及 Ombra Desktop 源代码。Chromium 引擎补丁在独立仓库中维护，编译好的构建版本通过 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 发布。
+本仓库托管 SDK 契约、Schema 定义、一致性测试用例与文档。Ombra Desktop 托管在独立仓库 [`ombralabs/manager`](https://github.com/ombralabs/manager)（`GPL-3.0-only`）。Chromium 引擎补丁在独立仓库中维护，编译好的构建版本通过 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 发布。
 
 ## 常见问题（FAQ）
 
@@ -987,7 +985,7 @@ Ombra 面向经过授权的自动化任务、QA 测试、监控、研究以及�
 
 ## 许可证
 
-本仓库中的 SDK 源代码依据 [Apache License 2.0](../../LICENSE) 许可发布。该许可证不授予对 Ombra 商标、Ombra Chromium 引擎或 Ombra Desktop 的权利——有关商标与第三方条款，请参阅 [NOTICE](../../NOTICE)。
+本仓库中的 SDK 源代码依据 [Apache License 2.0](../../LICENSE) 许可发布。Ombra Desktop 在 [`ombralabs/manager`](https://github.com/ombralabs/manager) 中依据 `GPL-3.0-only` 独立开发。Apache License 2.0 不授予对 Ombra 商标或 Ombra Chromium 引擎的权利——有关商标与第三方条款，请参阅 [NOTICE](../../NOTICE)。
 
 ## 相关链接
 

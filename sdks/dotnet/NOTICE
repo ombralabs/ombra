@@ -1,4 +1,4 @@
-Ombra SDK, Ombra Desktop, and Ombra Chromium Engine
+Ombra SDK and Ombra Chromium Engine
 Copyright 2026 Ombra Labs
 Required Notice: Copyright 2026 Ombra Labs (https://ombrabrowser.dev)
 
@@ -15,11 +15,13 @@ Split Licensing:
 - SDK source code (sdks/), examples, documentation, and repository tooling
   are licensed under the Apache License 2.0 (see LICENSE).
 - The Ombra Chromium browser engine (compiled builds published via GitHub
-  Releases) and Ombra Desktop (desktop/) are NOT licensed under the Apache
-  License 2.0. They are licensed under the PolyForm Noncommercial License
-  1.0.0 (see LICENSE-NONCOMMERCIAL and desktop/LICENSE) for personal and
-  noncommercial use only. Any commercial use requires a separate commercial
-  license from Ombra Labs (admin@ombrabrowser.dev).
+  Releases) is NOT licensed under the Apache License 2.0. It is licensed
+  under the PolyForm Noncommercial License 1.0.0 (see LICENSE-NONCOMMERCIAL)
+  for personal and noncommercial use only. Any commercial use requires a
+  separate commercial license from Ombra Labs (admin@ombrabrowser.dev).
+- Ombra Desktop has moved to a separate repository
+  (https://github.com/ombralabs/manager) under the GNU General Public License
+  v3.0 only (GPL-3.0-only).
 
 Third-party dependencies added to the SDKs remain under their respective
 licenses. Their notices are recorded in the package manifest of the SDK

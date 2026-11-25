@@ -57,7 +57,7 @@ Cùng API, cùng selector và kiểu dữ liệu — chỉ cần đổi câu l�
 - **Vận hành độc lập không cần khóa hay tài khoản** — các bản dựng engine hiện tại và Ombra Desktop chạy cục bộ mà không cần đăng ký, khóa bản quyền, mã phần cứng (hardware ID) hay máy chủ cấp phép.
 - **Cài đặt tự động và xác minh mật mã cho tệp nhị phân** — chạy `pip install ombrabrowser` hoặc `npm install @ombralabs/sdk`; ở lần khởi chạy đầu tiên, SDK sẽ tự tải một bản dựng tương thích từ [GitHub Releases](https://github.com/ombralabs/ombra/releases), xác minh chữ ký Ed25519 và mã kiểm tra SHA-256.
 - **Hồ sơ bền vững và bộ chuyển tiếp proxy an toàn** — hồ sơ có tên lưu giữ cookie, `localStorage`, IndexedDB và `seed` xuyên suốt các lần chạy với cơ chế khóa liên tiến trình; các proxy yêu cầu xác thực (HTTP, HTTPS, SOCKS5) chạy qua bộ chuyển tiếp loopback cục bộ để thông tin đăng nhập không bao giờ xuất hiện trong tham số dòng lệnh tiến trình.
-- **Trình quản lý hồ sơ ngoại tuyến Ombra Desktop** — ứng dụng máy tính gốc ngay trong kho lưu trữ này ([`desktop/`](../../desktop/README.md)) đi kèm bộ cài đặt dựng sẵn cho macOS, Linux và Windows.
+- **Trình quản lý hồ sơ ngoại tuyến Ombra Desktop** — ứng dụng máy tính gốc trong kho lưu trữ riêng ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) đi kèm bộ cài đặt dựng sẵn cho macOS, Linux và Windows.
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ Mỗi thành phần trong hệ sinh thái đều tuân theo hợp đồng khởi
 | **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` trên PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` trên npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Engine Ombra Chromium** | Phạm vi SDK `>=151.0.7922.108,<159` | SDK tự động tải xuống từ [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | Trình quản lý hồ sơ ngoại tuyến | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | Trình quản lý hồ sơ ngoại tuyến | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **Trình duyệt độc lập** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schema và kiểm thử tuân thủ** | JSON Schema + bộ kiểm thử dùng chung | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Phương pháp kiểm tra stealth** | 6 lớp (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ Xem [CHANGELOG.md](../../CHANGELOG.md) để theo dõi đầy đủ lịch sử 
 
 ## Ombra Desktop
 
-**Trình quản lý hồ sơ cục bộ ngoại tuyến có giao diện đồ họa (GUI).** Mã nguồn của ứng dụng nằm trực tiếp trong kho lưu trữ này ([`desktop/`](../../desktop/README.md)) và được xây dựng bằng Tauri (Rust + Vue).
+**Trình quản lý hồ sơ cục bộ ngoại tuyến có giao diện đồ họa (GUI).** Mã nguồn của ứng dụng nằm trong kho lưu trữ riêng ([`ombralabs/manager`](https://github.com/ombralabs/manager), giấy phép `GPL-3.0-only`) và được xây dựng bằng Tauri (Rust + Vue).
 
 - **Hoàn toàn ngoại tuyến và cục bộ** — danh mục hồ sơ được lưu trong cơ sở dữ liệu SQLite cục bộ ngay trên máy bạn với khóa mã hóa cục bộ; không cần tài khoản, dịch vụ đám mây hay kết nối mạng.
 - **Quản lý hồ sơ có cấu trúc** — tạo hồ sơ, tìm kiếm theo tên, ghi chú hoặc số thứ tự, chỉnh sửa mô tả, đồng thời sắp xếp bằng nhóm, thẻ, nhãn và dấu trang trong danh mục viết bằng Rust.
@@ -211,7 +211,7 @@ Xem [CHANGELOG.md](../../CHANGELOG.md) để theo dõi đầy đủ lịch sử 
 - **Bộ cài đặt dựng sẵn** — macOS Apple Silicon (`.dmg`, đã ký Apple Developer ID và công chứng), Linux (`.deb` và `.rpm`) và Windows x64 (`setup.exe`).
 - **Danh mục cô lập** — đặt biến môi trường `OMBRA_DESKTOP_DATA_DIR` để làm việc với danh mục thử nghiệm riêng biệt hoặc bản sao lưu.
 
-[Tải bản phát hành mới nhất →](https://github.com/ombralabs/ombra/releases) · [Tài liệu Desktop](../../desktop/README.md) · [Hướng dẫn về hồ sơ và khóa cục bộ](../../docs/desktop/README.md)
+[Tải bản phát hành mới nhất →](https://github.com/ombralabs/manager/releases) · [Tài liệu Desktop](https://github.com/ombralabs/manager/blob/main/README.md) · [Hướng dẫn về hồ sơ và khóa cục bộ](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## Xác minh fingerprint và kiểm tra stealth
 
@@ -923,14 +923,12 @@ Vui lòng báo cáo riêng tư các vấn đề bảo mật theo hướng dẫn 
 │   ├── vi/README.md             # tệp này (Tiếng Việt)
 │   ├── ru/README.md             # bản dịch tiếng Nga
 │   └── <locale>/README.md       # 19 bản dịch ngôn ngữ khác
-├── desktop/                     # Ombra Desktop (Tauri: danh mục Rust + giao diện Vue)
 ├── docs/
 │   ├── architecture.md          # kiến trúc, ranh giới tin cậy, vòng đời
 │   ├── sdk-contract.md          # hợp đồng khởi chạy v0.2, tùy chọn, lỗi, bất biến
 │   ├── stealth-checkup.md       # phương pháp kiểm tra stealth (tiếng Anh)
 │   ├── stealth-checkup.ru.md    # phương pháp kiểm tra stealth (tiếng Nga)
-│   ├── versioning.md            # đánh phiên bản cho SDK, engine và client
-│   └── desktop/                 # hướng dẫn hồ sơ và khóa cục bộ của Desktop
+│   └── versioning.md            # đánh phiên bản cho SDK, engine và client
 ├── sdks/
 │   ├── manifest.json            # danh bạ SDK dạng máy đọc được
 │   ├── README.md                # cấu trúc SDK và quy tắc đóng góp
@@ -941,7 +939,7 @@ Vui lòng báo cáo riêng tư các vấn đề bảo mật theo hướng dẫn 
 └── .github/workflows/ci.yml
 ```
 
-Kho lưu trữ này chứa hợp đồng SDK, các schema, bộ kiểm thử tuân thủ, tài liệu hướng dẫn và mã nguồn Ombra Desktop. Các bản vá của engine Chromium được duy trì ở một kho lưu trữ riêng, còn các bản dựng đã biên dịch được phát hành qua [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Kho lưu trữ này chứa hợp đồng SDK, các schema, bộ kiểm thử tuân thủ và tài liệu hướng dẫn. Ombra Desktop nằm trong [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`). Các bản vá của engine Chromium được duy trì ở một kho lưu trữ riêng, còn các bản dựng đã biên dịch được phát hành qua [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## Câu hỏi thường gặp (FAQ)
 
@@ -987,7 +985,7 @@ Hướng dẫn đóng góp nằm trong [CONTRIBUTING.md](../../CONTRIBUTING.md),
 
 ## Giấy phép
 
-Mã nguồn SDK trong kho lưu trữ này được cấp phép theo [Giấy phép Apache 2.0](../../LICENSE). Giấy phép này không cấp quyền đối với nhãn hiệu Ombra, engine Ombra Chromium hay Ombra Desktop — xem [NOTICE](../../NOTICE) để biết thêm điều khoản về nhãn hiệu và các thành phần bên thứ ba.
+Mã nguồn SDK trong kho lưu trữ này được cấp phép theo [Giấy phép Apache 2.0](../../LICENSE). Ombra Desktop được phát triển riêng tại [`ombralabs/manager`](https://github.com/ombralabs/manager) theo giấy phép `GPL-3.0-only`. Giấy phép Apache 2.0 không cấp quyền đối với nhãn hiệu Ombra hay engine Ombra Chromium — xem [NOTICE](../../NOTICE) để biết thêm điều khoản về nhãn hiệu và các thành phần bên thứ ba.
 
 ## Liên kết
 

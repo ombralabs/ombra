@@ -57,7 +57,7 @@ API เดิม ซีเลกเตอร์และชนิดข้อม
 - **ทำงานได้ด้วยตนเองโดยไม่ต้องใช้คีย์หรือบัญชี** — บิลด์เอนจินรุ่นปัจจุบันและ Ombra Desktop ทำงานในเครื่องได้โดยไม่ต้องสมัครสมาชิก ไม่ต้องใช้ไลเซนส์คีย์ ไม่ต้องใช้ hardware ID และไม่ต้องพึ่งเซิร์ฟเวอร์ตรวจสอบสิทธิ์
 - **ติดตั้งอัตโนมัติพร้อมตรวจสอบไบนารีด้วยการเข้ารหัส** — `pip install ombrabrowser` หรือ `npm install @ombralabs/sdk` เมื่อเปิดใช้งานครั้งแรก SDK จะดาวน์โหลดบิลด์ที่เข้ากันได้จาก [GitHub Releases](https://github.com/ombralabs/ombra/releases) พร้อมตรวจสอบลายเซ็น Ed25519 และเช็กซัม SHA-256
 - **โปรไฟล์ถาวรและรีเลย์พร็อกซีที่ปลอดภัย** — โปรไฟล์แบบตั้งชื่อจะเก็บรักษาคุกกี้ `localStorage`, IndexedDB และ `seed` ข้ามการรันพร้อมระบบล็อกข้ามโพรเซส ส่วนพร็อกซีที่ต้องยืนยันตัวตน (HTTP, HTTPS, SOCKS5) จะวิ่งผ่านรีเลย์ loopback ในเครื่อง ทำให้ข้อมูลรับรองไม่ปรากฏในอาร์กิวเมนต์ของโพรเซสเลย
-- **ตัวจัดการโปรไฟล์ออฟไลน์ Ombra Desktop** — แอปพลิเคชันเดสก์ท็อปเนทีฟในรีพอซิทอรีนี้ ([`desktop/`](../../desktop/README.md)) พร้อมตัวติดตั้งสำเร็จรูปสำหรับ macOS, Linux และ Windows
+- **ตัวจัดการโปรไฟล์ออฟไลน์ Ombra Desktop** — แอปพลิเคชันเดสก์ท็อปเนทีฟในรีพอซิทอรีแยกต่างหาก ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) พร้อมตัวติดตั้งสำเร็จรูปสำหรับ macOS, Linux และ Windows
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ npm install mmdb-lib
 | **Python SDK** | Alpha `0.2.0` | [`ombrabrowser` บน PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.2.0` | [`@ombralabs/sdk` บน npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **เอนจิน Ombra Chromium** | ช่วงที่ SDK รองรับ `>=151.0.7922.108,<159` | ดาวน์โหลดอัตโนมัติโดย SDK จาก [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | ตัวจัดการโปรไฟล์ออฟไลน์ | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | ตัวจัดการโปรไฟล์ออฟไลน์ | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **เบราว์เซอร์แบบสแตนด์อโลน** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **สคีมาและการทดสอบความสอดคล้อง** | JSON Schema + กรณีทดสอบร่วม | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **วิธีการตรวจเช็กความแนบเนียน** | 6 ระดับ (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ npm install mmdb-lib
 
 ## Ombra Desktop
 
-**ตัวจัดการโปรไฟล์แบบออฟไลน์ในเครื่องพร้อมหน้าจอ GUI** ซอร์สโค้ดอยู่ในรีพอซิทอรีนี้โดยตรง ([`desktop/`](../../desktop/README.md)) และสร้างด้วย Tauri (Rust + Vue)
+**ตัวจัดการโปรไฟล์แบบออฟไลน์ในเครื่องพร้อมหน้าจอ GUI** ซอร์สโค้ดอยู่ในรีพอซิทอรีแยกต่างหาก ([`ombralabs/manager`](https://github.com/ombralabs/manager), ภายใต้สัญญาอนุญาต `GPL-3.0-only`) และสร้างด้วย Tauri (Rust + Vue)
 
 - **ออฟไลน์และทำงานในเครื่อง 100%** — แคตตาล็อกโปรไฟล์เก็บอยู่ในฐานข้อมูล SQLite ในเครื่องของคุณพร้อมคีย์เข้ารหัสในเครื่อง ไม่ต้องใช้บัญชี บริการคลาวด์ หรือการเชื่อมต่อเครือข่าย
 - **จัดการโปรไฟล์อย่างเป็นระบบ** — สร้างโปรไฟล์ ค้นหาด้วยชื่อ บันทึกช่วยจำ หรือหมายเลข แก้ไขคำอธิบาย และจัดระเบียบด้วยกลุ่ม แท็ก ป้ายกำกับ และบุ๊กมาร์กในแคตตาล็อก Rust
@@ -211,7 +211,7 @@ npm install mmdb-lib
 - **ตัวติดตั้งสำเร็จรูป** — macOS Apple Silicon (`.dmg` ลงนามด้วย Apple Developer ID และผ่านการรับรอง notarized), Linux (`.deb` และ `.rpm`) และ Windows x64 (`setup.exe`)
 - **แคตตาล็อกแยกอิสระ** — กำหนดตัวแปร `OMBRA_DESKTOP_DATA_DIR` เพื่อทำงานกับแคตตาล็อกทดสอบแยกต่างหากหรือสำเนาสำรองข้อมูล
 
-[ดาวน์โหลดรุ่นล่าสุด →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [คู่มือโปรไฟล์และคีย์ในเครื่อง](../../docs/desktop/README.md)
+[ดาวน์โหลดรุ่นล่าสุด →](https://github.com/ombralabs/manager/releases) · [Desktop README](https://github.com/ombralabs/manager/blob/main/README.md) · [คู่มือโปรไฟล์และคีย์ในเครื่อง](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## การตรวจสอบฟิงเกอร์พรินต์และการตรวจเช็กความแนบเนียน
 
@@ -923,14 +923,12 @@ for _ in range(15):
 │   ├── th/README.md             # ไฟล์นี้ (ไทย)
 │   ├── ru/README.md             # ฉบับแปลภาษารัสเซีย
 │   └── <locale>/README.md       # ฉบับแปลภาษาอื่นอีก 19 ภาษา
-├── desktop/                     # Ombra Desktop (Tauri: แคตตาล็อก Rust + UI ด้วย Vue)
 ├── docs/
 │   ├── architecture.md          # สถาปัตยกรรม ขอบเขตความเชื่อถือ และวงจรการทำงาน
 │   ├── sdk-contract.md          # สัญญาการเปิดใช้งาน v0.2 ตัวเลือก ข้อผิดพลาด และข้อกำหนด
 │   ├── stealth-checkup.md       # วิธีการตรวจเช็กความแนบเนียน (ภาษาอังกฤษ)
 │   ├── stealth-checkup.ru.md    # วิธีการตรวจเช็กความแนบเนียน (ภาษารัสเซีย)
-│   ├── versioning.md            # การกำหนดเวอร์ชันของ SDK เอนจิน และไคลเอนต์
-│   └── desktop/                 # คู่มือโปรไฟล์และคีย์ในเครื่องของ Desktop
+│   └── versioning.md            # การกำหนดเวอร์ชันของ SDK เอนจิน และไคลเอนต์
 ├── sdks/
 │   ├── manifest.json            # ทะเบียน SDK ที่เครื่องอ่านได้
 │   ├── README.md                # โครงสร้าง SDK และกฎการมีส่วนร่วม
@@ -941,7 +939,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-รีพอซิทอรีนี้เก็บสัญญา SDK, สคีมา, กรณีทดสอบความสอดคล้อง, เอกสาร และซอร์สโค้ดของ Ombra Desktop ส่วนแพตช์เอนจิน Chromium ดูแลอยู่ในรีพอซิทอรีแยกต่างหาก โดยเผยแพร่บิลด์ที่คอมไพล์แล้วผ่าน [GitHub Releases](https://github.com/ombralabs/ombra/releases)
+รีพอซิทอรีนี้เก็บสัญญา SDK, สคีมา, กรณีทดสอบความสอดคล้อง และเอกสาร ส่วน Ombra Desktop อยู่ใน [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`) ส่วนแพตช์เอนจิน Chromium ดูแลอยู่ในรีพอซิทอรีแยกต่างหาก โดยเผยแพร่บิลด์ที่คอมไพล์แล้วผ่าน [GitHub Releases](https://github.com/ombralabs/ombra/releases)
 
 ## คำถามที่พบบ่อย (FAQ)
 
@@ -987,7 +985,7 @@ Ombra ถูกสร้างมาเพื่อระบบอัตโน�
 
 ## สัญญาอนุญาต
 
-ซอร์สโค้ด SDK ในรีพอซิทอรีนี้อยู่ภายใต้สัญญาอนุญาต [Apache License 2.0](../../LICENSE) สัญญาอนุญาตนี้ไม่ได้มอบสิทธิ์ในเครื่องหมายการค้าของ Ombra เอนจิน Ombra Chromium หรือ Ombra Desktop — ดูเงื่อนไขเครื่องหมายการค้าและบุคคลที่สามได้ที่ [NOTICE](../../NOTICE)
+ซอร์สโค้ด SDK ในรีพอซิทอรีนี้อยู่ภายใต้สัญญาอนุญาต [Apache License 2.0](../../LICENSE) Ombra Desktop พัฒนาแยกต่างหากใน [`ombralabs/manager`](https://github.com/ombralabs/manager) ภายใต้ `GPL-3.0-only` สัญญาอนุญาต Apache 2.0 ไม่ได้มอบสิทธิ์ในเครื่องหมายการค้าของ Ombra หรือเอนจิน Ombra Chromium — ดูเงื่อนไขเครื่องหมายการค้าและบุคคลที่สามได้ที่ [NOTICE](../../NOTICE)
 
 ## ลิงก์ที่เกี่ยวข้อง
 

@@ -57,7 +57,7 @@ Aynı API, aynı seçiciler ve tipler — yalnızca içe aktarma satırını ve 
 - **Anahtar veya hesap gerektirmeden bağımsız çalışma** — güncel motor derlemeleri ile Ombra Desktop kayıt, lisans anahtarı, donanım kimliği veya lisans sunucusu olmadan yerel olarak çalışır.
 - **Otomatik kurulum ve kriptografik ikili doğrulama** — `pip install ombrabrowser` veya `npm install @ombralabs/sdk`; ilk başlatmada SDK [GitHub Releases](https://github.com/ombralabs/ombra/releases) üzerinden uyumlu bir derleme indirir, Ed25519 imzasını ve SHA-256 sağlama toplamını doğrular.
 - **Kalıcı profiller ve güvenli proxy aktarıcı** — adlandırılmış profiller çerezleri, `localStorage`, IndexedDB ve `seed` değerini süreçler arası kilitleme ile çalıştırmalar arasında korur; kimlik doğrulamalı proxy'ler (HTTP, HTTPS, SOCKS5) yerel loopback aktarıcı üzerinden çalışır, böylece kimlik bilgileri süreç argümanlarında asla görünmez.
-- **Çevrimdışı Ombra Desktop profil yöneticisi** — macOS, Linux ve Windows için önceden derlenmiş kurulum dosyalarıyla bu depoda yer alan yerleşik bir masaüstü uygulaması ([`desktop/`](../../desktop/README.md)).
+- **Çevrimdışı Ombra Desktop profil yöneticisi** — macOS, Linux ve Windows için önceden derlenmiş kurulum dosyalarıyla ayrı bir depoda yer alan yerleşik bir masaüstü uygulaması ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`).
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ Ekosistemdeki her bileşen ortak başlatma sözleşmesini izler ve bağımsız o
 | **Python SDK** | Alfa `0.2.0` | [PyPI üzerinde `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alfa `0.2.0` | [npm üzerinde `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium motoru** | SDK aralığı `>=151.0.7922.108,<159` | SDK tarafından [GitHub Releases](https://github.com/ombralabs/ombra/releases) üzerinden otomatik indirilir (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | Çevrimdışı profil yöneticisi | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | Çevrimdışı profil yöneticisi | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **Bağımsız tarayıcı** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Şemalar ve uyumluluk testleri** | JSON Schema + ortak senaryolar | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Gizlilik kontrolü yöntemi** | 6 katman (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ Tüm sürüm geçmişi için [CHANGELOG.md](../../CHANGELOG.md) dosyasına bakı
 
 ## Ombra Desktop
 
-**Grafik arayüzlü, yerel ve çevrimdışı bir profil yöneticisi.** Kaynak kodu doğrudan bu depoda bulunur ([`desktop/`](../../desktop/README.md)) ve Tauri (Rust + Vue) ile geliştirilmiştir.
+**Grafik arayüzlü, yerel ve çevrimdışı bir profil yöneticisi.** Kaynak kodu ayrı bir depoda bulunur ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only` lisanslı) ve Tauri (Rust + Vue) ile geliştirilmiştir.
 
 - **Tamamen çevrimdışı ve yerel** — profil kataloğu makinenizde yerel bir şifreleme anahtarıyla korunan yerel bir SQLite veritabanında tutulur; hesap, bulut hizmeti veya ağ erişimi gerekmez.
 - **Yapılandırılmış profil yönetimi** — profiller oluşturun, ad, not veya numaraya göre arama yapın, açıklamaları düzenleyin ve kayıtları Rust kataloğunda gruplar, etiketler, işaretler ve yer imleriyle organize edin.
@@ -211,7 +211,7 @@ Tüm sürüm geçmişi için [CHANGELOG.md](../../CHANGELOG.md) dosyasına bakı
 - **Önceden derlenmiş kurulum dosyaları** — macOS Apple Silicon (`.dmg`, Apple Developer ID ile imzalı ve noter onaylı), Linux (`.deb` ve `.rpm`) ve Windows x64 (`setup.exe`).
 - **Yalıtılmış kataloglar** — ayrı bir test kataloğu veya yedek kopya ile çalışmak için `OMBRA_DESKTOP_DATA_DIR` değişkenini ayarlayın.
 
-[En son sürümü indir →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [Profiller ve yerel anahtarlar kılavuzu](../../docs/desktop/README.md)
+[En son sürümü indir →](https://github.com/ombralabs/manager/releases) · [Desktop README](https://github.com/ombralabs/manager/blob/main/README.md) · [Profiller ve yerel anahtarlar kılavuzu](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## Parmak izi doğrulaması ve gizlilik kontrolü
 
@@ -923,14 +923,12 @@ Güvenlik sorunlarını [SECURITY.md](../../SECURITY.md) dosyasına uygun olarak
 │   ├── tr/README.md             # bu dosya (Türkçe)
 │   ├── ru/README.md             # Rusça çeviri
 │   └── <locale>/README.md       # 19 ek yerelleştirme
-├── desktop/                     # Ombra Desktop (Tauri: Rust kataloğu + Vue arayüzü)
 ├── docs/
 │   ├── architecture.md          # mimari, güven sınırları, yaşam döngüsü
 │   ├── sdk-contract.md          # v0.2 başlatma sözleşmesi, seçenekler, hatalar, değişmezler
 │   ├── stealth-checkup.md       # gizlilik kontrolü yöntemi (İngilizce)
 │   ├── stealth-checkup.ru.md    # gizlilik kontrolü yöntemi (Rusça)
-│   ├── versioning.md            # SDK, motor ve istemci sürümleme kuralları
-│   └── desktop/                 # Desktop yerel profil ve anahtar kılavuzları
+│   └── versioning.md            # SDK, motor ve istemci sürümleme kuralları
 ├── sdks/
 │   ├── manifest.json            # makine tarafından okunabilir SDK kayıt defteri
 │   ├── README.md                # SDK dizin yapısı ve katkı kuralları
@@ -941,7 +939,7 @@ Güvenlik sorunlarını [SECURITY.md](../../SECURITY.md) dosyasına uygun olarak
 └── .github/workflows/ci.yml
 ```
 
-Bu depo SDK sözleşmesini, şemaları, uyumluluk test senaryolarını, belgeleri ve Ombra Desktop kaynak kodunu barındırır. Chromium motor yamaları ayrı bir depoda tutulur; derlenmiş ikili paketler [GitHub Releases](https://github.com/ombralabs/ombra/releases) üzerinden yayımlanır.
+Bu depo SDK sözleşmesini, şemaları, uyumluluk test senaryolarını ve belgeleri barındırır. Ombra Desktop [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`) deposunda yer alır. Chromium motor yamaları ayrı bir depoda tutulur; derlenmiş ikili paketler [GitHub Releases](https://github.com/ombralabs/ombra/releases) üzerinden yayımlanır.
 
 ## Sıkça sorulan sorular (SSS)
 
@@ -987,7 +985,7 @@ Katkı yönergeleri [CONTRIBUTING.md](../../CONTRIBUTING.md), topluluk standartl
 
 ## Lisans
 
-Bu depodaki SDK kaynak kodu [Apache License 2.0](../../LICENSE) altında lisanslanmıştır. Bu lisans Ombra ticari markaları, Ombra Chromium motoru veya Ombra Desktop üzerinde hak vermez — ticari marka ve üçüncü taraf koşulları için [NOTICE](../../NOTICE) dosyasına bakın.
+Bu depodaki SDK kaynak kodu [Apache License 2.0](../../LICENSE) altında lisanslanmıştır. Ombra Desktop ayrı olarak [`ombralabs/manager`](https://github.com/ombralabs/manager) deposunda `GPL-3.0-only` altında geliştirilir. Apache License 2.0, Ombra ticari markaları veya Ombra Chromium motoru üzerinde hak vermez — ticari marka ve üçüncü taraf koşulları için [NOTICE](../../NOTICE) dosyasına bakın.
 
 ## Bağlantılar
 

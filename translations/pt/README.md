@@ -57,7 +57,7 @@ Mesma API, mesmos seletores e tipos — basta trocar o import e a chamada <code>
 - **Operação autônoma sem chaves nem contas** — os builds atuais do motor e o Ombra Desktop funcionam localmente sem cadastro, chaves de licença, IDs de hardware ou servidor de licenciamento.
 - **Instalação automática e verificação criptográfica de binários** — `pip install ombrabrowser` ou `npm install @ombralabs/sdk`; na primeira inicialização, o SDK baixa um build compatível do [GitHub Releases](https://github.com/ombralabs/ombra/releases) e verifica sua assinatura Ed25519 e o checksum SHA-256.
 - **Perfis persistentes e relay de proxy seguro** — perfis nomeados mantêm cookies, `localStorage`, IndexedDB e `seed` entre execuções com bloqueio entre processos; proxies autenticados (HTTP, HTTPS, SOCKS5) passam por um relay de loopback local para que as credenciais nunca apareçam nos argumentos do processo.
-- **Gerenciador de perfis offline Ombra Desktop** — um aplicativo desktop nativo neste repositório ([`desktop/`](../../desktop/README.md)) com instaladores pré-compilados para macOS, Linux e Windows.
+- **Gerenciador de perfis offline Ombra Desktop** — um aplicativo desktop nativo em um repositório separado ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) com instaladores pré-compilados para macOS, Linux e Windows.
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ Cada componente do ecossistema segue o contrato de inicialização compartilhado
 | **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` no PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` no npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Motor Ombra Chromium** | Faixa do SDK `>=151.0.7922.108,<159` | Baixado automaticamente pelo SDK do [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | Gerenciador de perfis offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | Gerenciador de perfis offline | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **Navegador standalone** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schemas e conformidade** | JSON Schema + casos compartilhados | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Método de checkup de stealth** | 6 camadas (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ Consulte [CHANGELOG.md](../../CHANGELOG.md) para o histórico completo de lança
 
 ## Ombra Desktop
 
-**Um gerenciador de perfis local e offline com interface gráfica.** Seu código-fonte está diretamente neste repositório ([`desktop/`](../../desktop/README.md)) e é construído com Tauri (Rust + Vue).
+**Um gerenciador de perfis local e offline com interface gráfica.** Seu código-fonte está em um repositório separado ([`ombralabs/manager`](https://github.com/ombralabs/manager), licenciado sob `GPL-3.0-only`) e é construído com Tauri (Rust + Vue).
 
 - **Completamente offline e local** — o catálogo de perfis fica em um banco SQLite local na sua máquina com chave de criptografia local; sem necessidade de conta, serviço em nuvem ou acesso à rede.
 - **Gerenciamento estruturado de perfis** — crie perfis, pesquise por nome, nota ou número, edite descrições e organize registros com grupos, tags, rótulos e favoritos no catálogo em Rust.
@@ -211,7 +211,7 @@ Consulte [CHANGELOG.md](../../CHANGELOG.md) para o histórico completo de lança
 - **Instaladores pré-compilados** — macOS Apple Silicon (`.dmg`, assinado com Apple Developer ID e notarizado), Linux (`.deb` e `.rpm`) e Windows x64 (`setup.exe`).
 - **Catálogos isolados** — defina `OMBRA_DESKTOP_DATA_DIR` para trabalhar com um catálogo de testes separado ou uma cópia de backup.
 
-[Baixar a versão mais recente →](https://github.com/ombralabs/ombra/releases) · [README do Desktop](../../desktop/README.md) · [Guia de perfis e chaves locais](../../docs/desktop/README.md)
+[Baixar a versão mais recente →](https://github.com/ombralabs/manager/releases) · [README do Desktop](https://github.com/ombralabs/manager/blob/main/README.md) · [Guia de perfis e chaves locais](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## Verificação de fingerprint e checkup de stealth
 
@@ -922,14 +922,12 @@ Relate problemas de segurança de forma privada seguindo [SECURITY.md](../../SEC
 ├── translations/
 │   ├── pt/README.md             # este arquivo (Português)
 │   └── <locale>/README.md       # outras 20 localizações
-├── desktop/                     # Ombra Desktop (Tauri: catálogo Rust + UI Vue)
 ├── docs/
 │   ├── architecture.md          # arquitetura, limites de confiança, ciclo de vida
 │   ├── sdk-contract.md          # contrato de inicialização v0.2, opções, erros, invariantes
 │   ├── stealth-checkup.md       # método de checkup (English)
 │   ├── stealth-checkup.ru.md    # método de checkup (Русский)
-│   ├── versioning.md            # versionamento de SDK, motor e clientes
-│   └── desktop/                 # guias de perfis locais e chaves do Desktop
+│   └── versioning.md            # versionamento de SDK, motor e clientes
 ├── sdks/
 │   ├── manifest.json            # registro legível por máquina dos SDKs
 │   ├── README.md                # estrutura dos SDKs e regras de contribuição
@@ -940,7 +938,7 @@ Relate problemas de segurança de forma privada seguindo [SECURITY.md](../../SEC
 └── .github/workflows/ci.yml
 ```
 
-Este repositório hospeda o contrato do SDK, os schemas, os casos de conformidade, a documentação e o código-fonte do Ombra Desktop. Os patches do motor Chromium são mantidos em um repositório separado, com builds compilados publicados no [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Este repositório hospeda o contrato do SDK, os schemas, os casos de conformidade e a documentação. O Ombra Desktop está em [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`). Os patches do motor Chromium são mantidos em um repositório separado, com builds compilados publicados no [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## FAQ
 
@@ -986,7 +984,7 @@ As diretrizes de contribuição estão em [CONTRIBUTING.md](../../CONTRIBUTING.m
 
 ## Licença
 
-O código-fonte do SDK neste repositório é licenciado sob a [Licença Apache 2.0](../../LICENSE). A licença não concede direitos sobre as marcas registradas do Ombra, sobre o motor Ombra Chromium nem sobre o Ombra Desktop — consulte [NOTICE](../../NOTICE) para os termos de marcas registradas e de terceiros.
+O código-fonte do SDK neste repositório é licenciado sob a [Licença Apache 2.0](../../LICENSE). O Ombra Desktop é desenvolvido separadamente em [`ombralabs/manager`](https://github.com/ombralabs/manager) sob `GPL-3.0-only`. A Licença Apache 2.0 não concede direitos sobre as marcas registradas do Ombra nem sobre o motor Ombra Chromium — consulte [NOTICE](../../NOTICE) para os termos de marcas registradas e de terceiros.
 
 ## Links
 
