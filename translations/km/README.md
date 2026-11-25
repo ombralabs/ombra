@@ -57,7 +57,7 @@ API ដដែល, selector និងប្រភេទទិន្នន័យ�
 - **ដំណើរការដោយឯករាជ្យ ដោយគ្មានកូនសោ ឬគណនី** — កំណែស្ថាបនាម៉ាស៊ីនបច្ចុប្បន្ន និង Ombra Desktop ដំណើរការក្នុងម៉ាស៊ីនដោយមិនចាំបាច់ចុះឈ្មោះ កូនសោអាជ្ញាបណ្ណ លេខសម្គាល់ផ្នែករឹង ឬម៉ាស៊ីនមេផ្តល់អាជ្ញាបណ្ណឡើយ។
 - **ការដំឡើងដោយស្វ័យប្រវត្តិ និងការផ្ទៀងផ្ទាត់ឯកសារប្រតិបត្តិដោយគ្រីបតូក្រាហ្វី** — `pip install ombrabrowser` ឬ `npm install @ombralabs/sdk`; នៅពេលបើកដំណើរការលើកដំបូង SDK នឹងទាញយកកំណែស្ថាបនាដែលឆបគ្នាពី [GitHub Releases](https://github.com/ombralabs/ombra/releases) ហើយផ្ទៀងផ្ទាត់ហត្ថលេខា Ed25519 និងតម្លៃផ្ទៀងផ្ទាត់ SHA-256 របស់វា។
 - **ប្រវត្តិរូបអចិន្ត្រៃយ៍ និងប្រព័ន្ធបញ្ជូនបន្តប្រូកស៊ីដែលមានសុវត្ថិភាព** — ប្រវត្តិរូបដែលមានឈ្មោះរក្សាទុកខូគី, `localStorage`, IndexedDB និង `seed` ឆ្លងកាត់ការដំណើរការជាមួយការចាក់សោឆ្លងដំណើរការ; ប្រូកស៊ីដែលមានការផ្ទៀងផ្ទាត់ (HTTP, HTTPS, SOCKS5) ដំណើរការតាមរយៈប្រព័ន្ធបញ្ជូនបន្ត loopback ក្នុងម៉ាស៊ីន ដូច្នេះព័ត៌មានផ្ទៀងផ្ទាត់មិនដែលបង្ហាញនៅក្នុងអាគុយម៉ង់ដំណើរការឡើយ។
-- **កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញ Ombra Desktop** — កម្មវិធីកុំព្យូទ័រដើមនៅក្នុងឃ្លាំងកូដនេះ ([`desktop/`](../../desktop/README.md)) ដែលមានកម្មវិធីដំឡើងបង្កើតស្រាប់សម្រាប់ macOS, Linux និង Windows។
+- **កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញ Ombra Desktop** — កម្មវិធីកុំព្យូទ័រដើមនៅក្នុងឃ្លាំងកូដដាច់ដោយឡែក ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) ដែលមានកម្មវិធីដំឡើងបង្កើតស្រាប់សម្រាប់ macOS, Linux និង Windows។
 
 **Python (Playwright)៖**
 
@@ -186,7 +186,7 @@ npm install mmdb-lib
 | **Python SDK** | Alpha `0.2.0` | [`ombrabrowser` នៅលើ PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.2.0` | [`@ombralabs/sdk` នៅលើ npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **ម៉ាស៊ីន Ombra Chromium** | ចន្លោះកំណែ SDK `>=151.0.7922.108,<159` | ទាញយកដោយស្វ័យប្រវត្តិដោយ SDK ពី [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញ | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញ | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **កម្មវិធីរុករកឯករាជ្យ** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **គ្រោងការណ៍ និងការអនុលោមតាម** | JSON Schema + ករណីសាកល្បងរួម | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង** | 6 ស្រទាប់ (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ npm install mmdb-lib
 
 ## Ombra Desktop
 
-**កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញក្នុងម៉ាស៊ីនដែលមានចំណុចប្រទាក់ក្រាហ្វិក (GUI)។** កូដប្រភពរបស់វាស្ថិតនៅដោយផ្ទាល់ក្នុងឃ្លាំងកូដនេះ ([`desktop/`](../../desktop/README.md)) ហើយត្រូវបានបង្កើតឡើងដោយប្រើ Tauri (Rust + Vue)។
+**កម្មវិធីគ្រប់គ្រងប្រវត្តិរូបក្រៅបណ្តាញក្នុងម៉ាស៊ីនដែលមានចំណុចប្រទាក់ក្រាហ្វិក (GUI)។** កូដប្រភពរបស់វាស្ថិតនៅក្នុងឃ្លាំងកូដដាច់ដោយឡែក ([`ombralabs/manager`](https://github.com/ombralabs/manager), អាជ្ញាបណ្ណ `GPL-3.0-only`) ហើយត្រូវបានបង្កើតឡើងដោយប្រើ Tauri (Rust + Vue)។
 
 - **ក្រៅបណ្តាញ និងក្នុងម៉ាស៊ីនទាំងស្រុង** — កាតាឡុកប្រវត្តិរូបស្ថិតនៅក្នុងមូលដ្ឋានទិន្នន័យ SQLite ក្នុងម៉ាស៊ីនរបស់អ្នកជាមួយកូនសោអ៊ិនគ្រីបក្នុងម៉ាស៊ីន; មិនចាំបាច់មានគណនី សេវាកម្មពពក ឬការតភ្ជាប់បណ្តាញឡើយ។
 - **ការគ្រប់គ្រងប្រវត្តិរូបដែលមានរចនាសម្ព័ន្ធ** — បង្កើតប្រវត្តិរូប ស្វែងរកតាមឈ្មោះ កំណត់ចំណាំ ឬលេខ កែសម្រួលការពិពណ៌នា និងរៀបចំធាតុជាមួយក្រុម ស្លាក ផ្លាកសញ្ញា និងចំណាំនៅក្នុងកាតាឡុក Rust។
@@ -211,7 +211,7 @@ npm install mmdb-lib
 - **កម្មវិធីដំឡើងបង្កើតស្រាប់** — macOS Apple Silicon (`.dmg`, ចុះហត្ថលេខា Apple Developer ID និងបញ្ជាក់ភាពត្រឹមត្រូវ), Linux (`.deb` និង `.rpm`) និង Windows x64 (`setup.exe`)។
 - **កាតាឡុកដាច់ដោយឡែក** — កំណត់ `OMBRA_DESKTOP_DATA_DIR` ដើម្បីធ្វើការជាមួយកាតាឡុកសាកល្បងដាច់ដោយឡែក ឬច្បាប់ចម្លងបម្រុងទុក។
 
-[ទាញយកកំណែចេញផ្សាយចុងក្រោយ →](https://github.com/ombralabs/ombra/releases) · [ឯកសារ README របស់ Desktop](../../desktop/README.md) · [មគ្គុទ្ទេសក៍ប្រវត្តិរូប និងកូនសោក្នុងម៉ាស៊ីន](../../docs/desktop/README.md)
+[ទាញយកកំណែចេញផ្សាយចុងក្រោយ →](https://github.com/ombralabs/manager/releases) · [ឯកសារ README របស់ Desktop](https://github.com/ombralabs/manager/blob/main/README.md) · [មគ្គុទ្ទេសក៍ប្រវត្តិរូប និងកូនសោក្នុងម៉ាស៊ីន](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## ការផ្ទៀងផ្ទាត់ស្នាមម្រាមដៃ និងការត្រួតពិនិត្យភាពលាក់កំបាំង
 
@@ -923,14 +923,12 @@ for _ in range(15):
 │   ├── km/README.md             # ឯកសារនេះ (ខ្មែរ)
 │   ├── ru/README.md             # ការបកប្រែជាភាសារុស្ស៊ី
 │   └── <locale>/README.md       # ការបកប្រែជាភាសាផ្សេងទៀតចំនួន 19
-├── desktop/                     # Ombra Desktop (Tauri៖ កាតាឡុក Rust + ចំណុចប្រទាក់ Vue)
 ├── docs/
 │   ├── architecture.md          # ស្ថាបត្យកម្ម ដែនកំណត់ទំនុកចិត្ត វដ្តជីវិត
 │   ├── sdk-contract.md          # កិច្ចសន្យាបើកដំណើរការ v0.2, ជម្រើស, កំហុស, លក្ខខណ្ឌថេរ
 │   ├── stealth-checkup.md       # វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង (ភាសាអង់គ្លេស)
 │   ├── stealth-checkup.ru.md    # វិធីសាស្ត្រត្រួតពិនិត្យភាពលាក់កំបាំង (ភាសារុស្ស៊ី)
-│   ├── versioning.md            # ការកំណត់កំណែ SDK, ម៉ាស៊ីន និងកម្មវិធីអតិថិជន
-│   └── desktop/                 # មគ្គុទ្ទេសក៍ប្រវត្តិរូប និងកូនសោក្នុងម៉ាស៊ីនរបស់ Desktop
+│   └── versioning.md            # ការកំណត់កំណែ SDK, ម៉ាស៊ីន និងកម្មវិធីអតិថិជន
 ├── sdks/
 │   ├── manifest.json            # បញ្ជីចុះឈ្មោះ SDK ដែលម៉ាស៊ីនអាចអានបាន
 │   ├── README.md                # ប្លង់ SDK និងច្បាប់រួមចំណែក
@@ -941,7 +939,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-ឃ្លាំងកូដនេះផ្ទុកកិច្ចសន្យា SDK, គ្រោងការណ៍, ករណីអនុលោមតាម, ឯកសារ និងកូដប្រភព Ombra Desktop។ បំណះកូដម៉ាស៊ីន Chromium ត្រូវបានថែទាំក្នុងឃ្លាំងកូដដាច់ដោយឡែក ដោយមានកំណែស្ថាបនាចងក្រងស្រាប់បោះពុម្ពផ្សាយតាមរយៈ [GitHub Releases](https://github.com/ombralabs/ombra/releases)។
+ឃ្លាំងកូដនេះផ្ទុកកិច្ចសន្យា SDK, គ្រោងការណ៍, ករណីអនុលោមតាម និងឯកសារ។ Ombra Desktop ស្ថិតនៅក្នុង [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`)។ បំណះកូដម៉ាស៊ីន Chromium ត្រូវបានថែទាំក្នុងឃ្លាំងកូដដាច់ដោយឡែក ដោយមានកំណែស្ថាបនាចងក្រងស្រាប់បោះពុម្ពផ្សាយតាមរយៈ [GitHub Releases](https://github.com/ombralabs/ombra/releases)។
 
 ## សំណួរដែលសួរញឹកញាប់ (FAQ)
 
@@ -987,7 +985,7 @@ Ombra ត្រូវបានបង្កើតឡើងសម្រាប់�
 
 ## អាជ្ញាបណ្ណ
 
-កូដប្រភព SDK នៅក្នុងឃ្លាំងកូដនេះត្រូវបានផ្តល់អាជ្ញាបណ្ណក្រោម [Apache License 2.0](../../LICENSE)។ អាជ្ញាបណ្ណនេះមិនផ្តល់សិទ្ធិលើពាណិជ្ជសញ្ញារបស់ Ombra ម៉ាស៊ីន Ombra Chromium ឬ Ombra Desktop ទេ — សូមមើល [NOTICE](../../NOTICE) សម្រាប់លក្ខខណ្ឌពាណិជ្ជសញ្ញា និងភាគីទីបី។
+កូដប្រភព SDK នៅក្នុងឃ្លាំងកូដនេះត្រូវបានផ្តល់អាជ្ញាបណ្ណក្រោម [Apache License 2.0](../../LICENSE)។ Ombra Desktop ត្រូវបានអភិវឌ្ឍដាច់ដោយឡែកក្នុង [`ombralabs/manager`](https://github.com/ombralabs/manager) ក្រោម `GPL-3.0-only`។ Apache License 2.0 មិនផ្តល់សិទ្ធិលើពាណិជ្ជសញ្ញារបស់ Ombra ឬម៉ាស៊ីន Ombra Chromium ទេ — សូមមើល [NOTICE](../../NOTICE) សម្រាប់លក្ខខណ្ឌពាណិជ្ជសញ្ញា និងភាគីទីបី។
 
 ## តំណភ្ជាប់
 

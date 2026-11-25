@@ -57,7 +57,7 @@
 - **Автономная работа без ключей и аккаунтов** — актуальные сборки движка и Ombra Desktop запускаются локально без регистрации, лицензионного ключа, аппаратного ID и сервера лицензирования.
 - **Автоматическая установка и криптографическая проверка движка** — `pip install ombrabrowser` или `npm install @ombralabs/sdk`; при первом запуске SDK скачивает совместимую сборку из [GitHub Releases](https://github.com/ombralabs/ombra/releases) и проверяет подпись Ed25519 и контрольную сумму SHA-256.
 - **Постоянные профили и безопасный прокси-ретранслятор** — именованные профили сохраняют cookies, `localStorage`, IndexedDB и `seed`, защищены кросс-процессной блокировкой; прокси с авторизацией (HTTP, HTTPS, SOCKS5) работают через локальный loopback-ретранслятор без передачи паролей в аргументах процесса.
-- **Офлайн-менеджер профилей Ombra Desktop** — нативное настольное приложение в этом же репозитории ([`desktop/`](../../desktop/README.md)) с готовыми установщиками для macOS, Linux и Windows.
+- **Офлайн-менеджер профилей Ombra Desktop** — нативное настольное приложение в отдельном репозитории ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) с готовыми установщиками для macOS, Linux и Windows.
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ npm install mmdb-lib
 | **Python SDK** | Альфа `0.2.0` | [`ombrabrowser` на PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Альфа `0.2.0` | [`@ombralabs/sdk` на npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Движок Ombra Chromium** | Диапазон SDK `>=151.0.7922.108,<159` | Автозагрузка через SDK из [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | Офлайн-менеджер профилей | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | Офлайн-менеджер профилей | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **Автономный браузер** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Схемы и проверка соответствия** | JSON Schema + кейсы | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Методика проверки движка** | 6 слоёв (`L0`–`L5`) | [`docs/stealth-checkup.ru.md`](../../docs/stealth-checkup.ru.md) |
@@ -202,7 +202,7 @@ npm install mmdb-lib
 
 ## Ombra Desktop
 
-**Локальный офлайн-менеджер профилей с графическим интерфейсом.** Исходный код приложения находится прямо в этом репозитории ([`desktop/`](../../desktop/README.md)) и построен на Tauri (Rust + Vue).
+**Локальный офлайн-менеджер профилей с графическим интерфейсом.** Исходный код приложения вынесен в отдельный репозиторий ([`ombralabs/manager`](https://github.com/ombralabs/manager), лицензия `GPL-3.0-only`) и построен на Tauri (Rust + Vue).
 
 - **Полностью офлайн и локально** — каталог профилей хранится в локальной SQLite-базе на вашей машине с локальным ключом шифрования; аккаунт, облако и доступ в сеть не требуются.
 - **Удобная организация профилей** — создание профилей, поиск по имени, заметке и номеру, редактирование описаний, поддержка групп, тегов, меток и закладок на уровне Rust-каталога.
@@ -211,7 +211,7 @@ npm install mmdb-lib
 - **Готовые установщики** — macOS Apple Silicon (`.dmg`, подписан Apple Developer ID и нотаризован), Linux (`.deb` и `.rpm`) и Windows x64 (`setup.exe`).
 - **Изоляция каталогов** — переменная окружения `OMBRA_DESKTOP_DATA_DIR` позволяет открыть отдельный тестовый каталог или резервную копию.
 
-[Скачать последний релиз →](https://github.com/ombralabs/ombra/releases) · [Документация Desktop](../../desktop/README.md) · [Руководство по профилям и ключам](../../docs/desktop/README.md)
+[Репозиторий (`ombralabs/manager`) →](https://github.com/ombralabs/manager) · [Документация Desktop](https://github.com/ombralabs/manager/blob/main/README.md) · [Руководство по профилям и ключам](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## Проверка отпечатка и stealth-чекап
 
@@ -922,14 +922,12 @@ for _ in range(15):
 ├── translations/
 │   ├── ru/README.md             # этот файл (Русский)
 │   └── <locale>/README.md       # ещё 20 локализаций
-├── desktop/                     # Ombra Desktop (Tauri: Rust-каталог + Vue UI)
 ├── docs/
 │   ├── architecture.md          # архитектура, границы доверия, жизненный цикл
 │   ├── sdk-contract.md          # контракт запуска v0.2, опции, ошибки, инварианты
 │   ├── stealth-checkup.md       # методика проверки (English)
 │   ├── stealth-checkup.ru.md    # методика проверки (Русский)
-│   ├── versioning.md            # версионность SDK, движка и клиентов
-│   └── desktop/                 # руководства по локальным профилям и ключам Desktop
+│   └── versioning.md            # версионность SDK, движка и клиентов
 ├── sdks/
 │   ├── manifest.json            # машиночитаемый реестр SDK
 │   ├── README.md                # правила структуры и разработки SDK
@@ -940,7 +938,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-В этом репозитории находятся контракт SDK, схемы, тесты соответствия, документация и исходный код Ombra Desktop. Исходный код патчей движка Chromium ведётся в отдельном репозитории, а готовые сборки публикуются в [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+В этом репозитории находятся контракт SDK, схемы, правила соответствия и документация. Ombra Desktop вынесен в отдельный репозиторий [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`), а исходный код патчей движка Chromium ведётся в отдельном репозитории, готовые сборки публикуются в [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## FAQ
 
@@ -950,7 +948,7 @@ for _ in range(15):
 
 ### Бесплатен ли Ombra и нужен ли лицензионный ключ?
 
-Исходный код SDK в этом репозитории (`sdks/`) открыт под лицензией [Apache 2.0](../../LICENSE). Скомпилированные сборки движка Ombra Chromium и настольное приложение Ombra Desktop (`desktop/`) бесплатны для личного и некоммерческого использования по лицензии [PolyForm Noncommercial License 1.0.0](../../LICENSE-NONCOMMERCIAL) — без аккаунта, аппаратного ID и лимита на число профилей. Для коммерческого использования движка Ombra Chromium или Ombra Desktop требуется отдельная коммерческая лицензия Ombra Labs (`admin@ombrabrowser.dev`). Параметр `license_key` и `OMBRA_LICENSE_KEY` нужны только для старых лицензируемых сборок.
+Исходный код SDK в этом репозитории (`sdks/`) открыт под лицензией [Apache 2.0](../../LICENSE). Скомпилированные сборки движка Ombra Chromium бесплатны для личного и некоммерческого использования по лицензии [PolyForm Noncommercial License 1.0.0](../../LICENSE-NONCOMMERCIAL) — без аккаунта, аппаратного ID и лимита на число профилей; для коммерческого использования движка требуется отдельная коммерческая лицензия Ombra Labs (`admin@ombrabrowser.dev`). Ombra Desktop открыт под лицензией `GPL-3.0-only` в [`ombralabs/manager`](https://github.com/ombralabs/manager). Параметр `license_key` и `OMBRA_LICENSE_KEY` нужны только для старых лицензируемых сборок.
 
 ### Нужно ли устанавливать Ombra Desktop для работы с SDK?
 
@@ -989,7 +987,8 @@ Ombra предназначен для авторизованной автома�
 В этом репозитории используется раздельное лицензирование:
 
 - **SDK (`sdks/`), документация, примеры и инструменты**: [Apache License 2.0](../../LICENSE).
-- **Ombra Desktop (`desktop/`) и бинарные сборки движка Ombra Chromium**: [PolyForm Noncommercial License 1.0.0](../../LICENSE-NONCOMMERCIAL) ([`desktop/LICENSE`](../../desktop/LICENSE)) — бесплатно только для личного и некоммерческого использования. Коммерческое использование требует отдельной коммерческой лицензии Ombra Labs (`admin@ombrabrowser.dev`).
+- **Бинарные сборки движка Ombra Chromium**: [PolyForm Noncommercial License 1.0.0](../../LICENSE-NONCOMMERCIAL) — бесплатно только для личного и некоммерческого использования. Коммерческое использование требует отдельной коммерческой лицензии Ombra Labs (`admin@ombrabrowser.dev`).
+- **Ombra Desktop**: развивается отдельно в [`ombralabs/manager`](https://github.com/ombralabs/manager) под лицензией GNU General Public License v3.0 only (`GPL-3.0-only`).
 
 Подробности о товарных знаках и сторонних компонентах приведены в [NOTICE](../../NOTICE).
 
@@ -998,7 +997,8 @@ Ombra предназначен для авторизованной автома�
 - 🌐 **Сайт** — [ombrabrowser.dev](https://ombrabrowser.dev)
 - 📦 **PyPI** — [pypi.org/project/ombrabrowser](https://pypi.org/project/ombrabrowser/)
 - 📦 **npm** — [npmjs.com/package/@ombralabs/sdk](https://www.npmjs.com/package/@ombralabs/sdk)
-- 🚀 **Релизы (движок и Desktop)** — [GitHub Releases](https://github.com/ombralabs/ombra/releases)
+- 🖥️ **Ombra Desktop** — [github.com/ombralabs/manager](https://github.com/ombralabs/manager)
+- 🚀 **Релизы (движок)** — [GitHub Releases](https://github.com/ombralabs/ombra/releases)
 - 📋 **История изменений** — [CHANGELOG.md](../../CHANGELOG.md)
 - 🐛 **Баги и предложения** — [GitHub Issues](https://github.com/ombralabs/ombra/issues)
 - 🏢 **Организация** — [Ombra Labs](https://github.com/ombralabs)

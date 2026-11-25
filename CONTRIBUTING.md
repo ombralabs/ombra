@@ -88,4 +88,4 @@ Use the pull request template. Keep the diff focused; do not reformat unrelated 
 
 ## License
 
-Contributions to the SDKs, docs, examples, and tooling are licensed under the [Apache License 2.0](LICENSE), without a separate contributor license agreement. Contributions to `desktop/` are licensed under the [PolyForm Noncommercial License 1.0.0](desktop/LICENSE) (see [NOTICE](NOTICE)). You retain copyright to your work.
+Contributions to the SDKs, docs, examples, and tooling in this repository are licensed under the [Apache License 2.0](LICENSE), without a separate contributor license agreement. Ombra Desktop has moved to [`ombralabs/manager`](https://github.com/ombralabs/manager) under `GPL-3.0-only`. See [NOTICE](NOTICE). You retain copyright to your work.

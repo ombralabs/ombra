@@ -57,7 +57,7 @@ Același API, aceiași selectori și tipuri — trebuie doar să schimbi importu
 - **Funcționare autonomă fără chei sau conturi** — build-urile actuale ale motorului și Ombra Desktop rulează local fără înregistrare, chei de licență, ID-uri hardware sau un server de licențiere.
 - **Instalare automată și verificare criptografică a binarului** — `pip install ombrabrowser` sau `npm install @ombralabs/sdk`; la prima lansare, SDK-ul descarcă un build compatibil de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases) și îi verifică semnătura Ed25519 și suma de control SHA-256.
 - **Profiluri persistente și releu proxy sigur** — profilurile cu nume păstrează cookie-urile, `localStorage`, IndexedDB și `seed` între rulări cu blocare inter-proces; proxy-urile autentificate (HTTP, HTTPS, SOCKS5) trec printr-un releu loopback local, astfel încât datele de autentificare nu apar niciodată în argumentele procesului.
-- **Manager de profiluri offline Ombra Desktop** — o aplicație desktop nativă din acest depozit ([`desktop/`](../../desktop/README.md)) cu pachete de instalare precompilate pentru macOS, Linux și Windows.
+- **Manager de profiluri offline Ombra Desktop** — o aplicație desktop nativă dintr-un depozit separat ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) cu pachete de instalare precompilate pentru macOS, Linux și Windows.
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ Fiecare componentă din ecosistem respectă contractul comun de lansare și este
 | **SDK Python** | Alpha `0.2.0` | [`ombrabrowser` pe PyPI](https://pypi.org/project/ombrabrowser/) |
 | **SDK Node.js / TypeScript** | Alpha `0.2.0` | [`@ombralabs/sdk` pe npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Motor Ombra Chromium** | Interval SDK `>=151.0.7922.108,<159` | Descărcat automat de SDK de pe [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | Manager de profiluri offline | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | Manager de profiluri offline | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **Browser independent** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Scheme și conformitate** | JSON Schema + cazuri comune | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Metodă de audit stealth** | 6 straturi (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ Consultă [CHANGELOG.md](../../CHANGELOG.md) pentru istoricul complet al versiun
 
 ## Ombra Desktop
 
-**Un manager de profiluri local, offline, cu interfață grafică (GUI).** Codul său sursă se află direct în acest depozit ([`desktop/`](../../desktop/README.md)) și este construit cu Tauri (Rust + Vue).
+**Un manager de profiluri local, offline, cu interfață grafică (GUI).** Codul său sursă se află într-un depozit separat ([`ombralabs/manager`](https://github.com/ombralabs/manager), sub licență `GPL-3.0-only`) și este construit cu Tauri (Rust + Vue).
 
 - **Complet offline și local** — catalogul de profiluri stă într-o bază de date SQLite locală pe mașina ta, cu o cheie de criptare locală; nu necesită cont, serviciu cloud sau acces la rețea.
 - **Gestionare structurată a profilurilor** — creează profiluri, caută după nume, notă sau număr, editează descrieri și organizează intrările cu grupuri, etichete, marcaje și semne de carte în catalogul Rust.
@@ -211,7 +211,7 @@ Consultă [CHANGELOG.md](../../CHANGELOG.md) pentru istoricul complet al versiun
 - **Instalatoare precompilate** — macOS Apple Silicon (`.dmg`, semnat cu Apple Developer ID și notarizat), Linux (`.deb` și `.rpm`) și Windows x64 (`setup.exe`).
 - **Cataloage izolate** — setează `OMBRA_DESKTOP_DATA_DIR` pentru a lucra cu un catalog separat de test sau o copie de siguranță.
 
-[Descarcă cea mai recentă versiune →](https://github.com/ombralabs/ombra/releases) · [README Desktop](../../desktop/README.md) · [Ghid pentru profiluri și chei locale](../../docs/desktop/README.md)
+[Descarcă cea mai recentă versiune →](https://github.com/ombralabs/manager/releases) · [README Desktop](https://github.com/ombralabs/manager/blob/main/README.md) · [Ghid pentru profiluri și chei locale](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## Verificarea amprentei și auditul de stealth
 
@@ -922,14 +922,12 @@ Raportează problemele de securitate în mod privat conform [SECURITY.md](../../
 ├── translations/
 │   ├── ro/README.md             # acest fișier (Română)
 │   └── <locale>/README.md       # încă 20 de localizări
-├── desktop/                     # Ombra Desktop (Tauri: catalog Rust + UI Vue)
 ├── docs/
 │   ├── architecture.md          # arhitectură, limite de încredere, ciclu de viață
 │   ├── sdk-contract.md          # contract de lansare v0.2, opțiuni, erori, invarianți
 │   ├── stealth-checkup.md       # metodă de verificare (English)
 │   ├── stealth-checkup.ru.md    # metodă de verificare (Русский)
-│   ├── versioning.md            # versionarea SDK-ului, motorului și clienților
-│   └── desktop/                 # ghiduri Desktop pentru profiluri și chei locale
+│   └── versioning.md            # versionarea SDK-ului, motorului și clienților
 ├── sdks/
 │   ├── manifest.json            # registru SDK prelucrabil automat
 │   ├── README.md                # structura SDK-urilor și reguli de contribuție
@@ -940,7 +938,7 @@ Raportează problemele de securitate în mod privat conform [SECURITY.md](../../
 └── .github/workflows/ci.yml
 ```
 
-Acest depozit găzduiește contractul SDK, schemele, cazurile de conformitate, documentația și codul sursă Ombra Desktop. Patch-urile motorului Chromium sunt întreținute într-un depozit separat, iar build-urile compilate sunt publicate pe [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Acest depozit găzduiește contractul SDK, schemele, cazurile de conformitate și documentația. Ombra Desktop se află în [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`). Patch-urile motorului Chromium sunt întreținute într-un depozit separat, iar build-urile compilate sunt publicate pe [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## Întrebări frecvente
 
@@ -986,7 +984,7 @@ Ghidul de contribuție se află în [CONTRIBUTING.md](../../CONTRIBUTING.md), st
 
 ## Licență
 
-Codul sursă al SDK-ului din acest depozit este licențiat sub [Apache License 2.0](../../LICENSE). Licența nu acordă drepturi asupra mărcilor comerciale Ombra, motorului Ombra Chromium sau Ombra Desktop — consultă [NOTICE](../../NOTICE) pentru termenii privind mărcile comerciale și terții.
+Codul sursă al SDK-ului din acest depozit este licențiat sub [Apache License 2.0](../../LICENSE). Ombra Desktop este dezvoltat separat în [`ombralabs/manager`](https://github.com/ombralabs/manager) sub `GPL-3.0-only`. Licența Apache 2.0 nu acordă drepturi asupra mărcilor comerciale Ombra sau motorului Ombra Chromium — consultă [NOTICE](../../NOTICE) pentru termenii privind mărcile comerciale și terții.
 
 ## Linkuri
 

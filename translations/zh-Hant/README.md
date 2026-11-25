@@ -57,7 +57,7 @@ Python 與 Node.js 中 Playwright 和 Puppeteer 的無痛啟動替代方案。<b
 - **無需金鑰或帳號即可自主運行** — 目前的引擎建置版本與 Ombra Desktop 皆可於本機獨立運行，無需註冊、授權金鑰、硬體識別碼或授權伺服器。
 - **自動安裝與加密執行檔驗證** — 只需執行 `pip install ombrabrowser` 或 `npm install @ombralabs/sdk`；首次啟動時，SDK 會從 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自動下載相容的建置版本，並驗證其 Ed25519 簽章與 SHA-256 校驗碼。
 - **持久化設定檔與安全代理中繼** — 具名設定檔可在多次執行間保留 Cookie、`localStorage`、IndexedDB 與 `seed`，並提供跨處理程序鎖定；需要驗證的代理伺服器（HTTP、HTTPS、SOCKS5）透過本機迴路中繼運作，憑證絕不會出現在處理程序參數中。
-- **離線版 Ombra Desktop 設定檔管理器** — 本儲存庫內建的原生桌面應用程式（[`desktop/`](../../desktop/README.md)），提供適用於 macOS、Linux 與 Windows 的預先建置安裝程式。
+- **離線版 Ombra Desktop 設定檔管理器** — 位於獨立儲存庫的原生桌面應用程式（[`ombralabs/manager`](https://github.com/ombralabs/manager)，`GPL-3.0-only`），提供適用於 macOS、Linux 與 Windows 的預先建置安裝程式。
 
 **Python（Playwright）：**
 
@@ -186,7 +186,7 @@ npm install mmdb-lib
 | **Python SDK** | Alpha `0.2.0` | [PyPI 上的 `ombrabrowser`](https://pypi.org/project/ombrabrowser/) |
 | **Node.js / TypeScript SDK** | Alpha `0.2.0` | [npm 上的 `@ombralabs/sdk`](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium 引擎** | SDK 相容範圍 `>=151.0.7922.108,<159` | 由 SDK 從 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 自動下載（macOS ARM64 / Linux x64 / Windows x64） |
-| **Ombra Desktop** | 離線設定檔管理器 | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | 離線設定檔管理器 | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **獨立版瀏覽器** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **結構描述與一致性測試** | JSON Schema + 共用測試案例 | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **隱匿性檢查方法** | 6 個層級（`L0`–`L5`） | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ npm install mmdb-lib
 
 ## Ombra Desktop
 
-**具備圖形介面的本機離線設定檔管理器。** 其原始碼直接託管於本儲存庫（[`desktop/`](../../desktop/README.md)），並採用 Tauri（Rust + Vue）建置。
+**具備圖形介面的本機離線設定檔管理器。** 其原始碼託管於獨立儲存庫（[`ombralabs/manager`](https://github.com/ombralabs/manager)，採用 `GPL-3.0-only` 授權），並採用 Tauri（Rust + Vue）建置。
 
 - **完全離線且本機化** — 設定檔目錄儲存於本機 SQLite 資料庫並搭配本機加密金鑰；無需帳號、雲端服務或網路連線。
 - **結構化設定檔管理** — 可建立設定檔、依名稱／備註／編號搜尋、編輯說明，並在 Rust 目錄中透過群組、標籤、標記與書籤進行整理。
@@ -211,7 +211,7 @@ npm install mmdb-lib
 - **預先建置安裝程式** — 提供 macOS Apple Silicon（`.dmg`，具備 Apple Developer ID 簽章與公證）、Linux（`.deb` 與 `.rpm`）以及 Windows x64（`setup.exe`）版本。
 - **隔離目錄** — 設定 `OMBRA_DESKTOP_DATA_DIR` 即可操作獨立的測試目錄或備份複本。
 
-[下載最新版本 →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [設定檔與本機金鑰指南](../../docs/desktop/README.md)
+[下載最新版本 →](https://github.com/ombralabs/manager/releases) · [Desktop README](https://github.com/ombralabs/manager/blob/main/README.md) · [設定檔與本機金鑰指南](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## 指紋驗證與隱匿性檢查
 
@@ -923,14 +923,12 @@ for _ in range(15):
 │   ├── zh-Hant/README.md        # 本檔案（繁體中文）
 │   ├── ru/README.md             # 俄文翻譯
 │   └── <locale>/README.md       # 另外 19 種在地化版本
-├── desktop/                     # Ombra Desktop（Tauri：Rust 目錄 + Vue 介面）
 ├── docs/
 │   ├── architecture.md          # 架構、信任邊界、生命週期
 │   ├── sdk-contract.md          # v0.2 啟動契約、選項、錯誤、不變量
 │   ├── stealth-checkup.md       # 隱匿性檢查方法（英文）
 │   ├── stealth-checkup.ru.md    # 隱匿性檢查方法（俄文）
-│   ├── versioning.md            # SDK、引擎與用戶端版本控管
-│   └── desktop/                 # Desktop 本機設定檔與金鑰指南
+│   └── versioning.md            # SDK、引擎與用戶端版本控管
 ├── sdks/
 │   ├── manifest.json            # 機器可讀的 SDK 登錄檔
 │   ├── README.md                # SDK 目錄結構與貢獻規範
@@ -941,7 +939,7 @@ for _ in range(15):
 └── .github/workflows/ci.yml
 ```
 
-本儲存庫託管 SDK 契約、Schema、一致性測試案例、文件與 Ombra Desktop 原始碼。Chromium 引擎修補程式維護於獨立儲存庫中，編譯完成的建置版本則透過 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 發布。
+本儲存庫託管 SDK 契約、Schema、一致性測試案例與文件。Ombra Desktop 託管於獨立儲存庫 [`ombralabs/manager`](https://github.com/ombralabs/manager)（`GPL-3.0-only`）。Chromium 引擎修補程式維護於獨立儲存庫中，編譯完成的建置版本則透過 [GitHub Releases](https://github.com/ombralabs/ombra/releases) 發布。
 
 ## 常見問題
 
@@ -987,7 +985,7 @@ Ombra 專為經授權的自動化作業、QA 測試、監控、研究以及管�
 
 ## 授權條款
 
-本儲存庫中的 SDK 原始碼依據 [Apache License 2.0](../../LICENSE) 授權。本授權條款並未授予 Ombra 商標、Ombra Chromium 引擎或 Ombra Desktop 的相關權利——商標與第三方條款請參閱 [NOTICE](../../NOTICE)。
+本儲存庫中的 SDK 原始碼依據 [Apache License 2.0](../../LICENSE) 授權。Ombra Desktop 在 [`ombralabs/manager`](https://github.com/ombralabs/manager) 中依據 `GPL-3.0-only` 獨立開發。Apache License 2.0 並未授予 Ombra 商標或 Ombra Chromium 引擎的相關權利——商標與第三方條款請參閱 [NOTICE](../../NOTICE)。
 
 ## 相關連結
 

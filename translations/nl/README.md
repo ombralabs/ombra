@@ -57,7 +57,7 @@ Dezelfde API, dezelfde selectors en types — vervang alleen de import en de <co
 - **Zelfstandige werking zonder sleutels of accounts** — actuele engine-builds en Ombra Desktop draaien lokaal zonder registratie, licentiesleutels, hardware-ID's of een licentieserver.
 - **Automatische installatie en cryptografische binary-verificatie** — `pip install ombrabrowser` of `npm install @ombralabs/sdk`; bij de eerste start downloadt de SDK een compatibele build van [GitHub Releases](https://github.com/ombralabs/ombra/releases) en verifieert de Ed25519-handtekening en de SHA-256-checksum.
 - **Persistente profielen en veilige proxy-relay** — profielen met een naam bewaren cookies, `localStorage`, IndexedDB en `seed` tussen sessies met vergrendeling tussen processen; geauthenticeerde proxy's (HTTP, HTTPS, SOCKS5) lopen via een lokale loopback-relay zodat inloggegevens nooit in procesargumenten verschijnen.
-- **Offline profielbeheerder Ombra Desktop** — een native desktopapplicatie in deze repository ([`desktop/`](../../desktop/README.md)) met vooraf gebouwde installatieprogramma's voor macOS, Linux en Windows.
+- **Offline profielbeheerder Ombra Desktop** — een native desktopapplicatie in een aparte repository ([`ombralabs/manager`](https://github.com/ombralabs/manager), `GPL-3.0-only`) met vooraf gebouwde installatieprogramma's voor macOS, Linux en Windows.
 
 **Python (Playwright):**
 
@@ -186,7 +186,7 @@ Elk onderdeel in het ecosysteem volgt het gedeelde startcontract en wordt onafha
 | **Python-SDK** | Alfa `0.2.0` | [`ombrabrowser` op PyPI](https://pypi.org/project/ombrabrowser/) |
 | **Node.js- / TypeScript-SDK** | Alfa `0.2.0` | [`@ombralabs/sdk` op npm](https://www.npmjs.com/package/@ombralabs/sdk) |
 | **Ombra Chromium-engine** | SDK-bereik `>=151.0.7922.108,<159` | Automatisch gedownload door de SDK van [GitHub Releases](https://github.com/ombralabs/ombra/releases) (macOS ARM64 / Linux x64 / Windows x64) |
-| **Ombra Desktop** | Offline profielbeheerder | [`desktop/`](../../desktop/README.md) · [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
+| **Ombra Desktop** | Offline profielbeheerder | [`ombralabs/manager`](https://github.com/ombralabs/manager) · [GitHub Releases](https://github.com/ombralabs/manager/releases) |
 | **Losstaande browser** | Chromium `158.0.8127.37` | [GitHub Releases](https://github.com/ombralabs/ombra/releases) |
 | **Schema's en conformiteit** | JSON Schema + gedeelde testcases | [`spec/schemas`](../../AGENTS.md#sdk-launch-options-and-binary-info-schemas) · [`conformance`](../../AGENTS.md#sdk-conformance-and-stealth-invariants) |
 | **Stealth-checkupmethode** | 6 lagen (`L0`–`L5`) | [`docs/stealth-checkup.md`](../../docs/stealth-checkup.md) |
@@ -202,7 +202,7 @@ Zie [CHANGELOG.md](../../CHANGELOG.md) voor de volledige releasegeschiedenis.
 
 ## Ombra Desktop
 
-**Een lokale offline profielbeheerder met een grafische interface (GUI).** De broncode staat direct in deze repository ([`desktop/`](../../desktop/README.md)) en is gebouwd met Tauri (Rust + Vue).
+**Een lokale offline profielbeheerder met een grafische interface (GUI).** De broncode staat in een aparte repository ([`ombralabs/manager`](https://github.com/ombralabs/manager), gelicentieerd onder `GPL-3.0-only`) en is gebouwd met Tauri (Rust + Vue).
 
 - **Volledig offline en lokaal** — de profielcatalogus staat in een lokale SQLite-database op jouw machine met een lokale encryptiesleutel; geen account, cloudservice of netwerktoegang vereist.
 - **Gestructureerd profielbeheer** — maak profielen aan, zoek op naam, notitie of nummer, bewerk beschrijvingen en organiseer items met groepen, tags, labels en bladwijzers in de Rust-catalogus.
@@ -211,7 +211,7 @@ Zie [CHANGELOG.md](../../CHANGELOG.md) voor de volledige releasegeschiedenis.
 - **Vooraf gebouwde installatieprogramma's** — macOS Apple Silicon (`.dmg`, ondertekend met Apple Developer ID en genotariseerd), Linux (`.deb` en `.rpm`) en Windows x64 (`setup.exe`).
 - **Geïsoleerde catalogi** — stel `OMBRA_DESKTOP_DATA_DIR` in om met een aparte testcatalogus of een reservekopie te werken.
 
-[Download de nieuwste release →](https://github.com/ombralabs/ombra/releases) · [Desktop README](../../desktop/README.md) · [Handleiding voor profielen en lokale sleutels](../../docs/desktop/README.md)
+[Download de nieuwste release →](https://github.com/ombralabs/manager/releases) · [Desktop README](https://github.com/ombralabs/manager/blob/main/README.md) · [Handleiding voor profielen en lokale sleutels](https://github.com/ombralabs/manager/blob/main/docs/README.md)
 
 ## Fingerprintverificatie en stealth-checkup
 
@@ -923,14 +923,12 @@ Meld beveiligingsproblemen vertrouwelijk volgens [SECURITY.md](../../SECURITY.md
 │   ├── nl/README.md             # dit bestand (Nederlands)
 │   ├── ru/README.md             # Russische vertaling
 │   └── <locale>/README.md       # 19 aanvullende lokalisaties
-├── desktop/                     # Ombra Desktop (Tauri: Rust-catalogus + Vue-UI)
 ├── docs/
 │   ├── architecture.md          # architectuur, vertrouwensgrenzen, levenscyclus
 │   ├── sdk-contract.md          # v0.2 startcontract, opties, fouten, invarianten
 │   ├── stealth-checkup.md       # checkupmethode (Engels)
 │   ├── stealth-checkup.ru.md    # checkupmethode (Russisch)
-│   ├── versioning.md            # versionering van SDK, engine en client
-│   └── desktop/                 # handleidingen voor lokale Desktop-profielen en sleutels
+│   └── versioning.md            # versionering van SDK, engine en client
 ├── sdks/
 │   ├── manifest.json            # machineleesbaar SDK-register
 │   ├── README.md                # SDK-structuur en regels voor bijdragen
@@ -941,7 +939,7 @@ Meld beveiligingsproblemen vertrouwelijk volgens [SECURITY.md](../../SECURITY.md
 └── .github/workflows/ci.yml
 ```
 
-Deze repository bevat het SDK-contract, schema's, conformiteitscases, documentatie en de broncode van Ombra Desktop. Patches voor de Chromium-engine worden in een aparte repository onderhouden; gecompileerde builds worden gepubliceerd via [GitHub Releases](https://github.com/ombralabs/ombra/releases).
+Deze repository bevat het SDK-contract, schema's, conformiteitscases en documentatie. Ombra Desktop staat in [`ombralabs/manager`](https://github.com/ombralabs/manager) (`GPL-3.0-only`). Patches voor de Chromium-engine worden in een aparte repository onderhouden; gecompileerde builds worden gepubliceerd via [GitHub Releases](https://github.com/ombralabs/ombra/releases).
 
 ## Veelgestelde vragen
 
@@ -987,7 +985,7 @@ Richtlijnen voor bijdragen staan in [CONTRIBUTING.md](../../CONTRIBUTING.md), ge
 
 ## Licentie
 
-De SDK-broncode in deze repository is gelicentieerd onder de [Apache License 2.0](../../LICENSE). De licentie verleent geen rechten op handelsmerken van Ombra, de Ombra Chromium-engine of Ombra Desktop — zie [NOTICE](../../NOTICE) voor handelsmerkvoorwaarden en voorwaarden van derden.
+De SDK-broncode in deze repository is gelicentieerd onder de [Apache License 2.0](../../LICENSE). Ombra Desktop wordt afzonderlijk ontwikkeld in [`ombralabs/manager`](https://github.com/ombralabs/manager) onder `GPL-3.0-only`. De Apache License 2.0 verleent geen rechten op handelsmerken van Ombra of de Ombra Chromium-engine — zie [NOTICE](../../NOTICE) voor handelsmerkvoorwaarden en voorwaarden van derden.
 
 ## Links
 
